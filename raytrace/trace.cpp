@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#define ANTIALIAS 3
+#define MAX_RAY_GENERATION 2
 
 Tracer::Tracer(Scene *scene)
 {
@@ -70,30 +70,34 @@ Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
 		Color specular = light->color().scale(texture->finish()->specular() * specular_coeff);
 
 		totalColor += diffuse + specular;
+
+		if(texture->finish()->reflection() > 0 && ray.generation() < MAX_RAY_GENERATION)
+		{
+			Vector incident = ray.direction();
+			Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
+			
+			Ray reflectRay(intersection.point(), reflect);
+			reflectRay.setGeneration(ray.generation() + 1);
+
+			Color c = traceRay(reflectRay);
+
+			totalColor = totalColor * (1 - texture->finish()->reflection()) + c * texture->finish()->reflection();
+		}
 	}
 
 	return totalColor.clamp();
 }
 
-Color Tracer::tracePixel(double x, double y, double width, double height) const
+Color Tracer::traceRay(const Ray &ray) const
 {
-	Color totalColor;
+	mIntersections.clear();
+	mScene->findIntersections(ray, mIntersections);
 
-	for(int i=0; i<ANTIALIAS; i++)
-		for(int j=0; j<ANTIALIAS; j++)
-		{
-			Ray ray = mScene->camera()->createRay(x + (double)i / ANTIALIAS, y + (double)j / ANTIALIAS, width, height);
+	Color color(.2, .2, .2);
 
-			mIntersections.clear();
-			mScene->findIntersections(ray, mIntersections);
-
-			Color color(.2, .2, .2);
-
-			if(mIntersections.size() > 0)
-				color = doLighting(ray, mIntersections[0]);
-
-			totalColor = totalColor + color;
-		}
-
-	return totalColor / (ANTIALIAS * ANTIALIAS);
+	if(mIntersections.size() > 0)
+	{
+		color = doLighting(ray, mIntersections[0]);
+	}
+	return color;
 }

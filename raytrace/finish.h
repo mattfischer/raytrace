@@ -19,10 +19,14 @@ public:
 	double specularPower() const;
 	void setSpecularPower(double specularPower);
 
+	double reflection() const;
+	void setReflection(double reflection);
+
 protected:
 	double mAmbient;
 	double mDiffuse;
 	double mSpecular;
 	double mSpecularPower;
+	double mReflection;
 };
 #endif

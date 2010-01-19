@@ -20,11 +20,15 @@ public:
 	const Vector &direction() const;
 	void setDirection(const Vector &direction);
 
+	int generation() const;
+	void setGeneration(int generation);
+
 	Ray transform(const Matrix &transformation) const;
 
 protected:
  	Vector mOrigin;
 	Vector mDirection;
+	int mGeneration;
 };
 
 #endif

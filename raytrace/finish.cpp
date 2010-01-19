@@ -4,6 +4,7 @@
 #define DIFFUSE_DEFAULT 0.8
 #define SPECULAR_DEFAULT 0.0
 #define SPECULARPOWER_DEFAULT 50
+#define REFLECTION_DEFAULT 0
 
 Finish::Finish()
 {
@@ -11,6 +12,7 @@ Finish::Finish()
 	mDiffuse = DIFFUSE_DEFAULT;
 	mSpecular = SPECULAR_DEFAULT;
 	mSpecularPower = SPECULARPOWER_DEFAULT;
+	mReflection = REFLECTION_DEFAULT;
 }
 
 Finish::~Finish()
@@ -55,4 +57,14 @@ double Finish::specularPower() const
 void Finish::setSpecularPower(double specularPower)
 {
 	mSpecularPower = specularPower;
+}
+
+double Finish::reflection() const
+{
+	return mReflection;
+}
+
+void Finish::setReflection(double reflection)
+{
+	mReflection = reflection;
 }

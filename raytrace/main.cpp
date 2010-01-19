@@ -12,6 +12,8 @@ HBITMAP backBitmap;
 int screenX = 800;
 int screenY = 600;
 
+#define ANTIALIAS 2
+
 BOOL PlotNextPixels(const Tracer &tracer)
 {
 	int x;
@@ -31,7 +33,19 @@ BOOL PlotNextPixels(const Tracer &tracer)
 	
 	for(x=0; x<screenX; x++)
 	{
-		c = tracer.tracePixel(x, y, screenX, screenY);
+		Color totalColor;
+
+		for(int i=0; i<ANTIALIAS; i++)
+			for(int j=0; j<ANTIALIAS; j++)
+			{
+				Ray ray = tracer.scene()->camera()->createRay(x + (double)i / ANTIALIAS, y + (double)j / ANTIALIAS, screenX, screenY);
+
+				Color color = tracer.traceRay(ray);
+
+				totalColor = totalColor + color;
+			}
+
+		Color c = totalColor / (ANTIALIAS * ANTIALIAS);
 
 		bits[x*3] = c.blue() * 0xFF;
 		bits[x*3 + 1] = c.green() * 0xFF;

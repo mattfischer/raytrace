@@ -25,6 +25,7 @@ public:
 	Color &operator+=(const Color &b);
 	Color operator/(double b) const;
 	Color operator*(const Color &b) const;
+	Color operator*(double b) const;
 
 protected:
 	double mRed;

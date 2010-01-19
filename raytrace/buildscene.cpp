@@ -16,7 +16,9 @@ Scene *buildScene(int screenX, int screenY)
 	Scene *scene = new Scene;
 
 	Camera *camera = new Camera(45, (double)screenY / (double)screenX);
-	camera->transform(Transformation::translate(0, 0, -10));
+	camera->transform(Transformation::translate(4, 1, -10));
+	camera->transform(Transformation::rotate(0, 20, 0));
+	camera->transform(Transformation::rotate(10, 0, 0));
 	scene->setCamera(camera);
 
 	Light *light = new Light(Color(1, 1, 1));
@@ -44,6 +46,7 @@ Scene *buildScene(int screenX, int screenY)
 
 	Sphere *sphere2 = new Sphere;
 	sphere2->setTexture(new Texture(new PigmentSolid(Color(1, 0, 1)), new Finish));
+	sphere2->texture()->finish()->setReflection(.75);
 	sphere2->texture()->finish()->setSpecular(1);
 	sphere2->transform(Transformation::translate(-1, 0, 1));
 	sphere2->transform(Transformation::uniformScale(2));

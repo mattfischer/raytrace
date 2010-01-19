@@ -104,3 +104,8 @@ Color Color::operator*(const Color &b) const
 {
 	return Color(mRed * b.mRed, mGreen * b.mGreen, mBlue * b.mBlue);
 }
+
+Color Color::operator*(double b) const
+{
+	return Color(mRed * b, mGreen * b, mBlue * b);
+}
