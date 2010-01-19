@@ -1,0 +1,55 @@
+#include "ray.h"
+
+Ray::Ray()
+{
+}
+
+Ray::Ray(const Vector &origin, const Vector &direction)
+{
+	mOrigin = origin;
+	mDirection = direction;
+}
+
+Ray::Ray(const Ray &c)
+{
+	mOrigin = c.origin();
+	mDirection = c.direction();
+}
+
+Ray &Ray::operator=(const Ray &c)
+{
+	mOrigin = c.origin();
+	mDirection = c.direction();
+
+	return *this;
+}
+
+Ray Ray::createFromPoints(const Vector &point1, const Vector &point2)
+{
+	return Ray(point1, (point2 - point1).normalize());
+}
+
+const Vector &Ray::origin() const
+{
+	return mOrigin;
+}
+
+void Ray::setOrigin(const Vector &origin)
+{
+	mOrigin = origin;
+}
+
+const Vector &Ray::direction() const
+{
+	return mDirection;
+}
+
+void Ray::setDirection(const Vector &direction)
+{
+	mDirection = direction;
+}
+
+Ray Ray::transform(const Matrix &transformation) const 
+{
+	return Ray(transformation * mOrigin, transformation * mDirection - transformation * Vector(0, 0, 0));
+}
