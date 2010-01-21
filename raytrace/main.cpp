@@ -12,7 +12,7 @@ HBITMAP backBitmap;
 int screenX = 800;
 int screenY = 600;
 
-#define ANTIALIAS 2
+#define ANTIALIAS 1
 
 BOOL PlotNextPixels(const Tracer &tracer)
 {

@@ -66,3 +66,8 @@ void Cone::doIntersect(const Ray &ray, std::vector<Intersection> &intersections)
 	if(intersection.valid())
 		intersections.push_back(intersection);
 }
+
+bool Cone::doInside(const Vector &point) const
+{
+	return point.z() <= 1 && point.x() * point.x() + point.y() * point.y() <= point.z() * point.z();
+}

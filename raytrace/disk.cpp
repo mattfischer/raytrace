@@ -35,3 +35,8 @@ void Disk::doIntersect(const Ray &ray, std::vector<Intersection> &intersections)
 	if(intersection.valid())
 		intersections.push_back(intersection);
 }
+
+bool Disk::doInside(const Vector &point) const
+{
+	return false;
+}

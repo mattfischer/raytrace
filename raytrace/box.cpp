@@ -42,3 +42,7 @@ void Box::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) 
 	testIntersect(ray, Vector(0,0,-1), intersections);
 }
 
+bool Box::doInside(const Vector &point) const
+{
+	return abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1;
+}

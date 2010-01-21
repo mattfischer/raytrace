@@ -18,10 +18,12 @@ public:
 	void setTexture(Texture *texture);
 
 	void intersect(const Ray &ray, std::vector<Intersection> &intersections) const;
+	bool inside(const Vector &point) const;
 
 protected:
 	Texture *mTexture;
 
 	virtual void doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const = 0;
+	virtual bool doInside(const Vector &point) const = 0;
 };
 #endif

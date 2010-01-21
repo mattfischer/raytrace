@@ -40,3 +40,7 @@ void Sphere::doIntersect(const Ray &ray, std::vector<Intersection> &intersection
 	}
 }
 
+bool Sphere::doInside(const Vector &point) const
+{
+	return point.magnitude2() <= 1;
+}

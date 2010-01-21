@@ -171,6 +171,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\csg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\cylinder.cpp"
 				>
 			</File>
@@ -266,6 +270,10 @@
 			</File>
 			<File
 				RelativePath=".\cone.h"
+				>
+			</File>
+			<File
+				RelativePath=".\csg.h"
 				>
 			</File>
 			<File

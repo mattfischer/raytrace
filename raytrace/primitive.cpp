@@ -30,3 +30,10 @@ void Primitive::intersect(const Ray &ray, std::vector<Intersection> &intersectio
 
 	doIntersect(transformedRay, intersections);
 }
+
+bool Primitive::inside(const Vector &point) const
+{
+	Vector transformedPoint = mTransformation.inverseTransformPoint(point);
+
+	return doInside(transformedPoint);
+}

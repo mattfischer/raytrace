@@ -69,3 +69,8 @@ void Cylinder::doIntersect(const Ray &ray, std::vector<Intersection> &intersecti
 	if(intersection.valid())
 		intersections.push_back(intersection);
 }
+
+bool Cylinder::doInside(const Vector &point) const
+{
+	return abs(point.z()) <= 1 && point.x() * point.x() + point.y() * point.y() <= 1;
+}
