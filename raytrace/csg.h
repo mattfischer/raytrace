@@ -25,4 +25,7 @@ protected:
 	Primitive *mPrimitive1;
 	Primitive *mPrimitive2;
 	Type mType;
+
+	virtual bool doInside(const Vector &point) const;
+	virtual void doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const;
 };
