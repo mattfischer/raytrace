@@ -15,6 +15,7 @@ Intersection::Intersection(const Primitive *primitive, double distance, const Ve
 	mObjectNormal = objectNormal;
 	mObjectPoint = objectPoint;
 	mTransformed = false;
+	mTransformation = mPrimitive->transformation();
 };
 
 Intersection::Intersection(const Intersection &c)
@@ -27,6 +28,7 @@ Intersection::Intersection(const Intersection &c)
 	mObjectPoint = c.mObjectPoint;
 	mPoint = c.mPoint;
 	mTransformed = c.mTransformed;
+	mTransformation = c.mTransformation;
 }
 
 Intersection &Intersection::operator=(const Intersection &c)
@@ -39,6 +41,7 @@ Intersection &Intersection::operator=(const Intersection &c)
 	mObjectPoint = c.mObjectPoint;
 	mPoint = c.mPoint;
 	mTransformed = c.mTransformed;
+	mTransformation = c.mTransformation;
 
 	return *this;
 }
@@ -76,7 +79,7 @@ void Intersection::setDistance(double distance)
 const Vector &Intersection::normal() const
 {
 	if(!mTransformed)
-		transform();
+		doTransform();
 
 	return mNormal;
 }
@@ -96,7 +99,7 @@ void Intersection::setObjectNormal(const Vector &objectNormal)
 const Vector &Intersection::point() const
 {
 	if(!mTransformed)
-		transform();
+		doTransform();
 
 	return mPoint;
 }
@@ -113,6 +116,22 @@ void Intersection::setObjectPoint(const Vector &objectPoint)
 	mObjectPoint = objectPoint;
 }
 
+void Intersection::transform(const Transformation &transformation)
+{
+	mTransformation = transformation.transformTransformation(mTransformation);
+
+	if(mTransformed)
+	{
+		mNormal = transformation.transformNormal(mNormal);
+		mPoint = transformation.transformPoint(mPoint);
+	}
+}
+
+const Transformation &Intersection::transformation() const
+{
+	return mTransformation;
+}
+
 const Intersection &Intersection::nearest(const Intersection &b) const
 {
 	return (*this < b) ? *this : b;
@@ -126,10 +145,10 @@ bool Intersection::operator<(const Intersection &b) const
 	return distance() < b.distance();
 }
 
-void Intersection::transform() const
+void Intersection::doTransform() const
 {
-	mNormal = mPrimitive->transformation().transformNormal(mObjectNormal);
-	mPoint = mPrimitive->transformation().transformPoint(mObjectPoint);
+	mNormal = mTransformation.transformNormal(mObjectNormal);
+	mPoint = mTransformation.transformPoint(mObjectPoint);
 
 	mTransformed = true;
 }

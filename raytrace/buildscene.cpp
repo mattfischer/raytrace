@@ -49,6 +49,7 @@ Scene *buildScene(int screenX, int screenY)
 	csg->setPrimitive1(sphere2);
 	csg->setPrimitive2(sphere1);
 	csg->setType(Csg::TypeIntersection);
+	csg->transform(Transformation::rotate(0, 45, 0));
 	scene->addPrimitive(csg);
 
 	return scene;

@@ -2,6 +2,7 @@
 #define INTERSECTION_H
 
 #include "vector.h"
+#include "transformation.h"
 
 class Primitive;
 
@@ -34,6 +35,9 @@ public:
 
 	const Intersection &nearest(const Intersection &b) const;
 	
+	void transform(const Transformation &transformation);
+	const Transformation &transformation() const;
+
 	bool operator<(const Intersection &b) const;
 
 protected:
@@ -45,8 +49,9 @@ protected:
 	mutable Vector mPoint;
 	mutable Vector mNormal;
 	mutable bool mTransformed;
+	Transformation mTransformation;
 
-	void transform() const;
+	void doTransform() const;
 };
 
 #endif

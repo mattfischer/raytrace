@@ -89,6 +89,7 @@ void Csg::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) 
 
 		if(add)
 		{
+			localIntersections[i].transform(transformation());
 			intersections.push_back(localIntersections[i]);
 		}
 	}
