@@ -8,6 +8,11 @@ Plane::Plane()
 {
 }
 
+Plane *Plane::fromAst(AST *ast)
+{
+	return new Plane;
+}
+
 Intersection Plane::intersectPlane(const Primitive *primitive, const Ray &ray, const Vector &normal, double displacement)
 {
 	Intersection intersection;

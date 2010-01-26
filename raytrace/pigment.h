@@ -3,12 +3,15 @@
 
 #include "color.h"
 #include "vector.h"
+#include "ast.h"
 
 class Pigment
 {
 public:
 	Pigment();
 	virtual ~Pigment();
+
+	static Pigment *fromAst(AST *ast);
 
 	virtual Color pointColor(const Vector &point) const = 0;
 };

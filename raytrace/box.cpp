@@ -8,6 +8,11 @@ Box::Box()
 {
 }
 
+Box *Box::fromAst(AST *ast)
+{
+	return new Box();
+}
+
 void Box::testIntersect(const Ray &ray, const Vector &normal, std::vector<Intersection> &intersections) const
 {
 	Intersection newIntersection = Plane::intersectPlane(this, ray, normal, 1);

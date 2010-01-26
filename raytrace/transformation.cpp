@@ -2,6 +2,11 @@
 
 #include <math.h>
 
+Transformation Transformation::translate(const Vector &vector)
+{
+	return translate(vector.x(), vector.y(), vector.z());
+}
+
 Transformation Transformation::translate(double x, double y, double z)
 {
 	return Transformation(
@@ -15,6 +20,11 @@ Transformation Transformation::translate(double x, double y, double z)
 				  0, 1, 0, -y,
 				  0, 0, 1, -z,
 				  0, 0, 0, 1));
+}
+
+Transformation Transformation::scale(const Vector &vector)
+{
+	return scale(vector.x(), vector.y(), vector.z());
 }
 
 Transformation Transformation::scale(double x, double y, double z)
@@ -40,6 +50,11 @@ Transformation Transformation::uniformScale(double factor)
 static double rad(double deg)
 {
 	return deg * 3.14 / 180.0;
+}
+
+Transformation Transformation::rotate(const Vector &vector)
+{
+	return rotate(vector.x(), vector.y(), vector.z());
 }
 
 Transformation Transformation::rotate(double x, double y, double z)
@@ -99,6 +114,29 @@ Transformation::Transformation(const Matrix &matrix, const Matrix &inverseMatrix
 	mInverseOrigin = mInverseMatrix * Vector(0, 0, 0);
 	mTransposeOrigin = mMatrixTranspose * Vector(0, 0, 0);
 	mInverseTransposeOrigin = mInverseMatrixTranspose * Vector(0, 0, 0);
+}
+
+Transformation Transformation::fromAst(AST *ast)
+{
+	Transformation t;
+
+	for(int i=0; i<ast->numChildren; i++)
+	{
+		switch(ast->children[i]->type)
+		{
+		case AstTranslate:
+			t = t.transformTransformation(translate(ast->children[i]->data._vector));
+			break;
+		case AstRotate:
+			t = t.transformTransformation(rotate(ast->children[i]->data._vector));
+			break;
+		case AstScale:
+			t = t.transformTransformation(scale(ast->children[i]->data._vector));
+			break;
+		}
+	}
+
+	return t;
 }
 
 Transformation::Transformation(const Transformation &c)

@@ -10,6 +10,20 @@ Pigment::~Pigment()
 {
 }
 
+Pigment *Pigment::fromAst(AST *ast)
+{
+	AST *pigmentAst = ast->children[0];
+	switch(pigmentAst->type)
+	{
+	case AstPigmentColor:
+		return new PigmentSolid(pigmentAst->children[0]->data._vector);
+	case AstPigmentChecker:
+		return new PigmentChecker(pigmentAst->children[0]->data._vector, pigmentAst->children[1]->data._vector);
+	}
+
+	return 0;
+}
+
 PigmentSolid::PigmentSolid(const Color &color)
 : mColor(color)
 {

@@ -15,6 +15,36 @@ Texture::~Texture()
 		delete mFinish;
 }
 
+Texture *Texture::fromAst(AST *ast)
+{
+	Texture *texture = new Texture();
+
+	for(int i=0; i<ast->numChildren; i++)
+	{
+		switch(ast->children[i]->type)
+		{
+		case AstPigment:
+			texture->setPigment(Pigment::fromAst(ast->children[i]));
+			break;
+		case AstFinish:
+			texture->setFinish(Finish::fromAst(ast->children[i]));
+			break;
+		}
+	}
+
+	if(texture->pigment() == 0)
+	{
+		texture->setPigment(new PigmentSolid(Color(0,0,0)));
+	}
+
+	if(texture->finish() == 0)
+	{
+		texture->setFinish(new Finish());
+	}
+
+	return texture;
+}
+
 void Texture::transform(const Transformation &transformation)
 {
 	mTransformation = transformation.transformTransformation(mTransformation);

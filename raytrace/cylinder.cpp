@@ -14,6 +14,11 @@ Cylinder::~Cylinder()
 {
 }
 
+Cylinder *Cylinder::fromAst(AST *ast)
+{
+	return new Cylinder();
+}
+
 void Cylinder::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
 {
 	double a, b, c;

@@ -1,11 +1,15 @@
 #ifndef FINISH_H
 #define FINISH_H
 
+#include "ast.h"
+
 class Finish
 {
 public:
 	Finish();
 	virtual ~Finish();
+
+	static Finish *fromAst(AST *ast);
 
 	double ambient() const;
 	void setAmbient(double ambient);

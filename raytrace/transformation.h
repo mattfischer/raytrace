@@ -4,14 +4,23 @@
 #include "matrix.h"
 #include "vector.h"
 #include "ray.h"
+#include "ast.h"
 
 class Transformation
 {
 public:
 	static Transformation translate(double x, double y, double z);
+	static Transformation translate(const Vector &vector);
+
 	static Transformation scale(double x, double y, double z);
+	static Transformation scale(const Vector &vector);
+
 	static Transformation uniformScale(double factor);
+
 	static Transformation rotate(double x, double y, double z);
+	static Transformation rotate(const Vector &vector);
+
+	static Transformation fromAst(AST *ast);
 
 	Transformation();
 	Transformation(const Matrix &matrix, const Matrix &inverseMatrix);

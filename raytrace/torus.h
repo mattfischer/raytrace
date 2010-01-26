@@ -1,16 +1,12 @@
-#ifndef CONE_H
-#define CONE_H
+#ifndef TORUS_H
+#define TORUS_H
 
 #include "primitive.h"
-#include "ast.h"
 
-class Cone : public Primitive
+class Torus : public Primitive
 {
 public:
-	Cone();
-	~Cone();
-
-	static Cone *fromAst(AST *ast);
+	Torus();
 
 protected:
 	virtual void doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const;

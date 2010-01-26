@@ -8,6 +8,8 @@ class Plane : public Primitive
 public:
 	Plane();
 
+	static Plane *fromAst(AST *ast);
+
 	static Intersection intersectPlane(const Primitive *primitive, const Ray &ray, const Vector &normal, double displacement);
 
 protected:

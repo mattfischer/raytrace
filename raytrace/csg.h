@@ -1,3 +1,6 @@
+#ifndef CSG_H
+#define CSG_H
+
 #include "primitive.h"
 
 class Csg : public Primitive
@@ -29,3 +32,5 @@ protected:
 	virtual bool doInside(const Vector &point) const;
 	virtual void doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const;
 };
+
+#endif

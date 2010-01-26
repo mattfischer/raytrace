@@ -2,11 +2,14 @@
 #define BOX_H
 
 #include "primitive.h"
+#include "ast.h"
 
 class Box : public Primitive
 {
 public:
 	Box();
+
+	static Box *fromAst(AST *ast);
 
 protected:
 	virtual void doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const;

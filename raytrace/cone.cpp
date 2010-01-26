@@ -13,6 +13,11 @@ Cone::~Cone()
 {
 }
 
+Cone *Cone::fromAst(AST *ast)
+{
+	return new Cone();
+}
+
 void Cone::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
 {
 	double a, b, c;

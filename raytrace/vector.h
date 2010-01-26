@@ -1,11 +1,14 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include "ast.h"
+
 class Vector
 {
 public:
 	Vector();
 	Vector(double x, double y, double z);
+	Vector(const ASTVector &astVector);
 	Vector(const Vector &c);
 	Vector &operator=(const Vector &c);
 

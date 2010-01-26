@@ -9,6 +9,11 @@ Sphere::Sphere()
 {
 }
 
+Sphere *Sphere::fromAst(AST *ast)
+{
+	return new Sphere();
+}
+
 void Sphere::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
 {
 	Intersection intersection;

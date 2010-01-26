@@ -14,6 +14,13 @@ Color::Color(double red, double green, double blue)
 	mBlue = blue;
 }
 
+Color::Color(const ASTVector &vector)
+{
+	mRed = vector.x;
+	mGreen = vector.y;
+	mBlue = vector.z;
+}
+
 Color::Color(const Color &c)
 {
 	mRed = c.mRed;

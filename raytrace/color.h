@@ -1,11 +1,14 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include "ast.h"
+
 class Color
 {
 public:
 	Color();
 	Color(double red, double green, double blue);
+	Color(const ASTVector &vector);
 	Color(const Color &c);
 	Color &operator=(const Color &c);
 

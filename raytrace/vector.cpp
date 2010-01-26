@@ -16,6 +16,13 @@ Vector::Vector(double x, double y, double z)
 	mValues[2] = z;
 }
 
+Vector::Vector(const ASTVector &astVector)
+{
+	mValues[0] = astVector.x;
+	mValues[1] = astVector.y;
+	mValues[2] = astVector.z;
+}
+
 Vector::Vector(const Vector &c)
 {
 	for(int i=0; i<3; i++) 

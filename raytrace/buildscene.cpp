@@ -12,45 +12,78 @@
 
 #include "texture.h"
 
+#include "ast.h"
+
+#include <stdio.h>
+
+extern "C"
+{
+	AST *parseScene(const char *filename);
+}
+
+Primitive *createPrimitive(AST *ast)
+{
+	int i;
+	Primitive *primitive = 0;
+
+	switch(ast->type)
+	{
+	case AstSphere:
+		primitive = Sphere::fromAst(ast);
+		break;
+	case AstPlane:
+		primitive = Plane::fromAst(ast);
+		break;
+	case AstBox:
+		primitive = Box::fromAst(ast);
+		break;
+	case AstCone:
+		primitive = Cone::fromAst(ast);
+		break;
+	case AstCylinder:
+		primitive = Cylinder::fromAst(ast);
+		break;
+	}
+
+	for(i=0; i<ast->numChildren; i++)
+	{
+		switch(ast->children[i]->type)
+		{
+		case AstTransform:
+			primitive->transform(Transformation::fromAst(ast->children[i]));
+			break;
+		case AstTexture:
+			primitive->setTexture(Texture::fromAst(ast->children[i]));
+			break;
+		}
+	}
+
+	return primitive;
+}
+
 Scene *buildScene(int screenX, int screenY)
 {
 	Scene *scene = new Scene;
 
 	Camera *camera = new Camera(45, (double)screenY / (double)screenX);
-	camera->transform(Transformation::translate(1, 1, -10));
-	camera->transform(Transformation::rotate(0, 10, 0));
-	camera->transform(Transformation::rotate(10, 0, 0));
+	camera->transform(Transformation::translate(3, 3, -10));
+	camera->transform(Transformation::rotate(0, 20, 0));
+	camera->transform(Transformation::rotate(20, 0, 0));
 	scene->setCamera(camera);
 
 	Light *light = new Light(Color(1, 1, 1));
 	light->transform(Transformation::translate(3, 2, -3));
 	scene->addLight(light);
 
-	Plane *plane = new Plane;
-	plane->setTexture(new Texture(new PigmentChecker(Color(0, 0, 1), Color(1, 0, 0)), new Finish));
-	plane->transform(Transformation::translate(0, -2, 0));
-	scene->addPrimitive(plane);
+	AST *ast = parseScene("scene.txt");
 
-	Sphere *sphere1 = new Sphere;
-	sphere1->setTexture(new Texture(new PigmentSolid(Color(1, 0, 0)), new Finish));
-	sphere1->transform(Transformation::translate(.5, 0, 0));
-	//sphere1->transform(Transformation::uniformScale(.5));
-	//scene->addPrimitive(sphere1);
+	for(int i=0; i<ast->numChildren; i++)
+	{
+		AST *primAST = ast->children[i];
+		Primitive *primitive = createPrimitive(ast->children[i]);
 
-	Sphere *sphere2 = new Sphere;
-	sphere2->setTexture(new Texture(new PigmentSolid(Color(1, 0, 1)), new Finish));
-	sphere2->texture()->finish()->setReflection(.75);
-	sphere2->texture()->finish()->setSpecular(1);
-	sphere2->transform(Transformation::translate(-.5, 0, 0));
-	//sphere2->transform(Transformation::uniformScale(2));
-	//scene->addPrimitive(sphere2);
-
-	Csg *csg = new Csg;
-	csg->setPrimitive1(sphere2);
-	csg->setPrimitive2(sphere1);
-	csg->setType(Csg::TypeIntersection);
-	csg->transform(Transformation::rotate(0, 45, 0));
-	scene->addPrimitive(csg);
+		scene->addPrimitive(primitive);
+	}
 
 	return scene;
 }

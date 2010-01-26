@@ -19,6 +19,39 @@ Finish::~Finish()
 {
 }
 
+Finish *Finish::fromAst(AST *ast)
+{
+	Finish *finish = new Finish();
+
+	for(int i=0; i<ast->numChildren; i++)
+	{
+		switch(ast->children[i]->type)
+		{
+		case AstAmbient:
+			finish->setAmbient(ast->children[i]->data._double);
+			break;
+
+		case AstDiffuse:
+			finish->setDiffuse(ast->children[i]->data._double);
+			break;
+
+		case AstSpecular:
+			finish->setSpecular(ast->children[i]->data._double);
+			break;
+
+		case AstSpecularPower:
+			finish->setSpecularPower(ast->children[i]->data._double);
+			break;
+
+		case AstReflection:
+			finish->setReflection(ast->children[i]->data._double);
+			break;
+		}
+	}
+
+	return finish;
+}
+
 double Finish::ambient() const
 {
 	return mAmbient;
