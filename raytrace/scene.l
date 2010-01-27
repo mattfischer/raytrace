@@ -41,6 +41,10 @@ specular return SPECULAR;
 specular_power return SPECULAR_POWER;
 reflection return REFLECTION;
 
+light return LIGHT;
+
+camera return CAMERA;
+
 \{|\}		return *yytext;
 <<EOF>>	return END;
 %%

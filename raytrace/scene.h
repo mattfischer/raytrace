@@ -12,7 +12,7 @@
 class Scene
 {
 public:
-	Scene();
+	Scene(double aspectRatio);
 	~Scene();
 
 	Camera *camera() const;
@@ -30,6 +30,7 @@ protected:
 	Camera *mCamera;
 	std::vector<Light*> mLights;
 	std::vector<Primitive*> mPrimitives;
+	double mAspectRatio;
 };
 
 #endif

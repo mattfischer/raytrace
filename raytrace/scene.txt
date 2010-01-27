@@ -1,34 +1,32 @@
-sphere
-{
-    texture
-    {
-		pigment
-		{
-			color <1,0,0>
-		}
-		finish
-		{
+sphere {
+    texture {
+		pigment { color <1,0,0>	}
+		finish {
 			ambient 0
 			specular 1
 		}
 	}
 }
 
-plane
-{
-	transform
-	{
-		translate <0,-1,0>
-	}
-	texture
-	{
-		pigment
-		{
+plane {
+	transform {	translate <0,-1,0> }
+	texture	{
+		pigment	{
 			checker color <0,1,0> color <0,0,1>
 		}
-		finish
-		{
-			ambient 0.01
-		}
+		finish { ambient 0.01 }
+	}
+}
+
+light {
+	color <1,1,1>
+	transform { translate <0,3,-5> }
+}
+
+camera {
+	transform {
+		translate <3,3,-10>
+		rotate <0,20,0>
+		rotate <20,0,0>			
 	}
 }

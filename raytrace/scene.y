@@ -40,27 +40,39 @@
 %token SPECULAR_POWER
 %token REFLECTION
 
+%token LIGHT
+
+%token CAMERA
+
 %token END
 %token <_vector> VECTOR
 %token <_double> DOUBLE
 
-%type <_ast> scene primitive_list primitive primitive_modifiers primitive_modifier
+%type <_ast> scene object_list object primitive primitive_modifiers primitive_modifier
+%type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> texturedef texture_list texture_item pigmentdef pigment_type finishdef finish_list finish_item
 %type <_ast> spheredef planedef boxdef conedef cylinderdef
+%type <_ast> lightdef light_modifiers light_modifier
+%type <_ast> cameradef camera_modifiers camera_modifier
 %start scene
 
 %%
-scene: primitive_list END
+scene: object_list END
 	{ tree = $1; }
 
-primitive_list: primitive
-	{ $$ = newAst(AstPrimitiveList, 1, $1); }
-			  | primitive_list primitive
+object_list: object
+	{ $$ = newAst(AstList, 1, $1); }
+		   | object_list object
 	{ $$ = addChild($1, $2); }
 			  
+object: primitive
+	{ $$ = newAst(AstPrimitive, 1, $1); }
+	  | lightdef
+	  | cameradef
+	
 primitive: spheredef | planedef | boxdef | conedef | cylinderdef
-
+	
 spheredef: SPHERE '{' primitive_modifiers '}'
 	{ $$ = addChildren(newAst(AstSphere, 0), $3->numChildren, $3->children); }
 
@@ -77,7 +89,7 @@ cylinderdef: CYLINDER '{' primitive_modifiers '}'
 	{ $$ = addChildren(newAst(AstCylinder, 0), $3->numChildren, $3->children); }
 
 primitive_modifiers: primitive_modifier
-	{ $$ = newAst(AstPrimitiveModifiers, 1, $1); }
+	{ $$ = newAst(AstList, 1, $1); }
 				   | primitive_modifiers primitive_modifier
 	{ $$ = addChild($1, $2); }
 
@@ -111,13 +123,13 @@ texture_item: pigmentdef | finishdef
 pigmentdef: PIGMENT '{' pigment_type '}'
 	{ $$ = newAst(AstPigment, 1, $3); }
 	
-pigment_type: COLOR VECTOR
-	{ $$ = newAst(AstPigmentColor, 1, newAst(AstColor, 0)); $$->children[0]->data._vector = $2; }
-			| CHECKER COLOR VECTOR COLOR VECTOR
-	{ $$ = newAst(AstPigmentChecker, 2, newAst(AstColor, 0), newAst(AstColor, 0)); 
-	  $$->children[0]->data._vector = $3;
-	  $$->children[1]->data._vector = $5;
-	}
+pigment_type: colordef
+	{ $$ = newAst(AstPigmentColor, 1, $1); }
+			| CHECKER colordef colordef
+	{ $$ = newAst(AstPigmentChecker, 2, $2, $3); }
+
+colordef: COLOR VECTOR
+	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }
 	
 finishdef: FINISH '{' finish_list '}'
 	{ $$ = $3; }
@@ -137,6 +149,27 @@ finish_item: AMBIENT DOUBLE
 	{ $$ = newAst(AstSpecularPower, 0); $$->data._double = $2; }
 		   | REFLECTION DOUBLE
 	{ $$ = newAst(AstReflection, 0); $$->data._double = $2; }	
+	
+lightdef: LIGHT '{' colordef light_modifiers '}'
+	{ $$ = addChildren(newAst(AstLight, 1, $3), $4->numChildren, $4->children); }
+	
+light_modifiers: light_modifier
+	{ $$ = newAst(AstList, 1, $1); }
+			   | light_modifiers light_modifier
+	{ $$ = addChild($1, $2); }
+
+light_modifier: transformdef
+
+cameradef: CAMERA '{' camera_modifiers '}'
+	{ $$ = addChildren(newAst(AstCamera, 0), $3->numChildren, $3->children); }
+	
+camera_modifiers: camera_modifier
+	{ $$ = newAst(AstList, 1, $1); }
+				| camera_modifiers camera_modifier
+	{ $$ = addChild($1, $2); }
+	
+camera_modifier: transformdef
+
 %%
 
 extern FILE *scenein;

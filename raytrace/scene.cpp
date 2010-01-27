@@ -2,9 +2,10 @@
 
 #include <algorithm>
 
-Scene::Scene()
+Scene::Scene(double aspectRatio)
 {
 	mCamera = 0;
+	mAspectRatio = aspectRatio;
 }
 
 Scene::~Scene()
@@ -32,6 +33,7 @@ void Scene::setCamera(Camera *camera)
 		delete mCamera;
 
 	mCamera = camera;
+	mCamera->setAspectRatio(mAspectRatio);
 }
 
 const std::vector<Light*> &Scene::lights() const

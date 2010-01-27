@@ -3,14 +3,14 @@
 
 typedef enum
 {
-	AstPrimitiveList,
+	AstList,
+
+	AstPrimitive,
 	AstSphere,
 	AstPlane,
 	AstBox,
 	AstCone,
 	AstCylinder,
-
-	AstPrimitiveModifiers,
 
 	AstTransform,
 	AstTranslate,
@@ -28,7 +28,11 @@ typedef enum
 	AstDiffuse,
 	AstSpecular,
 	AstSpecularPower,
-	AstReflection
+	AstReflection,
+
+	AstLight,
+
+	AstCamera
 } ASTType;
 
 typedef struct

@@ -14,6 +14,8 @@ public:
 	Primitive();
 	virtual ~Primitive();
 
+	static Primitive *fromAst(AST *ast);
+
 	Texture *texture() const;
 	void setTexture(Texture *texture);
 
