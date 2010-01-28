@@ -1,7 +1,52 @@
 #include "csg.h"
 
-Csg::Csg()
+Csg::Csg() :
+	mPrimitive1(0),
+	mPrimitive2(0)
 {
+}
+
+Csg *Csg::fromAst(AST *ast)
+{
+	Csg *csg = new Csg();
+
+	switch(ast->type)
+	{
+	case AstUnion:
+		csg->setType(TypeUnion);
+		break;
+
+	case AstDifference:
+		csg->setType(TypeDifference);
+		break;
+
+	case AstIntersection:
+		csg->setType(TypeIntersection);
+		break;
+	}
+
+	for(int i=0; i<ast->numChildren; i++)
+	{
+		switch(ast->children[i]->type)
+		{
+		case AstPrimitive:
+			if(csg->primitive1() == 0)
+			{
+				csg->setPrimitive1(Primitive::fromAst(ast->children[i]));
+			}
+			else
+			{
+				csg->setPrimitive2(Primitive::fromAst(ast->children[i]));
+			}
+			break;
+
+		case AstTransform:
+			csg->transform(Transformation::fromAst(ast->children[i]));
+			break;
+		}
+	}
+
+	return csg;
 }
 
 Primitive *Csg::primitive1()

@@ -1,11 +1,5 @@
 #include "buildscene.h"
 
-#include "csg.h"
-
-#include "transformation.h"
-
-#include "texture.h"
-
 #include "ast.h"
 
 #include <stdio.h>

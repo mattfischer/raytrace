@@ -32,7 +32,11 @@ typedef enum
 
 	AstLight,
 
-	AstCamera
+	AstCamera,
+
+	AstUnion,
+	AstDifference,
+	AstIntersection
 } ASTType;
 
 typedef struct

@@ -15,6 +15,8 @@ public:
 
 	Csg();
 
+	static Csg *fromAst(AST *ast);
+
 	Primitive *primitive1();
 	void setPrimitive1(Primitive *primitive1);
 

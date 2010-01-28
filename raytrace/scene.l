@@ -45,6 +45,10 @@ light return LIGHT;
 
 camera return CAMERA;
 
+union return UNION;
+difference return DIFFERENCE;
+intersection return INTERSECTION;
+
 \{|\}		return *yytext;
 <<EOF>>	return END;
 %%

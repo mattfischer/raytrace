@@ -6,6 +6,7 @@
 #include "cone.h"
 #include "disk.h"
 #include "cylinder.h"
+#include "csg.h"
 
 Primitive::Primitive()
 {
@@ -39,6 +40,11 @@ Primitive *Primitive::fromAst(AST *ast)
 		break;
 	case AstCylinder:
 		primitive = Cylinder::fromAst(sub);
+		break;
+	case AstUnion:
+	case AstDifference:
+	case AstIntersection:
+		primitive = Csg::fromAst(sub);
 		break;
 	}
 

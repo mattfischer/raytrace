@@ -54,8 +54,7 @@ Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
 
 		if(mLightIntersections.size() == 0 || mLightIntersections[0].distance() >= lightMagnitude)
 		{
-			diffuse_coeff = intersection.normal() * lightDir;
-			if(diffuse_coeff < 0) diffuse_coeff = 0;
+			diffuse_coeff = abs(intersection.normal() * lightDir);
 
 			Vector incident = -lightDir;
 			Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));

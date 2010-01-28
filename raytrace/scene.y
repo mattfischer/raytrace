@@ -39,22 +39,25 @@
 %token SPECULAR
 %token SPECULAR_POWER
 %token REFLECTION
-
+%token CAMERA
 %token LIGHT
 
-%token CAMERA
+
+%token UNION
+%token DIFFERENCE
+%token INTERSECTION
 
 %token END
 %token <_vector> VECTOR
 %token <_double> DOUBLE
 
-%type <_ast> scene object_list object primitive primitive_modifiers primitive_modifier
+%type <_ast> scene object_list object primitive primitive_wrap primitive_modifiers primitive_modifier
 %type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> texturedef texture_list texture_item pigmentdef pigment_type finishdef finish_list finish_item
 %type <_ast> spheredef planedef boxdef conedef cylinderdef
 %type <_ast> lightdef light_modifiers light_modifier
-%type <_ast> cameradef camera_modifiers camera_modifier
+%type <_ast> cameradef camera_modifiers camera_modifier csgdef
 %start scene
 
 %%
@@ -67,11 +70,13 @@ object_list: object
 	{ $$ = addChild($1, $2); }
 			  
 object: primitive
-	{ $$ = newAst(AstPrimitive, 1, $1); }
 	  | lightdef
 	  | cameradef
 	
-primitive: spheredef | planedef | boxdef | conedef | cylinderdef
+primitive: primitive_wrap
+	{ $$ = newAst(AstPrimitive, 1, $1); }
+	
+primitive_wrap: spheredef | planedef | boxdef | conedef | cylinderdef | csgdef
 	
 spheredef: SPHERE '{' primitive_modifiers '}'
 	{ $$ = addChildren(newAst(AstSphere, 0), $3->numChildren, $3->children); }
@@ -169,6 +174,13 @@ camera_modifiers: camera_modifier
 	{ $$ = addChild($1, $2); }
 	
 camera_modifier: transformdef
+
+csgdef: UNION '{' primitive primitive primitive_modifiers '}'
+	{ $$ = addChildren(newAst(AstUnion, 2, $3, $4), $5->numChildren, $5->children); }
+	  | DIFFERENCE '{' primitive primitive primitive_modifiers '}'
+	{ $$ = addChildren(newAst(AstDifference, 2, $3, $4), $5->numChildren, $5->children); }
+	  | INTERSECTION '{' primitive primitive primitive_modifiers '}'
+	{ $$ = addChildren(newAst(AstIntersection, 2, $3, $4), $5->numChildren, $5->children); }
 
 %%
 
