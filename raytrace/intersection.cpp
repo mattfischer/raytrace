@@ -15,7 +15,7 @@ Intersection::Intersection(const Primitive *primitive, double distance, const Ve
 	mObjectNormal = objectNormal;
 	mObjectPoint = objectPoint;
 	mTransformed = false;
-	mTransformation = mPrimitive->transformation();
+	mCompositeTransformed = false;
 };
 
 Intersection::Intersection(const Intersection &c)
@@ -28,7 +28,12 @@ Intersection::Intersection(const Intersection &c)
 	mObjectPoint = c.mObjectPoint;
 	mPoint = c.mPoint;
 	mTransformed = c.mTransformed;
-	mTransformation = c.mTransformation;
+	mCompositeTransformed = c.mCompositeTransformed;
+
+	if(mCompositeTransformed)
+	{
+		mTransformation = c.mTransformation;
+	}
 }
 
 Intersection &Intersection::operator=(const Intersection &c)
@@ -41,7 +46,12 @@ Intersection &Intersection::operator=(const Intersection &c)
 	mObjectPoint = c.mObjectPoint;
 	mPoint = c.mPoint;
 	mTransformed = c.mTransformed;
-	mTransformation = c.mTransformation;
+	mCompositeTransformed = c.mCompositeTransformed;
+
+	if(mCompositeTransformed)
+	{
+		mTransformation = c.mTransformation;
+	}
 
 	return *this;
 }
@@ -118,7 +128,15 @@ void Intersection::setObjectPoint(const Vector &objectPoint)
 
 void Intersection::transform(const Transformation &transformation)
 {
-	mTransformation = transformation.transformTransformation(mTransformation);
+	if(mCompositeTransformed)
+	{
+		mTransformation = transformation.transformTransformation(mTransformation);
+	}
+	else
+	{
+		mTransformation = transformation.transformTransformation(mPrimitive->transformation());
+		mCompositeTransformed = true;
+	}
 
 	if(mTransformed)
 	{
@@ -129,7 +147,14 @@ void Intersection::transform(const Transformation &transformation)
 
 const Transformation &Intersection::transformation() const
 {
-	return mTransformation;
+	if(mCompositeTransformed)
+	{
+		return mTransformation;
+	}
+	else
+	{
+		return mPrimitive->transformation();
+	}
 }
 
 const Intersection &Intersection::nearest(const Intersection &b) const
@@ -147,8 +172,16 @@ bool Intersection::operator<(const Intersection &b) const
 
 void Intersection::doTransform() const
 {
-	mNormal = mTransformation.transformNormal(mObjectNormal);
-	mPoint = mTransformation.transformPoint(mObjectPoint);
+	if(mCompositeTransformed)
+	{
+		mNormal = mTransformation.transformNormal(mObjectNormal);
+		mPoint = mTransformation.transformPoint(mObjectPoint);
+	}
+	else
+	{
+		mNormal = mPrimitive->transformation().transformNormal(mObjectNormal);
+		mPoint = mPrimitive->transformation().transformPoint(mObjectPoint);
+	}
 
 	mTransformed = true;
 }

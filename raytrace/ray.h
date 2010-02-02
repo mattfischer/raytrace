@@ -14,10 +14,10 @@ public:
 	Ray(const Ray &c);
 	Ray &operator=(const Ray &c);
 
-	const Vector &origin() const;
+	const Vector &origin() const { return mOrigin; }
 	void setOrigin(const Vector &origin);
 
-	const Vector &direction() const;
+	const Vector &direction() const { return mDirection; }
 	void setDirection(const Vector &direction);
 
 	int generation() const;

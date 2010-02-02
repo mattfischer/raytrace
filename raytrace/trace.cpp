@@ -61,7 +61,7 @@ Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
 
 			double dot = reflect * (mScene->camera()->transformation().origin() - point).normalize();
 
-			if(dot>0)
+			if(texture->finish()->specular() > 0 && dot>0)
 				specular_coeff = pow(dot, texture->finish()->specularPower());
 		}
 

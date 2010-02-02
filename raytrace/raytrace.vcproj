@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -130,7 +130,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				GenerateDebugInformation="false"
+				GenerateDebugInformation="true"
 				SubSystem="2"
 			/>
 			<Tool
@@ -220,10 +220,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\matrix.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\object.cpp"
 				>
 			</File>
@@ -281,10 +277,6 @@
 			</File>
 			<File
 				RelativePath=".\transformation.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\vector.cpp"
 				>
 			</File>
 		</Filter>

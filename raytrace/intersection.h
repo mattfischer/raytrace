@@ -50,6 +50,7 @@ protected:
 	mutable Vector mNormal;
 	mutable bool mTransformed;
 	Transformation mTransformation;
+	bool mCompositeTransformed;
 
 	void doTransform() const;
 };

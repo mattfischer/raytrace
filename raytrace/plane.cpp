@@ -15,7 +15,6 @@ Plane *Plane::fromAst(AST *ast)
 
 Intersection Plane::intersectPlane(const Primitive *primitive, const Ray &ray, const Vector &normal, double displacement)
 {
-	Intersection intersection;
 	double scale;
 
 	scale = (ray.origin() * normal - displacement) / (ray.direction() * -normal);
@@ -24,21 +23,29 @@ Intersection Plane::intersectPlane(const Primitive *primitive, const Ray &ray, c
 		Vector point = ray.origin() + ray.direction() * scale;
 		point = point - normal * (point * normal - displacement);
 
-		intersection = Intersection(primitive, scale, normal, point);
+		return Intersection(primitive, scale, normal, point);
 	}
 
-	return intersection;
+	return Intersection();
 }
 
 void Plane::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
 {
-	Intersection intersection = intersectPlane(this, ray, Vector(0, 1, 0), 0);
-	
-	if(intersection.valid())
-		intersections.push_back(intersection);
+	double scale;
+
+	if(ray.origin().y() > 0 && ray.direction().y() > 0 || 
+		ray.origin().y() < 0 && ray.direction().y() < 0) return;
+
+	scale = -ray.origin().y() / ray.direction().y();
+	if(scale > EPSILON)
+	{
+		Vector point = ray.origin() + ray.direction() * scale;
+
+		intersections.push_back(Intersection(this, scale, Vector(0,1,0), point));
+	}
 }
 
 bool Plane::doInside(const Vector &point) const
 {
-	return point.z() <= 0;
+	return point.y() <= 0;
 }

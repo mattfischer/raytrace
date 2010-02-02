@@ -33,19 +33,9 @@ Ray Ray::createFromPoints(const Vector &point1, const Vector &point2)
 	return Ray(point1, (point2 - point1).normalize());
 }
 
-const Vector &Ray::origin() const
-{
-	return mOrigin;
-}
-
 void Ray::setOrigin(const Vector &origin)
 {
 	mOrigin = origin;
-}
-
-const Vector &Ray::direction() const
-{
-	return mDirection;
 }
 
 void Ray::setDirection(const Vector &direction)

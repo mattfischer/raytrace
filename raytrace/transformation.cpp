@@ -94,8 +94,8 @@ Transformation Transformation::rotate(double x, double y, double z)
 				  0, 0, 0, 1);
 
 	Matrix zRotateInverse(
-				  cos(rz), sin(rz), 0, 0,
-				  -sin(rz), cos(rz), 0, 0,
+				  cos(rz), -sin(rz), 0, 0,
+				  sin(rz), cos(rz), 0, 0,
 				  0, 0, 1, 0,
 				  0, 0, 0, 1);
 
@@ -110,10 +110,10 @@ Transformation::Transformation(const Matrix &matrix, const Matrix &inverseMatrix
 : mMatrix(matrix), mInverseMatrix(inverseMatrix),
   mMatrixTranspose(matrix.transpose()), mInverseMatrixTranspose(inverseMatrix.transpose())
 {
-	mOrigin = mMatrix * Vector(0, 0, 0);
-	mInverseOrigin = mInverseMatrix * Vector(0, 0, 0);
-	mTransposeOrigin = mMatrixTranspose * Vector(0, 0, 0);
-	mInverseTransposeOrigin = mInverseMatrixTranspose * Vector(0, 0, 0);
+	mOrigin = mMatrix.origin();
+	mInverseOrigin = mInverseMatrix.origin();
+	mTransposeOrigin = mMatrixTranspose.origin();
+	mInverseTransposeOrigin = mInverseMatrixTranspose.origin();
 }
 
 Transformation Transformation::fromAst(AST *ast)
