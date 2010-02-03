@@ -14,6 +14,8 @@ int screenY = 600;
 
 #define ANTIALIAS 1
 
+#define Y_INC 1
+
 BOOL PlotNextPixels(const Tracer &tracer)
 {
 	int x;
@@ -30,40 +32,42 @@ BOOL PlotNextPixels(const Tracer &tracer)
 	bi.bmiHeader.biPlanes = 1;
 	bi.bmiHeader.biBitCount = 24;
 	bi.bmiHeader.biCompression = BI_RGB;
-	
-	for(x=0; x<screenX; x++)
-	{
-		Color totalColor;
-
-		for(int i=0; i<ANTIALIAS; i++)
-			for(int j=0; j<ANTIALIAS; j++)
-			{
-				Ray ray = tracer.scene()->camera()->createRay(x + (double)i / ANTIALIAS, y + (double)j / ANTIALIAS, screenX, screenY);
-
-				Color color = tracer.traceRay(ray);
-
-				totalColor = totalColor + color;
-			}
-
-		Color c = totalColor / (ANTIALIAS * ANTIALIAS);
-
-		bits[x*3] = c.blue() * 0xFF;
-		bits[x*3 + 1] = c.green() * 0xFF;
-		bits[x*3 + 2] = c.red() * 0xFF;
-	}
-
-	SetDIBits(backBuffer, backBitmap, screenY - y - 1, 1, bits, &bi, DIB_RGB_COLORS);
-	
-	free(bits);
 
 	rect.left = 0;
 	rect.right = screenX;
 	rect.top = y;
-	rect.bottom = y + 1;
+	
+	for(int yi=0; yi < Y_INC; yi++)
+	{
+		for(x=0; x<screenX; x++)
+		{
+			Color totalColor;
 
+			for(int i=0; i<ANTIALIAS; i++)
+				for(int j=0; j<ANTIALIAS; j++)
+				{
+					Ray ray = tracer.scene()->camera()->createRay(x + (double)i / ANTIALIAS, y + (double)j / ANTIALIAS, screenX, screenY);
+
+					Color color = tracer.traceRay(ray);
+
+					totalColor = totalColor + color;
+				}
+
+			Color c = totalColor / (ANTIALIAS * ANTIALIAS);
+
+			bits[x*3] = c.blue() * 0xFF;
+			bits[x*3 + 1] = c.green() * 0xFF;
+			bits[x*3 + 2] = c.red() * 0xFF;
+		}
+
+		SetDIBits(backBuffer, backBitmap, screenY - y - 1, 1, bits, &bi, DIB_RGB_COLORS);
+		y++;
+		if(y >= screenY) break;
+	}
+	free(bits);
+
+	rect.bottom = y;
 	InvalidateRect(hWnd, &rect, FALSE);
-
-	y++;
 
 	return y >= screenY;
 }

@@ -98,14 +98,15 @@ public:
 
 		Vector r;
 
+		if(useW)
+		{
+			r = Vector(at(3,0), at(3,1), at(3,2));
+		}
+
 		for(int i=0; i<3; i++)
 		{
-			r(i) = 0;
 			for(int k=0; k<3; k++)
 				r(i) += at(k, i) * b(k);
-
-			if(useW)
-				r(i) += at(3, i);
 		}
 
 		return r;

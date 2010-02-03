@@ -117,6 +117,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				WholeProgramOptimization="true"
+				EnableEnhancedInstructionSet="2"
 				DebugInformationFormat="3"
 			/>
 			<Tool
