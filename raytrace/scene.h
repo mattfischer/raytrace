@@ -7,6 +7,8 @@
 
 #include "intersection.h"
 
+#include "photon.h"
+
 #include <vector>
 
 class Scene
@@ -26,11 +28,16 @@ public:
 
 	void findIntersections(const Ray &ray, std::vector<Intersection> &intersections);
 
+	void photonMap(int numPhotons);
+
+	const PhotonMap &photonMap() const;
+
 protected:
 	Camera *mCamera;
 	std::vector<Light*> mLights;
 	std::vector<Primitive*> mPrimitives;
 	double mAspectRatio;
+	PhotonMap mPhotonMap;
 };
 
 #endif

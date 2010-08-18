@@ -125,7 +125,9 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 	SelectObject(backBuffer, (HGDIOBJ)backBitmap);
 	ReleaseDC(hWnd, hDC);
 
-	Tracer tracer(buildScene(screenX, screenY));
+	Scene *scene = buildScene(screenX, screenY); 
+	scene->photonMap(1000);
+	Tracer tracer(scene);
 
 	do
 	{

@@ -1,6 +1,10 @@
 #include "trace.h"
 #include "object.h"
 
+#include "photon.h"
+
+#include <algorithm>
+
 #include <math.h>
 
 #define MAX_RAY_GENERATION 2
@@ -68,20 +72,55 @@ Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
 		Color diffuse = light->color() * pointColor.scale(texture->finish()->diffuse() * diffuse_coeff);
 		Color specular = light->color().scale(texture->finish()->specular() * specular_coeff);
 
+
 		totalColor += diffuse + specular;
 
-		if(texture->finish()->reflection() > 0 && ray.generation() < MAX_RAY_GENERATION)
+/*
+		if(ray.generation() == 1)
 		{
-			Vector incident = ray.direction();
-			Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
-			
-			Ray reflectRay(intersection.point(), reflect);
-			reflectRay.setGeneration(ray.generation() + 1);
+#define NUM_PATH_TRACE_RAYS 100
+			for(int i=0; i<NUM_PATH_TRACE_RAYS; i++)
+			{
+				Vector v(rand() * (rand() % 2 - 0.5), rand() * (rand() % 2 - 0.5), rand() * (rand() % 2 - 0.5));
+				v = v.normalize();
+				Vector normal = intersection.normal();
+				if(v * normal < 0)
+				{
+					continue;
+				}
 
-			Color c = traceRay(reflectRay);
+				Ray reflectRay(point, v);
+				reflectRay.setGeneration(ray.generation() + 1);
 
-			totalColor = totalColor * (1 - texture->finish()->reflection()) + c * texture->finish()->reflection();
-		}
+				Color c = traceRay(reflectRay);
+				
+				totalColor = totalColor + (c * (v * normal) / (double)NUM_PATH_TRACE_RAYS) * 5;
+			}
+		}*/
+	}
+
+	#define NUM_PHOTONS 30
+
+	Photon photons[NUM_PHOTONS];
+	Vector normal = intersection.normal();
+
+	int num = mScene->photonMap().nearestPhotons(point, normal, photons, NUM_PHOTONS);
+	double distance2 = (photons[num - 1].position - point).magnitude2();
+
+	double photon = 0.01 * (double)num / (3.14 * distance2);
+	totalColor += pointColor.scale(photon);
+
+	if(texture->finish()->reflection() > 0 && ray.generation() < MAX_RAY_GENERATION)
+	{
+		Vector incident = ray.direction();
+		Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
+		
+		Ray reflectRay(intersection.point(), reflect);
+		reflectRay.setGeneration(ray.generation() + 1);
+
+		Color c = traceRay(reflectRay);
+
+		totalColor = totalColor * (1 - texture->finish()->reflection()) + c * texture->finish()->reflection();
 	}
 
 	return totalColor.clamp();

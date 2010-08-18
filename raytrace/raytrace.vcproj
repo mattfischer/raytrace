@@ -228,6 +228,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\photon.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\pigment.cpp"
 				>
 			</File>
@@ -343,6 +347,10 @@
 			</File>
 			<File
 				RelativePath=".\object.h"
+				>
+			</File>
+			<File
+				RelativePath=".\photon.h"
 				>
 			</File>
 			<File
