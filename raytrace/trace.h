@@ -10,11 +10,20 @@
 class Tracer
 {
 public:
+	struct Settings
+	{
+		int antialias;
+		double hFOV;
+		int maxRayGeneration;
+	};
+
 	Tracer(Scene *scene = 0);
 	virtual ~Tracer();
 
 	Scene *scene() const;
 	void setScene(Scene *scene);
+
+	Settings &settings();
 
 	Color tracePixel(int x, int y, int width, int height) const;
 
@@ -23,6 +32,7 @@ protected:
 	Color traceRay(const Ray &ray) const;
 
 	Scene *mScene;
+	Settings mSettings;
 
 	mutable std::vector<Intersection> mIntersections;
 	mutable std::vector<Intersection> mLightIntersections;
