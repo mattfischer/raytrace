@@ -3,6 +3,6 @@
 
 #include "scene.h"
 
-Scene *buildScene(int screenX, int screenY);
+Scene *buildScene();
 
 #endif

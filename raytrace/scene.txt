@@ -1,45 +1,32 @@
 sphere {
-	transform { translate <-0.5,-0.5,0> scale <0.5,0.5,0.5> } 
-	texture { pigment { color <1,0,0> } }
-}
-
-plane {
-	transform {	rotate <0,0,-90> translate <0,-1,0> }
-	texture	{ pigment { color <1,0,0> }	}
-}
-
-plane {
-	transform {	rotate <0,0,90> translate <0,-1,0> }
-	texture	{ pigment { color <0,0,1> }	}
+    texture {
+		pigment { color <1,0,0>	}
+		finish {
+			ambient 0
+			specular 1
+		}
+	}
 }
 
 plane {
 	transform {	translate <0,-1,0> }
-	texture	{ pigment { color <1,1,1> }	}
-}
-
-difference {
-	plane {
-		transform {	rotate <180,0,0> translate <0,-1,0> }
-		texture	{ pigment { color <1,1,1> }	}
+	texture	{
+		pigment	{
+			checker color <0,1,0> color <0,0,1>
+		}
+		finish { ambient 0.01 }
 	}
-	box {
-		transform { translate <0,1,-1> scale <0.25,1,0.25> }
-		texture { pigment { color <1,1,1> } }
-	}
-	transform { translate <0,0,0> }
-}
-
-plane {
-	transform {	rotate <-90,0,0> translate <0,-1,0> }
-	texture	{ pigment { color <1,1,1> }	}
 }
 
 light {
 	color <1,1,1>
-	transform { translate <0,1.25,-1> }
+	transform { translate <0,3,-5> }
 }
 
 camera {
-	transform { translate <0,0,-5> }
+	transform {
+		translate <3,3,-10>
+		rotate <0,20,0>
+		rotate <20,0,0>			
+	}
 }

@@ -12,8 +12,6 @@ HBITMAP backBitmap;
 int screenX = 800;
 int screenY = 600;
 
-#define ANTIALIAS 1
-
 #define Y_INC 1
 
 BOOL PlotNextPixels(const Tracer &tracer)
@@ -41,19 +39,7 @@ BOOL PlotNextPixels(const Tracer &tracer)
 	{
 		for(x=0; x<screenX; x++)
 		{
-			Color totalColor;
-
-			for(int i=0; i<ANTIALIAS; i++)
-				for(int j=0; j<ANTIALIAS; j++)
-				{
-					Ray ray = tracer.scene()->camera()->createRay(x + (double)i / ANTIALIAS, y + (double)j / ANTIALIAS, screenX, screenY);
-
-					Color color = tracer.traceRay(ray);
-
-					totalColor = totalColor + color;
-				}
-
-			Color c = totalColor / (ANTIALIAS * ANTIALIAS);
+			Color c = tracer.tracePixel(x, y, screenX, screenY);
 
 			bits[x*3] = c.blue() * 0xFF;
 			bits[x*3 + 1] = c.green() * 0xFF;
@@ -125,8 +111,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 	SelectObject(backBuffer, (HGDIOBJ)backBitmap);
 	ReleaseDC(hWnd, hDC);
 
-	Scene *scene = buildScene(screenX, screenY); 
-	scene->photonMap(1000);
+	Scene *scene = buildScene();
 	Tracer tracer(scene);
 
 	do

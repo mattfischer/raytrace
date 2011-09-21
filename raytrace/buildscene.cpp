@@ -9,9 +9,9 @@ extern "C"
 	AST *parseScene(const char *filename);
 }
 
-Scene *buildScene(int screenX, int screenY)
+Scene *buildScene()
 {
-	Scene *scene = new Scene((double)screenY / (double)screenX);
+	Scene *scene = new Scene;
 
 	AST *tree = parseScene("scene.txt");
 

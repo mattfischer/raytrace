@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+#define EPSILON 0.01
+
 Pigment::Pigment()
 {
 }
@@ -49,9 +51,9 @@ PigmentChecker::~PigmentChecker()
 
 Color PigmentChecker::pointColor(const Vector &point) const
 {
-	int x = (int)abs(point.x()) + ((point.x() > 0)?1:0);
-	int y = (int)abs(point.y()) + ((point.y() > 0)?1:0);
-	int z = (int)abs(point.z()) + ((point.z() > 0)?1:0);
+	int x = (int)abs(point.x() + EPSILON) + ((point.x() + EPSILON > 0)?1:0);
+	int y = (int)abs(point.y() + EPSILON) + ((point.y() + EPSILON > 0)?1:0);
+	int z = (int)abs(point.z() + EPSILON) + ((point.z() + EPSILON > 0)?1:0);
 
 	int checker = (x % 2 + y % 2 + z % 2) % 2;
 

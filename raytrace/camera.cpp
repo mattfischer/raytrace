@@ -13,10 +13,6 @@ static double rad(double deg)
 
 Camera::Camera()
 {
-	mFOV = DEFAULT_FOV;
-	mAspectRatio = 1;
-
-	computeSpans();
 }
 
 Camera *Camera::fromAst(AST *ast)
@@ -36,60 +32,12 @@ Camera *Camera::fromAst(AST *ast)
 	return camera;
 }
 
-void Camera::setFOV(double FOV)
-{
-	mFOV = FOV;
-
-	computeSpans();
-}
-
-double Camera::FOV() const
-{
-	return mFOV;
-}
-
-void Camera::setAspectRatio(double aspectRatio)
-{
-	mAspectRatio = aspectRatio;
-
-	computeSpans();
-}
-
-double Camera::aspectRatio() const
-{
-	return mAspectRatio;
-}
-
-Camera::Camera(const Camera &c)
-{
-	mFOV = c.mFOV;
-	mAspectRatio = c.mAspectRatio;
-	mHSpan = c.mHSpan;
-	mVSpan = c.mVSpan;
-}
-
-Camera &Camera::operator=(const Camera &c)
-{
-	mFOV = c.mFOV;
-	mAspectRatio = c.mAspectRatio;
-	mHSpan = c.mHSpan;
-	mVSpan = c.mVSpan;
-
-	return *this;
-}
-
-void Camera::computeSpans()
-{
-	mHSpan = 2 * sin(rad(mFOV / 2));
-	mVSpan = mHSpan * mAspectRatio;
-}
-
-Ray Camera::createRay(double x, double y, double width, double height)
+Ray Camera::createRay(double x, double y, double hFOV, double vFOV)
 {
 	double rayX, rayY;
 
-	rayX = mHSpan * x / width - mHSpan / 2;
-	rayY = mVSpan / 2 - mVSpan * y / height;
+	rayX = tan(rad(hFOV/2)) * (2*x - 1);
+	rayY = -tan(rad(vFOV/2)) * (2*y - 1);
 
 	return Ray(transformation().origin(), transformation().transformDirection(Vector(rayX, rayY, 1).normalize()));
 }

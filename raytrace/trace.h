@@ -16,10 +16,11 @@ public:
 	Scene *scene() const;
 	void setScene(Scene *scene);
 
-	Color traceRay(const Ray &ray) const;
+	Color tracePixel(int x, int y, int width, int height) const;
 
 protected:
 	Color doLighting(const Ray &ray, const Intersection &intersection) const;
+	Color traceRay(const Ray &ray) const;
 
 	Scene *mScene;
 
