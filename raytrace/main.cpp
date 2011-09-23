@@ -2,27 +2,31 @@
 
 #include "trace.h"
 #include "buildscene.h"
+#include "resource.h"
 
 #define CLASSNAME "raytrace"
 
 HWND hWnd;
 HDC backBuffer;
 HBITMAP backBitmap;
+HWND hDlg;
 
 int screenX = 800;
 int screenY = 600;
 
-#define Y_INC 1
+Tracer *tracer;
 
-BOOL PlotNextPixels(const Tracer &tracer)
+void Render()
 {
 	int x;
-	static int y = 0;
+	int y;
+	int row;
 	RECT rect;
 	Color c;
 
 	BYTE *bits = (BYTE*)malloc(screenX * 3);
 	BITMAPINFO bi;
+	MSG msg;
 
 	bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	bi.bmiHeader.biWidth = screenX;
@@ -33,13 +37,14 @@ BOOL PlotNextPixels(const Tracer &tracer)
 
 	rect.left = 0;
 	rect.right = screenX;
-	rect.top = y;
-	
-	for(int yi=0; yi < Y_INC; yi++)
+
+	tracer->settings().lighting = IsDlgButtonChecked(hDlg, IDC_LIGHTING);
+	row = 0;
+	for(int y=0; y<screenY; y++)
 	{
 		for(x=0; x<screenX; x++)
 		{
-			Color c = tracer.tracePixel(x, y, screenX, screenY);
+			Color c = tracer->tracePixel(x, y, screenX, screenY);
 
 			bits[x*3] = c.blue() * 0xFF;
 			bits[x*3 + 1] = c.green() * 0xFF;
@@ -47,15 +52,22 @@ BOOL PlotNextPixels(const Tracer &tracer)
 		}
 
 		SetDIBits(backBuffer, backBitmap, screenY - y - 1, 1, bits, &bi, DIB_RGB_COLORS);
-		y++;
-		if(y >= screenY) break;
+		rect.top = y;
+		rect.bottom = y + 1;
+		InvalidateRect(hWnd, &rect, FALSE);
+
+		row++;
+		if(row == 1)
+		{
+			while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+			row = 0;
+		}
 	}
 	free(bits);
-
-	rect.bottom = y;
-	InvalidateRect(hWnd, &rect, FALSE);
-
-	return y >= screenY;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -78,6 +90,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	}
 
 	return DefWindowProc(hWnd, iMsg, wParam, lParam);
+}
+
+INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch(uMsg)
+	{
+	case WM_INITDIALOG:
+		CheckDlgButton(hwndDlg, IDC_LIGHTING, tracer->settings().lighting ? BST_CHECKED : BST_UNCHECKED);
+		return FALSE;
+
+	case WM_COMMAND:
+		switch(LOWORD(wParam))
+		{
+		case ID_RENDER:
+			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), FALSE);
+			Render();
+			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), TRUE);
+			return TRUE;
+		}
+		break;
+	}
+	return FALSE;
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
@@ -112,32 +146,16 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 	ReleaseDC(hWnd, hDC);
 
 	Scene *scene = buildScene();
-	Tracer tracer(scene);
+	tracer = new Tracer(scene);
 
-	do
+	hDlg = CreateDialog(hInst, (LPCSTR)IDD_RENDER_CONTROL, NULL, DialogProc);
+	SetWindowPos(hDlg, NULL, screenX + 40, 40, 0, 0, SWP_NOSIZE);
+	ShowWindow(hDlg, SW_SHOW);
+
+	while(GetMessage(&msg, NULL, 0, 0))
 	{
-		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-
-		if(PlotNextPixels(tracer)) break;
-	} while(msg.message != WM_QUIT);
-
-	long endTime = GetTickCount();
-
-	char buffer[500];
-	sprintf(buffer, "Render took %f seconds\n", (float)(endTime - startTime) / 1000.0);
-	OutputDebugString(buffer);
-
-	if(msg.message != WM_QUIT)
-	{
-		while(GetMessage(&msg, NULL, 0, 0))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 
 	return 0;

@@ -5,6 +5,7 @@
 
 #include <math.h>
 
+#define DEFAULT_LIGHTING true
 #define DEFAULT_MAX_RAY_GENERATION 2
 #define DEFAULT_ANTIALIAS 1
 #define DEFAULT_HFOV 45
@@ -12,6 +13,7 @@
 Tracer::Tracer(Scene *scene)
 {
 	mScene = scene;
+	mSettings.lighting = DEFAULT_LIGHTING;
 	mSettings.antialias = DEFAULT_ANTIALIAS;
 	mSettings.maxRayGeneration = DEFAULT_MAX_RAY_GENERATION;
 	mSettings.hFOV = DEFAULT_HFOV;
@@ -28,6 +30,11 @@ Scene *Tracer::scene() const
 	return mScene;
 }
 
+Tracer::Settings &Tracer::settings()
+{
+	return mSettings;
+}
+
 void Tracer::setScene(Scene *scene)
 {
 	mScene = scene;
@@ -38,6 +45,11 @@ Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
 	Vector point(intersection.point());
 	Texture *texture = intersection.primitive()->texture();
 	Color pointColor = texture->pointColor(intersection.objectPoint());
+
+	if(!mSettings.lighting) {
+		return pointColor;
+	}
+
 	Color totalColor;
 
 	Color ambient = pointColor.scale(texture->finish()->ambient());

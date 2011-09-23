@@ -12,6 +12,7 @@ class Tracer
 public:
 	struct Settings
 	{
+		bool lighting;
 		int antialias;
 		double hFOV;
 		int maxRayGeneration;
