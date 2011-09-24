@@ -12,13 +12,15 @@ class Tracer
 public:
 	struct Settings
 	{
+		int width;
+		int height;
 		bool lighting;
 		int antialias;
 		double hFOV;
 		int maxRayGeneration;
 	};
 
-	Tracer(Scene *scene = 0);
+	Tracer(Scene *scene, const Settings &settings);
 	virtual ~Tracer();
 
 	Scene *scene() const;
@@ -26,7 +28,7 @@ public:
 
 	Settings &settings();
 
-	Color tracePixel(int x, int y, int width, int height) const;
+	Color tracePixel(int x, int y) const;
 
 protected:
 	Color doLighting(const Ray &ray, const Intersection &intersection) const;

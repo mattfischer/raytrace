@@ -5,18 +5,10 @@
 
 #include <math.h>
 
-#define DEFAULT_LIGHTING true
-#define DEFAULT_MAX_RAY_GENERATION 2
-#define DEFAULT_ANTIALIAS 1
-#define DEFAULT_HFOV 45
-
-Tracer::Tracer(Scene *scene)
+Tracer::Tracer(Scene *scene, const Settings &settings)
 {
 	mScene = scene;
-	mSettings.lighting = DEFAULT_LIGHTING;
-	mSettings.antialias = DEFAULT_ANTIALIAS;
-	mSettings.maxRayGeneration = DEFAULT_MAX_RAY_GENERATION;
-	mSettings.hFOV = DEFAULT_HFOV;
+	mSettings = settings;
 }
 
 Tracer::~Tracer()
@@ -120,15 +112,15 @@ Color Tracer::traceRay(const Ray &ray) const
 	return color;
 }
 
-Color Tracer::tracePixel(int x, int y, int width, int height) const
+Color Tracer::tracePixel(int x, int y) const
 {
-	double aspectRatio = (double)height / (double)width;
+	double aspectRatio = (double)mSettings.height / (double)mSettings.width;
 	Color color;
 
 	for(int i=0; i<mSettings.antialias; i++)
 		for(int j=0; j<mSettings.antialias; j++)
 		{
-			Ray ray = mScene->camera()->createRay((x + (double)i / mSettings.antialias) / width, (y + (double)j / mSettings.antialias) / height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
+			Ray ray = mScene->camera()->createRay((x + (double)i / mSettings.antialias) / mSettings.width, (y + (double)j / mSettings.antialias) / mSettings.height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
 			color = color + traceRay(ray);
 		}
 
