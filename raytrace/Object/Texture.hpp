@@ -2,7 +2,7 @@
 #define TEXTURE_H
 
 #include "Math/Transformation.hpp"
-#include "Object/Pigment.hpp"
+#include "Object/Pigment/Base.hpp"
 #include "Object/Finish.hpp"
 #include "Parse/AST.h"
 
@@ -11,7 +11,7 @@ namespace Object {
 class Texture
 {
 public:
-	Texture(Pigment *pigment = 0, Finish *finish = 0);
+	Texture(Pigment::Base *pigment = 0, Finish *finish = 0);
 	virtual ~Texture();
 
 	static Texture *fromAst(AST *ast);
@@ -19,8 +19,8 @@ public:
 	void transform(const Math::Transformation &transform);
 	const Math::Transformation &transformation() const;
 
-	Pigment *pigment() const;
-	void setPigment(Pigment *pigment);
+	Pigment::Base *pigment() const;
+	void setPigment(Pigment::Base *pigment);
 
 	Finish *finish() const;
 	void setFinish(Finish *finish);
@@ -30,7 +30,7 @@ public:
 protected:
 	Math::Transformation mTransformation;
 
-	Pigment *mPigment;
+	Pigment::Base *mPigment;
 	Finish *mFinish;
 };
 

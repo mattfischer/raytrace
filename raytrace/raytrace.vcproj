@@ -236,10 +236,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Object\Pigment.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Scene.cpp"
 					>
 					<FileConfiguration
@@ -302,6 +298,40 @@
 					</File>
 					<File
 						RelativePath=".\Object\Primitive\Torus.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Pigment"
+					>
+					<File
+						RelativePath=".\Object\Pigment\Base.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Object\Pigment\Checker.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Pigment\Solid.cpp"
 						>
 					</File>
 				</Filter>
@@ -404,10 +434,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Object\Pigment.hpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Scene.hpp"
 					>
 				</File>
@@ -452,6 +478,22 @@
 					</File>
 					<File
 						RelativePath=".\Object\Primitive\Torus.hpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Pigment"
+					>
+					<File
+						RelativePath=".\Object\Pigment\Base.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Pigment\Checker.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Pigment\Solid.hpp"
 						>
 					</File>
 				</Filter>

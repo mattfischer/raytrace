@@ -1,8 +1,10 @@
 #include "Object/Texture.hpp"
 
+#include "Object/Pigment/Solid.hpp"
+
 namespace Object {
 
-Texture::Texture(Pigment *pigment, Finish *finish)
+Texture::Texture(Pigment::Base *pigment, Finish *finish)
 {
 	mPigment = pigment;
 	mFinish = finish;
@@ -26,7 +28,7 @@ Texture *Texture::fromAst(AST *ast)
 		switch(ast->children[i]->type)
 		{
 		case AstPigment:
-			texture->setPigment(Pigment::fromAst(ast->children[i]));
+			texture->setPigment(Pigment::Base::fromAst(ast->children[i]));
 			break;
 		case AstFinish:
 			texture->setFinish(Finish::fromAst(ast->children[i]));
@@ -36,7 +38,7 @@ Texture *Texture::fromAst(AST *ast)
 
 	if(texture->pigment() == 0)
 	{
-		texture->setPigment(new PigmentSolid(Color(0,0,0)));
+		texture->setPigment(new Pigment::Solid(Color(0,0,0)));
 	}
 
 	if(texture->finish() == 0)
@@ -57,12 +59,12 @@ const Math::Transformation &Texture::transformation() const
 	return mTransformation;
 }
 
-Pigment *Texture::pigment() const
+Pigment::Base *Texture::pigment() const
 {
 	return mPigment;
 }
 
-void Texture::setPigment(Pigment *pigment)
+void Texture::setPigment(Pigment::Base *pigment)
 {
 	if(mPigment)
 		delete mPigment;
