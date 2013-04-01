@@ -34,19 +34,19 @@ void Tracer::setScene(Object::Scene *scene)
 	mScene = scene;
 }
 
-Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection) const
+Object::Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection) const
 {
 	Math::Vector point(intersection.point());
 	Object::Texture *texture = intersection.primitive()->texture();
-	Color pointColor = texture->pointColor(intersection.objectPoint());
+	Object::Color pointColor = texture->pointColor(intersection.objectPoint());
 
 	if(!mSettings.lighting) {
 		return pointColor;
 	}
 
-	Color totalColor;
+	Object::Color totalColor;
 
-	Color ambient = pointColor.scale(texture->finish()->ambient());
+	Object::Color ambient = pointColor.scale(texture->finish()->ambient());
 
 	totalColor += ambient;
 	
@@ -78,8 +78,8 @@ Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection)
 				specular_coeff = pow(dot, texture->finish()->specularPower());
 		}
 
-		Color diffuse = light->color() * pointColor.scale(texture->finish()->diffuse() * diffuse_coeff);
-		Color specular = light->color().scale(texture->finish()->specular() * specular_coeff);
+		Object::Color diffuse = light->color() * pointColor.scale(texture->finish()->diffuse() * diffuse_coeff);
+		Object::Color specular = light->color().scale(texture->finish()->specular() * specular_coeff);
 
 		totalColor += diffuse + specular;
 	}
@@ -92,7 +92,7 @@ Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection)
 		Math::Ray reflectRay(intersection.point(), reflect);
 		reflectRay.setGeneration(ray.generation() + 1);
 
-		Color c = traceRay(reflectRay);
+		Object::Color c = traceRay(reflectRay);
 
 		totalColor = totalColor * (1 - texture->finish()->reflection()) + c * texture->finish()->reflection();
  	}
@@ -100,12 +100,12 @@ Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection)
 	return totalColor.clamp();
 }
 
-Color Tracer::traceRay(const Math::Ray &ray) const
+Object::Color Tracer::traceRay(const Math::Ray &ray) const
 {
 	mIntersections.clear();
 	mScene->findIntersections(ray, mIntersections);
 
-	Color color(.2, .2, .2);
+	Object::Color color(.2, .2, .2);
 
 	if(mIntersections.size() > 0)
 	{
@@ -114,10 +114,10 @@ Color Tracer::traceRay(const Math::Ray &ray) const
 	return color;
 }
 
-Color Tracer::tracePixel(int x, int y) const
+Object::Color Tracer::tracePixel(int x, int y) const
 {
 	double aspectRatio = (double)mSettings.height / (double)mSettings.width;
-	Color color;
+	Object::Color color;
 
 	for(int i=0; i<mSettings.antialias; i++)
 		for(int j=0; j<mSettings.antialias; j++)

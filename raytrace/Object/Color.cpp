@@ -1,4 +1,6 @@
-#include "color.h"
+#include "Object/Color.hpp"
+
+namespace Object {
 
 Color::Color()
 {
@@ -115,4 +117,6 @@ Color Color::operator*(const Color &b) const
 Color Color::operator*(double b) const
 {
 	return Color(mRed * b, mGreen * b, mBlue * b);
+}
+
 }

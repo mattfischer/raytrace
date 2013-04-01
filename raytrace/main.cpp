@@ -20,7 +20,7 @@ void Render()
 	int width;
 	int height;
 	RECT rect;
-	Color c;
+	Object::Color c;
 	HBITMAP backBitmap;
 	HGDIOBJ oldBitmap;
 	HDC hDC;
@@ -53,7 +53,7 @@ void Render()
 	{
 		for(x=0; x<width; x++)
 		{
-			Color c = tracer->tracePixel(x, y);
+			Object::Color c = tracer->tracePixel(x, y);
 
 			bits[x*3] = c.blue() * 0xFF;
 			bits[x*3 + 1] = c.green() * 0xFF;

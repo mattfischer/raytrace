@@ -2,7 +2,7 @@
 #define LIGHT_H
 
 #include "Object/Object.hpp"
-#include "color.h"
+#include "Object/Color.hpp"
 
 namespace Object {
 

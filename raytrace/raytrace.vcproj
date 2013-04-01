@@ -179,10 +179,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\color.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\lex.scene.c"
 				>
 			</File>
@@ -227,6 +223,10 @@
 				</File>
 				<File
 					RelativePath=".\Object\Camera.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Color.cpp"
 					>
 				</File>
 				<File
@@ -331,10 +331,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\color.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
@@ -375,6 +371,10 @@
 				</File>
 				<File
 					RelativePath=".\Object\Camera.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Color.hpp"
 					>
 				</File>
 				<File

@@ -3,6 +3,8 @@
 
 #include "ast.h"
 
+namespace Object {
+
 class Color
 {
 public:
@@ -35,5 +37,7 @@ protected:
 	double mGreen;
 	double mBlue;
 };
+
+}
 
 #endif

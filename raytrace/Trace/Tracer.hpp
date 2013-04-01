@@ -1,7 +1,7 @@
 #ifndef TRACE_H
 #define TRACE_H
 
-#include "color.h"
+#include "Object/Color.hpp"
 #include "Object/Scene.hpp"
 
 #include "Trace/Intersection.hpp"
@@ -30,11 +30,11 @@ public:
 
 	Settings &settings();
 
-	Color tracePixel(int x, int y) const;
+	Object::Color tracePixel(int x, int y) const;
 
 protected:
-	Color doLighting(const Math::Ray &ray, const Intersection &intersection) const;
-	Color traceRay(const Math::Ray &ray) const;
+	Object::Color doLighting(const Math::Ray &ray, const Intersection &intersection) const;
+	Object::Color traceRay(const Math::Ray &ray) const;
 
 	Object::Scene *mScene;
 	Settings mSettings;

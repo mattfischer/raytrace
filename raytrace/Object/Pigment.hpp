@@ -1,7 +1,7 @@
 #ifndef PIGMENT_H
 #define PIGMENT_H
 
-#include "color.h"
+#include "Object/Color.hpp"
 #include "Math/Vector.hpp"
 #include "ast.h"
 
