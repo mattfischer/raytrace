@@ -17,6 +17,8 @@ public:
 	Scene();
 	~Scene();
 
+	static Scene *fromAST(AST *ast);
+
 	Camera *camera() const;
 	void setCamera(Camera *camera);
 

@@ -23,6 +23,31 @@ Scene::~Scene()
 		delete mPrimitives[i];
 }
 
+Scene *Scene::fromAST(AST *ast)
+{
+	Scene *scene = new Scene;
+
+	for(int i=0; i<ast->numChildren; i++)
+	{
+		AST *child = ast->children[i];
+
+		switch(child->type)
+		{
+		case AstPrimitive:
+			scene->addPrimitive(Primitive::fromAst(child));
+			break;
+		case AstLight:
+			scene->addLight(Light::fromAst(child));
+			break;
+		case AstCamera:
+			scene->setCamera(Camera::fromAst(child));
+			break;
+		}
+	}
+
+	return scene;
+}
+
 Camera *Scene::camera() const
 {
 	return mCamera;
