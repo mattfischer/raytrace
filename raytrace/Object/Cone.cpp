@@ -21,7 +21,7 @@ Cone *Cone::fromAst(AST *ast)
 	return new Cone();
 }
 
-void Cone::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
+void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	double a, b, c;
 	double disc;
@@ -47,7 +47,7 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersec
 				normal.setZ(-1);
 				normal = normal.normalize();
 
-				intersections.push_back(Intersection(this, distance, normal, point));
+				intersections.push_back(Trace::Intersection(this, distance, normal, point));
 			}
 		}
 
@@ -65,12 +65,12 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersec
 				normal.setZ(-1);
 				normal = normal.normalize();
 
-				intersections.push_back(Intersection(this, distance, normal, point));
+				intersections.push_back(Trace::Intersection(this, distance, normal, point));
 			}
 		}
 	}
 
-	Intersection intersection = Disk::intersectDisk(this, ray, Math::Vector(0, 0, 1), 1);
+	Trace::Intersection intersection = Disk::intersectDisk(this, ray, Math::Vector(0, 0, 1), 1);
 	if(intersection.valid())
 		intersections.push_back(intersection);
 }

@@ -15,9 +15,9 @@ Box *Box::fromAst(AST *ast)
 	return new Box();
 }
 
-void Box::testIntersect(const Math::Ray &ray, const Math::Vector &normal, std::vector<Intersection> &intersections) const
+void Box::testIntersect(const Math::Ray &ray, const Math::Vector &normal, std::vector<Trace::Intersection> &intersections) const
 {
-	Intersection newIntersection = Plane::intersectPlane(this, ray, normal, 1);
+	Trace::Intersection newIntersection = Plane::intersectPlane(this, ray, normal, 1);
 	Math::Vector point;
 
 	if(newIntersection.valid())
@@ -31,10 +31,10 @@ void Box::testIntersect(const Math::Ray &ray, const Math::Vector &normal, std::v
 	}
 }
 
-void Box::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
+void Box::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
-	Intersection intersection;
-	Intersection newIntersection;
+	Trace::Intersection intersection;
+	Trace::Intersection newIntersection;
 	Math::Vector point;
 
 	double t = -ray.origin() * ray.direction() / ray.direction().magnitude2();

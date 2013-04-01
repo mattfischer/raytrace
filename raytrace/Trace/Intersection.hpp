@@ -8,6 +8,8 @@ namespace Object {
 class Primitive;
 }
 
+namespace Trace {
+
 class Intersection
 {
 public:
@@ -57,4 +59,5 @@ protected:
 	void doTransform() const;
 };
 
+}
 #endif

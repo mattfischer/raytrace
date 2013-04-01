@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#include "trace.h"
+#include "Trace/Tracer.hpp"
 #include "buildscene.h"
 #include "resource.h"
 
@@ -11,7 +11,7 @@ HWND hWnd;
 HWND hDlg;
 HDC backBuffer;
 
-Tracer *tracer;
+Trace::Tracer *tracer;
 
 void Render()
 {
@@ -145,7 +145,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 
 	Object::Scene *scene = buildScene();
 
-	Tracer::Settings settings;
+	Trace::Tracer::Settings settings;
 
 	settings.width = 800;
 	settings.height = 600;
@@ -154,7 +154,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 	settings.antialias = 1;
 	settings.hFOV = 45;
 
-	tracer = new Tracer(scene, settings);
+	tracer = new Trace::Tracer(scene, settings);
 
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;

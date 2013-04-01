@@ -15,7 +15,7 @@ public:
 	static Cone *fromAst(AST *ast);
 
 protected:
-	virtual void doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const;
+	virtual void doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 	virtual bool doInside(const Math::Vector &point) const;
 };
 

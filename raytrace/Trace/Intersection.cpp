@@ -2,6 +2,8 @@
 
 #include "Object/Primitive.hpp"
 
+namespace Trace {
+
 Intersection::Intersection()
 {
 	mValid = false;
@@ -184,4 +186,6 @@ void Intersection::doTransform() const
 	}
 
 	mTransformed = true;
+}
+
 }

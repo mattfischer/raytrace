@@ -183,10 +183,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\intersection.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\lex.scene.c"
 				>
 			</File>
@@ -208,10 +204,6 @@
 			</File>
 			<File
 				RelativePath=".\scene.y"
-				>
-			</File>
-			<File
-				RelativePath=".\trace.cpp"
 				>
 			</File>
 			<Filter
@@ -312,6 +304,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Trace"
+				>
+				<File
+					RelativePath=".\Trace\Intersection.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Trace\Tracer.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -331,10 +335,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\intersection.h"
-				>
-			</File>
-			<File
 				RelativePath=".\polysolve.h"
 				>
 			</File>
@@ -344,10 +344,6 @@
 			</File>
 			<File
 				RelativePath=".\scene.tab.h"
-				>
-			</File>
-			<File
-				RelativePath=".\trace.h"
 				>
 			</File>
 			<Filter
@@ -435,6 +431,18 @@
 				</File>
 				<File
 					RelativePath=".\Object\Torus.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Trace"
+				>
+				<File
+					RelativePath=".\Trace\Intersection.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Trace\Tracer.hpp"
 					>
 				</File>
 			</Filter>

@@ -12,10 +12,10 @@ public:
 
 	static Plane *fromAst(AST *ast);
 
-	static Intersection intersectPlane(const Primitive *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement);
+	static Trace::Intersection intersectPlane(const Primitive *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement);
 
 protected:
-	virtual void doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const;
+	virtual void doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 	virtual bool doInside(const Math::Vector &point) const;
 };
 

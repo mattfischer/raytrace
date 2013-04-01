@@ -16,9 +16,9 @@ Sphere *Sphere::fromAst(AST *ast)
 	return new Sphere();
 }
 
-void Sphere::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
+void Sphere::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
-	Intersection intersection;
+	Trace::Intersection intersection;
 	double a, b, c;
 	double disc;
 
@@ -34,7 +34,7 @@ void Sphere::doIntersect(const Math::Ray &ray, std::vector<Intersection> &inters
 		if(distance > EPSILON)
 		{
 			Math::Vector point = ray.origin() + ray.direction() * distance;
-			intersections.push_back(Intersection(this, distance, point, point));
+			intersections.push_back(Trace::Intersection(this, distance, point, point));
 		}
 
 		distance = (-b + sqrt(disc)) / (2 * a);
@@ -42,7 +42,7 @@ void Sphere::doIntersect(const Math::Ray &ray, std::vector<Intersection> &inters
 		if(distance > EPSILON)
 		{
 			Math::Vector point = ray.origin() + ray.direction() * distance;
-			intersections.push_back(Intersection(this, distance, point, point));
+			intersections.push_back(Trace::Intersection(this, distance, point, point));
 		}
 	}
 }

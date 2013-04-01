@@ -96,9 +96,9 @@ bool Csg::doInside(const Math::Vector &point) const
 	return false;
 }
 
-void Csg::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
+void Csg::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
-	std::vector<Intersection> localIntersections;
+	std::vector<Trace::Intersection> localIntersections;
 
 	mPrimitive1->intersect(ray, localIntersections);
 	mPrimitive2->intersect(ray, localIntersections);

@@ -79,7 +79,7 @@ void Primitive::setTexture(Texture *texture)
 	mTexture = texture;
 }
 
-void Primitive::intersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
+void Primitive::intersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	Math::Ray transformedRay = mTransformation.inverseTransformRay(ray);
 

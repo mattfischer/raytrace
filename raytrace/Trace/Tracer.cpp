@@ -1,9 +1,11 @@
-#include "trace.h"
+#include "Trace/Tracer.hpp"
 #include "Object/Object.hpp"
 
 #include <algorithm>
 
 #include <math.h>
+
+namespace Trace {
 
 Tracer::Tracer(Object::Scene *scene, const Settings &settings)
 {
@@ -125,4 +127,6 @@ Color Tracer::tracePixel(int x, int y) const
 		}
 
 	return color / (mSettings.antialias * mSettings.antialias);
+}
+
 }

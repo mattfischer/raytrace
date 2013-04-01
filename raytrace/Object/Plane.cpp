@@ -15,7 +15,7 @@ Plane *Plane::fromAst(AST *ast)
 	return new Plane;
 }
 
-Intersection Plane::intersectPlane(const Primitive *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
+Trace::Intersection Plane::intersectPlane(const Primitive *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
 {
 	double scale;
 
@@ -25,13 +25,13 @@ Intersection Plane::intersectPlane(const Primitive *primitive, const Math::Ray &
 		Math::Vector point = ray.origin() + ray.direction() * scale;
 		point = point - normal * (point * normal - displacement);
 
-		return Intersection(primitive, scale, normal, point);
+		return Trace::Intersection(primitive, scale, normal, point);
 	}
 
-	return Intersection();
+	return Trace::Intersection();
 }
 
-void Plane::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
+void Plane::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	double scale;
 
@@ -43,7 +43,7 @@ void Plane::doIntersect(const Math::Ray &ray, std::vector<Intersection> &interse
 	{
 		Math::Vector point = ray.origin() + ray.direction() * scale;
 
-		intersections.push_back(Intersection(this, scale, Math::Vector(0,1,0), point));
+		intersections.push_back(Trace::Intersection(this, scale, Math::Vector(0,1,0), point));
 	}
 }
 

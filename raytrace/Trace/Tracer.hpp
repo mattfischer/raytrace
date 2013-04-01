@@ -4,8 +4,10 @@
 #include "color.h"
 #include "Object/Scene.hpp"
 
-#include "intersection.h"
+#include "Trace/Intersection.hpp"
 #include <vector>
+
+namespace Trace {
 
 class Tracer
 {
@@ -41,4 +43,5 @@ protected:
 	mutable std::vector<Intersection> mLightIntersections;
 };
 
+}
 #endif
