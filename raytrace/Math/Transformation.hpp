@@ -4,7 +4,7 @@
 #include "Math/Matrix.hpp"
 #include "Math/Vector.hpp"
 #include "Math/Ray.hpp"
-#include "ast.h"
+#include "Parse/AST.h"
 
 namespace Math {
 

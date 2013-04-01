@@ -2,7 +2,7 @@
 #define CONE_H
 
 #include "Object/Primitive.hpp"
-#include "ast.h"
+#include "Parse/AST.h"
 
 namespace Object {
 

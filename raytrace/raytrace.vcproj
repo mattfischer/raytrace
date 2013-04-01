@@ -175,27 +175,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\buildscene.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\lex.scene.c"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\scene.l"
-				>
-			</File>
-			<File
-				RelativePath=".\scene.tab.c"
-				>
-			</File>
-			<File
-				RelativePath=".\scene.y"
 				>
 			</File>
 			<Filter
@@ -316,6 +296,30 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Parse"
+				>
+				<File
+					RelativePath=".\lex.Scene.c"
+					>
+				</File>
+				<File
+					RelativePath=".\Parse\Parser.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Parse\Scene.l"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene.tab.c"
+					>
+				</File>
+				<File
+					RelativePath=".\Parse\Scene.y"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -323,19 +327,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\ast.h"
-				>
-			</File>
-			<File
-				RelativePath=".\buildscene.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\scene.tab.h"
 				>
 			</File>
 			<Filter
@@ -443,6 +435,22 @@
 				</File>
 				<File
 					RelativePath=".\Trace\Tracer.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Parse"
+				>
+				<File
+					RelativePath=".\Parse\AST.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Parse\Parser.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Scene.tab.h"
 					>
 				</File>
 			</Filter>

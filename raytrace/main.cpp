@@ -2,7 +2,7 @@
 #include <commctrl.h>
 
 #include "Trace/Tracer.hpp"
-#include "buildscene.h"
+#include "Parse/Parser.hpp"
 #include "resource.h"
 
 #define CLASSNAME "raytrace"
@@ -143,7 +143,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 
 	InitCommonControls();
 
-	Object::Scene *scene = buildScene();
+	AST *ast = Parse::Parser::parse("scene.txt");
+	Object::Scene *scene = Object::Scene::fromAST(ast);
 
 	Trace::Tracer::Settings settings;
 

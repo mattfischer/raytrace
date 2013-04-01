@@ -1,7 +1,7 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-#include "ast.h"
+#include "Parse/AST.h"
 
 namespace Object {
 

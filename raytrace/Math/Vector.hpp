@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#include "ast.h"
+#include "Parse/AST.h"
 
 namespace Math {
 

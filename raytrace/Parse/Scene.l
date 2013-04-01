@@ -1,8 +1,8 @@
 %option noyywrap
 
 %{
-	#include "ast.h"
-	#include "scene.tab.h"
+	#include "Parse/AST.h"
+	#include "Scene.tab.h"
 	#include <string.h>
 	#include <stdlib.h>
 	
@@ -15,8 +15,8 @@ FLOAT -?[[:digit:]]+(\.[[:digit:]]+)?
 [[:blank:]]*
 \n*
 
-\<{FLOAT},{FLOAT},{FLOAT}\>	parseVector(scenetext, &(scenelval._vector)); return VECTOR;
-{FLOAT} scenelval._double = atof(scenetext); return DOUBLE;
+\<{FLOAT},{FLOAT},{FLOAT}\>	parseVector(Scenetext, &(Scenelval._vector)); return VECTOR;
+{FLOAT} Scenelval._double = atof(Scenetext); return DOUBLE;
 
 sphere	return SPHERE;
 plane return PLANE;

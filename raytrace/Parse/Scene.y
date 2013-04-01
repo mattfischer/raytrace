@@ -1,5 +1,5 @@
 %{
-	#include "ast.h"
+	#include "Parse/AST.h"
 	#include <stdarg.h>
 	#include <stdio.h>
 		
@@ -184,17 +184,17 @@ csgdef: UNION '{' primitive primitive primitive_modifiers '}'
 
 %%
 
-extern FILE *scenein;
+extern FILE *Scenein;
 
 AST *parseScene(const char *filename)
 {
-	fopen_s(&scenein, filename, "r");
-	sceneparse();
+	fopen_s(&Scenein, filename, "r");
+	Sceneparse();
 	
 	return tree;
 }
 
-int sceneerror(char const *s)
+int Sceneerror(char const *s)
 {
 	return 0;
 }

@@ -1,7 +1,7 @@
 #ifndef FINISH_H
 #define FINISH_H
 
-#include "ast.h"
+#include "Parse/AST.h"
 
 namespace Object {
 

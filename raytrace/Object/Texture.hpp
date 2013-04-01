@@ -4,7 +4,7 @@
 #include "Math/Transformation.hpp"
 #include "Object/Pigment.hpp"
 #include "Object/Finish.hpp"
-#include "ast.h"
+#include "Parse/AST.h"
 
 namespace Object {
 

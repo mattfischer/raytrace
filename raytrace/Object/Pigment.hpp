@@ -3,7 +3,7 @@
 
 #include "Object/Color.hpp"
 #include "Math/Vector.hpp"
-#include "ast.h"
+#include "Parse/AST.h"
 
 namespace Object {
 
