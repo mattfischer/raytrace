@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "transformation.h"
+#include "Math/Transformation.hpp"
 #include "pigment.h"
 #include "finish.h"
 #include "ast.h"
@@ -14,8 +14,8 @@ public:
 
 	static Texture *fromAst(AST *ast);
 
-	void transform(const Transformation &transform);
-	const Transformation &transformation() const;
+	void transform(const Math::Transformation &transform);
+	const Math::Transformation &transformation() const;
 
 	Pigment *pigment() const;
 	void setPigment(Pigment *pigment);
@@ -23,10 +23,10 @@ public:
 	Finish *finish() const;
 	void setFinish(Finish *finish);
 
-	Color pointColor(const Vector &point) const;
+	Color pointColor(const Math::Vector &point) const;
 
 protected:
-	Transformation mTransformation;
+	Math::Transformation mTransformation;
 
 	Pigment *mPigment;
 	Finish *mFinish;

@@ -7,7 +7,7 @@ Torus::Torus()
 {
 }
 
-bool cylIntersect(const Ray &ray, double radius, double results[])
+bool cylIntersect(const Math::Ray &ray, double radius, double results[])
 {
 	double a, b, c;
 	double disc;
@@ -28,7 +28,7 @@ bool cylIntersect(const Ray &ray, double radius, double results[])
 	return false;
 }
 
-void Torus::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
+void Torus::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
 {
 	double r = 0.25;
 	double r2 = r * r;
@@ -85,13 +85,13 @@ void Torus::doIntersect(const Ray &ray, std::vector<Intersection> &intersections
 		if(results[i] == HUGE_VAL) continue;
 		if(results[i] < 0.01) continue;
 
-		Vector point = ray.origin() + ray.direction() * results[i];
+		Math::Vector point = ray.origin() + ray.direction() * results[i];
 		
 		intersections.push_back(Intersection(this, results[i], point, point));
 	}
 }
 
-bool Torus::doInside(const Vector &point) const
+bool Torus::doInside(const Math::Vector &point) const
 {
 	return false;
 }

@@ -45,12 +45,12 @@ Texture *Texture::fromAst(AST *ast)
 	return texture;
 }
 
-void Texture::transform(const Transformation &transformation)
+void Texture::transform(const Math::Transformation &transformation)
 {
 	mTransformation = transformation.transformTransformation(mTransformation);
 }
 
-const Transformation &Texture::transformation() const
+const Math::Transformation &Texture::transformation() const
 {
 	return mTransformation;
 }
@@ -81,7 +81,7 @@ void Texture::setFinish(Finish *finish)
 	mFinish = finish;
 }
 
-Color Texture::pointColor(const Vector &point) const
+Color Texture::pointColor(const Math::Vector &point) const
 {
 	return mPigment->pointColor(mTransformation.inverseTransformPoint(point));
 }

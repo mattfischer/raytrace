@@ -19,7 +19,7 @@ Cylinder *Cylinder::fromAst(AST *ast)
 	return new Cylinder();
 }
 
-void Cylinder::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
+void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
 {
 	double a, b, c;
 	double disc;
@@ -35,11 +35,11 @@ void Cylinder::doIntersect(const Ray &ray, std::vector<Intersection> &intersecti
 
 		if(distance > EPSILON)
 		{
-			Vector point = ray.origin() + ray.direction() * distance;
+			Math::Vector point = ray.origin() + ray.direction() * distance;
 			
 			if(abs(point.z()) <= 1)
 			{
-				Vector normal = point;
+				Math::Vector normal = point;
 				normal.setZ(0);
 				normal = normal.normalize();
 				
@@ -51,11 +51,11 @@ void Cylinder::doIntersect(const Ray &ray, std::vector<Intersection> &intersecti
 
 		if(distance > EPSILON)
 		{
-			Vector point = ray.origin() + ray.direction() * distance;
+			Math::Vector point = ray.origin() + ray.direction() * distance;
 			
 			if(abs(point.z()) <= 1)
 			{
-				Vector normal = point;
+				Math::Vector normal = point;
 				normal.setZ(0);
 				normal = normal.normalize();
 				
@@ -66,16 +66,16 @@ void Cylinder::doIntersect(const Ray &ray, std::vector<Intersection> &intersecti
 
 	Intersection intersection;
 
-	intersection = Disk::intersectDisk(this, ray, Vector(0, 0, 1), 1);
+	intersection = Disk::intersectDisk(this, ray, Math::Vector(0, 0, 1), 1);
 	if(intersection.valid())
 		intersections.push_back(intersection);
 
-	intersection = Disk::intersectDisk(this, ray, Vector(0, 0, -1), 1);
+	intersection = Disk::intersectDisk(this, ray, Math::Vector(0, 0, -1), 1);
 	if(intersection.valid())
 		intersections.push_back(intersection);
 }
 
-bool Cylinder::doInside(const Vector &point) const
+bool Cylinder::doInside(const Math::Vector &point) const
 {
 	return abs(point.z()) <= 1 && point.x() * point.x() + point.y() * point.y() <= 1;
 }

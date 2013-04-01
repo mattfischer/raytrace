@@ -2,7 +2,7 @@
 #define CAMERA_H
 
 #include "object.h"
-#include "ray.h"
+#include "Math/Ray.hpp"
 
 class Camera : public Object
 {
@@ -11,7 +11,7 @@ public:
 
 	static Camera *fromAst(AST *ast);
 
-	Ray createRay(double x, double y, double hFOV, double vFOV);
+	Math::Ray createRay(double x, double y, double hFOV, double vFOV);
 };
 
 #endif

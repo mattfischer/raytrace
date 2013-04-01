@@ -1,4 +1,6 @@
-#include "ray.h"
+#include "Math/Ray.hpp"
+
+namespace Math {
 
 Ray::Ray()
 {
@@ -56,4 +58,6 @@ int Ray::generation() const
 void Ray::setGeneration(int generation)
 {
 	mGeneration = generation;
+}
+
 }

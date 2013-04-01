@@ -1,7 +1,7 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#include "transformation.h"
+#include "Math/Transformation.hpp"
 
 class Object
 {
@@ -9,11 +9,11 @@ public:
 	Object();
 	virtual ~Object();
 
-	void transform(const Transformation &transform);
-	const Transformation &transformation() const;
+	void transform(const Math::Transformation &transform);
+	const Math::Transformation &transformation() const;
 
 protected:
-	Transformation mTransformation;
+	Math::Transformation mTransformation;
 };
 
 #endif

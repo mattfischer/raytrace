@@ -10,14 +10,14 @@ Disk::~Disk()
 {
 }
 
-Intersection Disk::intersectDisk(const Primitive *primitive, const Ray &ray, const Vector &normal, double displacement)
+Intersection Disk::intersectDisk(const Primitive *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
 {
 	Intersection intersection;
 	Intersection planeIntersection = Plane::intersectPlane(primitive, ray, normal, displacement);
 
 	if(planeIntersection.valid())
 	{
-		Vector point = planeIntersection.objectPoint();
+		Math::Vector point = planeIntersection.objectPoint();
 
 		point = point - normal * (point * normal);
 
@@ -28,15 +28,15 @@ Intersection Disk::intersectDisk(const Primitive *primitive, const Ray &ray, con
 	return intersection;
 }
 
-void Disk::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
+void Disk::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
 {
-	Intersection intersection = intersectDisk(this, ray, Vector(0, 1, 0), 0);
+	Intersection intersection = intersectDisk(this, ray, Math::Vector(0, 1, 0), 0);
 	
 	if(intersection.valid())
 		intersections.push_back(intersection);
 }
 
-bool Disk::doInside(const Vector &point) const
+bool Disk::doInside(const Math::Vector &point) const
 {
 	return false;
 }

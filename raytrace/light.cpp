@@ -27,7 +27,7 @@ Light *Light::fromAst(AST *ast)
 			break;
 
 		case AstTransform:
-			light->transform(Transformation::fromAst(ast->children[i]));
+			light->transform(Math::Transformation::fromAst(ast->children[i]));
 			break;
 		}
 	}

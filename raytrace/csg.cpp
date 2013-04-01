@@ -41,7 +41,7 @@ Csg *Csg::fromAst(AST *ast)
 			break;
 
 		case AstTransform:
-			csg->transform(Transformation::fromAst(ast->children[i]));
+			csg->transform(Math::Transformation::fromAst(ast->children[i]));
 			break;
 		}
 	}
@@ -79,7 +79,7 @@ void Csg::setType(Type type)
 	mType = type;
 }
 
-bool Csg::doInside(const Vector &point) const
+bool Csg::doInside(const Math::Vector &point) const
 {
 	switch(mType)
 	{
@@ -94,7 +94,7 @@ bool Csg::doInside(const Vector &point) const
 	return false;
 }
 
-void Csg::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
+void Csg::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
 {
 	std::vector<Intersection> localIntersections;
 

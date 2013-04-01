@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="raytrace"
 	ProjectGUID="{CB888B23-4AA4-473F-9268-2C1E26ECC742}"
+	RootNamespace="raytrace"
 	>
 	<Platforms>
 		<Platform
@@ -120,6 +121,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
+				AdditionalIncludeDirectories="."
 				EnableEnhancedInstructionSet="2"
 				DebugInformationFormat="3"
 			/>
@@ -245,10 +247,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ray.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\scene.cpp"
 				>
 			</File>
@@ -280,10 +278,18 @@
 				RelativePath=".\trace.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\transformation.cpp"
+			<Filter
+				Name="Math"
 				>
-			</File>
+				<File
+					RelativePath=".\Math\Ray.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\Transformation.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -339,10 +345,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\matrix.h"
-				>
-			</File>
-			<File
 				RelativePath=".\object.h"
 				>
 			</File>
@@ -360,10 +362,6 @@
 			</File>
 			<File
 				RelativePath=".\primitive.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ray.h"
 				>
 			</File>
 			<File
@@ -394,14 +392,26 @@
 				RelativePath=".\trace.h"
 				>
 			</File>
-			<File
-				RelativePath=".\transformation.h"
+			<Filter
+				Name="Math"
 				>
-			</File>
-			<File
-				RelativePath=".\vector.h"
-				>
-			</File>
+				<File
+					RelativePath=".\Math\Matrix.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\Ray.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\Transformation.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\Vector.hpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

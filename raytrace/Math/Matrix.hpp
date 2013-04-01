@@ -1,7 +1,9 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include "vector.h"
+#include "Math/Vector.hpp"
+
+namespace Math {
 
 class Matrix
 {
@@ -143,5 +145,7 @@ protected:
 	double mValues[16];
 	bool mIdentity;
 };
+
+}
 
 #endif

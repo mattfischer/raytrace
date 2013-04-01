@@ -5,6 +5,8 @@
 
 #include "ast.h"
 
+namespace Math {
+
 class Vector
 {
 public:
@@ -143,5 +145,7 @@ public:
 protected:
 	double mValues[3];
 };
+
+}
 
 #endif

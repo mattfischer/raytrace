@@ -1,5 +1,5 @@
 #include "sphere.h"
-#include "transformation.h"
+#include "Math/Transformation.hpp"
 
 #include <math.h>
 
@@ -14,7 +14,7 @@ Sphere *Sphere::fromAst(AST *ast)
 	return new Sphere();
 }
 
-void Sphere::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
+void Sphere::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
 {
 	Intersection intersection;
 	double a, b, c;
@@ -31,7 +31,7 @@ void Sphere::doIntersect(const Ray &ray, std::vector<Intersection> &intersection
 
 		if(distance > EPSILON)
 		{
-			Vector point = ray.origin() + ray.direction() * distance;
+			Math::Vector point = ray.origin() + ray.direction() * distance;
 			intersections.push_back(Intersection(this, distance, point, point));
 		}
 
@@ -39,13 +39,13 @@ void Sphere::doIntersect(const Ray &ray, std::vector<Intersection> &intersection
 
 		if(distance > EPSILON)
 		{
-			Vector point = ray.origin() + ray.direction() * distance;
+			Math::Vector point = ray.origin() + ray.direction() * distance;
 			intersections.push_back(Intersection(this, distance, point, point));
 		}
 	}
 }
 
-bool Sphere::doInside(const Vector &point) const
+bool Sphere::doInside(const Math::Vector &point) const
 {
 	return point.magnitude2() <= 1;
 }

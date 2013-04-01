@@ -32,9 +32,9 @@ void Tracer::setScene(Scene *scene)
 	mScene = scene;
 }
 
-Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
+Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection) const
 {
-	Vector point(intersection.point());
+	Math::Vector point(intersection.point());
 	Texture *texture = intersection.primitive()->texture();
 	Color pointColor = texture->pointColor(intersection.objectPoint());
 
@@ -54,21 +54,21 @@ Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
 		double diffuse_coeff = 0;
 		double specular_coeff = 0;
 		
-		Ray lightRay = Ray::createFromPoints(point, light->transformation().origin());
+		Math::Ray lightRay = Math::Ray::createFromPoints(point, light->transformation().origin());
 
 		mLightIntersections.clear();
 		mScene->findIntersections(lightRay, mLightIntersections);
 		
-		Vector lightVector = light->transformation().origin() - point;
+		Math::Vector lightVector = light->transformation().origin() - point;
 		double lightMagnitude = lightVector.magnitude();
-		Vector lightDir = lightVector / lightMagnitude;
+		Math::Vector lightDir = lightVector / lightMagnitude;
 
 		if(mLightIntersections.size() == 0 || mLightIntersections[0].distance() >= lightMagnitude)
 		{
 			diffuse_coeff = abs(intersection.normal() * lightDir);
 
-			Vector incident = -lightDir;
-			Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
+			Math::Vector incident = -lightDir;
+			Math::Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
 
 			double dot = reflect * (mScene->camera()->transformation().origin() - point).normalize();
 
@@ -84,10 +84,10 @@ Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
 
 	if(texture->finish()->reflection() > 0 && ray.generation() < mSettings.maxRayGeneration)
 	{
-		Vector incident = ray.direction();
-		Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
+		Math::Vector incident = ray.direction();
+		Math::Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
 
-		Ray reflectRay(intersection.point(), reflect);
+		Math::Ray reflectRay(intersection.point(), reflect);
 		reflectRay.setGeneration(ray.generation() + 1);
 
 		Color c = traceRay(reflectRay);
@@ -98,7 +98,7 @@ Color Tracer::doLighting(const Ray &ray, const Intersection &intersection) const
 	return totalColor.clamp();
 }
 
-Color Tracer::traceRay(const Ray &ray) const
+Color Tracer::traceRay(const Math::Ray &ray) const
 {
 	mIntersections.clear();
 	mScene->findIntersections(ray, mIntersections);
@@ -120,7 +120,7 @@ Color Tracer::tracePixel(int x, int y) const
 	for(int i=0; i<mSettings.antialias; i++)
 		for(int j=0; j<mSettings.antialias; j++)
 		{
-			Ray ray = mScene->camera()->createRay((x + (double)i / mSettings.antialias) / mSettings.width, (y + (double)j / mSettings.antialias) / mSettings.height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
+			Math::Ray ray = mScene->camera()->createRay((x + (double)i / mSettings.antialias) / mSettings.width, (y + (double)j / mSettings.antialias) / mSettings.height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
 			color = color + traceRay(ray);
 		}
 

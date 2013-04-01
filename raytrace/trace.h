@@ -31,8 +31,8 @@ public:
 	Color tracePixel(int x, int y) const;
 
 protected:
-	Color doLighting(const Ray &ray, const Intersection &intersection) const;
-	Color traceRay(const Ray &ray) const;
+	Color doLighting(const Math::Ray &ray, const Intersection &intersection) const;
+	Color traceRay(const Math::Ray &ray) const;
 
 	Scene *mScene;
 	Settings mSettings;

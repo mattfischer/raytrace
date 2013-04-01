@@ -24,7 +24,7 @@ Camera *Camera::fromAst(AST *ast)
 		switch(ast->children[i]->type)
 		{
 		case AstTransform:
-			camera->transform(Transformation::fromAst(ast->children[i]));
+			camera->transform(Math::Transformation::fromAst(ast->children[i]));
 			break;
 		}
 	}
@@ -32,13 +32,13 @@ Camera *Camera::fromAst(AST *ast)
 	return camera;
 }
 
-Ray Camera::createRay(double x, double y, double hFOV, double vFOV)
+Math::Ray Camera::createRay(double x, double y, double hFOV, double vFOV)
 {
 	double rayX, rayY;
 
 	rayX = tan(rad(hFOV/2)) * (2*x - 1);
 	rayY = -tan(rad(vFOV/2)) * (2*y - 1);
 
-	return Ray(transformation().origin(), transformation().transformDirection(Vector(rayX, rayY, 1).normalize()));
+	return Math::Ray(transformation().origin(), transformation().transformDirection(Math::Vector(rayX, rayY, 1).normalize()));
 }
 

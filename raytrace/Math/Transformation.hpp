@@ -1,10 +1,12 @@
 #ifndef TRANSFORMATION_H
 #define TRANSFORMATION_H
 
-#include "matrix.h"
-#include "vector.h"
-#include "ray.h"
+#include "Math/Matrix.hpp"
+#include "Math/Vector.hpp"
+#include "Math/Ray.hpp"
 #include "ast.h"
+
+namespace Math {
 
 class Transformation
 {
@@ -62,5 +64,7 @@ protected:
 	Vector mTransposeOrigin;
 	Vector mInverseTransposeOrigin;
 };
+
+}
 
 #endif

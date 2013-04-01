@@ -8,12 +8,12 @@ Object::~Object()
 {
 }
 
-void Object::transform(const Transformation &transformation)
+void Object::transform(const Math::Transformation &transformation)
 {
 	mTransformation = transformation.transformTransformation(mTransformation);
 }
 
-const Transformation &Object::transformation() const
+const Math::Transformation &Object::transformation() const
 {
 	return mTransformation;
 }

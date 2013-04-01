@@ -53,7 +53,7 @@ Primitive *Primitive::fromAst(AST *ast)
 		switch(sub->children[i]->type)
 		{
 		case AstTransform:
-			primitive->transform(Transformation::fromAst(sub->children[i]));
+			primitive->transform(Math::Transformation::fromAst(sub->children[i]));
 			break;
 		case AstTexture:
 			primitive->setTexture(Texture::fromAst(sub->children[i]));
@@ -77,16 +77,16 @@ void Primitive::setTexture(Texture *texture)
 	mTexture = texture;
 }
 
-void Primitive::intersect(const Ray &ray, std::vector<Intersection> &intersections) const
+void Primitive::intersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
 {
-	Ray transformedRay = mTransformation.inverseTransformRay(ray);
+	Math::Ray transformedRay = mTransformation.inverseTransformRay(ray);
 
 	doIntersect(transformedRay, intersections);
 }
 
-bool Primitive::inside(const Vector &point) const
+bool Primitive::inside(const Math::Vector &point) const
 {
-	Vector transformedPoint = mTransformation.inverseTransformPoint(point);
+	Math::Vector transformedPoint = mTransformation.inverseTransformPoint(point);
 
 	return doInside(transformedPoint);
 }

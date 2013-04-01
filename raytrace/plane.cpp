@@ -13,14 +13,14 @@ Plane *Plane::fromAst(AST *ast)
 	return new Plane;
 }
 
-Intersection Plane::intersectPlane(const Primitive *primitive, const Ray &ray, const Vector &normal, double displacement)
+Intersection Plane::intersectPlane(const Primitive *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
 {
 	double scale;
 
 	scale = (ray.origin() * normal - displacement) / (ray.direction() * -normal);
 	if(scale > EPSILON)
 	{
-		Vector point = ray.origin() + ray.direction() * scale;
+		Math::Vector point = ray.origin() + ray.direction() * scale;
 		point = point - normal * (point * normal - displacement);
 
 		return Intersection(primitive, scale, normal, point);
@@ -29,7 +29,7 @@ Intersection Plane::intersectPlane(const Primitive *primitive, const Ray &ray, c
 	return Intersection();
 }
 
-void Plane::doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const
+void Plane::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const
 {
 	double scale;
 
@@ -39,13 +39,13 @@ void Plane::doIntersect(const Ray &ray, std::vector<Intersection> &intersections
 	scale = -ray.origin().y() / ray.direction().y();
 	if(scale > EPSILON)
 	{
-		Vector point = ray.origin() + ray.direction() * scale;
+		Math::Vector point = ray.origin() + ray.direction() * scale;
 
-		intersections.push_back(Intersection(this, scale, Vector(0,1,0), point));
+		intersections.push_back(Intersection(this, scale, Math::Vector(0,1,0), point));
 	}
 }
 
-bool Plane::doInside(const Vector &point) const
+bool Plane::doInside(const Math::Vector &point) const
 {
 	return point.y() <= 0;
 }

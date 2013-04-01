@@ -7,7 +7,7 @@ Intersection::Intersection()
 	mValid = false;
 }
 
-Intersection::Intersection(const Primitive *primitive, double distance, const Vector &objectNormal, const Vector &objectPoint)
+Intersection::Intersection(const Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Vector &objectPoint)
 {
 	mValid = true;
 	mPrimitive = primitive;
@@ -86,7 +86,7 @@ void Intersection::setDistance(double distance)
 	mDistance = distance;
 }
 
-const Vector &Intersection::normal() const
+const Math::Vector &Intersection::normal() const
 {
 	if(!mTransformed)
 		doTransform();
@@ -94,19 +94,19 @@ const Vector &Intersection::normal() const
 	return mNormal;
 }
 
-const Vector &Intersection::objectNormal() const
+const Math::Vector &Intersection::objectNormal() const
 {
 	return mObjectNormal;
 }
 
-void Intersection::setObjectNormal(const Vector &objectNormal)
+void Intersection::setObjectNormal(const Math::Vector &objectNormal)
 {
 	mTransformed = false;
 
 	mObjectNormal = objectNormal;
 }
 
-const Vector &Intersection::point() const
+const Math::Vector &Intersection::point() const
 {
 	if(!mTransformed)
 		doTransform();
@@ -114,19 +114,19 @@ const Vector &Intersection::point() const
 	return mPoint;
 }
 
-const Vector &Intersection::objectPoint() const
+const Math::Vector &Intersection::objectPoint() const
 {
 	return mObjectPoint;
 }
 
-void Intersection::setObjectPoint(const Vector &objectPoint) 
+void Intersection::setObjectPoint(const Math::Vector &objectPoint) 
 {
 	mTransformed = false;
 
 	mObjectPoint = objectPoint;
 }
 
-void Intersection::transform(const Transformation &transformation)
+void Intersection::transform(const Math::Transformation &transformation)
 {
 	if(mCompositeTransformed)
 	{
@@ -145,7 +145,7 @@ void Intersection::transform(const Transformation &transformation)
 	}
 }
 
-const Transformation &Intersection::transformation() const
+const Math::Transformation &Intersection::transformation() const
 {
 	if(mCompositeTransformed)
 	{

@@ -1,8 +1,8 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
-#include "vector.h"
-#include "transformation.h"
+#include "Math/Vector.hpp"
+#include "Math/Transformation.hpp"
 
 class Primitive;
 
@@ -10,7 +10,7 @@ class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Primitive *primitive, double distance, const Vector &objectNormal, const Vector &objectPoint);
+	Intersection(const Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Vector &objectPoint);
 	Intersection(const Intersection &c);
 	Intersection &operator=(const Intersection &c);
 
@@ -23,20 +23,20 @@ public:
 	double distance() const;
 	void setDistance(double distance);
 
-	const Vector &normal() const;
+	const Math::Vector &normal() const;
 
-	const Vector &objectNormal() const;
-	void setObjectNormal(const Vector &objectNormal);
+	const Math::Vector &objectNormal() const;
+	void setObjectNormal(const Math::Vector &objectNormal);
 
-	const Vector &point() const;
+	const Math::Vector &point() const;
 
-	const Vector &objectPoint() const;
-	void setObjectPoint(const Vector &objectPoint);
+	const Math::Vector &objectPoint() const;
+	void setObjectPoint(const Math::Vector &objectPoint);
 
 	const Intersection &nearest(const Intersection &b) const;
 	
-	void transform(const Transformation &transformation);
-	const Transformation &transformation() const;
+	void transform(const Math::Transformation &transformation);
+	const Math::Transformation &transformation() const;
 
 	bool operator<(const Intersection &b) const;
 
@@ -44,12 +44,12 @@ protected:
 	bool mValid;
 	const Primitive *mPrimitive;
 	double mDistance;
-	Vector mObjectNormal;
-	Vector mObjectPoint;
-	mutable Vector mPoint;
-	mutable Vector mNormal;
+	Math::Vector mObjectNormal;
+	Math::Vector mObjectPoint;
+	mutable Math::Vector mPoint;
+	mutable Math::Vector mNormal;
 	mutable bool mTransformed;
-	Transformation mTransformation;
+	Math::Transformation mTransformation;
 	bool mCompositeTransformed;
 
 	void doTransform() const;

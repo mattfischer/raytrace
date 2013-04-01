@@ -54,7 +54,7 @@ void Scene::addPrimitive(Primitive *primitive)
 	mPrimitives.push_back(primitive);
 }
 
-void Scene::findIntersections(const Ray &ray, std::vector<Intersection> &intersections)
+void Scene::findIntersections(const Math::Ray &ray, std::vector<Intersection> &intersections)
 {
 	int i;
 	

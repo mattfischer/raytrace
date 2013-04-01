@@ -1,8 +1,10 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "vector.h"
-#include "matrix.h"
+#include "Math/Vector.hpp"
+#include "Math/Matrix.hpp"
+
+namespace Math {
 
 class Ray
 {
@@ -26,9 +28,11 @@ public:
 	Ray transform(const Matrix &transformation) const;
 
 protected:
- 	Vector mOrigin;
+	Vector mOrigin;
 	Vector mDirection;
 	int mGeneration;
 };
+
+}
 
 #endif

@@ -12,10 +12,10 @@ public:
 	static Box *fromAst(AST *ast);
 
 protected:
-	virtual void doIntersect(const Ray &ray, std::vector<Intersection> &intersections) const;
-	virtual bool doInside(const Vector &point) const;
+	virtual void doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const;
+	virtual bool doInside(const Math::Vector &point) const;
 
-	void testIntersect(const Ray &ray, const Vector &normal, std::vector<Intersection> &intersections) const;
+	void testIntersect(const Math::Ray &ray, const Math::Vector &normal, std::vector<Intersection> &intersections) const;
 };
 
 #endif

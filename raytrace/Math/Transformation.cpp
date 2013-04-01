@@ -1,6 +1,8 @@
-#include "transformation.h"
+#include "Math/Transformation.hpp"
 
 #include <math.h>
+
+namespace Math {
 
 Transformation Transformation::translate(const Vector &vector)
 {
@@ -265,4 +267,6 @@ Ray Transformation::inverseTransformRay(const Ray &ray) const
 Transformation Transformation::inverseTransformTransformation(const Transformation &transformation) const
 {
 	return Transformation(transformation.inverseMatrix() * mInverseMatrix, mMatrix * transformation.matrix());
+}
+
 }
