@@ -1,6 +1,8 @@
-#include "polysolve.h"
+#include "Math/PolySolve.hpp"
 
 #include <math.h>
+
+namespace Math {
 
 double PolySolve::evaluate(const double coeffs[], int n, double x)
 {
@@ -51,4 +53,6 @@ void PolySolve::newtonRhapson(const double coeffs[], int n, const double guesses
 	{
 		results[i] = newtonRhapson(coeffs, n, guesses[i], threshold);
 	}
+}
+
 }

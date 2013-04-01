@@ -1,4 +1,4 @@
-#include "intersection.h"
+#include "Trace/Intersection.hpp"
 
 #include "Object/Primitive.hpp"
 

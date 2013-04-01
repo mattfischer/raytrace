@@ -191,10 +191,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\polysolve.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\scene.l"
 				>
 			</File>
@@ -209,6 +205,10 @@
 			<Filter
 				Name="Math"
 				>
+				<File
+					RelativePath=".\Math\PolySolve.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\Math\Ray.cpp"
 					>
@@ -335,10 +335,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\polysolve.h"
-				>
-			</File>
-			<File
 				RelativePath=".\resource.h"
 				>
 			</File>
@@ -351,6 +347,10 @@
 				>
 				<File
 					RelativePath=".\Math\Matrix.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\PolySolve.hpp"
 					>
 				</File>
 				<File

@@ -1,5 +1,5 @@
 #include "Object/Torus.hpp"
-#include "polysolve.h"
+#include "Math/PolySolve.hpp"
 
 #include <math.h>
 
@@ -81,7 +81,7 @@ void Torus::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &
 		cylIntersect(ray, 1 + r, guesses + 2);
 	}
 
-	PolySolve::newtonRhapson(c, 5, guesses, .1, results);
+	Math::PolySolve::newtonRhapson(c, 5, guesses, .1, results);
 	for(int i=0; i<4; i++)
 	{
 		if(results[i] == HUGE_VAL) continue;

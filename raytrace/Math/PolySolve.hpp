@@ -1,6 +1,8 @@
 #ifndef POLYSOLVE_H
 #define POLYSOLVE_H
 
+namespace Math {
+
 class PolySolve
 {
 public:
@@ -9,4 +11,6 @@ public:
 	static double newtonRhapson(const double coeffs[], int n, double guess, double threshold);
 	static void newtonRhapson(const double coeffs[], int n, const double guesses[], double threshold, double results[]);
 };
+
+}
 #endif
