@@ -22,13 +22,13 @@ Scene *buildScene()
 		switch(ast->type)
 		{
 		case AstPrimitive:
-			scene->addPrimitive(Primitive::fromAst(ast));
+			scene->addPrimitive(Object::Primitive::fromAst(ast));
 			break;
 		case AstLight:
-			scene->addLight(Light::fromAst(ast));
+			scene->addLight(Object::Light::fromAst(ast));
 			break;
 		case AstCamera:
-			scene->setCamera(Camera::fromAst(ast));
+			scene->setCamera(Object::Camera::fromAst(ast));
 			break;
 		}
 	}

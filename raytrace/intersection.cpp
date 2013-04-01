@@ -1,13 +1,13 @@
 #include "intersection.h"
 
-#include "primitive.h"
+#include "Object/Primitive.hpp"
 
 Intersection::Intersection()
 {
 	mValid = false;
 }
 
-Intersection::Intersection(const Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Vector &objectPoint)
+Intersection::Intersection(const Object::Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Vector &objectPoint)
 {
 	mValid = true;
 	mPrimitive = primitive;
@@ -66,12 +66,12 @@ void Intersection::setValid(bool valid)
 	mValid = valid;
 }
 
-const Primitive *Intersection::primitive() const
+const Object::Primitive *Intersection::primitive() const
 {
 	return mPrimitive;
 }
 
-void Intersection::setPrimitive(const Primitive *primitive)
+void Intersection::setPrimitive(const Object::Primitive *primitive)
 {
 	mPrimitive = primitive;
 }

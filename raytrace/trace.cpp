@@ -1,5 +1,5 @@
 #include "trace.h"
-#include "object.h"
+#include "Object/Object.hpp"
 
 #include <algorithm>
 
@@ -50,7 +50,7 @@ Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection)
 	
 	for(int i=0; i<mScene->lights().size(); i++)
 	{
-		Light *light = mScene->lights()[i];
+		Object::Light *light = mScene->lights()[i];
 		double diffuse_coeff = 0;
 		double specular_coeff = 0;
 		

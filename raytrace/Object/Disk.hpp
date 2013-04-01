@@ -1,7 +1,9 @@
 #ifndef DISK_H
 #define DISK_H
 
-#include "primitive.h"
+#include "Object/Primitive.hpp"
+
+namespace Object {
 
 class Disk : public Primitive
 {
@@ -16,4 +18,5 @@ protected:
 	virtual bool doInside(const Math::Vector &point) const;
 };
 
+}
 #endif

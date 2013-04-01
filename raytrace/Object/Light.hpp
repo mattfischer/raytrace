@@ -1,8 +1,10 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "object.h"
+#include "Object/Object.hpp"
 #include "color.h"
+
+namespace Object {
 
 class Light : public Object
 {
@@ -21,4 +23,5 @@ protected:
 	Color mColor;
 };
 
+}
 #endif

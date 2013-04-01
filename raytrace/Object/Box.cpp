@@ -1,8 +1,10 @@
-#include "box.h"
+#include "Object/Box.hpp"
 
-#include "plane.h"
+#include "Object/Plane.hpp"
 
 #include <math.h>
+
+namespace Object {
 
 Box::Box()
 {
@@ -50,4 +52,6 @@ void Box::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersect
 bool Box::doInside(const Math::Vector &point) const
 {
 	return abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1;
+}
+
 }

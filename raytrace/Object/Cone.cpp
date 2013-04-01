@@ -1,10 +1,13 @@
-#include "cone.h"
+#include "Object/Cone.hpp"
 
-#include "disk.h"
+#include "Object/Disk.hpp"
 
 #include <math.h>
 
 #define EPSILON 0.01
+
+namespace Object {
+
 Cone::Cone()
 {
 }
@@ -75,4 +78,6 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersec
 bool Cone::doInside(const Math::Vector &point) const
 {
 	return point.z() <= 1 && point.x() * point.x() + point.y() * point.y() <= point.z() * point.z();
+}
+
 }

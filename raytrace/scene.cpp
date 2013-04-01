@@ -21,12 +21,12 @@ Scene::~Scene()
 		delete mPrimitives[i];
 }
 
-Camera *Scene::camera() const
+Object::Camera *Scene::camera() const
 {
 	return mCamera;
 }
 
-void Scene::setCamera(Camera *camera)
+void Scene::setCamera(Object::Camera *camera)
 {
 	if(mCamera)
 		delete mCamera;
@@ -34,22 +34,22 @@ void Scene::setCamera(Camera *camera)
 	mCamera = camera;
 }
 
-const std::vector<Light*> &Scene::lights() const
+const std::vector<Object::Light*> &Scene::lights() const
 {
 	return mLights;
 }
 
-void Scene::addLight(Light *light)
+void Scene::addLight(Object::Light *light)
 {
 	mLights.push_back(light);
 }
 
-const std::vector<Primitive*> &Scene::primitives() const
+const std::vector<Object::Primitive*> &Scene::primitives() const
 {
 	return mPrimitives;
 }
 
-void Scene::addPrimitive(Primitive *primitive)
+void Scene::addPrimitive(Object::Primitive *primitive)
 {
 	mPrimitives.push_back(primitive);
 }

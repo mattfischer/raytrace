@@ -1,4 +1,6 @@
-#include "object.h"
+#include "Object/Object.hpp"
+
+namespace Object {
 
 Object::Object() 
 { 
@@ -18,3 +20,4 @@ const Math::Transformation &Object::transformation() const
 	return mTransformation;
 }
 
+}

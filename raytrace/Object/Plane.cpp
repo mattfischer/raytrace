@@ -1,8 +1,10 @@
-#include "plane.h"
+#include "Object/Plane.hpp"
 
 #include <math.h>
 
 #define EPSILON .01
+
+namespace Object {
 
 Plane::Plane()
 {
@@ -48,4 +50,6 @@ void Plane::doIntersect(const Math::Ray &ray, std::vector<Intersection> &interse
 bool Plane::doInside(const Math::Vector &point) const
 {
 	return point.y() <= 0;
+}
+
 }

@@ -1,7 +1,9 @@
 #ifndef PLANE_H
 #define PLANE_H
 
-#include "primitive.h"
+#include "Object/Primitive.hpp"
+
+namespace Object {
 
 class Plane : public Primitive
 {
@@ -17,4 +19,5 @@ protected:
 	virtual bool doInside(const Math::Vector &point) const;
 };
 
+}
 #endif

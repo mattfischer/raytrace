@@ -1,9 +1,11 @@
-#include "sphere.h"
+#include "Object/Sphere.hpp"
 #include "Math/Transformation.hpp"
 
 #include <math.h>
 
 #define EPSILON 0.0001
+
+namespace Object {
 
 Sphere::Sphere()
 {
@@ -48,4 +50,6 @@ void Sphere::doIntersect(const Math::Ray &ray, std::vector<Intersection> &inters
 bool Sphere::doInside(const Math::Vector &point) const
 {
 	return point.magnitude2() <= 1;
+}
+
 }

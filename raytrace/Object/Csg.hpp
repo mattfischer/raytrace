@@ -1,7 +1,9 @@
 #ifndef CSG_H
 #define CSG_H
 
-#include "primitive.h"
+#include "Object/Primitive.hpp"
+
+namespace Object {
 
 class Csg : public Primitive
 {
@@ -35,4 +37,5 @@ protected:
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const;
 };
 
+}
 #endif

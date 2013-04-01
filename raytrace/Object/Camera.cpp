@@ -1,7 +1,9 @@
-#include "camera.h"
+#include "Object/Camera.hpp"
 
 #include <math.h>
 #include <stdio.h>
+
+namespace Object {
 
 static double rad(double deg)
 {
@@ -42,3 +44,4 @@ Math::Ray Camera::createRay(double x, double y, double hFOV, double vFOV)
 	return Math::Ray(transformation().origin(), transformation().transformDirection(Math::Vector(rayX, rayY, 1).normalize()));
 }
 
+}

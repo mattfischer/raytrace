@@ -1,4 +1,6 @@
-#include "csg.h"
+#include "Object/Csg.hpp"
+
+namespace Object {
 
 Csg::Csg() :
 	mPrimitive1(0),
@@ -138,4 +140,6 @@ void Csg::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersect
 			intersections.push_back(localIntersections[i]);
 		}
 	}
+}
+
 }

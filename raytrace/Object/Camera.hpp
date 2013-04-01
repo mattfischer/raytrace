@@ -1,8 +1,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "object.h"
+#include "Object/Object.hpp"
 #include "Math/Ray.hpp"
+
+namespace Object {
 
 class Camera : public Object
 {
@@ -14,4 +16,5 @@ public:
 	Math::Ray createRay(double x, double y, double hFOV, double vFOV);
 };
 
+}
 #endif

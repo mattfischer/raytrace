@@ -1,6 +1,8 @@
-#include "disk.h"
+#include "Object/Disk.hpp"
 
-#include "plane.h"
+#include "Object/Plane.hpp"
+
+namespace Object {
 
 Disk::Disk()
 {
@@ -39,4 +41,6 @@ void Disk::doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersec
 bool Disk::doInside(const Math::Vector &point) const
 {
 	return false;
+}
+
 }

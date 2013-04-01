@@ -1,10 +1,12 @@
-#include "cylinder.h"
+#include "Object/Cylinder.hpp"
 
-#include "disk.h"
+#include "Object/Disk.hpp"
 
 #include <math.h>
 
 #define EPSILON 0.01
+
+namespace Object {
 
 Cylinder::Cylinder()
 {
@@ -78,4 +80,6 @@ void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Intersection> &inte
 bool Cylinder::doInside(const Math::Vector &point) const
 {
 	return abs(point.z()) <= 1 && point.x() * point.x() + point.y() * point.y() <= 1;
+}
+
 }

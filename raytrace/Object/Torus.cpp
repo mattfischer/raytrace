@@ -1,7 +1,9 @@
-#include "torus.h"
+#include "Object/Torus.hpp"
 #include "polysolve.h"
 
 #include <math.h>
+
+namespace Object {
 
 Torus::Torus()
 {
@@ -94,4 +96,6 @@ void Torus::doIntersect(const Math::Ray &ray, std::vector<Intersection> &interse
 bool Torus::doInside(const Math::Vector &point) const
 {
 	return false;
+}
+
 }

@@ -1,4 +1,6 @@
-#include "light.h"
+#include "Object/Light.hpp"
+
+namespace Object {
 
 Light::Light()
 {
@@ -50,4 +52,6 @@ const Color &Light::color() const
 void Light::setColor(const Color &color)
 {
 	mColor = color;
+}
+
 }

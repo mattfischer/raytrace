@@ -1,12 +1,14 @@
-#include "primitive.h"
+#include "Object/Primitive.hpp"
 
-#include "sphere.h"
-#include "box.h"
-#include "plane.h"
-#include "cone.h"
-#include "disk.h"
-#include "cylinder.h"
-#include "csg.h"
+#include "Object/Sphere.hpp"
+#include "Object/Box.hpp"
+#include "Object/Plane.hpp"
+#include "Object/Cone.hpp"
+#include "Object/Disk.hpp"
+#include "Object/Cylinder.hpp"
+#include "Object/Csg.hpp"
+
+namespace Object {
 
 Primitive::Primitive()
 {
@@ -89,4 +91,6 @@ bool Primitive::inside(const Math::Vector &point) const
 	Math::Vector transformedPoint = mTransformation.inverseTransformPoint(point);
 
 	return doInside(transformedPoint);
+}
+
 }

@@ -1,18 +1,23 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#ifndef CONE_H
+#define CONE_H
 
-#include "primitive.h"
+#include "Object/Primitive.hpp"
 #include "ast.h"
 
-class Sphere : public Primitive
+namespace Object {
+
+class Cone : public Primitive
 {
 public:
-	Sphere();
-	static Sphere *fromAst(AST *ast);
+	Cone();
+	~Cone();
+
+	static Cone *fromAst(AST *ast);
 
 protected:
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const;
 	virtual bool doInside(const Math::Vector &point) const;
 };
 
+}
 #endif

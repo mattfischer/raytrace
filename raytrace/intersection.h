@@ -4,21 +4,23 @@
 #include "Math/Vector.hpp"
 #include "Math/Transformation.hpp"
 
+namespace Object {
 class Primitive;
+}
 
 class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Vector &objectPoint);
+	Intersection(const Object::Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Vector &objectPoint);
 	Intersection(const Intersection &c);
 	Intersection &operator=(const Intersection &c);
 
 	bool valid() const;
 	void setValid(bool valid);
 
-	const Primitive *primitive() const;
-	void setPrimitive(const Primitive *primitive);
+	const Object::Primitive *primitive() const;
+	void setPrimitive(const Object::Primitive *primitive);
 
 	double distance() const;
 	void setDistance(double distance);
@@ -42,7 +44,7 @@ public:
 
 protected:
 	bool mValid;
-	const Primitive *mPrimitive;
+	const Object::Primitive *mPrimitive;
 	double mDistance;
 	Math::Vector mObjectNormal;
 	Math::Vector mObjectPoint;

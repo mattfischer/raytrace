@@ -3,6 +3,8 @@
 
 #include "Math/Transformation.hpp"
 
+namespace Object {
+
 class Object
 {
 public:
@@ -16,4 +18,5 @@ protected:
 	Math::Transformation mTransformation;
 };
 
+}
 #endif

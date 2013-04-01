@@ -175,35 +175,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\box.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\buildscene.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\camera.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\color.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cone.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\csg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cylinder.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\disk.cpp"
 				>
 			</File>
 			<File
@@ -219,15 +195,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\light.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\object.cpp"
 				>
 			</File>
 			<File
@@ -235,15 +203,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\plane.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\polysolve.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\primitive.cpp"
 				>
 			</File>
 			<File
@@ -263,15 +223,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\sphere.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\texture.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\torus.cpp"
 				>
 			</File>
 			<File
@@ -290,6 +242,58 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Object"
+				>
+				<File
+					RelativePath=".\Object\Box.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Camera.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Cone.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Csg.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Cylinder.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Disk.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Light.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Object.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Plane.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Primitive.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Sphere.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Torus.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -301,35 +305,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\box.h"
-				>
-			</File>
-			<File
 				RelativePath=".\buildscene.h"
 				>
 			</File>
 			<File
-				RelativePath=".\camera.h"
-				>
-			</File>
-			<File
 				RelativePath=".\color.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cone.h"
-				>
-			</File>
-			<File
-				RelativePath=".\csg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cylinder.h"
-				>
-			</File>
-			<File
-				RelativePath=".\disk.h"
 				>
 			</File>
 			<File
@@ -341,27 +321,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\light.h"
-				>
-			</File>
-			<File
-				RelativePath=".\object.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pigment.h"
-				>
-			</File>
-			<File
-				RelativePath=".\plane.h"
-				>
-			</File>
-			<File
 				RelativePath=".\polysolve.h"
-				>
-			</File>
-			<File
-				RelativePath=".\primitive.h"
 				>
 			</File>
 			<File
@@ -377,15 +337,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\sphere.h"
-				>
-			</File>
-			<File
 				RelativePath=".\texture.h"
-				>
-			</File>
-			<File
-				RelativePath=".\torus.h"
 				>
 			</File>
 			<File
@@ -409,6 +361,58 @@
 				</File>
 				<File
 					RelativePath=".\Math\Vector.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Object"
+				>
+				<File
+					RelativePath=".\Object\Box.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Camera.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Cone.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Csg.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Cylinder.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Disk.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Light.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Object.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Plane.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Primitive.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Sphere.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Torus.hpp"
 					>
 				</File>
 			</Filter>

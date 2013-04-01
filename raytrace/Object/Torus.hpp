@@ -1,20 +1,19 @@
-#ifndef CYLINDER_H
-#define CYLINDER_H
+#ifndef TORUS_H
+#define TORUS_H
 
-#include "primitive.h"
-#include "ast.h"
+#include "Object/Primitive.hpp"
 
-class Cylinder : public Primitive
+namespace Object {
+
+class Torus : public Primitive
 {
 public:
-	Cylinder();
-	~Cylinder();
-
-	static Cylinder *fromAst(AST *ast);
+	Torus();
 
 protected:
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Intersection> &intersections) const;
 	virtual bool doInside(const Math::Vector &point) const;
 };
 
+}
 #endif
