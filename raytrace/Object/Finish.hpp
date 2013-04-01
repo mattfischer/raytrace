@@ -3,6 +3,8 @@
 
 #include "ast.h"
 
+namespace Object {
+
 class Finish
 {
 public:
@@ -33,4 +35,6 @@ protected:
 	double mSpecularPower;
 	double mReflection;
 };
+
+}
 #endif

@@ -1,6 +1,8 @@
-#include "scene.h"
+#include "Object/Scene.hpp"
 
 #include <algorithm>
+
+namespace Object {
 
 Scene::Scene()
 {
@@ -21,12 +23,12 @@ Scene::~Scene()
 		delete mPrimitives[i];
 }
 
-Object::Camera *Scene::camera() const
+Camera *Scene::camera() const
 {
 	return mCamera;
 }
 
-void Scene::setCamera(Object::Camera *camera)
+void Scene::setCamera(Camera *camera)
 {
 	if(mCamera)
 		delete mCamera;
@@ -34,22 +36,22 @@ void Scene::setCamera(Object::Camera *camera)
 	mCamera = camera;
 }
 
-const std::vector<Object::Light*> &Scene::lights() const
+const std::vector<Light*> &Scene::lights() const
 {
 	return mLights;
 }
 
-void Scene::addLight(Object::Light *light)
+void Scene::addLight(Light *light)
 {
 	mLights.push_back(light);
 }
 
-const std::vector<Object::Primitive*> &Scene::primitives() const
+const std::vector<Primitive*> &Scene::primitives() const
 {
 	return mPrimitives;
 }
 
-void Scene::addPrimitive(Object::Primitive *primitive)
+void Scene::addPrimitive(Primitive *primitive)
 {
 	mPrimitives.push_back(primitive);
 }
@@ -64,4 +66,6 @@ void Scene::findIntersections(const Math::Ray &ray, std::vector<Intersection> &i
 	}
 
 	std::sort(intersections.begin(), intersections.end());
+}
+
 }

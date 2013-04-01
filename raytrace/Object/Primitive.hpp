@@ -4,7 +4,7 @@
 #include "Object/Object.hpp"
 #include "intersection.h"
 #include "Math/Ray.hpp"
-#include "texture.h"
+#include "Object/Texture.hpp"
 
 #include <vector>
 

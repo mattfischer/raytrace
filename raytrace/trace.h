@@ -2,7 +2,7 @@
 #define TRACE_H
 
 #include "color.h"
-#include "scene.h"
+#include "Object/Scene.hpp"
 
 #include "intersection.h"
 #include <vector>
@@ -20,11 +20,11 @@ public:
 		int maxRayGeneration;
 	};
 
-	Tracer(Scene *scene, const Settings &settings);
+	Tracer(Object::Scene *scene, const Settings &settings);
 	virtual ~Tracer();
 
-	Scene *scene() const;
-	void setScene(Scene *scene);
+	Object::Scene *scene() const;
+	void setScene(Object::Scene *scene);
 
 	Settings &settings();
 
@@ -34,7 +34,7 @@ protected:
 	Color doLighting(const Math::Ray &ray, const Intersection &intersection) const;
 	Color traceRay(const Math::Ray &ray) const;
 
-	Scene *mScene;
+	Object::Scene *mScene;
 	Settings mSettings;
 
 	mutable std::vector<Intersection> mIntersections;

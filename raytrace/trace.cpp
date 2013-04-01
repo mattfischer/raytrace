@@ -5,7 +5,7 @@
 
 #include <math.h>
 
-Tracer::Tracer(Scene *scene, const Settings &settings)
+Tracer::Tracer(Object::Scene *scene, const Settings &settings)
 {
 	mScene = scene;
 	mSettings = settings;
@@ -17,7 +17,7 @@ Tracer::~Tracer()
 		delete mScene;
 }
 
-Scene *Tracer::scene() const
+Object::Scene *Tracer::scene() const
 {
 	return mScene;
 }
@@ -27,7 +27,7 @@ Tracer::Settings &Tracer::settings()
 	return mSettings;
 }
 
-void Tracer::setScene(Scene *scene)
+void Tracer::setScene(Object::Scene *scene)
 {
 	mScene = scene;
 }
@@ -35,7 +35,7 @@ void Tracer::setScene(Scene *scene)
 Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection) const
 {
 	Math::Vector point(intersection.point());
-	Texture *texture = intersection.primitive()->texture();
+	Object::Texture *texture = intersection.primitive()->texture();
 	Color pointColor = texture->pointColor(intersection.objectPoint());
 
 	if(!mSettings.lighting) {

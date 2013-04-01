@@ -183,10 +183,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\finish.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\intersection.cpp"
 				>
 			</File>
@@ -199,15 +195,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\pigment.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\polysolve.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\scene.cpp"
 				>
 			</File>
 			<File
@@ -220,10 +208,6 @@
 			</File>
 			<File
 				RelativePath=".\scene.y"
-				>
-			</File>
-			<File
-				RelativePath=".\texture.cpp"
 				>
 			</File>
 			<File
@@ -270,11 +254,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Object\Finish.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Object\Light.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Object\Object.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Pigment.cpp"
 					>
 				</File>
 				<File
@@ -286,7 +278,33 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Object\Scene.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath=".\Object\Sphere.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Texture.cpp"
 					>
 				</File>
 				<File
@@ -313,10 +331,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\finish.h"
-				>
-			</File>
-			<File
 				RelativePath=".\intersection.h"
 				>
 			</File>
@@ -329,15 +343,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\scene.h"
-				>
-			</File>
-			<File
 				RelativePath=".\scene.tab.h"
-				>
-			</File>
-			<File
-				RelativePath=".\texture.h"
 				>
 			</File>
 			<File
@@ -392,11 +398,19 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Object\Finish.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Object\Light.hpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Object\Object.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Pigment.hpp"
 					>
 				</File>
 				<File
@@ -408,7 +422,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Object\Scene.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Object\Sphere.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Object\Texture.hpp"
 					>
 				</File>
 				<File

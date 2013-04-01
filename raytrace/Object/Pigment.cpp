@@ -1,8 +1,10 @@
-#include "pigment.h"
+#include "Object/Pigment.hpp"
 
 #include <math.h>
 
 #define EPSILON 0.01
+
+namespace Object {
 
 Pigment::Pigment()
 {
@@ -65,4 +67,6 @@ Color PigmentChecker::pointColor(const Math::Vector &point) const
 	{
 		return mColor2;
 	}
+}
+
 }

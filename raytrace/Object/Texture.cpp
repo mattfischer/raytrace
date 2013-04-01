@@ -1,4 +1,6 @@
-#include "texture.h"
+#include "Object/Texture.hpp"
+
+namespace Object {
 
 Texture::Texture(Pigment *pigment, Finish *finish)
 {
@@ -84,4 +86,6 @@ void Texture::setFinish(Finish *finish)
 Color Texture::pointColor(const Math::Vector &point) const
 {
 	return mPigment->pointColor(mTransformation.inverseTransformPoint(point));
+}
+
 }

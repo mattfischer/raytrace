@@ -143,7 +143,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 
 	InitCommonControls();
 
-	Scene *scene = buildScene();
+	Object::Scene *scene = buildScene();
 
 	Tracer::Settings settings;
 

@@ -2,9 +2,11 @@
 #define TEXTURE_H
 
 #include "Math/Transformation.hpp"
-#include "pigment.h"
-#include "finish.h"
+#include "Object/Pigment.hpp"
+#include "Object/Finish.hpp"
 #include "ast.h"
+
+namespace Object {
 
 class Texture
 {
@@ -32,4 +34,5 @@ protected:
 	Finish *mFinish;
 };
 
+}
 #endif

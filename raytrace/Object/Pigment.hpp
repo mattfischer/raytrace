@@ -5,6 +5,8 @@
 #include "Math/Vector.hpp"
 #include "ast.h"
 
+namespace Object {
+
 class Pigment
 {
 public:
@@ -40,5 +42,7 @@ protected:
 	Color mColor1;
 	Color mColor2;
 };
+
+}
 
 #endif

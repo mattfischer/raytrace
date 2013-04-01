@@ -1,8 +1,8 @@
 #ifndef BUILDSCENE_H
 #define BUILDSCENE_H
 
-#include "scene.h"
+#include "Object/Scene.hpp"
 
-Scene *buildScene();
+Object::Scene *buildScene();
 
 #endif

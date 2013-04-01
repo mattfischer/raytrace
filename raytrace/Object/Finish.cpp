@@ -1,10 +1,12 @@
-#include "finish.h"
+#include "Object/Finish.hpp"
 
 #define AMBIENT_DEFAULT 0
 #define DIFFUSE_DEFAULT 0.8
 #define SPECULAR_DEFAULT 0.0
 #define SPECULARPOWER_DEFAULT 50
 #define REFLECTION_DEFAULT 0
+
+namespace Object {
 
 Finish::Finish()
 {
@@ -100,4 +102,6 @@ double Finish::reflection() const
 void Finish::setReflection(double reflection)
 {
 	mReflection = reflection;
+}
+
 }

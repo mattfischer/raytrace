@@ -9,9 +9,9 @@ extern "C"
 	AST *parseScene(const char *filename);
 }
 
-Scene *buildScene()
+Object::Scene *buildScene()
 {
-	Scene *scene = new Scene;
+	Object::Scene *scene = new Object::Scene;
 
 	AST *tree = parseScene("scene.txt");
 
