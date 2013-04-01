@@ -1,19 +1,25 @@
-#ifndef TORUS_H
-#define TORUS_H
+#ifndef CONE_H
+#define CONE_H
 
-#include "Object/Primitive.hpp"
+#include "Object/Primitive/Base.hpp"
+#include "Parse/AST.h"
 
 namespace Object {
+namespace Primitive {
 
-class Torus : public Primitive
+class Cone : public Base
 {
 public:
-	Torus();
+	Cone();
+	~Cone();
+
+	static Cone *fromAst(AST *ast);
 
 protected:
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 	virtual bool doInside(const Math::Point &point) const;
 };
 
+}
 }
 #endif

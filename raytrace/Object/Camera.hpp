@@ -1,12 +1,12 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Object/Object.hpp"
+#include "Object/Base.hpp"
 #include "Math/Ray.hpp"
 
 namespace Object {
 
-class Camera : public Object
+class Camera : public Base
 {
 public:
 	Camera();

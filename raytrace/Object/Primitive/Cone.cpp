@@ -1,12 +1,13 @@
-#include "Object/Cone.hpp"
+#include "Object/Primitive/Cone.hpp"
 
-#include "Object/Disk.hpp"
+#include "Object/Primitive/Disk.hpp"
 
 #include <math.h>
 
 #define EPSILON 0.01
 
 namespace Object {
+namespace Primitive {
 
 Cone::Cone()
 {
@@ -80,4 +81,5 @@ bool Cone::doInside(const Math::Point &point) const
 	return point.z() <= 1 && point.x() * point.x() + point.y() * point.y() <= point.z() * point.z();
 }
 
+}
 }

@@ -1,12 +1,13 @@
-#include "Object/Cylinder.hpp"
+#include "Object/Primitive/Cylinder.hpp"
 
-#include "Object/Disk.hpp"
+#include "Object/Primitive/Disk.hpp"
 
 #include <math.h>
 
 #define EPSILON 0.01
 
 namespace Object {
+namespace Primitive {
 
 Cylinder::Cylinder()
 {
@@ -82,4 +83,5 @@ bool Cylinder::doInside(const Math::Point &point) const
 	return abs(point.z()) <= 1 && point.x() * point.x() + point.y() * point.y() <= 1;
 }
 
+}
 }

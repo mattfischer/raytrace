@@ -5,11 +5,11 @@
 
 namespace Object {
 
-class Object
+class Base
 {
 public:
-	Object();
-	virtual ~Object();
+	Base();
+	virtual ~Base();
 
 	void transform(const Math::Transformation &transform);
 	const Math::Transformation &transformation() const;

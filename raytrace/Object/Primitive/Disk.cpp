@@ -1,8 +1,9 @@
-#include "Object/Disk.hpp"
+#include "Object/Primitive/Disk.hpp"
 
-#include "Object/Plane.hpp"
+#include "Object/Primitive/Plane.hpp"
 
 namespace Object {
+namespace Primitive {
 
 Disk::Disk()
 {
@@ -12,7 +13,7 @@ Disk::~Disk()
 {
 }
 
-Trace::Intersection Disk::intersectDisk(const Primitive *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
+Trace::Intersection Disk::intersectDisk(const Base *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
 {
 	Trace::Intersection intersection;
 	Trace::Intersection planeIntersection = Plane::intersectPlane(primitive, ray, normal, displacement);
@@ -43,4 +44,5 @@ bool Disk::doInside(const Math::Point &point) const
 	return false;
 }
 
+}
 }

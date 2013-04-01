@@ -3,7 +3,7 @@
 
 #include "Object/Camera.hpp"
 #include "Object/Light.hpp"
-#include "Object/Primitive.hpp"
+#include "Object/Primitive/Base.hpp"
 
 #include "Trace/Intersection.hpp"
 
@@ -25,15 +25,15 @@ public:
 	const std::vector<Light*> &lights() const;
 	void addLight(Light *light);
 
-	const std::vector<Primitive*> &primitives() const;
-	void addPrimitive(Primitive *primitive);
+	const std::vector<Primitive::Base*> &primitives() const;
+	void addPrimitive(Primitive::Base *primitive);
 
 	void findIntersections(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections);
 
 protected:
 	Camera *mCamera;
 	std::vector<Light*> mLights;
-	std::vector<Primitive*> mPrimitives;
+	std::vector<Primitive::Base*> mPrimitives;
 };
 
 }

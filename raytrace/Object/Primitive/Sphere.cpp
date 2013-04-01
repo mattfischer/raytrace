@@ -1,4 +1,4 @@
-#include "Object/Sphere.hpp"
+#include "Object/Primitive/Sphere.hpp"
 #include "Math/Transformation.hpp"
 
 #include <math.h>
@@ -6,6 +6,7 @@
 #define EPSILON 0.0001
 
 namespace Object {
+namespace Primitive {
 
 Sphere::Sphere()
 {
@@ -52,4 +53,5 @@ bool Sphere::doInside(const Math::Point &point) const
 	return point.vector().magnitude2() <= 1;
 }
 
+}
 }

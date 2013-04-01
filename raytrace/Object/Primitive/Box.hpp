@@ -1,12 +1,13 @@
 #ifndef BOX_H
 #define BOX_H
 
-#include "Object/Primitive.hpp"
+#include "Object/Primitive/Base.hpp"
 #include "Parse/AST.h"
 
 namespace Object {
+namespace Primitive {
 
-class Box : public Primitive
+class Box : public Base
 {
 public:
 	Box();
@@ -20,5 +21,6 @@ protected:
 	void testIntersect(const Math::Ray &ray, const Math::Vector &normal, std::vector<Trace::Intersection> &intersections) const;
 };
 
+}
 }
 #endif

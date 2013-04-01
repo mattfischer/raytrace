@@ -1,29 +1,30 @@
-#include "Object/Primitive.hpp"
+#include "Object/Primitive/Base.hpp"
 
-#include "Object/Sphere.hpp"
-#include "Object/Box.hpp"
-#include "Object/Plane.hpp"
-#include "Object/Cone.hpp"
-#include "Object/Disk.hpp"
-#include "Object/Cylinder.hpp"
-#include "Object/Csg.hpp"
+#include "Object/Primitive/Sphere.hpp"
+#include "Object/Primitive/Box.hpp"
+#include "Object/Primitive/Plane.hpp"
+#include "Object/Primitive/Cone.hpp"
+#include "Object/Primitive/Disk.hpp"
+#include "Object/Primitive/Cylinder.hpp"
+#include "Object/Primitive/Csg.hpp"
 
 namespace Object {
+namespace Primitive {
 
-Primitive::Primitive()
+Base::Base()
 {
 	mTexture = 0;
 }
 
-Primitive::~Primitive()
+Base::~Base()
 {
 	if(mTexture)
 		delete mTexture;
 }
 
-Primitive *Primitive::fromAst(AST *ast)
+Base *Base::fromAst(AST *ast)
 {
-	Primitive *primitive;
+	Base *primitive;
 	AST *sub = ast->children[0];
 
 	switch(sub->type)
@@ -66,12 +67,12 @@ Primitive *Primitive::fromAst(AST *ast)
 	return primitive;
 }
 
-Texture *Primitive::texture() const 
+Texture *Base::texture() const 
 { 
 	return mTexture; 
 }
 
-void Primitive::setTexture(Texture *texture)
+void Base::setTexture(Texture *texture)
 {
 	if(mTexture)
 		delete mTexture;
@@ -79,18 +80,19 @@ void Primitive::setTexture(Texture *texture)
 	mTexture = texture;
 }
 
-void Primitive::intersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Base::intersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	Math::Ray transformedRay = mTransformation.inverseTransformRay(ray);
 
 	doIntersect(transformedRay, intersections);
 }
 
-bool Primitive::inside(const Math::Point &point) const
+bool Base::inside(const Math::Point &point) const
 {
 	Math::Point transformedPoint = mTransformation.inverseTransformPoint(point);
 
 	return doInside(transformedPoint);
 }
 
+}
 }

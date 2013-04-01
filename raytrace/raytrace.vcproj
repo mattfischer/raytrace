@@ -198,8 +198,26 @@
 				Name="Object"
 				>
 				<File
-					RelativePath=".\Object\Box.cpp"
+					RelativePath=".\Object\Base.cpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\Object\Camera.cpp"
@@ -207,22 +225,6 @@
 				</File>
 				<File
 					RelativePath=".\Object\Color.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Cone.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Csg.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Cylinder.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Disk.cpp"
 					>
 				</File>
 				<File
@@ -234,19 +236,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Object\Object.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Pigment.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Plane.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Primitive.cpp"
 					>
 				</File>
 				<File
@@ -272,17 +262,49 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\Object\Sphere.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Texture.cpp"
 					>
 				</File>
-				<File
-					RelativePath=".\Object\Torus.cpp"
+				<Filter
+					Name="Primitive"
 					>
-				</File>
+					<File
+						RelativePath=".\Object\Primitive\Base.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Box.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Cone.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Csg.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Cylinder.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Disk.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Plane.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Sphere.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Torus.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Trace"
@@ -362,7 +384,7 @@
 				Name="Object"
 				>
 				<File
-					RelativePath=".\Object\Box.hpp"
+					RelativePath=".\Object\Base.hpp"
 					>
 				</File>
 				<File
@@ -374,22 +396,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Object\Cone.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Csg.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Cylinder.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Disk.hpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Finish.hpp"
 					>
 				</File>
@@ -398,19 +404,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Object\Object.hpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Pigment.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Plane.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Primitive.hpp"
 					>
 				</File>
 				<File
@@ -418,17 +412,49 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Object\Sphere.hpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Texture.hpp"
 					>
 				</File>
-				<File
-					RelativePath=".\Object\Torus.hpp"
+				<Filter
+					Name="Primitive"
 					>
-				</File>
+					<File
+						RelativePath=".\Object\Primitive\Base.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Box.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Cone.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Csg.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Cylinder.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Disk.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Plane.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Sphere.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Object\Primitive\Torus.hpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Trace"

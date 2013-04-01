@@ -1,23 +1,23 @@
-#ifndef CYLINDER_H
-#define CYLINDER_H
+#ifndef SPHERE_H
+#define SPHERE_H
 
-#include "Object/Primitive.hpp"
+#include "Object/Primitive/Base.hpp"
 #include "Parse/AST.h"
 
 namespace Object {
+namespace Primitive {
 
-class Cylinder : public Primitive
+class Sphere : public Base
 {
 public:
-	Cylinder();
-	~Cylinder();
-
-	static Cylinder *fromAst(AST *ast);
+	Sphere();
+	static Sphere *fromAst(AST *ast);
 
 protected:
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 	virtual bool doInside(const Math::Point &point) const;
 };
 
+}
 }
 #endif

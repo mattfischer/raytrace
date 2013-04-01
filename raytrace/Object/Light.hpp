@@ -1,12 +1,12 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "Object/Object.hpp"
+#include "Object/Base.hpp"
 #include "Object/Color.hpp"
 
 namespace Object {
 
-class Light : public Object
+class Light : public Base
 {
 public:
 	Light();

@@ -1,9 +1,10 @@
-#include "Object/Torus.hpp"
+#include "Object/Primitive/Torus.hpp"
 #include "Math/PolySolve.hpp"
 
 #include <math.h>
 
 namespace Object {
+namespace Primitive {
 
 Torus::Torus()
 {
@@ -98,4 +99,5 @@ bool Torus::doInside(const Math::Point &point) const
 	return false;
 }
 
+}
 }

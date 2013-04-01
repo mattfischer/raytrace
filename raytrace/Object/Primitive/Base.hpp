@@ -1,7 +1,7 @@
 #ifndef PRIMITIVE_H
 #define PRIMITIVE_H
 
-#include "Object/Object.hpp"
+#include "Object/Base.hpp"
 #include "Trace/Intersection.hpp"
 #include "Math/Ray.hpp"
 #include "Math/Point.hpp"
@@ -10,14 +10,15 @@
 #include <vector>
 
 namespace Object {
+namespace Primitive {
 
-class Primitive : public Object
+class Base : public Object::Base
 {
 public:
-	Primitive();
-	virtual ~Primitive();
+	Base();
+	virtual ~Base();
 
-	static Primitive *fromAst(AST *ast);
+	static Base *fromAst(AST *ast);
 
 	Texture *texture() const;
 	void setTexture(Texture *texture);
@@ -33,4 +34,6 @@ protected:
 };
 
 }
+}
+
 #endif

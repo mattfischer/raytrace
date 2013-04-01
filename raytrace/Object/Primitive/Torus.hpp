@@ -1,21 +1,21 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#ifndef TORUS_H
+#define TORUS_H
 
-#include "Object/Primitive.hpp"
-#include "Parse/AST.h"
+#include "Object/Primitive/Base.hpp"
 
 namespace Object {
+namespace Primitive {
 
-class Sphere : public Primitive
+class Torus : public Base
 {
 public:
-	Sphere();
-	static Sphere *fromAst(AST *ast);
+	Torus();
 
 protected:
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 	virtual bool doInside(const Math::Point &point) const;
 };
 
+}
 }
 #endif

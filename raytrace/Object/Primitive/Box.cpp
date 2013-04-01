@@ -1,10 +1,11 @@
-#include "Object/Box.hpp"
+#include "Object/Primitive/Box.hpp"
 
-#include "Object/Plane.hpp"
+#include "Object/Primitive/Plane.hpp"
 
 #include <math.h>
 
 namespace Object {
+namespace Primitive {
 
 Box::Box()
 {
@@ -54,4 +55,5 @@ bool Box::doInside(const Math::Point &point) const
 	return abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1;
 }
 
+}
 }

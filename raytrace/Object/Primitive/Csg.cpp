@@ -1,6 +1,7 @@
-#include "Object/Csg.hpp"
+#include "Object/Primitive/Csg.hpp"
 
 namespace Object {
+namespace Primitive {
 
 Csg::Csg() :
 	mPrimitive1(0),
@@ -34,11 +35,11 @@ Csg *Csg::fromAst(AST *ast)
 		case AstPrimitive:
 			if(csg->primitive1() == 0)
 			{
-				csg->setPrimitive1(Primitive::fromAst(ast->children[i]));
+				csg->setPrimitive1(Primitive::Base::fromAst(ast->children[i]));
 			}
 			else
 			{
-				csg->setPrimitive2(Primitive::fromAst(ast->children[i]));
+				csg->setPrimitive2(Primitive::Base::fromAst(ast->children[i]));
 			}
 			break;
 
@@ -51,22 +52,22 @@ Csg *Csg::fromAst(AST *ast)
 	return csg;
 }
 
-Primitive *Csg::primitive1()
+Base *Csg::primitive1()
 {
 	return mPrimitive1;
 }
 
-void Csg::setPrimitive1(Primitive *primitive1)
+void Csg::setPrimitive1(Base *primitive1)
 {
 	mPrimitive1 = primitive1;
 }
 
-Primitive *Csg::primitive2()
+Base *Csg::primitive2()
 {
 	return mPrimitive2;
 }
 
-void Csg::setPrimitive2(Primitive *primitive2)
+void Csg::setPrimitive2(Base *primitive2)
 {
 	mPrimitive2 = primitive2;
 }
@@ -142,4 +143,5 @@ void Csg::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &in
 	}
 }
 
+}
 }

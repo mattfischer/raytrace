@@ -1,10 +1,11 @@
-#include "Object/Plane.hpp"
+#include "Object/Primitive/Plane.hpp"
 
 #include <math.h>
 
 #define EPSILON .01
 
 namespace Object {
+namespace Primitive {
 
 Plane::Plane()
 {
@@ -15,7 +16,7 @@ Plane *Plane::fromAst(AST *ast)
 	return new Plane;
 }
 
-Trace::Intersection Plane::intersectPlane(const Primitive *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
+Trace::Intersection Plane::intersectPlane(const Base *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
 {
 	double scale;
 
@@ -52,4 +53,5 @@ bool Plane::doInside(const Math::Point &point) const
 	return point.y() <= 0;
 }
 
+}
 }

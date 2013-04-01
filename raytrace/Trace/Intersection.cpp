@@ -1,6 +1,6 @@
 #include "Trace/Intersection.hpp"
 
-#include "Object/Primitive.hpp"
+#include "Object/Primitive/Base.hpp"
 
 namespace Trace {
 
@@ -9,7 +9,7 @@ Intersection::Intersection()
 	mValid = false;
 }
 
-Intersection::Intersection(const Object::Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Point &objectPoint)
+Intersection::Intersection(const Object::Primitive::Base *primitive, double distance, const Math::Vector &objectNormal, const Math::Point &objectPoint)
 {
 	mValid = true;
 	mPrimitive = primitive;
@@ -68,12 +68,12 @@ void Intersection::setValid(bool valid)
 	mValid = valid;
 }
 
-const Object::Primitive *Intersection::primitive() const
+const Object::Primitive::Base *Intersection::primitive() const
 {
 	return mPrimitive;
 }
 
-void Intersection::setPrimitive(const Object::Primitive *primitive)
+void Intersection::setPrimitive(const Object::Primitive::Base *primitive)
 {
 	mPrimitive = primitive;
 }

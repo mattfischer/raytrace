@@ -5,7 +5,9 @@
 #include "Math/Transformation.hpp"
 
 namespace Object {
-class Primitive;
+namespace Primitive {
+class Base;
+}
 }
 
 namespace Trace {
@@ -14,15 +16,15 @@ class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Object::Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Point &objectPoint);
+	Intersection(const Object::Primitive::Base *primitive, double distance, const Math::Vector &objectNormal, const Math::Point &objectPoint);
 	Intersection(const Intersection &c);
 	Intersection &operator=(const Intersection &c);
 
 	bool valid() const;
 	void setValid(bool valid);
 
-	const Object::Primitive *primitive() const;
-	void setPrimitive(const Object::Primitive *primitive);
+	const Object::Primitive::Base *primitive() const;
+	void setPrimitive(const Object::Primitive::Base *primitive);
 
 	double distance() const;
 	void setDistance(double distance);
@@ -46,7 +48,7 @@ public:
 
 protected:
 	bool mValid;
-	const Object::Primitive *mPrimitive;
+	const Object::Primitive::Base *mPrimitive;
 	double mDistance;
 	Math::Vector mObjectNormal;
 	Math::Point mObjectPoint;

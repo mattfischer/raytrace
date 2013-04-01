@@ -34,7 +34,7 @@ Scene *Scene::fromAST(AST *ast)
 		switch(child->type)
 		{
 		case AstPrimitive:
-			scene->addPrimitive(Primitive::fromAst(child));
+			scene->addPrimitive(Primitive::Base::fromAst(child));
 			break;
 		case AstLight:
 			scene->addLight(Light::fromAst(child));
@@ -71,12 +71,12 @@ void Scene::addLight(Light *light)
 	mLights.push_back(light);
 }
 
-const std::vector<Primitive*> &Scene::primitives() const
+const std::vector<Primitive::Base*> &Scene::primitives() const
 {
 	return mPrimitives;
 }
 
-void Scene::addPrimitive(Primitive *primitive)
+void Scene::addPrimitive(Primitive::Base *primitive)
 {
 	mPrimitives.push_back(primitive);
 }
