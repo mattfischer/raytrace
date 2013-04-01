@@ -18,7 +18,7 @@ Box *Box::fromAst(AST *ast)
 void Box::testIntersect(const Math::Ray &ray, const Math::Vector &normal, std::vector<Trace::Intersection> &intersections) const
 {
 	Trace::Intersection newIntersection = Plane::intersectPlane(this, ray, normal, 1);
-	Math::Vector point;
+	Math::Point point;
 
 	if(newIntersection.valid())
 	{
@@ -35,11 +35,11 @@ void Box::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &in
 {
 	Trace::Intersection intersection;
 	Trace::Intersection newIntersection;
-	Math::Vector point;
+	Math::Point point;
 
-	double t = -ray.origin() * ray.direction() / ray.direction().magnitude2();
-	Math::Vector v = ray.origin() + ray.direction() * t;
-	if(v.magnitude2()>3) return;
+	double t = -ray.origin().vector() * ray.direction() / ray.direction().magnitude2();
+	Math::Point v = ray.origin() + ray.direction() * t;
+	if(v.vector().magnitude2()>3) return;
 
 	testIntersect(ray, Math::Vector(1,0,0), intersections);
 	testIntersect(ray, Math::Vector(-1,0,0), intersections);
@@ -49,7 +49,7 @@ void Box::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &in
 	testIntersect(ray, Math::Vector(0,0,-1), intersections);
 }
 
-bool Box::doInside(const Math::Vector &point) const
+bool Box::doInside(const Math::Point &point) const
 {
 	return abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1;
 }

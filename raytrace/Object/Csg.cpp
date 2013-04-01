@@ -81,7 +81,7 @@ void Csg::setType(Type type)
 	mType = type;
 }
 
-bool Csg::doInside(const Math::Vector &point) const
+bool Csg::doInside(const Math::Point &point) const
 {
 	switch(mType)
 	{

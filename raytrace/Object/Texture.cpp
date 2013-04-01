@@ -83,7 +83,7 @@ void Texture::setFinish(Finish *finish)
 	mFinish = finish;
 }
 
-Color Texture::pointColor(const Math::Vector &point) const
+Color Texture::pointColor(const Math::Point &point) const
 {
 	return mPigment->pointColor(mTransformation.inverseTransformPoint(point));
 }

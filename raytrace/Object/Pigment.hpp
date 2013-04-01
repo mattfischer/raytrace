@@ -2,6 +2,7 @@
 #define PIGMENT_H
 
 #include "Object/Color.hpp"
+#include "Math/Point.hpp"
 #include "Math/Vector.hpp"
 #include "Parse/AST.h"
 
@@ -15,7 +16,7 @@ public:
 
 	static Pigment *fromAst(AST *ast);
 
-	virtual Color pointColor(const Math::Vector &point) const = 0;
+	virtual Color pointColor(const Math::Point &point) const = 0;
 };
 
 class PigmentSolid : public Pigment
@@ -24,7 +25,7 @@ public:
 	PigmentSolid(const Color &color);
 	virtual ~PigmentSolid();
 
-	virtual Color pointColor(const Math::Vector &point) const;
+	virtual Color pointColor(const Math::Point &point) const;
 
 protected:
 	Color mColor;
@@ -36,7 +37,7 @@ public:
 	PigmentChecker(const Color &color1, const Color &color2);
 	virtual ~PigmentChecker();
 
-	virtual Color pointColor(const Math::Vector &point) const;
+	virtual Color pointColor(const Math::Point &point) const;
 
 protected:
 	Color mColor1;

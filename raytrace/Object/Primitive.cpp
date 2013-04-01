@@ -86,9 +86,9 @@ void Primitive::intersect(const Math::Ray &ray, std::vector<Trace::Intersection>
 	doIntersect(transformedRay, intersections);
 }
 
-bool Primitive::inside(const Math::Vector &point) const
+bool Primitive::inside(const Math::Point &point) const
 {
-	Math::Vector transformedPoint = mTransformation.inverseTransformPoint(point);
+	Math::Point transformedPoint = mTransformation.inverseTransformPoint(point);
 
 	return doInside(transformedPoint);
 }

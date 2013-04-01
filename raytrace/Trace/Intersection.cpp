@@ -9,7 +9,7 @@ Intersection::Intersection()
 	mValid = false;
 }
 
-Intersection::Intersection(const Object::Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Vector &objectPoint)
+Intersection::Intersection(const Object::Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Point &objectPoint)
 {
 	mValid = true;
 	mPrimitive = primitive;
@@ -108,7 +108,7 @@ void Intersection::setObjectNormal(const Math::Vector &objectNormal)
 	mObjectNormal = objectNormal;
 }
 
-const Math::Vector &Intersection::point() const
+const Math::Point &Intersection::point() const
 {
 	if(!mTransformed)
 		doTransform();
@@ -116,12 +116,12 @@ const Math::Vector &Intersection::point() const
 	return mPoint;
 }
 
-const Math::Vector &Intersection::objectPoint() const
+const Math::Point &Intersection::objectPoint() const
 {
 	return mObjectPoint;
 }
 
-void Intersection::setObjectPoint(const Math::Vector &objectPoint) 
+void Intersection::setObjectPoint(const Math::Point &objectPoint) 
 {
 	mTransformed = false;
 

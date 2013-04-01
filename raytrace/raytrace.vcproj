@@ -327,7 +327,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\resource.h"
+				RelativePath=".\Resource.h"
 				>
 			</File>
 			<Filter
@@ -335,6 +335,10 @@
 				>
 				<File
 					RelativePath=".\Math\Matrix.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\Point.hpp"
 					>
 				</File>
 				<File

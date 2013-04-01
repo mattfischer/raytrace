@@ -37,11 +37,11 @@ void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection
 
 		if(distance > EPSILON)
 		{
-			Math::Vector point = ray.origin() + ray.direction() * distance;
+			Math::Point point = ray.origin() + ray.direction() * distance;
 			
 			if(abs(point.z()) <= 1)
 			{
-				Math::Vector normal = point;
+				Math::Vector normal = point.vector();
 				normal.setZ(0);
 				normal = normal.normalize();
 				
@@ -53,11 +53,11 @@ void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection
 
 		if(distance > EPSILON)
 		{
-			Math::Vector point = ray.origin() + ray.direction() * distance;
+			Math::Point point = ray.origin() + ray.direction() * distance;
 			
 			if(abs(point.z()) <= 1)
 			{
-				Math::Vector normal = point;
+				Math::Vector normal = point.vector();
 				normal.setZ(0);
 				normal = normal.normalize();
 				
@@ -77,7 +77,7 @@ void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection
 		intersections.push_back(intersection);
 }
 
-bool Cylinder::doInside(const Math::Vector &point) const
+bool Cylinder::doInside(const Math::Point &point) const
 {
 	return abs(point.z()) <= 1 && point.x() * point.x() + point.y() * point.y() <= 1;
 }

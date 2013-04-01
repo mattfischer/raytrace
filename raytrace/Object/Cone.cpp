@@ -37,11 +37,11 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &i
 
 		if(distance > EPSILON)
 		{
-			Math::Vector point = ray.origin() + ray.direction() * distance;
+			Math::Point point = ray.origin() + ray.direction() * distance;
 			
 			if(point.z() >= 0 && point.z() <= 1)
 			{
-				Math::Vector normal(point);
+				Math::Vector normal = point.vector();
 				normal.setZ(0);
 				normal = normal.normalize();
 				normal.setZ(-1);
@@ -55,11 +55,11 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &i
 
 		if(distance > EPSILON)
 		{
-			Math::Vector point = ray.origin() + ray.direction() * distance;
+			Math::Point point = ray.origin() + ray.direction() * distance;
 			
 			if(point.z() >= 0 && point.z() <= 1)
 			{
-				Math::Vector normal(point);
+				Math::Vector normal = point.vector();
 				normal.setZ(0);
 				normal = normal.normalize();
 				normal.setZ(-1);
@@ -75,7 +75,7 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &i
 		intersections.push_back(intersection);
 }
 
-bool Cone::doInside(const Math::Vector &point) const
+bool Cone::doInside(const Math::Point &point) const
 {
 	return point.z() <= 1 && point.x() * point.x() + point.y() * point.y() <= point.z() * point.z();
 }

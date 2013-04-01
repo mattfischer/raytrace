@@ -37,7 +37,7 @@ PigmentSolid::~PigmentSolid()
 {
 }
 
-Color PigmentSolid::pointColor(const Math::Vector &point) const
+Color PigmentSolid::pointColor(const Math::Point &point) const
 {
 	return mColor;
 }
@@ -51,7 +51,7 @@ PigmentChecker::~PigmentChecker()
 {
 }
 
-Color PigmentChecker::pointColor(const Math::Vector &point) const
+Color PigmentChecker::pointColor(const Math::Point &point) const
 {
 	int x = (int)abs(point.x() + EPSILON) + ((point.x() + EPSILON > 0)?1:0);
 	int y = (int)abs(point.y() + EPSILON) + ((point.y() + EPSILON > 0)?1:0);

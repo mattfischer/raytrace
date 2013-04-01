@@ -87,13 +87,13 @@ void Torus::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &
 		if(results[i] == HUGE_VAL) continue;
 		if(results[i] < 0.01) continue;
 
-		Math::Vector point = ray.origin() + ray.direction() * results[i];
+		Math::Point point = ray.origin() + ray.direction() * results[i];
 		
-		intersections.push_back(Trace::Intersection(this, results[i], point, point));
+		intersections.push_back(Trace::Intersection(this, results[i], point.vector(), point));
 	}
 }
 
-bool Torus::doInside(const Math::Vector &point) const
+bool Torus::doInside(const Math::Point &point) const
 {
 	return false;
 }

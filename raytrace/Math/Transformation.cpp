@@ -189,22 +189,22 @@ const Matrix &Transformation::inverseMatrixTranspose() const
 	return mInverseMatrixTranspose;
 }
 
-const Vector &Transformation::origin() const
+const Point &Transformation::origin() const
 {
 	return mOrigin;
 }
 
-const Vector &Transformation::inverseOrigin() const
+const Point &Transformation::inverseOrigin() const
 {
 	return mInverseOrigin;
 }
 
-const Vector &Transformation::transposeOrigin() const
+const Point &Transformation::transposeOrigin() const
 {
 	return mTransposeOrigin;
 }
 
-const Vector &Transformation::inverseTransposeOrigin() const
+const Point &Transformation::inverseTransposeOrigin() const
 {
 	return mInverseTransposeOrigin;
 }
@@ -214,19 +214,19 @@ Matrix Transformation::transformMatrix(const Matrix &matrix) const
 	return mMatrix * matrix;
 }
 
-Vector Transformation::transformPoint(const Vector &point) const
+Point Transformation::transformPoint(const Point &point) const
 {
 	return mMatrix * point;
 }
 
 Vector Transformation::transformDirection(const Vector &direction) const
 {
-	return mMatrix.multiply(direction, false);
+	return mMatrix * direction;
 }
 
 Vector Transformation::transformNormal(const Vector &normal) const
 {
-	return mInverseMatrixTranspose.multiply(normal, false).normalize();
+	return (mInverseMatrixTranspose * normal).normalize();
 }
 
 Ray Transformation::transformRay(const Ray &ray) const
@@ -244,19 +244,19 @@ Matrix Transformation::inverseTransformMatrix(const Matrix &matrix) const
 	return mInverseMatrix * matrix;
 }
 
-Vector Transformation::inverseTransformPoint(const Vector &point) const
+Point Transformation::inverseTransformPoint(const Point &point) const
 {
 	return mInverseMatrix * point;
 }
 
 Vector Transformation::inverseTransformDirection(const Vector &direction) const
 {
-	return mInverseMatrix.multiply(direction, false);
+	return mInverseMatrix * direction;
 }
 
 Vector Transformation::inverseTransformNormal(const Vector &normal) const
 {
-	return mMatrixTranspose.multiply(normal, false).normalize();
+	return (mMatrixTranspose * normal).normalize();
 }
 
 Ray Transformation::inverseTransformRay(const Ray &ray) const

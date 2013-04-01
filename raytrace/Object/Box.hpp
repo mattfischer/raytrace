@@ -15,7 +15,7 @@ public:
 
 protected:
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
-	virtual bool doInside(const Math::Vector &point) const;
+	virtual bool doInside(const Math::Point &point) const;
 
 	void testIntersect(const Math::Ray &ray, const Math::Vector &normal, std::vector<Trace::Intersection> &intersections) const;
 };

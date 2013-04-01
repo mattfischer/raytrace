@@ -3,7 +3,7 @@
 
 #include "Trace/Tracer.hpp"
 #include "Parse/Parser.hpp"
-#include "resource.h"
+#include "Resource.h"
 
 #define CLASSNAME "raytrace"
 

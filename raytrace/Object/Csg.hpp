@@ -33,7 +33,7 @@ protected:
 	Primitive *mPrimitive2;
 	Type mType;
 
-	virtual bool doInside(const Math::Vector &point) const;
+	virtual bool doInside(const Math::Point &point) const;
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 };
 

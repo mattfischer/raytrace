@@ -14,7 +14,7 @@ class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Object::Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Vector &objectPoint);
+	Intersection(const Object::Primitive *primitive, double distance, const Math::Vector &objectNormal, const Math::Point &objectPoint);
 	Intersection(const Intersection &c);
 	Intersection &operator=(const Intersection &c);
 
@@ -32,10 +32,10 @@ public:
 	const Math::Vector &objectNormal() const;
 	void setObjectNormal(const Math::Vector &objectNormal);
 
-	const Math::Vector &point() const;
+	const Math::Point &point() const;
 
-	const Math::Vector &objectPoint() const;
-	void setObjectPoint(const Math::Vector &objectPoint);
+	const Math::Point &objectPoint() const;
+	void setObjectPoint(const Math::Point &objectPoint);
 
 	const Intersection &nearest(const Intersection &b) const;
 	
@@ -49,8 +49,8 @@ protected:
 	const Object::Primitive *mPrimitive;
 	double mDistance;
 	Math::Vector mObjectNormal;
-	Math::Vector mObjectPoint;
-	mutable Math::Vector mPoint;
+	Math::Point mObjectPoint;
+	mutable Math::Point mPoint;
 	mutable Math::Vector mNormal;
 	mutable bool mTransformed;
 	Math::Transformation mTransformation;

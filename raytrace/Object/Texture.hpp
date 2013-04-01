@@ -25,7 +25,7 @@ public:
 	Finish *finish() const;
 	void setFinish(Finish *finish);
 
-	Color pointColor(const Math::Vector &point) const;
+	Color pointColor(const Math::Point &point) const;
 
 protected:
 	Math::Transformation mTransformation;

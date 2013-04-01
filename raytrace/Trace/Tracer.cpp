@@ -36,7 +36,7 @@ void Tracer::setScene(Object::Scene *scene)
 
 Object::Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection) const
 {
-	Math::Vector point(intersection.point());
+	Math::Point point(intersection.point());
 	Object::Texture *texture = intersection.primitive()->texture();
 	Object::Color pointColor = texture->pointColor(intersection.objectPoint());
 

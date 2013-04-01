@@ -7,7 +7,7 @@ Ray::Ray()
 	mGeneration = 1;
 }
 
-Ray::Ray(const Vector &origin, const Vector &direction)
+Ray::Ray(const Point &origin, const Vector &direction)
 {
 	mOrigin = origin;
 	mDirection = direction;
@@ -30,12 +30,12 @@ Ray &Ray::operator=(const Ray &c)
 	return *this;
 }
 
-Ray Ray::createFromPoints(const Vector &point1, const Vector &point2)
+Ray Ray::createFromPoints(const Point &point1, const Point &point2)
 {
 	return Ray(point1, (point2 - point1).normalize());
 }
 
-void Ray::setOrigin(const Vector &origin)
+void Ray::setOrigin(const Point &origin)
 {
 	mOrigin = origin;
 }

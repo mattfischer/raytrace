@@ -19,11 +19,11 @@ Trace::Intersection Disk::intersectDisk(const Primitive *primitive, const Math::
 
 	if(planeIntersection.valid())
 	{
-		Math::Vector point = planeIntersection.objectPoint();
+		Math::Point point = planeIntersection.objectPoint();
 
-		point = point - normal * (point * normal);
+		point = point - normal * (point.vector() * normal);
 
-		if(point.magnitude2() <= 1)
+		if(point.vector().magnitude2() <= 1)
 			intersection = planeIntersection;
 	}
 
@@ -38,7 +38,7 @@ void Disk::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &i
 		intersections.push_back(intersection);
 }
 
-bool Disk::doInside(const Math::Vector &point) const
+bool Disk::doInside(const Math::Point &point) const
 {
 	return false;
 }

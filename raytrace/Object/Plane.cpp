@@ -19,11 +19,11 @@ Trace::Intersection Plane::intersectPlane(const Primitive *primitive, const Math
 {
 	double scale;
 
-	scale = (ray.origin() * normal - displacement) / (ray.direction() * -normal);
+	scale = (ray.origin().vector() * normal - displacement) / (ray.direction() * -normal);
 	if(scale > EPSILON)
 	{
-		Math::Vector point = ray.origin() + ray.direction() * scale;
-		point = point - normal * (point * normal - displacement);
+		Math::Point point = ray.origin() + ray.direction() * scale;
+		point = point - normal * (point.vector() * normal - displacement);
 
 		return Trace::Intersection(primitive, scale, normal, point);
 	}
@@ -41,13 +41,13 @@ void Plane::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &
 	scale = -ray.origin().y() / ray.direction().y();
 	if(scale > EPSILON)
 	{
-		Math::Vector point = ray.origin() + ray.direction() * scale;
+		Math::Point point = ray.origin() + ray.direction() * scale;
 
 		intersections.push_back(Trace::Intersection(this, scale, Math::Vector(0,1,0), point));
 	}
 }
 
-bool Plane::doInside(const Math::Vector &point) const
+bool Plane::doInside(const Math::Point &point) const
 {
 	return point.y() <= 0;
 }

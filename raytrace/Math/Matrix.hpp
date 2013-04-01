@@ -1,6 +1,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include "Math/Point.hpp"
 #include "Math/Vector.hpp"
 
 namespace Math {
@@ -71,9 +72,9 @@ public:
 		return at(x, y);
 	}
 
-	Vector origin() const
+	Point origin() const
 	{
-		return Vector(at(3,0), at(3,1), at(3,2));
+		return Point(at(3,0), at(3,1), at(3,2));
 	}
 
 	Matrix transpose() const
@@ -138,7 +139,32 @@ public:
 
 	Vector operator*(const Vector &b) const
 	{
-		return multiply(b, true);
+		if(mIdentity) return b;
+
+		Vector r;
+
+		for(int i=0; i<3; i++)
+		{
+			for(int k=0; k<3; k++)
+				r(i) += at(k, i) * b(k);
+		}
+
+		return r;
+	}
+
+	Point operator*(const Point &b) const
+	{
+		if(mIdentity) return b;
+
+		Point r = Point(at(3,0), at(3,1), at(3,2));
+
+		for(int i=0; i<3; i++)
+		{
+			for(int k=0; k<3; k++)
+				r(i) += at(k, i) * b(k);
+		}
+
+		return r;	
 	}
 
 protected:
