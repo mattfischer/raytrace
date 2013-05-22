@@ -127,13 +127,13 @@ Transformation Transformation::fromAst(AST *ast)
 		switch(ast->children[i]->type)
 		{
 		case AstTranslate:
-			t = translate(ast->children[i]->data._vector).transformTransformation(t);
+			t = translate(Math::Vector(ast->children[i]->data._vector)).transformTransformation(t);
 			break;
 		case AstRotate:
-			t = rotate(ast->children[i]->data._vector).transformTransformation(t);
+			t = rotate(Math::Vector(ast->children[i]->data._vector)).transformTransformation(t);
 			break;
 		case AstScale:
-			t = scale(ast->children[i]->data._vector).transformTransformation(t);
+			t = scale(Math::Vector(ast->children[i]->data._vector)).transformTransformation(t);
 			break;
 		}
 	}

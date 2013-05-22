@@ -24,8 +24,8 @@ void Sphere::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> 
 	double disc;
 
 	a = ray.direction().magnitude2();
-	b = 2 * (ray.origin().vector() * ray.direction());
-	c = ray.origin().vector().magnitude2() - 1;
+	b = 2 * (Math::Vector(ray.origin()) * ray.direction());
+	c = Math::Vector(ray.origin()).magnitude2() - 1;
 
 	disc = b * b - 4 * a * c;
 	if(disc >= 0)
@@ -35,7 +35,7 @@ void Sphere::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> 
 		if(distance > EPSILON)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			intersections.push_back(Trace::Intersection(this, distance, point.vector(), point));
+			intersections.push_back(Trace::Intersection(this, distance, Math::Vector(point), point));
 		}
 
 		distance = (-b + sqrt(disc)) / (2 * a);
@@ -43,14 +43,14 @@ void Sphere::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> 
 		if(distance > EPSILON)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			intersections.push_back(Trace::Intersection(this, distance, point.vector(), point));
+			intersections.push_back(Trace::Intersection(this, distance, Math::Vector(point), point));
 		}
 	}
 }
 
 bool Sphere::doInside(const Math::Point &point) const
 {
-	return point.vector().magnitude2() <= 1;
+	return Math::Vector(point).magnitude2() <= 1;
 }
 
 }

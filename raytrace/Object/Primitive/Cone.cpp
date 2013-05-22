@@ -42,7 +42,7 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &i
 			
 			if(point.z() >= 0 && point.z() <= 1)
 			{
-				Math::Vector normal = point.vector();
+				Math::Vector normal(point);
 				normal.setZ(0);
 				normal = normal.normalize();
 				normal.setZ(-1);
@@ -60,7 +60,7 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &i
 			
 			if(point.z() >= 0 && point.z() <= 1)
 			{
-				Math::Vector normal = point.vector();
+				Math::Vector normal(point);
 				normal.setZ(0);
 				normal = normal.normalize();
 				normal.setZ(-1);

@@ -20,11 +20,11 @@ Trace::Intersection Plane::intersectPlane(const Base *primitive, const Math::Ray
 {
 	double scale;
 
-	scale = (ray.origin().vector() * normal - displacement) / (ray.direction() * -normal);
+	scale = (Math::Vector(ray.origin()) * normal - displacement) / (ray.direction() * -normal);
 	if(scale > EPSILON)
 	{
 		Math::Point point = ray.origin() + ray.direction() * scale;
-		point = point - normal * (point.vector() * normal - displacement);
+		point = point - normal * (Math::Vector(point) * normal - displacement);
 
 		return Trace::Intersection(primitive, scale, normal, point);
 	}

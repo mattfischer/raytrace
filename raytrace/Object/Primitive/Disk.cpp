@@ -22,9 +22,9 @@ Trace::Intersection Disk::intersectDisk(const Base *primitive, const Math::Ray &
 	{
 		Math::Point point = planeIntersection.objectPoint();
 
-		point = point - normal * (point.vector() * normal);
+		point = point - normal * (Math::Vector(point) * normal);
 
-		if(point.vector().magnitude2() <= 1)
+		if(Math::Vector(point).magnitude2() <= 1)
 			intersection = planeIntersection;
 	}
 
