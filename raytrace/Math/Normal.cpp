@@ -10,7 +10,7 @@ Normal::Normal(const Point &point)
 {
 }
 
-double Normal::operator*(const Normal &b) const
+float Normal::operator*(const Normal &b) const
 {
 	return x() * b.x() + y() * b.y() + z() * b.z();
 }
@@ -25,12 +25,12 @@ Normal Normal::operator-() const
 	return Normal(-x(), -y(), -z());
 }
 
-double Normal::operator*(const Vector &b) const
+float Normal::operator*(const Vector &b) const
 {
 	return x() * b.x() + y() * b.y() + z() * b.z();
 }
 
-double operator*(const Vector &vector, const Normal &normal)
+float operator*(const Vector &vector, const Normal &normal)
 {
 	return normal * vector;
 }

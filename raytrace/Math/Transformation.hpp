@@ -10,15 +10,15 @@ namespace Math {
 class Transformation
 {
 public:
-	static Transformation translate(double x, double y, double z);
+	static Transformation translate(float x, float y, float z);
 	static Transformation translate(const Vector &vector);
 
-	static Transformation scale(double x, double y, double z);
+	static Transformation scale(float x, float y, float z);
 	static Transformation scale(const Vector &vector);
 
-	static Transformation uniformScale(double factor);
+	static Transformation uniformScale(float factor);
 
-	static Transformation rotate(double x, double y, double z);
+	static Transformation rotate(float x, float y, float z);
 	static Transformation rotate(const Vector &vector);
 
 	static Transformation fromAst(AST *ast);

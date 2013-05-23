@@ -16,23 +16,23 @@ class Normal : public Coordinate
 public:
 	Normal();
 	Normal(const Normal &c);
-	Normal(double x, double y, double z);
+	Normal(float x, float y, float z);
 	explicit Normal(const ASTVector &astVector);
 	explicit Normal(const Point &point);
 	explicit Normal(const Coordinate &c);
 
-	double operator*(const Normal &b) const;
-	double operator*(const Vector &b) const;
+	float operator*(const Normal &b) const;
+	float operator*(const Vector &b) const;
 	Normal operator-() const;
 };
 
 Normal operator*(const Transformation &transformation, const Normal &normal);
-double operator*(const Vector &vector, const Normal &normal);
+float operator*(const Vector &vector, const Normal &normal);
 
 inline Normal::Normal()
 {}
 
-inline Normal::Normal(double x, double y, double z)
+inline Normal::Normal(float x, float y, float z)
 : Coordinate(x, y, z, 0)
 {
 }

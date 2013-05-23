@@ -38,7 +38,7 @@ void Box::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &i
 	Trace::Intersection newIntersection;
 	Math::Point point;
 
-	double t = -Math::Vector(ray.origin()) * ray.direction() / ray.direction().magnitude2();
+	float t = -Math::Vector(ray.origin()) * ray.direction() / ray.direction().magnitude2();
 	Math::Point v = ray.origin() + ray.direction() * t;
 	if(Math::Vector(v).magnitude2()>3) return;
 

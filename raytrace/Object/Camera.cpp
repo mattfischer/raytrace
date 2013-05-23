@@ -5,7 +5,7 @@
 
 namespace Object {
 
-static double rad(double deg)
+static float rad(float deg)
 {
 	return deg * 3.14 / 180.0;
 }
@@ -34,9 +34,9 @@ Camera *Camera::fromAst(AST *ast)
 	return camera;
 }
 
-Trace::Ray Camera::createRay(double x, double y, double hFOV, double vFOV)
+Trace::Ray Camera::createRay(float x, float y, float hFOV, float vFOV)
 {
-	double rayX, rayY;
+	float rayX, rayY;
 
 	rayX = tan(rad(hFOV/2)) * (2*x - 1);
 	rayY = -tan(rad(vFOV/2)) * (2*y - 1);

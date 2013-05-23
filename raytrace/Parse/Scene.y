@@ -14,7 +14,7 @@
 {
 	AST *_ast;
 	ASTVector _vector;
-	double _double;
+	float _float;
 };
 
 %token SPHERE
@@ -49,7 +49,7 @@
 
 %token END
 %token <_vector> VECTOR
-%token <_double> DOUBLE
+%token <_float> FLOAT
 
 %type <_ast> scene object_list object primitive primitive_wrap primitive_modifiers primitive_modifier
 %type <_ast> colordef
@@ -144,16 +144,16 @@ finish_list: finish_item
 			| finish_list finish_item
 	{ $$ = addChild($1, $2); }
 			
-finish_item: AMBIENT DOUBLE
-	{ $$ = newAst(AstAmbient, 0); $$->data._double = $2; }
-		   | DIFFUSE DOUBLE
-	{ $$ = newAst(AstDiffuse, 0); $$->data._double = $2; }
-		   | SPECULAR DOUBLE
-	{ $$ = newAst(AstSpecular, 0); $$->data._double = $2; }
-		   | SPECULAR_POWER DOUBLE
-	{ $$ = newAst(AstSpecularPower, 0); $$->data._double = $2; }
-		   | REFLECTION DOUBLE
-	{ $$ = newAst(AstReflection, 0); $$->data._double = $2; }	
+finish_item: AMBIENT FLOAT
+	{ $$ = newAst(AstAmbient, 0); $$->data._float = $2; }
+		   | DIFFUSE FLOAT
+	{ $$ = newAst(AstDiffuse, 0); $$->data._float = $2; }
+		   | SPECULAR FLOAT
+	{ $$ = newAst(AstSpecular, 0); $$->data._float = $2; }
+		   | SPECULAR_POWER FLOAT
+	{ $$ = newAst(AstSpecularPower, 0); $$->data._float = $2; }
+		   | REFLECTION FLOAT
+	{ $$ = newAst(AstReflection, 0); $$->data._float = $2; }	
 	
 lightdef: LIGHT '{' colordef light_modifiers '}'
 	{ $$ = addChildren(newAst(AstLight, 1, $3), $4->numChildren, $4->children); }

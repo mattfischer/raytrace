@@ -10,10 +10,10 @@ Torus::Torus()
 {
 }
 
-bool cylIntersect(const Trace::Ray &ray, double radius, double results[])
+bool cylIntersect(const Trace::Ray &ray, float radius, float results[])
 {
-	double a, b, c;
-	double disc;
+	float a, b, c;
+	float disc;
 
 	a = ray.direction().x() * ray.direction().x() + ray.direction().y() * ray.direction().y();
 	b = 2 * (ray.origin().x() * ray.direction().x() + ray.origin().y() * ray.direction().y());
@@ -33,27 +33,27 @@ bool cylIntersect(const Trace::Ray &ray, double radius, double results[])
 
 void Torus::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
-	double r = 0.25;
-	double r2 = r * r;
+	float r = 0.25;
+	float r2 = r * r;
 
-	double ox = ray.origin().x();
-	double oy = ray.origin().y();
-	double oz = ray.origin().z();
+	float ox = ray.origin().x();
+	float oy = ray.origin().y();
+	float oz = ray.origin().z();
 
-	double dx = ray.direction().x();
-	double dy = ray.direction().y();
-	double dz = ray.direction().z();
+	float dx = ray.direction().x();
+	float dy = ray.direction().y();
+	float dz = ray.direction().z();
 
-	double ox2 = ox * ox, oy2 = oy * oy, oz2 = oz * oz;
-	double dx2 = dx * dx, dy2 = dy * dy, dz2 = dz * dz;
+	float ox2 = ox * ox, oy2 = oy * oy, oz2 = oz * oz;
+	float dx2 = dx * dx, dy2 = dy * dy, dz2 = dz * dz;
 
-	double ox3 = ox2 * ox, oy3 = oy2 * oy, oz3 = oz2 * oz;
-	double dx3 = dx2 * dx, dy3 = dy2 * dy, dz3 = dz2 * dz;
+	float ox3 = ox2 * ox, oy3 = oy2 * oy, oz3 = oz2 * oz;
+	float dx3 = dx2 * dx, dy3 = dy2 * dy, dz3 = dz2 * dz;
 
-	double ox4 = ox3 * ox, oy4 = oy3 * oy, oz4 = oz3 * oz;
-	double dx4 = dx3 * dx, dy4 = dy3 * dy, dz4 = dz3 * dz;
+	float ox4 = ox3 * ox, oy4 = oy3 * oy, oz4 = oz3 * oz;
+	float dx4 = dx3 * dx, dy4 = dy3 * dy, dz4 = dz3 * dz;
 
-	double c[5];
+	float c[5];
 	c[4] = dx + dy + dz + 2 * ( dx2 * dy2 + dy2 * dz2 + dx2 * dz2 );
 	c[3] = 4 * ( ox * dx3 + oy * dy3 + oz * dz3 + 
 		     dx2 * oy * dy + dy2 * oz * dz + dx2 * oz * dz +
@@ -71,8 +71,8 @@ void Torus::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> 
 	       -2 * ( ox2 * ( r2 + 1 ) + oy2 * ( r2 + 1 ) + oz2 * ( r2 - 1 ) ) +
 		      r2 * r2 + 1;
 
-	double guesses[4];
-	double results[4];
+	float guesses[4];
+	float results[4];
 	if(!cylIntersect(ray, 1 + r, guesses))
 	{
 		return;

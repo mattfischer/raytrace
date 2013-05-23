@@ -9,23 +9,23 @@ class Matrix
 {
 public:
 	Matrix();
-	Matrix(double m0, double m1, double m2, double m3, 
-				   double m4, double m5, double m6, double m7,
-				   double m8, double m9, double m10, double m11,
-				   double m12, double m13, double m14, double m15);
+	Matrix(float m0, float m1, float m2, float m3, 
+				   float m4, float m5, float m6, float m7,
+				   float m8, float m9, float m10, float m11,
+				   float m12, float m13, float m14, float m15);
 	Matrix(const Matrix &c);
 	Matrix &operator=(const Matrix &c);
 
-	double &at(int x, int y);
-	const double &at(int x, int y) const;
-	double &operator()(int x, int y);
-	const double &operator()(int x, int y) const;
+	float &at(int x, int y);
+	const float &at(int x, int y) const;
+	float &operator()(int x, int y);
+	const float &operator()(int x, int y) const;
 	bool identity() const;
 
 	Matrix operator*(const Matrix &b) const;
 
 protected:
-	double mValues[16];
+	float mValues[16];
 	bool mIdentity;
 };
 
@@ -37,22 +37,22 @@ inline Matrix::Matrix()
 	mIdentity = true;
 }
 
-inline double &Matrix::at(int x, int y)
+inline float &Matrix::at(int x, int y)
 {
 	return mValues[y * 4 + x];
 }
 
-inline const double &Matrix::at(int x, int y) const
+inline const float &Matrix::at(int x, int y) const
 {
 	return mValues[y * 4 + x];
 }
 
-inline double &Matrix::operator()(int x, int y)
+inline float &Matrix::operator()(int x, int y)
 {
 	return at(x, y);
 }
 
-inline const double &Matrix::operator()(int x, int y) const
+inline const float &Matrix::operator()(int x, int y) const
 {
 	return at(x, y);
 }

@@ -15,19 +15,19 @@ Vector::Vector(const Normal &normal)
 {
 }
 
-double Vector::magnitude() const
+float Vector::magnitude() const
 {
 	return sqrt(magnitude2());
 }
 
-double Vector::magnitude2() const
+float Vector::magnitude2() const
 {
 	return *this * *this;
 }
 
 Vector Vector::normalize() const
 {
-	double m = magnitude();
+	float m = magnitude();
 
 	return Vector(x() / m, y() / m, z() / m);
 }
@@ -42,17 +42,17 @@ Vector Vector::operator-(const Vector &b) const
 	return Vector(x() - b.x(), y() - b.y(), z() - b.z());
 }
 
-double Vector::operator*(const Vector &b) const
+float Vector::operator*(const Vector &b) const
 {
 	return x() * b.x() + y() * b.y() + z() * b.z();
 }
 
-Vector Vector::operator*(double b) const
+Vector Vector::operator*(float b) const
 {
 	return Vector(x() * b, y() * b, z() * b);
 }
 
-Vector Vector::operator/(double b) const
+Vector Vector::operator/(float b) const
 {
 	return Vector(x() / b, y() / b, z() / b);
 }

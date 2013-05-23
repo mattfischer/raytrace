@@ -4,9 +4,9 @@
 
 namespace Math {
 
-double PolySolve::evaluate(const double coeffs[], int n, double x)
+float PolySolve::evaluate(const float coeffs[], int n, float x)
 {
-	double result = 0;
+	float result = 0;
 	for(int i=n-1; i>=0; i--)
 	{
 		result *= x;
@@ -16,7 +16,7 @@ double PolySolve::evaluate(const double coeffs[], int n, double x)
 	return result;
 }
 
-void PolySolve::derivative(const double coeffs[], int n, double result[])
+void PolySolve::derivative(const float coeffs[], int n, float result[])
 {
 	for(int i=1; i<n; i++)
 	{
@@ -24,10 +24,10 @@ void PolySolve::derivative(const double coeffs[], int n, double result[])
 	}
 }
 
-double PolySolve::newtonRhapson(const double coeffs[], int n, double guess, double threshold)
+float PolySolve::newtonRhapson(const float coeffs[], int n, float guess, float threshold)
 {
-	double *deriv = new double[n-1];
-	double oldVal, newVal;
+	float *deriv = new float[n-1];
+	float oldVal, newVal;
 	int iter;
 
 	derivative(coeffs, n, deriv);
@@ -47,7 +47,7 @@ double PolySolve::newtonRhapson(const double coeffs[], int n, double guess, doub
 	else return newVal;
 }
 
-void PolySolve::newtonRhapson(const double coeffs[], int n, const double guesses[], double threshold, double results[])
+void PolySolve::newtonRhapson(const float coeffs[], int n, const float guesses[], float threshold, float results[])
 {
 	for(int i=0; i<n-1; i++)
 	{

@@ -12,7 +12,7 @@ public:
 	Disk();
 	virtual ~Disk();
 
-	static Trace::Intersection intersectDisk(const Base *primitive, const Trace::Ray &ray, const Math::Normal &normal, double displacement);
+	static Trace::Intersection intersectDisk(const Base *primitive, const Trace::Ray &ray, const Math::Normal &normal, float displacement);
 
 protected:
 	virtual void doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const;

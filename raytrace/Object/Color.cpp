@@ -9,7 +9,7 @@ Color::Color()
 	mBlue = 0;
 }
 
-Color::Color(double red, double green, double blue)
+Color::Color(float red, float green, float blue)
 {
 	mRed = red;
 	mGreen = green;
@@ -39,37 +39,37 @@ Color &Color::operator=(const Color &c)
 	return *this;
 }
 
-double Color::red() const
+float Color::red() const
 {
 	return mRed;
 }
 
-void Color::setRed(double red)
+void Color::setRed(float red)
 {
 	mRed = red;
 }
 
-double Color::green() const
+float Color::green() const
 {
 	return mGreen;
 }
 
-void Color::setGreen(double green)
+void Color::setGreen(float green)
 {
 	mGreen = green;
 }
 
-double Color::blue() const
+float Color::blue() const
 {
 	return mBlue;
 }
 
-void Color::setBlue(double blue)
+void Color::setBlue(float blue)
 {
 	mBlue = blue;
 }
 
-Color Color::scale(double b) const
+Color Color::scale(float b) const
 {
 	return Color(mRed * b, mGreen * b, mBlue * b);
 }
@@ -104,7 +104,7 @@ Color &Color::operator+=(const Color &b)
 	return *this;
 }
 
-Color Color::operator/(double b) const
+Color Color::operator/(float b) const
 {
 	return Color(mRed / b, mGreen / b, mBlue / b);
 }
@@ -114,7 +114,7 @@ Color Color::operator*(const Color &b) const
 	return Color(mRed * b.mRed, mGreen * b.mGreen, mBlue * b.mBlue);
 }
 
-Color Color::operator*(double b) const
+Color Color::operator*(float b) const
 {
 	return Color(mRed * b, mGreen * b, mBlue * b);
 }

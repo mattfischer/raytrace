@@ -9,7 +9,7 @@ Intersection::Intersection()
 	mValid = false;
 }
 
-Intersection::Intersection(const Object::Primitive::Base *primitive, double distance, const Math::Normal &objectNormal, const Math::Point &objectPoint)
+Intersection::Intersection(const Object::Primitive::Base *primitive, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint)
 {
 	mValid = true;
 	mPrimitive = primitive;
@@ -78,12 +78,12 @@ void Intersection::setPrimitive(const Object::Primitive::Base *primitive)
 	mPrimitive = primitive;
 }
 
-double Intersection::distance() const
+float Intersection::distance() const
 {
 	return mDistance;
 }
 
-void Intersection::setDistance(double distance)
+void Intersection::setDistance(float distance)
 {
 	mDistance = distance;
 }

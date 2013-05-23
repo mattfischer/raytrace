@@ -16,7 +16,7 @@ FLOAT -?[[:digit:]]+(\.[[:digit:]]+)?
 \n*
 
 \<{FLOAT},{FLOAT},{FLOAT}\>	parseVector(Scenetext, &(Scenelval._vector)); return VECTOR;
-{FLOAT} Scenelval._double = atof(Scenetext); return DOUBLE;
+{FLOAT} Scenelval._float = atof(Scenetext); return FLOAT;
 
 sphere	return SPHERE;
 plane return PLANE;

@@ -9,33 +9,33 @@ class Color
 {
 public:
 	Color();
-	Color(double red, double green, double blue);
+	Color(float red, float green, float blue);
 	Color(const ASTVector &vector);
 	Color(const Color &c);
 	Color &operator=(const Color &c);
 
-	double red() const;
-	void setRed(double red);
+	float red() const;
+	void setRed(float red);
 
-	double green() const;
-	void setGreen(double green);
+	float green() const;
+	void setGreen(float green);
 
-	double blue() const;
-	void setBlue(double blue);
+	float blue() const;
+	void setBlue(float blue);
 
-	Color scale(double b) const;
+	Color scale(float b) const;
 	Color clamp() const;
 
 	Color operator+(const Color &b) const;
 	Color &operator+=(const Color &b);
-	Color operator/(double b) const;
+	Color operator/(float b) const;
 	Color operator*(const Color &b) const;
-	Color operator*(double b) const;
+	Color operator*(float b) const;
 
 protected:
-	double mRed;
-	double mGreen;
-	double mBlue;
+	float mRed;
+	float mGreen;
+	float mBlue;
 };
 
 }

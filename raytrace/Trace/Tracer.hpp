@@ -18,7 +18,7 @@ public:
 		int height;
 		bool lighting;
 		int antialias;
-		double hFOV;
+		float hFOV;
 		int maxRayGeneration;
 	};
 

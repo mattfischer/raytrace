@@ -24,8 +24,8 @@ Cone *Cone::fromAst(AST *ast)
 
 void Cone::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
-	double a, b, c;
-	double disc;
+	float a, b, c;
+	float disc;
 
 	a = ray.direction().x() * ray.direction().x() + ray.direction().y() * ray.direction().y() - ray.direction().z() * ray.direction().z();
 	b = 2 * (ray.origin().x() * ray.direction().x() + ray.origin().y() * ray.direction().y() - ray.origin().z() * ray.direction().z());
@@ -34,7 +34,7 @@ void Cone::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &
 	disc = b * b - 4 * a * c;
 	if(disc >= 0)
 	{
-		double distance = (-b - sqrt(disc)) / (2 * a);
+		float distance = (-b - sqrt(disc)) / (2 * a);
 
 		if(distance > EPSILON)
 		{

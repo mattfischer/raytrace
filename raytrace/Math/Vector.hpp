@@ -16,21 +16,21 @@ class Vector : public Coordinate
 public:
 	Vector();
 	Vector(const Vector &c);
-	Vector(double x, double y, double z);
+	Vector(float x, float y, float z);
 	explicit Vector(const ASTVector &astVector);
 	explicit Vector(const Point &point);
 	explicit Vector(const Normal &normal);
 	explicit Vector(const Coordinate &c);
 
 	Vector normalize() const;
-	double magnitude() const;
-	double magnitude2() const;
+	float magnitude() const;
+	float magnitude2() const;
 
 	Vector operator+(const Vector &b) const;
 	Vector operator-(const Vector &b) const;
-	double operator*(const Vector &b) const;
-	Vector operator*(double b) const;
-	Vector operator/(double b) const;
+	float operator*(const Vector &b) const;
+	Vector operator*(float b) const;
+	Vector operator/(float b) const;
 	Vector operator-() const;
 };
 
@@ -39,7 +39,7 @@ Vector operator*(const Transformation &transformation, const Vector &vector);
 inline Vector::Vector()
 {}
 
-inline Vector::Vector(double x, double y, double z)
+inline Vector::Vector(float x, float y, float z)
 : Coordinate(x, y, z, 0)
 {
 }

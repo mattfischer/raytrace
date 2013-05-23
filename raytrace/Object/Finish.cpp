@@ -30,23 +30,23 @@ Finish *Finish::fromAst(AST *ast)
 		switch(ast->children[i]->type)
 		{
 		case AstAmbient:
-			finish->setAmbient(ast->children[i]->data._double);
+			finish->setAmbient(ast->children[i]->data._float);
 			break;
 
 		case AstDiffuse:
-			finish->setDiffuse(ast->children[i]->data._double);
+			finish->setDiffuse(ast->children[i]->data._float);
 			break;
 
 		case AstSpecular:
-			finish->setSpecular(ast->children[i]->data._double);
+			finish->setSpecular(ast->children[i]->data._float);
 			break;
 
 		case AstSpecularPower:
-			finish->setSpecularPower(ast->children[i]->data._double);
+			finish->setSpecularPower(ast->children[i]->data._float);
 			break;
 
 		case AstReflection:
-			finish->setReflection(ast->children[i]->data._double);
+			finish->setReflection(ast->children[i]->data._float);
 			break;
 		}
 	}
@@ -54,52 +54,52 @@ Finish *Finish::fromAst(AST *ast)
 	return finish;
 }
 
-double Finish::ambient() const
+float Finish::ambient() const
 {
 	return mAmbient;
 }
 
-void Finish::setAmbient(double ambient)
+void Finish::setAmbient(float ambient)
 {
 	mAmbient = ambient;
 }
 
-double Finish::diffuse() const
+float Finish::diffuse() const
 {
 	return mDiffuse;
 }
 
-void Finish::setDiffuse(double diffuse)
+void Finish::setDiffuse(float diffuse)
 {
 	mDiffuse = diffuse;
 }
 
-double Finish::specular() const
+float Finish::specular() const
 {
 	return mSpecular;
 }
 
-void Finish::setSpecular(double specular)
+void Finish::setSpecular(float specular)
 {
 	mSpecular = specular;
 }
 
-double Finish::specularPower() const
+float Finish::specularPower() const
 {
 	return mSpecularPower;
 }
 
-void Finish::setSpecularPower(double specularPower)
+void Finish::setSpecularPower(float specularPower)
 {
 	mSpecularPower = specularPower;
 }
 
-double Finish::reflection() const
+float Finish::reflection() const
 {
 	return mReflection;
 }
 
-void Finish::setReflection(double reflection)
+void Finish::setReflection(float reflection)
 {
 	mReflection = reflection;
 }

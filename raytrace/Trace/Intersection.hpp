@@ -16,7 +16,7 @@ class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Object::Primitive::Base *primitive, double distance, const Math::Normal &objectNormal, const Math::Point &objectPoint);
+	Intersection(const Object::Primitive::Base *primitive, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint);
 	Intersection(const Intersection &c);
 	Intersection &operator=(const Intersection &c);
 
@@ -26,8 +26,8 @@ public:
 	const Object::Primitive::Base *primitive() const;
 	void setPrimitive(const Object::Primitive::Base *primitive);
 
-	double distance() const;
-	void setDistance(double distance);
+	float distance() const;
+	void setDistance(float distance);
 
 	const Math::Normal &normal() const;
 
@@ -49,7 +49,7 @@ public:
 protected:
 	bool mValid;
 	const Object::Primitive::Base *mPrimitive;
-	double mDistance;
+	float mDistance;
 	Math::Normal mObjectNormal;
 	Math::Point mObjectPoint;
 	mutable Math::Point mPoint;

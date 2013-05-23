@@ -41,9 +41,9 @@ typedef enum
 
 typedef struct
 {
-	double x;
-	double y;
-	double z;
+	float x;
+	float y;
+	float z;
 } ASTVector;
 
 struct _AST;
@@ -57,7 +57,7 @@ struct _AST
 	union
 	{
 		ASTVector _vector;
-		double _double;
+		float _float;
 	} data;
 };
 

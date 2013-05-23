@@ -20,8 +20,8 @@ Sphere *Sphere::fromAst(AST *ast)
 void Sphere::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	Trace::Intersection intersection;
-	double a, b, c;
-	double disc;
+	float a, b, c;
+	float disc;
 
 	a = ray.direction().magnitude2();
 	b = 2 * (Math::Vector(ray.origin()) * ray.direction());
@@ -30,7 +30,7 @@ void Sphere::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection>
 	disc = b * b - 4 * a * c;
 	if(disc >= 0)
 	{
-		double distance = (-b - sqrt(disc)) / (2 * a);
+		float distance = (-b - sqrt(disc)) / (2 * a);
 
 		if(distance > EPSILON)
 		{

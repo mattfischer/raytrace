@@ -53,8 +53,8 @@ Object::Color Tracer::doLighting(const Trace::Ray &ray, const Intersection &inte
 	for(int i=0; i<mScene->lights().size(); i++)
 	{
 		Object::Light *light = mScene->lights()[i];
-		double diffuse_coeff = 0;
-		double specular_coeff = 0;
+		float diffuse_coeff = 0;
+		float specular_coeff = 0;
 		
 		Trace::Ray lightRay = Trace::Ray::createFromPoints(point, light->transformation().origin());
 
@@ -62,7 +62,7 @@ Object::Color Tracer::doLighting(const Trace::Ray &ray, const Intersection &inte
 		mScene->findIntersections(lightRay, mLightIntersections);
 		
 		Math::Vector lightVector = light->transformation().origin() - point;
-		double lightMagnitude = lightVector.magnitude();
+		float lightMagnitude = lightVector.magnitude();
 		Math::Vector lightDir = lightVector / lightMagnitude;
 
 		if(mLightIntersections.size() == 0 || mLightIntersections[0].distance() >= lightMagnitude)
@@ -72,7 +72,7 @@ Object::Color Tracer::doLighting(const Trace::Ray &ray, const Intersection &inte
 			Math::Vector incident = -lightDir;
 			Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
-			double dot = reflect * (mScene->camera()->transformation().origin() - point).normalize();
+			float dot = reflect * (mScene->camera()->transformation().origin() - point).normalize();
 
 			if(texture->finish()->specular() > 0 && dot>0)
 				specular_coeff = pow(dot, texture->finish()->specularPower());
@@ -116,13 +116,13 @@ Object::Color Tracer::traceRay(const Trace::Ray &ray) const
 
 Object::Color Tracer::tracePixel(int x, int y) const
 {
-	double aspectRatio = (double)mSettings.height / (double)mSettings.width;
+	float aspectRatio = (float)mSettings.height / (float)mSettings.width;
 	Object::Color color;
 
 	for(int i=0; i<mSettings.antialias; i++)
 		for(int j=0; j<mSettings.antialias; j++)
 		{
-			Trace::Ray ray = mScene->camera()->createRay((x + (double)i / mSettings.antialias) / mSettings.width, (y + (double)j / mSettings.antialias) / mSettings.height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
+			Trace::Ray ray = mScene->camera()->createRay((x + (float)i / mSettings.antialias) / mSettings.width, (y + (float)j / mSettings.antialias) / mSettings.height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
 			color = color + traceRay(ray);
 		}
 

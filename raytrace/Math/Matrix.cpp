@@ -1,10 +1,10 @@
 #include "Math/Matrix.hpp"
 
 namespace Math {
-Matrix::Matrix(double m0, double m1, double m2, double m3,
-			   double m4, double m5, double m6, double m7,
-			   double m8, double m9, double m10, double m11,
-			   double m12, double m13, double m14, double m15)
+Matrix::Matrix(float m0, float m1, float m2, float m3,
+			   float m4, float m5, float m6, float m7,
+			   float m8, float m9, float m10, float m11,
+			   float m12, float m13, float m14, float m15)
 {
 	mValues[0] = m0; mValues[1] = m1; mValues[2] = m2; mValues[3] = m3;
 	mValues[4] = m4; mValues[5] = m5; mValues[6] = m6; mValues[7] = m7;

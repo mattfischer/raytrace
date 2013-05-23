@@ -13,27 +13,27 @@ public:
 
 	static Finish *fromAst(AST *ast);
 
-	double ambient() const;
-	void setAmbient(double ambient);
+	float ambient() const;
+	void setAmbient(float ambient);
 
-	double diffuse() const;
-	void setDiffuse(double diffuse);
+	float diffuse() const;
+	void setDiffuse(float diffuse);
 
-	double specular() const;
-	void setSpecular(double specular);
+	float specular() const;
+	void setSpecular(float specular);
 
-	double specularPower() const;
-	void setSpecularPower(double specularPower);
+	float specularPower() const;
+	void setSpecularPower(float specularPower);
 
-	double reflection() const;
-	void setReflection(double reflection);
+	float reflection() const;
+	void setReflection(float reflection);
 
 protected:
-	double mAmbient;
-	double mDiffuse;
-	double mSpecular;
-	double mSpecularPower;
-	double mReflection;
+	float mAmbient;
+	float mDiffuse;
+	float mSpecular;
+	float mSpecularPower;
+	float mReflection;
 };
 
 }

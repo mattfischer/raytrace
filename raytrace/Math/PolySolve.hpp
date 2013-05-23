@@ -6,10 +6,10 @@ namespace Math {
 class PolySolve
 {
 public:
-	static double evaluate(const double coeffs[], int n, double x);
-	static void derivative(const double coeffs[], int n, double result[]);
-	static double newtonRhapson(const double coeffs[], int n, double guess, double threshold);
-	static void newtonRhapson(const double coeffs[], int n, const double guesses[], double threshold, double results[]);
+	static float evaluate(const float coeffs[], int n, float x);
+	static void derivative(const float coeffs[], int n, float result[]);
+	static float newtonRhapson(const float coeffs[], int n, float guess, float threshold);
+	static void newtonRhapson(const float coeffs[], int n, const float guesses[], float threshold, float results[]);
 };
 
 }

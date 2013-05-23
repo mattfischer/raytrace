@@ -14,7 +14,7 @@ class Point : public Coordinate
 {
 public:
 	Point();
-	Point(double x, double y, double z);
+	Point(float x, float y, float z);
 	Point(const Point &c);
 	explicit Point(const ASTVector &astVector);
 	explicit Point(const Coordinate &c);
@@ -29,7 +29,7 @@ Point operator*(const Transformation &transformation, const Point &point);
 inline Point::Point()
 {}
 
-inline Point::Point(double x, double y, double z)
+inline Point::Point(float x, float y, float z)
 : Coordinate(x, y, z, 1)
 {
 }

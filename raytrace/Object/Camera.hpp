@@ -13,7 +13,7 @@ public:
 
 	static Camera *fromAst(AST *ast);
 
-	Trace::Ray createRay(double x, double y, double hFOV, double vFOV);
+	Trace::Ray createRay(float x, float y, float hFOV, float vFOV);
 };
 
 }

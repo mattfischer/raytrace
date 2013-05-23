@@ -10,7 +10,7 @@ Transformation Transformation::translate(const Vector &vector)
 	return translate(vector.x(), vector.y(), vector.z());
 }
 
-Transformation Transformation::translate(double x, double y, double z)
+Transformation Transformation::translate(float x, float y, float z)
 {
 	return Transformation(
 				Matrix(
@@ -30,7 +30,7 @@ Transformation Transformation::scale(const Vector &vector)
 	return scale(vector.x(), vector.y(), vector.z());
 }
 
-Transformation Transformation::scale(double x, double y, double z)
+Transformation Transformation::scale(float x, float y, float z)
 {
 	return Transformation(
 				Matrix(
@@ -45,12 +45,12 @@ Transformation Transformation::scale(double x, double y, double z)
 				  0, 0, 0, 1));
 }
 
-Transformation Transformation::uniformScale(double factor)
+Transformation Transformation::uniformScale(float factor)
 {
 	return scale(factor, factor, factor);
 }
 
-static double rad(double deg)
+static float rad(float deg)
 {
 	return deg * 3.14 / 180.0;
 }
@@ -60,11 +60,11 @@ Transformation Transformation::rotate(const Vector &vector)
 	return rotate(vector.x(), vector.y(), vector.z());
 }
 
-Transformation Transformation::rotate(double x, double y, double z)
+Transformation Transformation::rotate(float x, float y, float z)
 {
-	double rx = rad(x);
-	double ry = rad(y);
-	double rz = rad(z);
+	float rx = rad(x);
+	float ry = rad(y);
+	float rz = rad(z);
 
 	Matrix xRotate(
 				  1, 0, 0, 0,
