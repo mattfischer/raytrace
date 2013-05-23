@@ -1,4 +1,5 @@
 #include "Math/Point.hpp"
+#include "Math/Vector.hpp"
 #include "Math/Transformation.hpp"
 
 namespace Math {

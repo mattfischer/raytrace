@@ -4,11 +4,11 @@
 #include <math.h>
 
 #include "Math/Coordinate.hpp"
-#include "Math/Vector.hpp"
 #include "Parse/AST.h"
 
 namespace Math {
 
+class Vector;
 class Transformation;
 class Point : public Coordinate
 {

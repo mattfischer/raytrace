@@ -25,9 +25,9 @@ Normal Normal::operator-() const
 	return Normal(-x(), -y(), -z());
 }
 
-double operator*(const Normal &normal, const Vector &vector)
+double Normal::operator*(const Vector &b) const
 {
-	return normal.x() * vector.x() + normal.y() * vector.y() + normal.z() * vector.z();
+	return x() * b.x() + y() * b.y() + z() * b.z();
 }
 
 double operator*(const Vector &vector, const Normal &normal)

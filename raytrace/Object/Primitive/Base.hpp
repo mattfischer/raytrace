@@ -2,10 +2,10 @@
 #define PRIMITIVE_H
 
 #include "Object/Base.hpp"
+#include "Object/Texture.hpp"
 #include "Trace/Intersection.hpp"
 #include "Trace/Ray.hpp"
 #include "Math/Point.hpp"
-#include "Object/Texture.hpp"
 
 #include <vector>
 

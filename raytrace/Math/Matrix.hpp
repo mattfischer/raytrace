@@ -1,8 +1,6 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include "Math/Point.hpp"
-#include "Math/Vector.hpp"
 #include "Math/Coordinate.hpp"
 
 namespace Math {

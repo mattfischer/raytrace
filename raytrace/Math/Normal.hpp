@@ -22,12 +22,12 @@ public:
 	explicit Normal(const Coordinate &c);
 
 	double operator*(const Normal &b) const;
+	double operator*(const Vector &b) const;
 	Normal operator-() const;
 };
 
 Normal operator*(const Transformation &transformation, const Normal &normal);
 double operator*(const Vector &vector, const Normal &normal);
-double operator*(const Normal &normal, const Vector &vector);
 
 inline Normal::Normal()
 {}
