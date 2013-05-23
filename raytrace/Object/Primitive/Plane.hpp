@@ -13,7 +13,7 @@ public:
 
 	static Plane *fromAst(AST *ast);
 
-	static Trace::Intersection intersectPlane(const Base *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement);
+	static Trace::Intersection intersectPlane(const Base *primitive, const Math::Ray &ray, const Math::Normal &normal, double displacement);
 
 protected:
 	virtual void doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const;

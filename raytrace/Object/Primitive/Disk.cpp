@@ -13,7 +13,7 @@ Disk::~Disk()
 {
 }
 
-Trace::Intersection Disk::intersectDisk(const Base *primitive, const Math::Ray &ray, const Math::Vector &normal, double displacement)
+Trace::Intersection Disk::intersectDisk(const Base *primitive, const Math::Ray &ray, const Math::Normal &normal, double displacement)
 {
 	Trace::Intersection intersection;
 	Trace::Intersection planeIntersection = Plane::intersectPlane(primitive, ray, normal, displacement);
@@ -22,7 +22,7 @@ Trace::Intersection Disk::intersectDisk(const Base *primitive, const Math::Ray &
 	{
 		Math::Point point = planeIntersection.objectPoint();
 
-		point = point - normal * (Math::Vector(point) * normal);
+		point = point - Math::Vector(normal) * (Math::Vector(point) * normal);
 
 		if(Math::Vector(point).magnitude2() <= 1)
 			intersection = planeIntersection;
@@ -33,7 +33,7 @@ Trace::Intersection Disk::intersectDisk(const Base *primitive, const Math::Ray &
 
 void Disk::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
-	Trace::Intersection intersection = intersectDisk(this, ray, Math::Vector(0, 1, 0), 0);
+	Trace::Intersection intersection = intersectDisk(this, ray, Math::Normal(0, 1, 0), 0);
 	
 	if(intersection.valid())
 		intersections.push_back(intersection);

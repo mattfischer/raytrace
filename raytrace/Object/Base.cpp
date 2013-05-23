@@ -12,7 +12,7 @@ Base::~Base()
 
 void Base::transform(const Math::Transformation &transformation)
 {
-	mTransformation = transformation.transformTransformation(mTransformation);
+	mTransformation = transformation * mTransformation;
 }
 
 const Math::Transformation &Base::transformation() const

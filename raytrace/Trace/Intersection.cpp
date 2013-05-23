@@ -9,7 +9,7 @@ Intersection::Intersection()
 	mValid = false;
 }
 
-Intersection::Intersection(const Object::Primitive::Base *primitive, double distance, const Math::Vector &objectNormal, const Math::Point &objectPoint)
+Intersection::Intersection(const Object::Primitive::Base *primitive, double distance, const Math::Normal &objectNormal, const Math::Point &objectPoint)
 {
 	mValid = true;
 	mPrimitive = primitive;
@@ -88,7 +88,7 @@ void Intersection::setDistance(double distance)
 	mDistance = distance;
 }
 
-const Math::Vector &Intersection::normal() const
+const Math::Normal &Intersection::normal() const
 {
 	if(!mTransformed)
 		doTransform();
@@ -96,12 +96,12 @@ const Math::Vector &Intersection::normal() const
 	return mNormal;
 }
 
-const Math::Vector &Intersection::objectNormal() const
+const Math::Normal &Intersection::objectNormal() const
 {
 	return mObjectNormal;
 }
 
-void Intersection::setObjectNormal(const Math::Vector &objectNormal)
+void Intersection::setObjectNormal(const Math::Normal &objectNormal)
 {
 	mTransformed = false;
 
@@ -132,18 +132,18 @@ void Intersection::transform(const Math::Transformation &transformation)
 {
 	if(mCompositeTransformed)
 	{
-		mTransformation = transformation.transformTransformation(mTransformation);
+		mTransformation = transformation * mTransformation;
 	}
 	else
 	{
-		mTransformation = transformation.transformTransformation(mPrimitive->transformation());
+		mTransformation = transformation * mPrimitive->transformation();
 		mCompositeTransformed = true;
 	}
 
 	if(mTransformed)
 	{
-		mNormal = transformation.transformNormal(mNormal);
-		mPoint = transformation.transformPoint(mPoint);
+		mNormal = transformation * mNormal;
+		mPoint = transformation * mPoint;
 	}
 }
 
@@ -176,13 +176,13 @@ void Intersection::doTransform() const
 {
 	if(mCompositeTransformed)
 	{
-		mNormal = mTransformation.transformNormal(mObjectNormal);
-		mPoint = mTransformation.transformPoint(mObjectPoint);
+		mNormal = mTransformation * mObjectNormal;
+		mPoint = mTransformation * mObjectPoint;
 	}
 	else
 	{
-		mNormal = mPrimitive->transformation().transformNormal(mObjectNormal);
-		mPoint = mPrimitive->transformation().transformPoint(mObjectPoint);
+		mNormal = mPrimitive->transformation() * mObjectNormal;
+		mPoint = mPrimitive->transformation() * mObjectPoint;
 	}
 
 	mTransformed = true;

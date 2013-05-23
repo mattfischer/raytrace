@@ -42,9 +42,9 @@ void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection
 			
 			if(abs(point.z()) <= 1)
 			{
-				Math::Vector normal(point);
-				normal.setZ(0);
-				normal = normal.normalize();
+				Math::Vector vector(point);
+				vector.setZ(0);
+				Math::Normal normal(vector.normalize());
 				
 				intersections.push_back(Trace::Intersection(this, distance, normal, point));
 			}
@@ -58,9 +58,9 @@ void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection
 			
 			if(abs(point.z()) <= 1)
 			{
-				Math::Vector normal(point);
-				normal.setZ(0);
-				normal = normal.normalize();
+				Math::Vector vector(point);
+				vector.setZ(0);
+				Math::Normal normal(vector.normalize());
 				
 				intersections.push_back(Trace::Intersection(this, distance, normal, point));
 			}
@@ -69,11 +69,11 @@ void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection
 
 	Trace::Intersection intersection;
 
-	intersection = Disk::intersectDisk(this, ray, Math::Vector(0, 0, 1), 1);
+	intersection = Disk::intersectDisk(this, ray, Math::Normal(0, 0, 1), 1);
 	if(intersection.valid())
 		intersections.push_back(intersection);
 
-	intersection = Disk::intersectDisk(this, ray, Math::Vector(0, 0, -1), 1);
+	intersection = Disk::intersectDisk(this, ray, Math::Normal(0, 0, -1), 1);
 	if(intersection.valid())
 		intersections.push_back(intersection);
 }

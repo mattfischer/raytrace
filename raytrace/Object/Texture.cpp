@@ -51,7 +51,7 @@ Texture *Texture::fromAst(AST *ast)
 
 void Texture::transform(const Math::Transformation &transformation)
 {
-	mTransformation = transformation.transformTransformation(mTransformation);
+	mTransformation = transformation * mTransformation;
 }
 
 const Math::Transformation &Texture::transformation() const
@@ -87,7 +87,7 @@ void Texture::setFinish(Finish *finish)
 
 Color Texture::pointColor(const Math::Point &point) const
 {
-	return mPigment->pointColor(mTransformation.inverseTransformPoint(point));
+	return mPigment->pointColor(mTransformation.inverse() * point);
 }
 
 }

@@ -10,8 +10,8 @@ class Coordinate
 public:
 	Coordinate();
 	Coordinate(const Coordinate &c);
-	Coordinate(double x, double y, double z);
-	explicit Coordinate(const ASTVector &astVector);
+	Coordinate(double x, double y, double z, double w);
+	explicit Coordinate(const ASTVector &astVector, double w);
 	
 	Coordinate &operator=(const Coordinate &c);
 
@@ -24,6 +24,9 @@ public:
 	double z() const;
 	void setZ(double z);
 
+	double w() const;
+	void setW(double w);
+
 	double &at(int i);
 	const double &at(int i) const;
 
@@ -31,37 +34,39 @@ public:
 	const double &operator()(int i) const;
 
 protected:
-	double mValues[3];
+	double mValues[4];
 };
 
 inline Coordinate::Coordinate()
 {
-	mValues[0] = mValues[1] = mValues[2] = 0;
+	mValues[0] = mValues[1] = mValues[2] = mValues[3] = 0;
 }
 
-inline Coordinate::Coordinate(double x, double y, double z)
+inline Coordinate::Coordinate(double x, double y, double z, double w)
 {
 	mValues[0] = x;
 	mValues[1] = y;
 	mValues[2] = z;
+	mValues[3] = w;
 }
 
-inline Coordinate::Coordinate(const ASTVector &astVector)
+inline Coordinate::Coordinate(const ASTVector &astVector, double w)
 {
 	mValues[0] = astVector.x;
 	mValues[1] = astVector.y;
 	mValues[2] = astVector.z;
+	mValues[3] = w;
 }
 
 inline Coordinate::Coordinate(const Coordinate &c)
 {
-	for(int i=0; i<3; i++) 
+	for(int i=0; i<4; i++) 
 		mValues[i] = c(i);
 }
 
 inline Coordinate &Coordinate::operator=(const Coordinate &c)
 {
-	for(int i=0; i<3; i++) 
+	for(int i=0; i<4; i++) 
 		mValues[i] = c(i);
 
 	return *this;
@@ -95,6 +100,16 @@ inline double Coordinate::z() const
 inline void Coordinate::setZ(double z)
 {
 	mValues[2] = z;
+}
+
+inline double Coordinate::w() const
+{
+	return mValues[3];
+}
+
+inline void Coordinate::setW(double z)
+{
+	mValues[3] = z;
 }
 
 inline double &Coordinate::at(int i)

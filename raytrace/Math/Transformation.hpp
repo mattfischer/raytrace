@@ -30,41 +30,48 @@ public:
 	Transformation(const Transformation &c);
 	Transformation &operator=(const Transformation &c);
 
+	Transformation inverse() const;
+
 	const Matrix &matrix() const;
 	const Matrix &inverseMatrix() const;
-	const Matrix &matrixTranspose() const;
-	const Matrix &inverseMatrixTranspose() const;
 
-	const Point &origin() const;
-	const Point &inverseOrigin() const;
-	const Point &transposeOrigin() const;
-	const Point &inverseTransposeOrigin() const;
-
-	Matrix transformMatrix(const Matrix &matrix) const;
-	Point transformPoint(const Point &point) const;
-	Vector transformDirection(const Vector &direction) const;
-	Vector transformNormal(const Vector &normal) const;
-	Ray    transformRay(const Ray &ray) const;
-	Transformation transformTransformation(const Transformation &transformation) const;
-
-	Matrix inverseTransformMatrix(const Matrix &matrix) const;
-	Point inverseTransformPoint(const Point &point) const;
-	Vector inverseTransformDirection(const Vector &direction) const;
-	Vector inverseTransformNormal(const Vector &normal) const;
-	Ray    inverseTransformRay(const Ray &ray) const;
-	Transformation inverseTransformTransformation(const Transformation &transformation) const;
+	Point origin() const;
 
 protected:
 	Matrix mMatrix;
 	Matrix mInverseMatrix;
-	Matrix mMatrixTranspose;
-	Matrix mInverseMatrixTranspose;
-
-	Point mOrigin;
-	Point mInverseOrigin;
-	Point mTransposeOrigin;
-	Point mInverseTransposeOrigin;
 };
+
+Transformation operator*(const Transformation &a, const Transformation &b);
+
+inline Transformation::Transformation(const Transformation &c)
+: mMatrix(c.mMatrix), 
+  mInverseMatrix(c.mInverseMatrix)
+{
+}
+
+inline Transformation &Transformation::operator=(const Transformation &c)
+{
+	mMatrix = c.mMatrix;
+	mInverseMatrix = c.mInverseMatrix;
+
+	return *this;
+}
+
+inline Transformation Transformation::inverse() const
+{
+	return Transformation(mInverseMatrix, mMatrix);
+}
+
+inline const Matrix &Transformation::matrix() const
+{
+	return mMatrix;
+}
+
+inline const Matrix &Transformation::inverseMatrix() const
+{
+	return mInverseMatrix;
+}
 
 }
 

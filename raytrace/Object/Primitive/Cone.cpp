@@ -42,11 +42,11 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &i
 			
 			if(point.z() >= 0 && point.z() <= 1)
 			{
-				Math::Vector normal(point);
-				normal.setZ(0);
-				normal = normal.normalize();
-				normal.setZ(-1);
-				normal = normal.normalize();
+				Math::Vector vector(point);
+				vector.setZ(0);
+				vector = vector.normalize();
+				vector.setZ(-1);
+				Math::Normal normal(vector.normalize());
 
 				intersections.push_back(Trace::Intersection(this, distance, normal, point));
 			}
@@ -60,18 +60,18 @@ void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &i
 			
 			if(point.z() >= 0 && point.z() <= 1)
 			{
-				Math::Vector normal(point);
-				normal.setZ(0);
-				normal = normal.normalize();
-				normal.setZ(-1);
-				normal = normal.normalize();
+				Math::Vector vector(point);
+				vector.setZ(0);
+				vector = vector.normalize();
+				vector.setZ(-1);
+				Math::Normal normal(vector.normalize());
 
 				intersections.push_back(Trace::Intersection(this, distance, normal, point));
 			}
 		}
 	}
 
-	Trace::Intersection intersection = Disk::intersectDisk(this, ray, Math::Vector(0, 0, 1), 1);
+	Trace::Intersection intersection = Disk::intersectDisk(this, ray, Math::Normal(0, 0, 1), 1);
 	if(intersection.valid())
 		intersections.push_back(intersection);
 }

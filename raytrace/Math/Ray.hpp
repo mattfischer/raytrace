@@ -7,6 +7,7 @@
 
 namespace Math {
 
+class Transformation;
 class Ray
 {
 public:
@@ -17,22 +18,32 @@ public:
 	Ray(const Ray &c);
 	Ray &operator=(const Ray &c);
 
-	const Point &origin() const { return mOrigin; }
+	const Point &origin() const;
 	void setOrigin(const Point &origin);
 
-	const Vector &direction() const { return mDirection; }
+	const Vector &direction() const;
 	void setDirection(const Vector &direction);
 
 	int generation() const;
 	void setGeneration(int generation);
-
-	Ray transform(const Matrix &transformation) const;
 
 protected:
 	Point mOrigin;
 	Vector mDirection;
 	int mGeneration;
 };
+
+Ray operator*(const Transformation &transformation, const Ray &ray);
+
+inline const Point &Ray::origin() const
+{
+	return mOrigin;
+}
+
+inline const Vector &Ray::direction() const
+{
+	return mDirection;
+}
 
 }
 

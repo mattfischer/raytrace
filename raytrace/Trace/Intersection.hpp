@@ -1,7 +1,7 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
-#include "Math/Vector.hpp"
+#include "Math/Normal.hpp"
 #include "Math/Transformation.hpp"
 
 namespace Object {
@@ -16,7 +16,7 @@ class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Object::Primitive::Base *primitive, double distance, const Math::Vector &objectNormal, const Math::Point &objectPoint);
+	Intersection(const Object::Primitive::Base *primitive, double distance, const Math::Normal &objectNormal, const Math::Point &objectPoint);
 	Intersection(const Intersection &c);
 	Intersection &operator=(const Intersection &c);
 
@@ -29,10 +29,10 @@ public:
 	double distance() const;
 	void setDistance(double distance);
 
-	const Math::Vector &normal() const;
+	const Math::Normal &normal() const;
 
-	const Math::Vector &objectNormal() const;
-	void setObjectNormal(const Math::Vector &objectNormal);
+	const Math::Normal &objectNormal() const;
+	void setObjectNormal(const Math::Normal &objectNormal);
 
 	const Math::Point &point() const;
 
@@ -50,10 +50,10 @@ protected:
 	bool mValid;
 	const Object::Primitive::Base *mPrimitive;
 	double mDistance;
-	Math::Vector mObjectNormal;
+	Math::Normal mObjectNormal;
 	Math::Point mObjectPoint;
 	mutable Math::Point mPoint;
-	mutable Math::Vector mNormal;
+	mutable Math::Normal mNormal;
 	mutable bool mTransformed;
 	Math::Transformation mTransformation;
 	bool mCompositeTransformed;

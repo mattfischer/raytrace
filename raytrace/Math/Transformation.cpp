@@ -109,13 +109,8 @@ Transformation::Transformation()
 }
 
 Transformation::Transformation(const Matrix &matrix, const Matrix &inverseMatrix)
-: mMatrix(matrix), mInverseMatrix(inverseMatrix),
-  mMatrixTranspose(matrix.transpose()), mInverseMatrixTranspose(inverseMatrix.transpose())
+: mMatrix(matrix), mInverseMatrix(inverseMatrix)
 {
-	mOrigin = mMatrix.origin();
-	mInverseOrigin = mInverseMatrix.origin();
-	mTransposeOrigin = mMatrixTranspose.origin();
-	mInverseTransposeOrigin = mInverseMatrixTranspose.origin();
 }
 
 Transformation Transformation::fromAst(AST *ast)
@@ -127,13 +122,13 @@ Transformation Transformation::fromAst(AST *ast)
 		switch(ast->children[i]->type)
 		{
 		case AstTranslate:
-			t = translate(Math::Vector(ast->children[i]->data._vector)).transformTransformation(t);
+			t = translate(Math::Vector(ast->children[i]->data._vector)) * t;
 			break;
 		case AstRotate:
-			t = rotate(Math::Vector(ast->children[i]->data._vector)).transformTransformation(t);
+			t = rotate(Math::Vector(ast->children[i]->data._vector)) * t;
 			break;
 		case AstScale:
-			t = scale(Math::Vector(ast->children[i]->data._vector)).transformTransformation(t);
+			t = scale(Math::Vector(ast->children[i]->data._vector)) *t;
 			break;
 		}
 	}
@@ -141,132 +136,14 @@ Transformation Transformation::fromAst(AST *ast)
 	return t;
 }
 
-Transformation::Transformation(const Transformation &c)
-: mMatrix(c.mMatrix), 
-  mInverseMatrix(c.mInverseMatrix), 
-  mMatrixTranspose(c.mMatrixTranspose),
-  mInverseMatrixTranspose(c.mInverseMatrixTranspose),
-  mOrigin(c.mOrigin), 
-  mInverseOrigin(c.mInverseOrigin),
-  mTransposeOrigin(c.mTransposeOrigin), 
-  mInverseTransposeOrigin(c.mInverseTransposeOrigin)
+Point Transformation::origin() const
 {
+	return Point(mMatrix(3,0), mMatrix(3,1), mMatrix(3,2));
 }
 
-Transformation &Transformation::operator=(const Transformation &c)
+Transformation operator*(const Transformation &a, const Transformation &b)
 {
-	mMatrix = c.mMatrix;
-	mInverseMatrix = c.mInverseMatrix;
-	mMatrixTranspose = c.mMatrixTranspose;
-	mInverseMatrixTranspose = c.mInverseMatrixTranspose;
-
-	mOrigin = c.mOrigin;
-	mInverseOrigin = c.mInverseOrigin;
-	mTransposeOrigin = c.mTransposeOrigin;
-	mInverseTransposeOrigin = c.mInverseTransposeOrigin;
-
-	return *this;
-}
-
-
-const Matrix &Transformation::matrix() const
-{
-	return mMatrix;
-}
-
-const Matrix &Transformation::inverseMatrix() const
-{
-	return mInverseMatrix;
-}
-
-const Matrix &Transformation::matrixTranspose() const
-{
-	return mMatrixTranspose;
-}
-
-const Matrix &Transformation::inverseMatrixTranspose() const
-{
-	return mInverseMatrixTranspose;
-}
-
-const Point &Transformation::origin() const
-{
-	return mOrigin;
-}
-
-const Point &Transformation::inverseOrigin() const
-{
-	return mInverseOrigin;
-}
-
-const Point &Transformation::transposeOrigin() const
-{
-	return mTransposeOrigin;
-}
-
-const Point &Transformation::inverseTransposeOrigin() const
-{
-	return mInverseTransposeOrigin;
-}
-
-Matrix Transformation::transformMatrix(const Matrix &matrix) const
-{
-	return mMatrix * matrix;
-}
-
-Point Transformation::transformPoint(const Point &point) const
-{
-	return mMatrix * point;
-}
-
-Vector Transformation::transformDirection(const Vector &direction) const
-{
-	return mMatrix * direction;
-}
-
-Vector Transformation::transformNormal(const Vector &normal) const
-{
-	return (mInverseMatrixTranspose * normal).normalize();
-}
-
-Ray Transformation::transformRay(const Ray &ray) const
-{
-	return Ray(transformPoint(ray.origin()), transformDirection(ray.direction()));
-}
-
-Transformation Transformation::transformTransformation(const Transformation &transformation) const
-{
-	return Transformation(transformation.matrix() * mMatrix, mInverseMatrix * transformation.inverseMatrix());
-}
-
-Matrix Transformation::inverseTransformMatrix(const Matrix &matrix) const
-{
-	return mInverseMatrix * matrix;
-}
-
-Point Transformation::inverseTransformPoint(const Point &point) const
-{
-	return mInverseMatrix * point;
-}
-
-Vector Transformation::inverseTransformDirection(const Vector &direction) const
-{
-	return mInverseMatrix * direction;
-}
-
-Vector Transformation::inverseTransformNormal(const Vector &normal) const
-{
-	return (mMatrixTranspose * normal).normalize();
-}
-
-Ray Transformation::inverseTransformRay(const Ray &ray) const
-{
-	return Ray(inverseTransformPoint(ray.origin()), inverseTransformDirection(ray.direction()));
-}
-
-Transformation Transformation::inverseTransformTransformation(const Transformation &transformation) const
-{
-	return Transformation(transformation.inverseMatrix() * mInverseMatrix, mMatrix * transformation.matrix());
+	return Transformation(b.matrix() * a.matrix(), a.inverseMatrix() * b.inverseMatrix());
 }
 
 }

@@ -1,10 +1,17 @@
 #include "Math/Vector.hpp"
 #include "Math/Point.hpp"
+#include "Math/Transformation.hpp"
+#include "Math/Normal.hpp"
 
 namespace Math {
 
 Vector::Vector(const Point &point)
 : Coordinate(point)
+{
+}
+
+Vector::Vector(const Normal &normal)
+: Coordinate(normal)
 {
 }
 
@@ -53,6 +60,11 @@ Vector Vector::operator/(double b) const
 Vector Vector::operator-() const
 {
 	return *this * -1;
+}
+
+Vector operator*(const Transformation &transformation, const Vector &vector)
+{
+	return Vector(transformation.matrix() * vector);
 }
 
 }

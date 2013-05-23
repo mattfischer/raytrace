@@ -70,7 +70,7 @@ Object::Color Tracer::doLighting(const Math::Ray &ray, const Intersection &inter
 			diffuse_coeff = abs(intersection.normal() * lightDir);
 
 			Math::Vector incident = -lightDir;
-			Math::Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
+			Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
 			double dot = reflect * (mScene->camera()->transformation().origin() - point).normalize();
 
@@ -87,7 +87,7 @@ Object::Color Tracer::doLighting(const Math::Ray &ray, const Intersection &inter
 	if(texture->finish()->reflection() > 0 && ray.generation() < mSettings.maxRayGeneration)
 	{
 		Math::Vector incident = ray.direction();
-		Math::Vector reflect = incident + intersection.normal() * (2 * (-intersection.normal() * incident));
+		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
 		Math::Ray reflectRay(intersection.point(), reflect);
 		reflectRay.setGeneration(ray.generation() + 1);

@@ -9,6 +9,8 @@
 namespace Math {
 
 class Point;
+class Normal;
+class Transformation;
 class Vector : public Coordinate
 {
 public:
@@ -17,6 +19,8 @@ public:
 	Vector(double x, double y, double z);
 	explicit Vector(const ASTVector &astVector);
 	explicit Vector(const Point &point);
+	explicit Vector(const Normal &normal);
+	explicit Vector(const Coordinate &c);
 
 	Vector normalize() const;
 	double magnitude() const;
@@ -30,21 +34,27 @@ public:
 	Vector operator-() const;
 };
 
+Vector operator*(const Transformation &transformation, const Vector &vector);
 
 inline Vector::Vector()
 {}
 
 inline Vector::Vector(double x, double y, double z)
-: Coordinate(x, y, z)
+: Coordinate(x, y, z, 0)
 {
 }
 
 inline Vector::Vector(const ASTVector &astVector)
-: Coordinate(astVector)
+: Coordinate(astVector, 0)
 {
 }
 
 inline Vector::Vector(const Vector &c)
+: Coordinate(c)
+{
+}
+
+inline Vector::Vector(const Coordinate &c)
 : Coordinate(c)
 {
 }

@@ -45,11 +45,6 @@ void Ray::setDirection(const Vector &direction)
 	mDirection = direction;
 }
 
-Ray Ray::transform(const Matrix &transformation) const 
-{
-	return Ray(transformation * mOrigin, transformation * mDirection - transformation * Vector(0, 0, 0));
-}
-
 int Ray::generation() const
 {
 	return mGeneration;
@@ -58,6 +53,11 @@ int Ray::generation() const
 void Ray::setGeneration(int generation)
 {
 	mGeneration = generation;
+}
+
+Ray operator*(const Transformation &transformation, const Ray &ray)
+{
+	return Ray(transformation * ray.origin(), transformation * ray.direction() - transformation * Vector(0, 0, 0));
 }
 
 }

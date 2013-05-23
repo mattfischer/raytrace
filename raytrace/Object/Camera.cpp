@@ -41,7 +41,7 @@ Math::Ray Camera::createRay(double x, double y, double hFOV, double vFOV)
 	rayX = tan(rad(hFOV/2)) * (2*x - 1);
 	rayY = -tan(rad(vFOV/2)) * (2*y - 1);
 
-	return Math::Ray(transformation().origin(), transformation().transformDirection(Math::Vector(rayX, rayY, 1).normalize()));
+	return Math::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize());
 }
 
 }

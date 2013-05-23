@@ -182,6 +182,14 @@
 				Name="Math"
 				>
 				<File
+					RelativePath=".\Math\Matrix.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\Normal.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Math\Point.cpp"
 					>
 				</File>
@@ -399,6 +407,10 @@
 				</File>
 				<File
 					RelativePath=".\Math\Matrix.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Math\Normal.hpp"
 					>
 				</File>
 				<File

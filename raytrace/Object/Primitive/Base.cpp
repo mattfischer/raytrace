@@ -82,14 +82,14 @@ void Base::setTexture(Texture *texture)
 
 void Base::intersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
-	Math::Ray transformedRay = mTransformation.inverseTransformRay(ray);
+	Math::Ray transformedRay = mTransformation.inverse() * ray;
 
 	doIntersect(transformedRay, intersections);
 }
 
 bool Base::inside(const Math::Point &point) const
 {
-	Math::Point transformedPoint = mTransformation.inverseTransformPoint(point);
+	Math::Point transformedPoint = mTransformation.inverse() * point;
 
 	return doInside(transformedPoint);
 }
