@@ -153,7 +153,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 	settings.lighting = true;
 	settings.maxRayGeneration = 2;
 	settings.antialias = 1;
-	settings.hFOV = 45;
 
 	tracer = new Trace::Tracer(scene, settings);
 

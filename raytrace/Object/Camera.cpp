@@ -10,16 +10,14 @@ static float rad(float deg)
 	return deg * 3.14 / 180.0;
 }
 
-#define DEFAULT_FOV 45
-#define DEFAULT_ASPECT_RATIO 
-
-Camera::Camera()
+Camera::Camera(int hFOV)
 {
+	mWidth = tan(rad(hFOV/2));
 }
 
 Camera *Camera::fromAst(AST *ast)
 {
-	Camera *camera = new Camera();
+	Camera *camera = new Camera(45);
 
 	for(int i=0; i<ast->numChildren; i++)
 	{
@@ -34,12 +32,12 @@ Camera *Camera::fromAst(AST *ast)
 	return camera;
 }
 
-Trace::Ray Camera::createRay(float x, float y, float hFOV, float vFOV)
+Trace::Ray Camera::createRay(float x, float y, float aspectRatio)
 {
 	float rayX, rayY;
 
-	rayX = tan(rad(hFOV/2)) * (2*x - 1);
-	rayY = -tan(rad(vFOV/2)) * (2*y - 1);
+	rayX = mWidth * (2*x - 1);
+	rayY = -mWidth * aspectRatio * (2*y - 1);
 
 	return Trace::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize());
 }

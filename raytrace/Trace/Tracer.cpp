@@ -122,7 +122,7 @@ Object::Color Tracer::tracePixel(int x, int y) const
 	for(int i=0; i<mSettings.antialias; i++)
 		for(int j=0; j<mSettings.antialias; j++)
 		{
-			Trace::Ray ray = mScene->camera()->createRay((x + (float)i / mSettings.antialias) / mSettings.width, (y + (float)j / mSettings.antialias) / mSettings.height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
+			Trace::Ray ray = mScene->camera()->createRay((x + (float)i / mSettings.antialias) / mSettings.width, (y + (float)j / mSettings.antialias) / mSettings.height, aspectRatio);
 			color = color + traceRay(ray);
 		}
 
