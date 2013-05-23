@@ -8,17 +8,13 @@ Ray::Ray()
 }
 
 Ray::Ray(const Math::Point &origin, const Math::Vector &direction)
+: mOrigin(origin), mDirection(direction), mGeneration(1)
 {
-	mOrigin = origin;
-	mDirection = direction;
-	mGeneration = 1;
 }
 
 Ray::Ray(const Ray &c)
+: mOrigin(c.origin()), mDirection(c.direction()), mGeneration(c.generation())
 {
-	mOrigin = c.origin();
-	mDirection = c.direction();
-	mGeneration = c.generation();
 }
 
 Ray &Ray::operator=(const Ray &c)
@@ -55,7 +51,7 @@ void Ray::setGeneration(int generation)
 	mGeneration = generation;
 }
 
-Ray operator*(const Math::Transformation &transformation, const Ray &ray)
+Ray operator*(const Math::BaseTransformation &transformation, const Ray &ray)
 {
 	return Ray(transformation * ray.origin(), transformation * ray.direction() - transformation * Math::Vector(0, 0, 0));
 }

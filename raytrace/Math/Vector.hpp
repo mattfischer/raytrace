@@ -10,7 +10,7 @@ namespace Math {
 
 class Point;
 class Normal;
-class Transformation;
+class BaseTransformation;
 class Vector : public Coordinate
 {
 public:
@@ -34,7 +34,7 @@ public:
 	Vector operator-() const;
 };
 
-Vector operator*(const Transformation &transformation, const Vector &vector);
+Vector operator*(const BaseTransformation &transformation, const Vector &vector);
 
 inline Vector::Vector()
 {}

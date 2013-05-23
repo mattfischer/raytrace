@@ -32,7 +32,7 @@ protected:
 	int mGeneration;
 };
 
-Ray operator*(const Math::Transformation &transformation, const Ray &ray);
+Ray operator*(const Math::BaseTransformation &transformation, const Ray &ray);
 
 inline const Math::Point &Ray::origin() const
 {

@@ -9,7 +9,7 @@
 namespace Math {
 
 class Point;
-class Transformation;
+class BaseTransformation;
 class Vector;
 class Normal : public Coordinate
 {
@@ -26,7 +26,7 @@ public:
 	Normal operator-() const;
 };
 
-Normal operator*(const Transformation &transformation, const Normal &normal);
+Normal operator*(const BaseTransformation &transformation, const Normal &normal);
 float operator*(const Vector &vector, const Normal &normal);
 
 inline Normal::Normal()

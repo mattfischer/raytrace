@@ -3,7 +3,14 @@
 
 #include <math.h>
 
+#pragma warning( disable : 4355 )
+
 namespace Math {
+
+Point BaseTransformation::origin() const
+{
+	return Point(matrix().at(3,0), matrix().at(3,1), matrix().at(3,2));
+}
 
 Transformation Transformation::translate(const Vector &vector)
 {
@@ -106,11 +113,12 @@ Transformation Transformation::rotate(float x, float y, float z)
 }
 
 Transformation::Transformation()
+: mInverse(*this)
 {
 }
 
 Transformation::Transformation(const Matrix &matrix, const Matrix &inverseMatrix)
-: mMatrix(matrix), mInverseMatrix(inverseMatrix)
+: mMatrix(matrix), mInverseMatrix(inverseMatrix), mInverse(*this)
 {
 }
 
@@ -137,12 +145,22 @@ Transformation Transformation::fromAst(AST *ast)
 	return t;
 }
 
-Point Transformation::origin() const
+Transformation::Transformation(const BaseTransformation &c)
+: mMatrix(c.matrix()),
+  mInverseMatrix(c.inverseMatrix()),
+  mInverse(*this)
 {
-	return Point(mMatrix(3,0), mMatrix(3,1), mMatrix(3,2));
 }
 
-Transformation operator*(const Transformation &a, const Transformation &b)
+Transformation &Transformation::operator=(const BaseTransformation &c)
+{
+	mMatrix = c.matrix();
+	mInverseMatrix = c.inverseMatrix();
+
+	return *this;
+}
+
+Transformation operator*(const BaseTransformation &a, const BaseTransformation &b)
 {
 	return Transformation(b.matrix() * a.matrix(), a.inverseMatrix() * b.inverseMatrix());
 }

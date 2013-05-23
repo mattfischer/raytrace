@@ -9,7 +9,7 @@
 namespace Math {
 
 class Vector;
-class Transformation;
+class BaseTransformation;
 class Point : public Coordinate
 {
 public:
@@ -24,7 +24,7 @@ public:
 	Vector operator-(const Point &b) const;
 };
 
-Point operator*(const Transformation &transformation, const Point &point);
+Point operator*(const BaseTransformation &transformation, const Point &point);
 
 inline Point::Point()
 {}

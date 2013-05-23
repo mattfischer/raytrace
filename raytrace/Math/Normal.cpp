@@ -15,7 +15,7 @@ float Normal::operator*(const Normal &b) const
 	return x() * b.x() + y() * b.y() + z() * b.z();
 }
 
-Normal operator*(const Transformation &transformation, const Normal &normal)
+Normal operator*(const BaseTransformation &transformation, const Normal &normal)
 {
 	return Normal(normal * transformation.inverseMatrix());
 }

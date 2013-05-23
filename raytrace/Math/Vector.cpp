@@ -62,7 +62,7 @@ Vector Vector::operator-() const
 	return *this * -1;
 }
 
-Vector operator*(const Transformation &transformation, const Vector &vector)
+Vector operator*(const BaseTransformation &transformation, const Vector &vector)
 {
 	return Vector(transformation.matrix() * vector);
 }

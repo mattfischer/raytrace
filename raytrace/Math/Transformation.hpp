@@ -7,7 +7,31 @@
 
 namespace Math {
 
-class Transformation
+class BaseTransformation {
+public:
+	virtual const BaseTransformation &inverse() const = 0;
+
+	virtual const Matrix &matrix() const = 0;
+	virtual const Matrix &inverseMatrix() const = 0;
+
+	Point origin() const;
+};
+
+class Transformation;
+class InverseTransformation : public BaseTransformation
+{
+public:
+	InverseTransformation(const Transformation &transformation);
+	const BaseTransformation &inverse() const;
+
+	const Matrix &matrix() const;
+	const Matrix &inverseMatrix() const;
+
+private:
+	const Transformation &mTransformation;
+};
+
+class Transformation : public BaseTransformation
 {
 public:
 	static Transformation translate(float x, float y, float z);
@@ -25,40 +49,45 @@ public:
 
 	Transformation();
 	Transformation(const Matrix &matrix, const Matrix &inverseMatrix);
-	Transformation(const Transformation &c);
-	Transformation &operator=(const Transformation &c);
+	explicit Transformation(const BaseTransformation &c);
+	Transformation &operator=(const BaseTransformation &c);
 
-	Transformation inverse() const;
+	const BaseTransformation &inverse() const;
 
 	const Matrix &matrix() const;
 	const Matrix &inverseMatrix() const;
 
-	Point origin() const;
-
 protected:
 	Matrix mMatrix;
 	Matrix mInverseMatrix;
+	InverseTransformation mInverse;
 };
 
-Transformation operator*(const Transformation &a, const Transformation &b);
+Transformation operator*(const BaseTransformation &a, const BaseTransformation &b);
 
-inline Transformation::Transformation(const Transformation &c)
-: mMatrix(c.mMatrix), 
-  mInverseMatrix(c.mInverseMatrix)
+inline InverseTransformation::InverseTransformation(const Transformation &transformation)
+: mTransformation(transformation)
 {
 }
 
-inline Transformation &Transformation::operator=(const Transformation &c)
+inline const BaseTransformation &InverseTransformation::inverse() const
 {
-	mMatrix = c.mMatrix;
-	mInverseMatrix = c.mInverseMatrix;
-
-	return *this;
+	return mTransformation;
 }
 
-inline Transformation Transformation::inverse() const
+inline const Matrix &InverseTransformation::matrix() const
 {
-	return Transformation(mInverseMatrix, mMatrix);
+	return mTransformation.inverseMatrix();
+}
+
+inline const Matrix &InverseTransformation::inverseMatrix() const
+{
+	return mTransformation.matrix();
+}
+
+inline const BaseTransformation &Transformation::inverse() const
+{
+	return mInverse;
 }
 
 inline const Matrix &Transformation::matrix() const
