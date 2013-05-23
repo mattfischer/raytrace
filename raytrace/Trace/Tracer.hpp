@@ -33,8 +33,8 @@ public:
 	Object::Color tracePixel(int x, int y) const;
 
 protected:
-	Object::Color doLighting(const Math::Ray &ray, const Intersection &intersection) const;
-	Object::Color traceRay(const Math::Ray &ray) const;
+	Object::Color doLighting(const Trace::Ray &ray, const Intersection &intersection) const;
+	Object::Color traceRay(const Trace::Ray &ray) const;
 
 	Object::Scene *mScene;
 	Settings mSettings;

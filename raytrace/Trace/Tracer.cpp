@@ -34,7 +34,7 @@ void Tracer::setScene(Object::Scene *scene)
 	mScene = scene;
 }
 
-Object::Color Tracer::doLighting(const Math::Ray &ray, const Intersection &intersection) const
+Object::Color Tracer::doLighting(const Trace::Ray &ray, const Intersection &intersection) const
 {
 	Math::Point point(intersection.point());
 	Object::Texture *texture = intersection.primitive()->texture();
@@ -56,7 +56,7 @@ Object::Color Tracer::doLighting(const Math::Ray &ray, const Intersection &inter
 		double diffuse_coeff = 0;
 		double specular_coeff = 0;
 		
-		Math::Ray lightRay = Math::Ray::createFromPoints(point, light->transformation().origin());
+		Trace::Ray lightRay = Trace::Ray::createFromPoints(point, light->transformation().origin());
 
 		mLightIntersections.clear();
 		mScene->findIntersections(lightRay, mLightIntersections);
@@ -89,7 +89,7 @@ Object::Color Tracer::doLighting(const Math::Ray &ray, const Intersection &inter
 		Math::Vector incident = ray.direction();
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
-		Math::Ray reflectRay(intersection.point(), reflect);
+		Trace::Ray reflectRay(intersection.point(), reflect);
 		reflectRay.setGeneration(ray.generation() + 1);
 
 		Object::Color c = traceRay(reflectRay);
@@ -100,7 +100,7 @@ Object::Color Tracer::doLighting(const Math::Ray &ray, const Intersection &inter
 	return totalColor.clamp();
 }
 
-Object::Color Tracer::traceRay(const Math::Ray &ray) const
+Object::Color Tracer::traceRay(const Trace::Ray &ray) const
 {
 	mIntersections.clear();
 	mScene->findIntersections(ray, mIntersections);
@@ -122,7 +122,7 @@ Object::Color Tracer::tracePixel(int x, int y) const
 	for(int i=0; i<mSettings.antialias; i++)
 		for(int j=0; j<mSettings.antialias; j++)
 		{
-			Math::Ray ray = mScene->camera()->createRay((x + (double)i / mSettings.antialias) / mSettings.width, (y + (double)j / mSettings.antialias) / mSettings.height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
+			Trace::Ray ray = mScene->camera()->createRay((x + (double)i / mSettings.antialias) / mSettings.width, (y + (double)j / mSettings.antialias) / mSettings.height, mSettings.hFOV, mSettings.hFOV * aspectRatio);
 			color = color + traceRay(ray);
 		}
 

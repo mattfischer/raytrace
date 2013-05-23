@@ -17,7 +17,7 @@ Sphere *Sphere::fromAst(AST *ast)
 	return new Sphere();
 }
 
-void Sphere::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Sphere::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	Trace::Intersection intersection;
 	double a, b, c;

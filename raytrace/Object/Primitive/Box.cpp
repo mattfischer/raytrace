@@ -16,7 +16,7 @@ Box *Box::fromAst(AST *ast)
 	return new Box();
 }
 
-void Box::testIntersect(const Math::Ray &ray, const Math::Normal &normal, std::vector<Trace::Intersection> &intersections) const
+void Box::testIntersect(const Trace::Ray &ray, const Math::Normal &normal, std::vector<Trace::Intersection> &intersections) const
 {
 	Trace::Intersection newIntersection = Plane::intersectPlane(this, ray, normal, 1);
 	Math::Point point;
@@ -32,7 +32,7 @@ void Box::testIntersect(const Math::Ray &ray, const Math::Normal &normal, std::v
 	}
 }
 
-void Box::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Box::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	Trace::Intersection intersection;
 	Trace::Intersection newIntersection;

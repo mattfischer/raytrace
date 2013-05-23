@@ -10,7 +10,7 @@ Torus::Torus()
 {
 }
 
-bool cylIntersect(const Math::Ray &ray, double radius, double results[])
+bool cylIntersect(const Trace::Ray &ray, double radius, double results[])
 {
 	double a, b, c;
 	double disc;
@@ -31,7 +31,7 @@ bool cylIntersect(const Math::Ray &ray, double radius, double results[])
 	return false;
 }
 
-void Torus::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Torus::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	double r = 0.25;
 	double r2 = r * r;

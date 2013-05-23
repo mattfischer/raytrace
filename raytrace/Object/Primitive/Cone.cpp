@@ -22,7 +22,7 @@ Cone *Cone::fromAst(AST *ast)
 	return new Cone();
 }
 
-void Cone::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Cone::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	double a, b, c;
 	double disc;

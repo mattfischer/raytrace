@@ -2,7 +2,7 @@
 #define CAMERA_H
 
 #include "Object/Base.hpp"
-#include "Math/Ray.hpp"
+#include "Trace/Ray.hpp"
 
 namespace Object {
 
@@ -13,7 +13,7 @@ public:
 
 	static Camera *fromAst(AST *ast);
 
-	Math::Ray createRay(double x, double y, double hFOV, double vFOV);
+	Trace::Ray createRay(double x, double y, double hFOV, double vFOV);
 };
 
 }

@@ -1,13 +1,13 @@
-#include "Math/Ray.hpp"
+#include "Trace/Ray.hpp"
 
-namespace Math {
+namespace Trace {
 
 Ray::Ray()
 {
 	mGeneration = 1;
 }
 
-Ray::Ray(const Point &origin, const Vector &direction)
+Ray::Ray(const Math::Point &origin, const Math::Vector &direction)
 {
 	mOrigin = origin;
 	mDirection = direction;
@@ -30,17 +30,17 @@ Ray &Ray::operator=(const Ray &c)
 	return *this;
 }
 
-Ray Ray::createFromPoints(const Point &point1, const Point &point2)
+Ray Ray::createFromPoints(const Math::Point &point1, const Math::Point &point2)
 {
 	return Ray(point1, (point2 - point1).normalize());
 }
 
-void Ray::setOrigin(const Point &origin)
+void Ray::setOrigin(const Math::Point &origin)
 {
 	mOrigin = origin;
 }
 
-void Ray::setDirection(const Vector &direction)
+void Ray::setDirection(const Math::Vector &direction)
 {
 	mDirection = direction;
 }
@@ -55,9 +55,9 @@ void Ray::setGeneration(int generation)
 	mGeneration = generation;
 }
 
-Ray operator*(const Transformation &transformation, const Ray &ray)
+Ray operator*(const Math::Transformation &transformation, const Ray &ray)
 {
-	return Ray(transformation * ray.origin(), transformation * ray.direction() - transformation * Vector(0, 0, 0));
+	return Ray(transformation * ray.origin(), transformation * ray.direction() - transformation * Math::Vector(0, 0, 0));
 }
 
 }

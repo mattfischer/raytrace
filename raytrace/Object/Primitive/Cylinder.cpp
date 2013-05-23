@@ -22,7 +22,7 @@ Cylinder *Cylinder::fromAst(AST *ast)
 	return new Cylinder();
 }
 
-void Cylinder::doIntersect(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Cylinder::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
 {
 	double a, b, c;
 	double disc;

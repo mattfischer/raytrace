@@ -198,10 +198,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Math\Ray.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Math\Transformation.cpp"
 					>
 				</File>
@@ -360,6 +356,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Trace\Ray.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Trace\Tracer.cpp"
 					>
 				</File>
@@ -419,10 +419,6 @@
 				</File>
 				<File
 					RelativePath=".\Math\PolySolve.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Math\Ray.hpp"
 					>
 				</File>
 				<File
@@ -527,6 +523,10 @@
 				>
 				<File
 					RelativePath=".\Trace\Intersection.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Trace\Ray.hpp"
 					>
 				</File>
 				<File

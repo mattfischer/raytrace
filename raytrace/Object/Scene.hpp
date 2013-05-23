@@ -28,7 +28,7 @@ public:
 	const std::vector<Primitive::Base*> &primitives() const;
 	void addPrimitive(Primitive::Base *primitive);
 
-	void findIntersections(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections);
+	void findIntersections(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections);
 
 protected:
 	Camera *mCamera;

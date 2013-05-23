@@ -81,7 +81,7 @@ void Scene::addPrimitive(Primitive::Base *primitive)
 	mPrimitives.push_back(primitive);
 }
 
-void Scene::findIntersections(const Math::Ray &ray, std::vector<Trace::Intersection> &intersections)
+void Scene::findIntersections(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections)
 {
 	int i;
 	
