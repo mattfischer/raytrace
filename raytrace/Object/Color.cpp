@@ -39,36 +39,6 @@ Color &Color::operator=(const Color &c)
 	return *this;
 }
 
-float Color::red() const
-{
-	return mRed;
-}
-
-void Color::setRed(float red)
-{
-	mRed = red;
-}
-
-float Color::green() const
-{
-	return mGreen;
-}
-
-void Color::setGreen(float green)
-{
-	mGreen = green;
-}
-
-float Color::blue() const
-{
-	return mBlue;
-}
-
-void Color::setBlue(float blue)
-{
-	mBlue = blue;
-}
-
 Color Color::scale(float b) const
 {
 	return Color(mRed * b, mGreen * b, mBlue * b);

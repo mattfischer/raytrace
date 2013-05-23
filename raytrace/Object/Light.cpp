@@ -12,8 +12,8 @@ Light::Light(const Color &color)
 }
 
 Light::Light(const Light &c)
+: mColor(c.mColor)
 {
-	mColor = c.mColor;
 }
 
 Light *Light::fromAst(AST *ast)
@@ -42,16 +42,6 @@ Light &Light::operator=(const Light &c)
 	mColor = c.mColor;
 
 	return *this;
-}
-
-const Color &Light::color() const
-{
-	return mColor;
-}
-
-void Light::setColor(const Color &color)
-{
-	mColor = color;
 }
 
 }

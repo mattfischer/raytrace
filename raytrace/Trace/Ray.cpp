@@ -31,26 +31,6 @@ Ray Ray::createFromPoints(const Math::Point &point1, const Math::Point &point2)
 	return Ray(point1, (point2 - point1).normalize());
 }
 
-void Ray::setOrigin(const Math::Point &origin)
-{
-	mOrigin = origin;
-}
-
-void Ray::setDirection(const Math::Vector &direction)
-{
-	mDirection = direction;
-}
-
-int Ray::generation() const
-{
-	return mGeneration;
-}
-
-void Ray::setGeneration(int generation)
-{
-	mGeneration = generation;
-}
-
 Ray operator*(const Math::BaseTransformation &transformation, const Ray &ray)
 {
 	return Ray(transformation * ray.origin(), transformation * ray.direction() - transformation * Math::Vector(0, 0, 0));

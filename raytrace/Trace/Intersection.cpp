@@ -58,36 +58,6 @@ Intersection &Intersection::operator=(const Intersection &c)
 	return *this;
 }
 
-bool Intersection::valid() const
-{
-	return mValid;
-}
-
-void Intersection::setValid(bool valid)
-{
-	mValid = valid;
-}
-
-const Object::Primitive::Base *Intersection::primitive() const
-{
-	return mPrimitive;
-}
-
-void Intersection::setPrimitive(const Object::Primitive::Base *primitive)
-{
-	mPrimitive = primitive;
-}
-
-float Intersection::distance() const
-{
-	return mDistance;
-}
-
-void Intersection::setDistance(float distance)
-{
-	mDistance = distance;
-}
-
 const Math::Normal &Intersection::normal() const
 {
 	if(!mTransformed)
@@ -96,36 +66,12 @@ const Math::Normal &Intersection::normal() const
 	return mNormal;
 }
 
-const Math::Normal &Intersection::objectNormal() const
-{
-	return mObjectNormal;
-}
-
-void Intersection::setObjectNormal(const Math::Normal &objectNormal)
-{
-	mTransformed = false;
-
-	mObjectNormal = objectNormal;
-}
-
 const Math::Point &Intersection::point() const
 {
 	if(!mTransformed)
 		doTransform();
 
 	return mPoint;
-}
-
-const Math::Point &Intersection::objectPoint() const
-{
-	return mObjectPoint;
-}
-
-void Intersection::setObjectPoint(const Math::Point &objectPoint) 
-{
-	mTransformed = false;
-
-	mObjectPoint = objectPoint;
 }
 
 void Intersection::transform(const Math::Transformation &transformation)
