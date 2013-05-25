@@ -14,32 +14,32 @@ HDC backBuffer;
 Object::Scene *scene;
 Trace::Tracer::Settings settings;
 
-struct CallbackData {
+struct RenderState : public RenderEngine::Listener {
 	unsigned char *bits;
 	HBITMAP backBitmap;
 	BITMAPINFO bi;
 	HANDLE evnt;
 	DWORD startTime;
+	RenderEngine *engine;
+
+	void onRenderDone();
 };
 
-CallbackData *cbd;
-
-void doneCallback(RenderEngine *engine, void *data)
+void RenderState::onRenderDone()
 {
-	CallbackData *cbd = (CallbackData*)data;
-
 	DWORD endTime = GetTickCount();
 	char buf[256];
-	sprintf(buf, "Render time: %ims", endTime - cbd->startTime);
+	sprintf(buf, "Render time: %ims", endTime - startTime);
 	SetDlgItemText(hDlg, IDC_RENDER_TIME, buf);
+	KillTimer(hWnd, 0);
 
-	CloseHandle(cbd->evnt);
-	free(cbd->bits);
-	delete(cbd);
+	free(bits);
 	delete engine;
 
-	KillTimer(hWnd, 0);
+	delete this;
 }
+
+RenderState *renderState;
 
 void Render()
 {
@@ -59,21 +59,20 @@ void Render()
 	oldBitmap = SelectObject(backBuffer, (HGDIOBJ)backBitmap);
 	DeleteObject(oldBitmap);
 
-	cbd = new CallbackData;
-	cbd->bits = (BYTE*)malloc(width * height * 3);
-	memset(cbd->bits, 0, width * height * 3);
-	cbd->bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	cbd->bi.bmiHeader.biWidth = width;
-	cbd->bi.bmiHeader.biHeight = height;
-	cbd->bi.bmiHeader.biPlanes = 1;
-	cbd->bi.bmiHeader.biBitCount = 24;
-	cbd->bi.bmiHeader.biCompression = BI_RGB;
-	cbd->backBitmap = backBitmap;
-	cbd->evnt = CreateEvent(NULL, FALSE, FALSE, NULL);
+	renderState = new RenderState;
+	renderState->bits = (BYTE*)malloc(width * height * 3);
+	memset(renderState->bits, 0, width * height * 3);
+	renderState->bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	renderState->bi.bmiHeader.biWidth = width;
+	renderState->bi.bmiHeader.biHeight = height;
+	renderState->bi.bmiHeader.biPlanes = 1;
+	renderState->bi.bmiHeader.biBitCount = 24;
+	renderState->bi.bmiHeader.biCompression = BI_RGB;
+	renderState->backBitmap = backBitmap;
 
-	cbd->startTime = GetTickCount();
-	RenderEngine *engine = new RenderEngine(scene, settings);
-	engine->render(cbd->bits, doneCallback, cbd);
+	renderState->startTime = GetTickCount();
+	renderState->engine = new RenderEngine(scene, settings);
+	renderState->engine->render(renderState->bits, renderState);
 
 	SetTimer(hWnd, 0, 0, NULL);
 }
@@ -90,7 +89,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case WM_TIMER:
-			SetDIBits(backBuffer, cbd->backBitmap, 0, settings.height, cbd->bits, &cbd->bi, DIB_RGB_COLORS);
+			SetDIBits(backBuffer, renderState->backBitmap, 0, settings.height, renderState->bits, &renderState->bi, DIB_RGB_COLORS);
 			InvalidateRect(hWnd, NULL, FALSE);
 			SetTimer(hWnd, 0, 0, NULL);
 			break;

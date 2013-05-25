@@ -10,15 +10,18 @@ class RenderEngine
 public:
 	friend class WorkerThread;
 
+	class Listener {
+	public:
+		virtual void onRenderDone() = 0;
+	};
+
 	RenderEngine(Object::Scene *scene, const Trace::Tracer::Settings &settings);
 
 	Object::Scene *scene() const;
 	const Trace::Tracer::Settings &settings() const;
 	unsigned char *bits() const;
 
-	typedef void (*DoneCallback)(RenderEngine *, void*);
-
-	void render(unsigned char *bits, DoneCallback doneCallback, void *data);
+	void render(unsigned char *bits, Listener *listener);
 
 private:
 	void threadDone(WorkerThread *thread);
@@ -26,8 +29,7 @@ private:
 	Object::Scene *mScene;
 	Trace::Tracer::Settings mSettings;
 	unsigned char *mBits;
-	DoneCallback mDoneCallback;
-	void *mData;
+	Listener *mListener;
 };
 
 #endif

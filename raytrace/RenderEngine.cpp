@@ -59,11 +59,10 @@ RenderEngine::RenderEngine(Object::Scene *scene, const Trace::Tracer::Settings &
 	mSettings = settings;
 }
 
-void RenderEngine::render(unsigned char *bits, DoneCallback doneCallback, void *data)
+void RenderEngine::render(unsigned char *bits, Listener *listener)
 {
 	mBits = bits;
-	mDoneCallback = doneCallback;
-	mData = data;
+	mListener = listener;
 
 	WorkerThread *thread = new WorkerThread(this);
 	thread->start();
@@ -88,5 +87,5 @@ void RenderEngine::threadDone(WorkerThread *thread)
 {
 	delete thread;
 
-	mDoneCallback(this, mData);
+	mListener->onRenderDone();
 }
