@@ -14,8 +14,6 @@ HDC backBuffer;
 Object::Scene *scene;
 Trace::Tracer::Settings settings;
 
-#define WM_UPDATE_BITMAP WM_USER
-
 struct CallbackData {
 	unsigned char *bits;
 	HBITMAP backBitmap;
@@ -24,20 +22,7 @@ struct CallbackData {
 	DWORD startTime;
 };
 
-void lineCallback(int line, void *data)
-{
-	CallbackData *cbd = (CallbackData*)data;
-
-	PostMessage(hWnd, WM_UPDATE_BITMAP, (WPARAM)cbd, (LPARAM)line);
-	WaitForSingleObject(cbd->evnt, INFINITE);
-
-	RECT rect;
-	rect.left = 0;
-	rect.right = settings.width;
-	rect.top = line;
-	rect.bottom = line + 1;
-	InvalidateRect(hWnd, &rect, FALSE);
-}
+CallbackData *cbd;
 
 void doneCallback(RenderEngine *engine, void *data)
 {
@@ -52,6 +37,8 @@ void doneCallback(RenderEngine *engine, void *data)
 	free(cbd->bits);
 	delete(cbd);
 	delete engine;
+
+	KillTimer(hWnd, 0);
 }
 
 void Render()
@@ -72,8 +59,9 @@ void Render()
 	oldBitmap = SelectObject(backBuffer, (HGDIOBJ)backBitmap);
 	DeleteObject(oldBitmap);
 
-	CallbackData *cbd = new CallbackData;
-	cbd->bits = (BYTE*)malloc(width * 3);
+	cbd = new CallbackData;
+	cbd->bits = (BYTE*)malloc(width * height * 3);
+	memset(cbd->bits, 0, width * height * 3);
 	cbd->bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	cbd->bi.bmiHeader.biWidth = width;
 	cbd->bi.bmiHeader.biHeight = height;
@@ -85,14 +73,15 @@ void Render()
 
 	cbd->startTime = GetTickCount();
 	RenderEngine *engine = new RenderEngine(scene, settings);
-	engine->render(cbd->bits, lineCallback, doneCallback, cbd);
+	engine->render(cbd->bits, doneCallback, cbd);
+
+	SetTimer(hWnd, 0, 0, NULL);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	int x, y;
-	CallbackData *cbd;
 
 	switch(iMsg)
 	{
@@ -100,10 +89,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			PostQuitMessage(0);
 			break;
 
-		case WM_UPDATE_BITMAP:
-			cbd = (CallbackData*)wParam;
-			SetDIBits(backBuffer, cbd->backBitmap, settings.height - lParam - 1, 1, cbd->bits, &cbd->bi, DIB_RGB_COLORS);
-			SetEvent(cbd->evnt);
+		case WM_TIMER:
+			SetDIBits(backBuffer, cbd->backBitmap, 0, settings.height, cbd->bits, &cbd->bi, DIB_RGB_COLORS);
+			InvalidateRect(hWnd, NULL, FALSE);
+			SetTimer(hWnd, 0, 0, NULL);
 			break;
 
 		case WM_PAINT:

@@ -13,7 +13,6 @@ RenderEngine::RenderEngine(Object::Scene *scene, const Trace::Tracer::Settings &
 struct ThreadData {
 	RenderEngine *engine;
 	unsigned char *bits;
-	RenderEngine::LineCallback lineCallback;
 	RenderEngine::DoneCallback doneCallback;
 	void *data;
 };
@@ -23,19 +22,19 @@ static void threadFunc(void *data)
 	ThreadData *td = (ThreadData*)data;
 
 	Trace::Tracer tracer(td->engine->scene(), td->engine->settings());
-
-	for(int y=0; y<td->engine->settings().height; y++)
+	int width = td->engine->settings().width;
+	int height = td->engine->settings().height;
+	for(int y=0; y<height; y++)
 	{
-		for(int x=0; x<td->engine->settings().width; x++)
+		for(int x=0; x<width; x++)
 		{
 			Object::Color c = tracer.tracePixel(x, y);
 
-			td->bits[x*3] = c.blue() * 0xFF;
-			td->bits[x*3 + 1] = c.green() * 0xFF;
-			td->bits[x*3 + 2] = c.red() * 0xFF;
+			int scany = height - y - 1;
+			td->bits[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
+			td->bits[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
+			td->bits[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
 		}
-
-		td->lineCallback(y, td->data);
 	}
 
 	td->doneCallback(td->engine, td->data);
@@ -43,12 +42,11 @@ static void threadFunc(void *data)
 	delete td;
 }
 
-void RenderEngine::render(unsigned char *bits, LineCallback lineCallback, DoneCallback doneCallback, void *data)
+void RenderEngine::render(unsigned char *bits, DoneCallback doneCallback, void *data)
 {
 	ThreadData *td = new ThreadData;
 
 	td->bits = bits;
-	td->lineCallback = lineCallback;
 	td->doneCallback = doneCallback;
 	td->data = data;
 	td->engine = this;

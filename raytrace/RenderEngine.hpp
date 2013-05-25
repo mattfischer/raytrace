@@ -12,10 +12,9 @@ public:
 	Object::Scene *scene() const;
 	const Trace::Tracer::Settings &settings() const;
 
-	typedef void (*LineCallback)(int, void*);
 	typedef void (*DoneCallback)(RenderEngine *, void*);
 
-	void render(unsigned char *bits, LineCallback lineCallback, DoneCallback doneCallback, void *data);
+	void render(unsigned char *bits, DoneCallback doneCallback, void *data);
 
 private:
 	Object::Scene *mScene;
