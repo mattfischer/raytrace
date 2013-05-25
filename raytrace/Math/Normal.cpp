@@ -5,6 +5,30 @@
 
 namespace Math {
 
+Normal::Normal()
+{
+}
+
+Normal::Normal(float x, float y, float z)
+: Coordinate(x, y, z, 0)
+{
+}
+
+Normal::Normal(const ASTVector &astVector)
+: Coordinate(astVector, 0)
+{
+}
+
+Normal::Normal(const Normal &c)
+: Coordinate(c)
+{
+}
+
+Normal::Normal(const Coordinate &c)
+: Coordinate(c)
+{
+}
+
 Normal::Normal(const Point &point)
 : Coordinate(point.x(), point.y(), point.z(), 0)
 {

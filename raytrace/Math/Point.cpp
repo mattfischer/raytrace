@@ -4,6 +4,30 @@
 
 namespace Math {
 	
+Point::Point()
+{
+}
+
+Point::Point(float x, float y, float z)
+: Coordinate(x, y, z, 1)
+{
+}
+
+Point::Point(const ASTVector &astVector)
+: Coordinate(astVector, 1)
+{
+}
+
+Point::Point(const Point &c)
+: Coordinate(c)
+{
+}
+
+Point::Point(const Coordinate &c)
+: Coordinate(c)
+{
+}
+
 Point Point::operator+(const Vector &b) const
 {
 	return Point(x() + b.x(), y() + b.y(), z() + b.z());

@@ -61,59 +61,5 @@ protected:
 	void doTransform() const;
 };
 
-inline bool Intersection::valid() const
-{
-	return mValid;
-}
-
-inline void Intersection::setValid(bool valid)
-{
-	mValid = valid;
-}
-
-inline const Object::Primitive::Base *Intersection::primitive() const
-{
-	return mPrimitive;
-}
-
-inline void Intersection::setPrimitive(const Object::Primitive::Base *primitive)
-{
-	mPrimitive = primitive;
-}
-
-inline float Intersection::distance() const
-{
-	return mDistance;
-}
-
-inline void Intersection::setDistance(float distance)
-{
-	mDistance = distance;
-}
-
-inline const Math::Normal &Intersection::objectNormal() const
-{
-	return mObjectNormal;
-}
-
-inline void Intersection::setObjectNormal(const Math::Normal &objectNormal)
-{
-	mTransformed = false;
-
-	mObjectNormal = objectNormal;
-}
-
-inline const Math::Point &Intersection::objectPoint() const
-{
-	return mObjectPoint;
-}
-
-inline void Intersection::setObjectPoint(const Math::Point &objectPoint) 
-{
-	mTransformed = false;
-
-	mObjectPoint = objectPoint;
-}
-
 }
 #endif

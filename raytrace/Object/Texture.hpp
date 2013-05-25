@@ -34,36 +34,5 @@ protected:
 	Finish *mFinish;
 };
 
-inline const Math::Transformation &Texture::transformation() const
-{
-	return mTransformation;
-}
-
-inline Pigment::Base *Texture::pigment() const
-{
-	return mPigment;
-}
-
-inline void Texture::setPigment(Pigment::Base *pigment)
-{
-	if(mPigment)
-		delete mPigment;
-
-	mPigment = pigment;
-}
-
-inline Finish *Texture::finish() const
-{
-	return mFinish;
-}
-
-inline void Texture::setFinish(Finish *finish)
-{
-	if(mFinish)
-		delete mFinish;
-
-	mFinish = finish;
-}
-
 }
 #endif

@@ -34,36 +34,6 @@ protected:
 
 Ray operator*(const Math::BaseTransformation &transformation, const Ray &ray);
 
-inline const Math::Point &Ray::origin() const
-{
-	return mOrigin;
-}
-
-inline const Math::Vector &Ray::direction() const
-{
-	return mDirection;
-}
-
-inline void Ray::setOrigin(const Math::Point &origin)
-{
-	mOrigin = origin;
-}
-
-inline void Ray::setDirection(const Math::Vector &direction)
-{
-	mDirection = direction;
-}
-
-inline int Ray::generation() const
-{
-	return mGeneration;
-}
-
-inline void Ray::setGeneration(int generation)
-{
-	mGeneration = generation;
-}
-
 }
 
 #endif

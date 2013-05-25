@@ -36,29 +36,6 @@ public:
 
 Vector operator*(const BaseTransformation &transformation, const Vector &vector);
 
-inline Vector::Vector()
-{}
-
-inline Vector::Vector(float x, float y, float z)
-: Coordinate(x, y, z, 0)
-{
-}
-
-inline Vector::Vector(const ASTVector &astVector)
-: Coordinate(astVector, 0)
-{
-}
-
-inline Vector::Vector(const Vector &c)
-: Coordinate(c)
-{
-}
-
-inline Vector::Vector(const Coordinate &c)
-: Coordinate(c)
-{
-}
-
 }
 
 #endif

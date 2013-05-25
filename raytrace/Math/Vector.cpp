@@ -5,6 +5,30 @@
 
 namespace Math {
 
+Vector::Vector()
+{
+}
+
+Vector::Vector(float x, float y, float z)
+: Coordinate(x, y, z, 0)
+{
+}
+
+Vector::Vector(const ASTVector &astVector)
+: Coordinate(astVector, 0)
+{
+}
+
+Vector::Vector(const Vector &c)
+: Coordinate(c)
+{
+}
+
+Vector::Vector(const Coordinate &c)
+: Coordinate(c)
+{
+}
+
 Vector::Vector(const Point &point)
 : Coordinate(point)
 {

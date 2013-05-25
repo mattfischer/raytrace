@@ -38,36 +38,6 @@ protected:
 	float mBlue;
 };
 
-inline float Color::red() const
-{
-	return mRed;
-}
-
-inline void Color::setRed(float red)
-{
-	mRed = red;
-}
-
-inline float Color::green() const
-{
-	return mGreen;
-}
-
-inline void Color::setGreen(float green)
-{
-	mGreen = green;
-}
-
-inline float Color::blue() const
-{
-	return mBlue;
-}
-
-inline void Color::setBlue(float blue)
-{
-	mBlue = blue;
-}
-
 }
 
 #endif

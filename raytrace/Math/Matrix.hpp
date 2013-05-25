@@ -32,36 +32,6 @@ protected:
 Coordinate operator*(const Matrix &matrix, const Coordinate &coordinate);
 Coordinate operator*(const Coordinate &coordinate, const Matrix &matrix);
 
-inline Matrix::Matrix()
-{
-	mIdentity = true;
-}
-
-inline float &Matrix::at(int x, int y)
-{
-	return mValues[y * 4 + x];
-}
-
-inline const float &Matrix::at(int x, int y) const
-{
-	return mValues[y * 4 + x];
-}
-
-inline float &Matrix::operator()(int x, int y)
-{
-	return at(x, y);
-}
-
-inline const float &Matrix::operator()(int x, int y) const
-{
-	return at(x, y);
-}
-
-inline bool Matrix::identity() const
-{
-	return mIdentity;
-}
-
 }
 
 #endif

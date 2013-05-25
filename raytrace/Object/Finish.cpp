@@ -54,4 +54,54 @@ Finish *Finish::fromAst(AST *ast)
 	return finish;
 }
 
+float Finish::ambient() const
+{
+	return mAmbient;
+}
+
+void Finish::setAmbient(float ambient)
+{
+	mAmbient = ambient;
+}
+
+float Finish::diffuse() const
+{
+	return mDiffuse;
+}
+
+void Finish::setDiffuse(float diffuse)
+{
+	mDiffuse = diffuse;
+}
+
+float Finish::specular() const
+{
+	return mSpecular;
+}
+
+void Finish::setSpecular(float specular)
+{
+	mSpecular = specular;
+}
+
+float Finish::specularPower() const
+{
+	return mSpecularPower;
+}
+
+void Finish::setSpecularPower(float specularPower)
+{
+	mSpecularPower = specularPower;
+}
+
+float Finish::reflection() const
+{
+	return mReflection;
+}
+
+void Finish::setReflection(float reflection)
+{
+	mReflection = reflection;
+}
+
 }

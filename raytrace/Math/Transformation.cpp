@@ -12,6 +12,41 @@ Point BaseTransformation::origin() const
 	return Point(matrix().at(3,0), matrix().at(3,1), matrix().at(3,2));
 }
 
+InverseTransformation::InverseTransformation(const Transformation &transformation)
+: mTransformation(transformation)
+{
+}
+
+const BaseTransformation &InverseTransformation::inverse() const
+{
+	return mTransformation;
+}
+
+const Matrix &InverseTransformation::matrix() const
+{
+	return mTransformation.inverseMatrix();
+}
+
+const Matrix &InverseTransformation::inverseMatrix() const
+{
+	return mTransformation.matrix();
+}
+
+const BaseTransformation &Transformation::inverse() const
+{
+	return mInverse;
+}
+
+const Matrix &Transformation::matrix() const
+{
+	return mMatrix;
+}
+
+const Matrix &Transformation::inverseMatrix() const
+{
+	return mInverseMatrix;
+}
+
 Transformation Transformation::translate(const Vector &vector)
 {
 	return translate(vector.x(), vector.y(), vector.z());

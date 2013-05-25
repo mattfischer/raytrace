@@ -49,6 +49,38 @@ Texture *Texture::fromAst(AST *ast)
 	return texture;
 }
 
+
+const Math::Transformation &Texture::transformation() const
+{
+	return mTransformation;
+}
+
+Pigment::Base *Texture::pigment() const
+{
+	return mPigment;
+}
+
+void Texture::setPigment(Pigment::Base *pigment)
+{
+	if(mPigment)
+		delete mPigment;
+
+	mPigment = pigment;
+}
+
+Finish *Texture::finish() const
+{
+	return mFinish;
+}
+
+void Texture::setFinish(Finish *finish)
+{
+	if(mFinish)
+		delete mFinish;
+
+	mFinish = finish;
+}
+
 void Texture::transform(const Math::Transformation &transformation)
 {
 	mTransformation = transformation * mTransformation;

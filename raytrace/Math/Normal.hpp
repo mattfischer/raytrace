@@ -29,29 +29,6 @@ public:
 Normal operator*(const BaseTransformation &transformation, const Normal &normal);
 float operator*(const Vector &vector, const Normal &normal);
 
-inline Normal::Normal()
-{}
-
-inline Normal::Normal(float x, float y, float z)
-: Coordinate(x, y, z, 0)
-{
-}
-
-inline Normal::Normal(const ASTVector &astVector)
-: Coordinate(astVector, 0)
-{
-}
-
-inline Normal::Normal(const Normal &c)
-: Coordinate(c)
-{
-}
-
-inline Normal::Normal(const Coordinate &c)
-: Coordinate(c)
-{
-}
-
 }
 
 #endif

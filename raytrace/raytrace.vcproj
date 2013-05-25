@@ -184,6 +184,10 @@
 				Name="Math"
 				>
 				<File
+					RelativePath=".\Math\Coordinate.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Math\Matrix.cpp"
 					>
 				</File>

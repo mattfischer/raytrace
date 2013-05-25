@@ -36,4 +36,34 @@ Ray operator*(const Math::BaseTransformation &transformation, const Ray &ray)
 	return Ray(transformation * ray.origin(), transformation * ray.direction() - transformation * Math::Vector(0, 0, 0));
 }
 
+const Math::Point &Ray::origin() const
+{
+	return mOrigin;
+}
+
+const Math::Vector &Ray::direction() const
+{
+	return mDirection;
+}
+
+void Ray::setOrigin(const Math::Point &origin)
+{
+	mOrigin = origin;
+}
+
+void Ray::setDirection(const Math::Vector &direction)
+{
+	mDirection = direction;
+}
+
+int Ray::generation() const
+{
+	return mGeneration;
+}
+
+void Ray::setGeneration(int generation)
+{
+	mGeneration = generation;
+}
+
 }

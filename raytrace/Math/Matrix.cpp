@@ -1,6 +1,12 @@
 #include "Math/Matrix.hpp"
 
 namespace Math {
+
+Matrix::Matrix()
+{
+	mIdentity = true;
+}
+
 Matrix::Matrix(float m0, float m1, float m2, float m3,
 			   float m4, float m5, float m6, float m7,
 			   float m8, float m9, float m10, float m11,
@@ -37,6 +43,31 @@ Matrix &Matrix::operator=(const Matrix &c)
 	}
 
 	return *this;
+}
+
+float &Matrix::at(int x, int y)
+{
+	return mValues[y * 4 + x];
+}
+
+const float &Matrix::at(int x, int y) const
+{
+	return mValues[y * 4 + x];
+}
+
+float &Matrix::operator()(int x, int y)
+{
+	return at(x, y);
+}
+
+const float &Matrix::operator()(int x, int y) const
+{
+	return at(x, y);
+}
+
+bool Matrix::identity() const
+{
+	return mIdentity;
 }
 
 Matrix Matrix::operator*(const Matrix &b) const

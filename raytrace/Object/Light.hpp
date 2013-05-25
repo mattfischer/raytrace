@@ -23,15 +23,5 @@ protected:
 	Color mColor;
 };
 
-inline const Color &Light::color() const
-{
-	return mColor;
-}
-
-inline void Light::setColor(const Color &color)
-{
-	mColor = color;
-}
-
 }
 #endif

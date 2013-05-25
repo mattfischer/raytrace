@@ -65,41 +65,6 @@ protected:
 
 Transformation operator*(const BaseTransformation &a, const BaseTransformation &b);
 
-inline InverseTransformation::InverseTransformation(const Transformation &transformation)
-: mTransformation(transformation)
-{
-}
-
-inline const BaseTransformation &InverseTransformation::inverse() const
-{
-	return mTransformation;
-}
-
-inline const Matrix &InverseTransformation::matrix() const
-{
-	return mTransformation.inverseMatrix();
-}
-
-inline const Matrix &InverseTransformation::inverseMatrix() const
-{
-	return mTransformation.matrix();
-}
-
-inline const BaseTransformation &Transformation::inverse() const
-{
-	return mInverse;
-}
-
-inline const Matrix &Transformation::matrix() const
-{
-	return mMatrix;
-}
-
-inline const Matrix &Transformation::inverseMatrix() const
-{
-	return mInverseMatrix;
-}
-
 }
 
 #endif
