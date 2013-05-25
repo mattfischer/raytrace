@@ -4,26 +4,39 @@
 
 #include <process.h>
 
-RenderEngine::RenderEngine(Object::Scene *scene, const Trace::Tracer::Settings &settings)
-{
-	mScene = scene;
-	mSettings = settings;
-}
+class WorkerThread {
+public:
+	WorkerThread(RenderEngine *engine);
+	void start();
 
-struct ThreadData {
-	RenderEngine *engine;
-	unsigned char *bits;
-	RenderEngine::DoneCallback doneCallback;
-	void *data;
+private:
+	static void kickstart(void *data);
+	void run();
+
+	RenderEngine *mEngine;
 };
 
-static void threadFunc(void *data)
+WorkerThread::WorkerThread(RenderEngine *engine)
 {
-	ThreadData *td = (ThreadData*)data;
+	mEngine = engine;
+}
 
-	Trace::Tracer tracer(td->engine->scene(), td->engine->settings());
-	int width = td->engine->settings().width;
-	int height = td->engine->settings().height;
+void WorkerThread::start()
+{
+	_beginthread(kickstart, 0, this);
+}
+
+void WorkerThread::kickstart(void *data)
+{
+	WorkerThread *obj = (WorkerThread*)data;
+	obj->run();
+}
+
+void WorkerThread::run()
+{
+	Trace::Tracer tracer(mEngine->scene(), mEngine->settings());
+	int width = mEngine->settings().width;
+	int height = mEngine->settings().height;
 	for(int y=0; y<height; y++)
 	{
 		for(int x=0; x<width; x++)
@@ -31,27 +44,29 @@ static void threadFunc(void *data)
 			Object::Color c = tracer.tracePixel(x, y);
 
 			int scany = height - y - 1;
-			td->bits[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
-			td->bits[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
-			td->bits[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
+			mEngine->bits()[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
+			mEngine->bits()[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
+			mEngine->bits()[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
 		}
 	}
 
-	td->doneCallback(td->engine, td->data);
+	mEngine->threadDone(this);
+}
 
-	delete td;
+RenderEngine::RenderEngine(Object::Scene *scene, const Trace::Tracer::Settings &settings)
+{
+	mScene = scene;
+	mSettings = settings;
 }
 
 void RenderEngine::render(unsigned char *bits, DoneCallback doneCallback, void *data)
 {
-	ThreadData *td = new ThreadData;
+	mBits = bits;
+	mDoneCallback = doneCallback;
+	mData = data;
 
-	td->bits = bits;
-	td->doneCallback = doneCallback;
-	td->data = data;
-	td->engine = this;
-
-	_beginthread(threadFunc, 0, td);
+	WorkerThread *thread = new WorkerThread(this);
+	thread->start();
 }
 
 Object::Scene *RenderEngine::scene() const
@@ -62,4 +77,16 @@ Object::Scene *RenderEngine::scene() const
 const Trace::Tracer::Settings &RenderEngine::settings() const
 {
 	return mSettings;
+}
+
+unsigned char *RenderEngine::bits() const
+{
+	return mBits;
+}
+
+void RenderEngine::threadDone(WorkerThread *thread)
+{
+	delete thread;
+
+	mDoneCallback(this, mData);
 }
