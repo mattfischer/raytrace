@@ -17,9 +17,9 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.antialias = 1;
 }
 
-void RenderControlDlg::createWindow(HINSTANCE hInst, StartRenderFunc startRenderFunc)
+void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
 {
-	mStartRenderFunc = startRenderFunc;
+	mListener = listener;
 	mHDlg = CreateDialog(hInst, (LPCSTR)IDD_RENDER_CONTROL, NULL, dialogProcStub);
 	SetWindowPos(mHDlg, NULL, mSettings.width + 40, 40, 0, 0, SWP_NOSIZE);
 	ShowWindow(mHDlg, SW_SHOW);
@@ -69,7 +69,7 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 			mSettings.antialias = GetDlgItemInt(hwndDlg, IDC_ANTIALIAS, NULL, TRUE);
 			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), FALSE);
 			SetDlgItemText(hwndDlg, IDC_RENDER_TIME, "");
-			mStartRenderFunc();
+			mListener->onStartRender();
 			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), TRUE);
 			return TRUE;
 		}

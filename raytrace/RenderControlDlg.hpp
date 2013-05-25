@@ -8,11 +8,15 @@
 class RenderControlDlg
 {
 public:
-	typedef void (*StartRenderFunc)();
+	class Listener
+	{
+	public:
+		virtual void onStartRender() = 0;
+	};
 
 	RenderControlDlg();
 
-	void createWindow(HINSTANCE hInst, StartRenderFunc startRenderFunc);
+	void createWindow(HINSTANCE hInst, Listener *listener);
 
 	Trace::Tracer::Settings &settings();
 
@@ -28,7 +32,7 @@ private:
 
 	HWND mHDlg;
 	Trace::Tracer::Settings mSettings;
-	StartRenderFunc mStartRenderFunc;
+	Listener *mListener;
 };
 
 #endif
