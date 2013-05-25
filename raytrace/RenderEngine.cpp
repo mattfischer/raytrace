@@ -3,6 +3,7 @@
 #include "Object/Color.hpp"
 
 #include <process.h>
+#include <windows.h>
 
 class WorkerThread {
 public:
@@ -55,6 +56,7 @@ void WorkerThread::run()
 
 RenderEngine::RenderEngine()
 {
+	mRendering = false;
 }
 
 void RenderEngine::startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
@@ -63,6 +65,9 @@ void RenderEngine::startRender(Object::Scene *scene, const Trace::Tracer::Settin
 	mSettings = settings;
 	mBits = bits;
 	mListener = listener;
+	mRendering = true;
+	mStartTime = GetTickCount();
+	mListener->onRenderStatus("");
 
 	WorkerThread *thread = new WorkerThread(this);
 	thread->start();
@@ -83,9 +88,20 @@ unsigned char *RenderEngine::bits() const
 	return mBits;
 }
 
+bool RenderEngine::rendering() const
+{
+	return mRendering;
+}
+
 void RenderEngine::threadDone(WorkerThread *thread)
 {
+	mRendering = false;
 	delete thread;
 
+	DWORD endTime = GetTickCount();
+	char buf[256];
+	sprintf(buf, "Render time: %ims", endTime - mStartTime);
+
+	mListener->onRenderStatus(buf);
 	mListener->onRenderDone();
 }

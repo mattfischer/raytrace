@@ -11,7 +11,7 @@ public:
 	class Listener
 	{
 	public:
-		virtual void onStartRender() = 0;
+		virtual void onRenderButtonClicked() = 0;
 	};
 
 	RenderControlDlg();
@@ -20,7 +20,8 @@ public:
 
 	Trace::Tracer::Settings &settings();
 
-	void setRenderTime(int time);
+	void setStatusMessage(const char *message);
+	void enableRenderButton(bool enabled);
 
 	void show();
 

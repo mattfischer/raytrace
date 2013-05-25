@@ -12,7 +12,6 @@ App::App()
 {
 	sInstance = this;
 	mFramebuffer = 0;
-	mRendering = false;
 }
 
 int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
@@ -56,13 +55,6 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	return 0;
 }
 
-void App::onRenderDone()
-{
-	DWORD endTime = GetTickCount();
-	mRenderControl.setRenderTime(endTime - mStartTime);
-	mRendering = false;
-}
-
 LRESULT CALLBACK App::wndProcStub(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	return sInstance->wndProc(hWnd, iMsg, wParam, lParam);
@@ -90,7 +82,7 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 			SetDIBits(mBackDC, hBitmap, 0, mRenderControl.settings().height, mFramebuffer, &bi, DIB_RGB_COLORS);
 			InvalidateRect(hWnd, NULL, FALSE);
 
-			if(mRendering) {
+			if(mEngine.rendering()) {
 				SetTimer(hWnd, 0, 0, NULL);
 			}
 			break;
@@ -115,7 +107,7 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 	return DefWindowProc(hWnd, iMsg, wParam, lParam);
 }
 
-void App::onStartRender()
+void App::onRenderButtonClicked()
 {
 	int width = mRenderControl.settings().width;
 	int height = mRenderControl.settings().height;
@@ -133,9 +125,19 @@ void App::onStartRender()
 	mFramebuffer = new BYTE[width * height * 3];
 	memset(mFramebuffer, 0, width * height * 3);
 
-	mStartTime = GetTickCount();
+	mRenderControl.enableRenderButton(false);
+
 	mEngine.startRender(mScene, mRenderControl.settings(), mFramebuffer, this);
 
-	mRendering = true;
 	SetTimer(mHWnd, 0, 0, NULL);
+}
+
+void App::onRenderDone()
+{
+	mRenderControl.enableRenderButton(true);
+}
+
+void App::onRenderStatus(const char *message)
+{
+	mRenderControl.setStatusMessage(message);
 }

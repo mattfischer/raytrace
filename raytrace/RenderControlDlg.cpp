@@ -30,11 +30,14 @@ Trace::Tracer::Settings &RenderControlDlg::settings()
 	return mSettings;
 }
 
-void RenderControlDlg::setRenderTime(int time)
+void RenderControlDlg::setStatusMessage(const char *message)
 {
-	char buf[256];
-	sprintf(buf, "Render time: %ims", time);
-	SetDlgItemText(mHDlg, IDC_RENDER_TIME, buf);
+	SetDlgItemText(mHDlg, IDC_RENDER_STATUS, message);
+}
+
+void RenderControlDlg::enableRenderButton(bool enabled)
+{
+	EnableWindow(GetDlgItem(mHDlg, ID_RENDER), enabled);
 }
 
 void RenderControlDlg::show()
@@ -67,10 +70,7 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 			mSettings.width = GetDlgItemInt(hwndDlg, IDC_WIDTH, NULL, TRUE);
 			mSettings.height = GetDlgItemInt(hwndDlg, IDC_HEIGHT, NULL, TRUE);
 			mSettings.antialias = GetDlgItemInt(hwndDlg, IDC_ANTIALIAS, NULL, TRUE);
-			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), FALSE);
-			SetDlgItemText(hwndDlg, IDC_RENDER_TIME, "");
-			mListener->onStartRender();
-			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), TRUE);
+			mListener->onRenderButtonClicked();
 			return TRUE;
 		}
 		break;

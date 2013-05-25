@@ -11,6 +11,7 @@
 #define IDC_SPIN6                       1011
 #define IDC_ANTIALIAS_SPIN              1011
 #define IDC_RENDER_TIME                 1012
+#define IDC_RENDER_STATUS               1012
 
 // Next default values for new objects
 // 

@@ -14,7 +14,8 @@ public:
 
 	int run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow);
 
-	void onStartRender();
+	void onRenderButtonClicked();
+	void onRenderStatus(const char *message);
 	void onRenderDone();
 
 private:
@@ -31,8 +32,6 @@ private:
 	Object::Scene *mScene;
 	RenderEngine mEngine;
 	unsigned char *mFramebuffer;
-	DWORD mStartTime;
-	bool mRendering;
 };
 
 #endif
