@@ -9,9 +9,13 @@ class RenderEngine
 public:
 	RenderEngine(Object::Scene *scene, const Trace::Tracer::Settings &settings);
 
-	typedef void (LineCallback)(unsigned char *, int, void*);
+	Object::Scene *scene() const;
+	const Trace::Tracer::Settings &settings() const;
 
-	void render(unsigned char *bits, LineCallback callback, void *data);
+	typedef void (*LineCallback)(int, void*);
+	typedef void (*DoneCallback)(RenderEngine *, void*);
+
+	void render(unsigned char *bits, LineCallback lineCallback, DoneCallback doneCallback, void *data);
 
 private:
 	Object::Scene *mScene;

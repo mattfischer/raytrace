@@ -88,6 +88,7 @@ Vector Vector::operator-() const
 
 Vector operator*(const BaseTransformation &transformation, const Vector &vector)
 {
+
 	return Vector(transformation.matrix() * vector);
 }
 

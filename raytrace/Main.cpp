@@ -14,16 +14,22 @@ HDC backBuffer;
 Object::Scene *scene;
 Trace::Tracer::Settings settings;
 
+#define WM_UPDATE_BITMAP WM_USER
+
 struct CallbackData {
+	unsigned char *bits;
 	HBITMAP backBitmap;
-	BITMAPINFO *bi;
+	BITMAPINFO bi;
+	HANDLE evnt;
+	DWORD startTime;
 };
 
-void lineCallback(unsigned char *bits, int line, void *data)
+void lineCallback(int line, void *data)
 {
 	CallbackData *cbd = (CallbackData*)data;
 
-	SetDIBits(backBuffer, cbd->backBitmap, settings.height - line - 1, 1, bits, cbd->bi, DIB_RGB_COLORS);
+	PostMessage(hWnd, WM_UPDATE_BITMAP, (WPARAM)cbd, (LPARAM)line);
+	WaitForSingleObject(cbd->evnt, INFINITE);
 
 	RECT rect;
 	rect.left = 0;
@@ -31,24 +37,30 @@ void lineCallback(unsigned char *bits, int line, void *data)
 	rect.top = line;
 	rect.bottom = line + 1;
 	InvalidateRect(hWnd, &rect, FALSE);
+}
 
-	MSG msg;
-	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+void doneCallback(RenderEngine *engine, void *data)
+{
+	CallbackData *cbd = (CallbackData*)data;
+
+	DWORD endTime = GetTickCount();
+	char buf[256];
+	sprintf(buf, "Render time: %ims", endTime - cbd->startTime);
+	SetDlgItemText(hDlg, IDC_RENDER_TIME, buf);
+
+	CloseHandle(cbd->evnt);
+	free(cbd->bits);
+	delete(cbd);
+	delete engine;
 }
 
 void Render()
 {
 	int width;
 	int height;
-	HBITMAP backBitmap;
 	HGDIOBJ oldBitmap;
 	HDC hDC;
-	BYTE *bits;
-	BITMAPINFO bi;
+	HBITMAP backBitmap;
 
 	width = settings.width;
 	height = settings.height;
@@ -60,34 +72,38 @@ void Render()
 	oldBitmap = SelectObject(backBuffer, (HGDIOBJ)backBitmap);
 	DeleteObject(oldBitmap);
 
-	bits = (BYTE*)malloc(width * 3);
-	bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bi.bmiHeader.biWidth = width;
-	bi.bmiHeader.biHeight = height;
-	bi.bmiHeader.biPlanes = 1;
-	bi.bmiHeader.biBitCount = 24;
-	bi.bmiHeader.biCompression = BI_RGB;
+	CallbackData *cbd = new CallbackData;
+	cbd->bits = (BYTE*)malloc(width * 3);
+	cbd->bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	cbd->bi.bmiHeader.biWidth = width;
+	cbd->bi.bmiHeader.biHeight = height;
+	cbd->bi.bmiHeader.biPlanes = 1;
+	cbd->bi.bmiHeader.biBitCount = 24;
+	cbd->bi.bmiHeader.biCompression = BI_RGB;
+	cbd->backBitmap = backBitmap;
+	cbd->evnt = CreateEvent(NULL, FALSE, FALSE, NULL);
 
-	RenderEngine engine(scene, settings);
-
-	CallbackData cbd;
-	cbd.backBitmap = backBitmap;
-	cbd.bi = &bi;
-
-	engine.render(bits, lineCallback, &cbd);
-
-	free(bits);
+	cbd->startTime = GetTickCount();
+	RenderEngine *engine = new RenderEngine(scene, settings);
+	engine->render(cbd->bits, lineCallback, doneCallback, cbd);
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	int x, y;
+	CallbackData *cbd;
 
 	switch(iMsg)
 	{
 		case WM_DESTROY:
 			PostQuitMessage(0);
+			break;
+
+		case WM_UPDATE_BITMAP:
+			cbd = (CallbackData*)wParam;
+			SetDIBits(backBuffer, cbd->backBitmap, settings.height - lParam - 1, 1, cbd->bits, &cbd->bi, DIB_RGB_COLORS);
+			SetEvent(cbd->evnt);
 			break;
 
 		case WM_PAINT:
@@ -127,13 +143,8 @@ INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			settings.height = GetDlgItemInt(hDlg, IDC_HEIGHT, NULL, TRUE);
 			settings.antialias = GetDlgItemInt(hDlg, IDC_ANTIALIAS, NULL, TRUE);
 			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), FALSE);
-			DWORD start = GetTickCount();
 			SetDlgItemText(hDlg, IDC_RENDER_TIME, "");
 			Render();
-			DWORD end = GetTickCount();
-			char buf[256];
-			sprintf(buf, "Render time: %ims", end - start);
-			SetDlgItemText(hDlg, IDC_RENDER_TIME, buf);
 			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), TRUE);
 			return TRUE;
 		}
