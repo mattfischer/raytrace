@@ -4,15 +4,16 @@
 #include "Parse/Parser.hpp"
 #include "RenderEngine.hpp"
 #include "Resource.h"
+#include "RenderControlDlg.hpp"
 
 #define CLASSNAME "raytrace"
 
 HWND hWnd;
-HWND hDlg;
 HDC backBuffer;
 
+RenderControlDlg renderControl;
+
 Object::Scene *scene;
-Trace::Tracer::Settings settings;
 
 struct RenderState : public RenderEngine::Listener {
 	unsigned char *bits;
@@ -28,9 +29,7 @@ struct RenderState : public RenderEngine::Listener {
 void RenderState::onRenderDone()
 {
 	DWORD endTime = GetTickCount();
-	char buf[256];
-	sprintf(buf, "Render time: %ims", endTime - startTime);
-	SetDlgItemText(hDlg, IDC_RENDER_TIME, buf);
+	renderControl.setRenderTime(endTime - startTime);
 	KillTimer(hWnd, 0);
 
 	free(bits);
@@ -49,8 +48,8 @@ void Render()
 	HDC hDC;
 	HBITMAP backBitmap;
 
-	width = settings.width;
-	height = settings.height;
+	width = renderControl.settings().width;
+	height = renderControl.settings().height;
 
 	SetWindowPos(hWnd, NULL, 0, 0, width, height, SWP_NOMOVE);
 	hDC = GetDC(hWnd);
@@ -71,7 +70,7 @@ void Render()
 	renderState->backBitmap = backBitmap;
 
 	renderState->startTime = GetTickCount();
-	renderState->engine = new RenderEngine(scene, settings);
+	renderState->engine = new RenderEngine(scene, renderControl.settings());
 	renderState->engine->render(renderState->bits, renderState);
 
 	SetTimer(hWnd, 0, 0, NULL);
@@ -89,7 +88,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case WM_TIMER:
-			SetDIBits(backBuffer, renderState->backBitmap, 0, settings.height, renderState->bits, &renderState->bi, DIB_RGB_COLORS);
+			SetDIBits(backBuffer, renderState->backBitmap, 0, renderControl.settings().height, renderState->bits, &renderState->bi, DIB_RGB_COLORS);
 			InvalidateRect(hWnd, NULL, FALSE);
 			SetTimer(hWnd, 0, 0, NULL);
 			break;
@@ -103,46 +102,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case WM_LBUTTONUP:
-			ShowWindow(hDlg, SW_SHOW);
+			renderControl.show();
 			break;
 	}
 
 	return DefWindowProc(hWnd, iMsg, wParam, lParam);
-}
-
-INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	switch(uMsg)
-	{
-	case WM_INITDIALOG:
-		CheckDlgButton(hwndDlg, IDC_LIGHTING, settings.lighting ? BST_CHECKED : BST_UNCHECKED);
-		SetDlgItemInt(hwndDlg, IDC_ANTIALIAS, settings.antialias, TRUE);
-		SendDlgItemMessage(hwndDlg, IDC_ANTIALIAS_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
-		SetDlgItemInt(hwndDlg, IDC_WIDTH, settings.width, TRUE);
-		SetDlgItemInt(hwndDlg, IDC_HEIGHT, settings.height, TRUE);
-		return FALSE;
-
-	case WM_COMMAND:
-		switch(LOWORD(wParam))
-		{
-		case ID_RENDER:
-			settings.lighting = IsDlgButtonChecked(hDlg, IDC_LIGHTING);
-			settings.width = GetDlgItemInt(hDlg, IDC_WIDTH, NULL, TRUE);
-			settings.height = GetDlgItemInt(hDlg, IDC_HEIGHT, NULL, TRUE);
-			settings.antialias = GetDlgItemInt(hDlg, IDC_ANTIALIAS, NULL, TRUE);
-			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), FALSE);
-			SetDlgItemText(hDlg, IDC_RENDER_TIME, "");
-			Render();
-			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), TRUE);
-			return TRUE;
-		}
-		break;
-
-	case WM_CLOSE:
-		ShowWindow(hwndDlg, SW_HIDE);
-		return TRUE;
-	}
-	return FALSE;
 }
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
@@ -155,12 +119,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 
 	AST *ast = Parse::Parser::parse("scene.txt");
 	scene = Object::Scene::fromAST(ast);
-
-	settings.width = 800;
-	settings.height = 600;
-	settings.lighting = true;
-	settings.maxRayGeneration = 2;
-	settings.antialias = 1;
 
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;
@@ -177,15 +135,13 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 
 	RegisterClassEx(&wc);
 
-	hWnd = CreateWindowEx((DWORD)0, CLASSNAME, "Raytrace", WS_POPUPWINDOW | WS_CAPTION | WS_VISIBLE, 10, 10, settings.width, settings.height, NULL, NULL, hInst, NULL);
+	hWnd = CreateWindowEx((DWORD)0, CLASSNAME, "Raytrace", WS_POPUPWINDOW | WS_CAPTION | WS_VISIBLE, 10, 10, renderControl.settings().width, renderControl.settings().height, NULL, NULL, hInst, NULL);
 
 	hDC = GetDC(hWnd);
 	backBuffer = CreateCompatibleDC(hDC);
 	ReleaseDC(hWnd, hDC);
 
-	hDlg = CreateDialog(hInst, (LPCSTR)IDD_RENDER_CONTROL, NULL, DialogProc);
-	SetWindowPos(hDlg, NULL, settings.width + 40, 40, 0, 0, SWP_NOSIZE);
-	ShowWindow(hDlg, SW_SHOW);
+	renderControl.createWindow(hInst, Render);
 
 	while(GetMessage(&msg, NULL, 0, 0))
 	{
