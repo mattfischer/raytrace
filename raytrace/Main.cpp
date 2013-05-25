@@ -122,7 +122,13 @@ INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			tracer->settings().height = GetDlgItemInt(hDlg, IDC_HEIGHT, NULL, TRUE);
 			tracer->settings().antialias = GetDlgItemInt(hDlg, IDC_ANTIALIAS, NULL, TRUE);
 			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), FALSE);
+			DWORD start = GetTickCount();
+			SetDlgItemText(hDlg, IDC_RENDER_TIME, "");
 			Render();
+			DWORD end = GetTickCount();
+			char buf[256];
+			sprintf(buf, "Render time: %ims", end - start);
+			SetDlgItemText(hDlg, IDC_RENDER_TIME, buf);
 			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), TRUE);
 			return TRUE;
 		}
