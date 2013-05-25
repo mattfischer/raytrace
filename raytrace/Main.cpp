@@ -1,8 +1,8 @@
 #include <windows.h>
 #include <commctrl.h>
 
-#include "Trace/Tracer.hpp"
 #include "Parse/Parser.hpp"
+#include "RenderEngine.hpp"
 #include "Resource.h"
 
 #define CLASSNAME "raytrace"
@@ -11,25 +11,47 @@ HWND hWnd;
 HWND hDlg;
 HDC backBuffer;
 
-Trace::Tracer *tracer;
+Object::Scene *scene;
+Trace::Tracer::Settings settings;
+
+struct CallbackData {
+	HBITMAP backBitmap;
+	BITMAPINFO *bi;
+};
+
+void lineCallback(unsigned char *bits, int line, void *data)
+{
+	CallbackData *cbd = (CallbackData*)data;
+
+	SetDIBits(backBuffer, cbd->backBitmap, settings.height - line - 1, 1, bits, cbd->bi, DIB_RGB_COLORS);
+
+	RECT rect;
+	rect.left = 0;
+	rect.right = settings.width;
+	rect.top = line;
+	rect.bottom = line + 1;
+	InvalidateRect(hWnd, &rect, FALSE);
+
+	MSG msg;
+	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+}
 
 void Render()
 {
-	int x;
-	int y;
 	int width;
 	int height;
-	RECT rect;
-	Object::Color c;
 	HBITMAP backBitmap;
 	HGDIOBJ oldBitmap;
 	HDC hDC;
 	BYTE *bits;
 	BITMAPINFO bi;
-	MSG msg;
 
-	width = tracer->settings().width;
-	height = tracer->settings().height;
+	width = settings.width;
+	height = settings.height;
 
 	SetWindowPos(hWnd, NULL, 0, 0, width, height, SWP_NOMOVE);
 	hDC = GetDC(hWnd);
@@ -46,31 +68,14 @@ void Render()
 	bi.bmiHeader.biBitCount = 24;
 	bi.bmiHeader.biCompression = BI_RGB;
 
-	rect.left = 0;
-	rect.right = width;
+	RenderEngine engine(scene, settings);
 
-	for(int y=0; y<height; y++)
-	{
-		for(x=0; x<width; x++)
-		{
-			Object::Color c = tracer->tracePixel(x, y);
+	CallbackData cbd;
+	cbd.backBitmap = backBitmap;
+	cbd.bi = &bi;
 
-			bits[x*3] = c.blue() * 0xFF;
-			bits[x*3 + 1] = c.green() * 0xFF;
-			bits[x*3 + 2] = c.red() * 0xFF;
-		}
+	engine.render(bits, lineCallback, &cbd);
 
-		SetDIBits(backBuffer, backBitmap, height - y - 1, 1, bits, &bi, DIB_RGB_COLORS);
-		rect.top = y;
-		rect.bottom = y + 1;
-		InvalidateRect(hWnd, &rect, FALSE);
-
-		while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-	}
 	free(bits);
 }
 
@@ -106,21 +111,21 @@ INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
-		CheckDlgButton(hwndDlg, IDC_LIGHTING, tracer->settings().lighting ? BST_CHECKED : BST_UNCHECKED);
-		SetDlgItemInt(hwndDlg, IDC_ANTIALIAS, tracer->settings().antialias, TRUE);
+		CheckDlgButton(hwndDlg, IDC_LIGHTING, settings.lighting ? BST_CHECKED : BST_UNCHECKED);
+		SetDlgItemInt(hwndDlg, IDC_ANTIALIAS, settings.antialias, TRUE);
 		SendDlgItemMessage(hwndDlg, IDC_ANTIALIAS_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
-		SetDlgItemInt(hwndDlg, IDC_WIDTH, tracer->settings().width, TRUE);
-		SetDlgItemInt(hwndDlg, IDC_HEIGHT, tracer->settings().height, TRUE);
+		SetDlgItemInt(hwndDlg, IDC_WIDTH, settings.width, TRUE);
+		SetDlgItemInt(hwndDlg, IDC_HEIGHT, settings.height, TRUE);
 		return FALSE;
 
 	case WM_COMMAND:
 		switch(LOWORD(wParam))
 		{
 		case ID_RENDER:
-			tracer->settings().lighting = IsDlgButtonChecked(hDlg, IDC_LIGHTING);
-			tracer->settings().width = GetDlgItemInt(hDlg, IDC_WIDTH, NULL, TRUE);
-			tracer->settings().height = GetDlgItemInt(hDlg, IDC_HEIGHT, NULL, TRUE);
-			tracer->settings().antialias = GetDlgItemInt(hDlg, IDC_ANTIALIAS, NULL, TRUE);
+			settings.lighting = IsDlgButtonChecked(hDlg, IDC_LIGHTING);
+			settings.width = GetDlgItemInt(hDlg, IDC_WIDTH, NULL, TRUE);
+			settings.height = GetDlgItemInt(hDlg, IDC_HEIGHT, NULL, TRUE);
+			settings.antialias = GetDlgItemInt(hDlg, IDC_ANTIALIAS, NULL, TRUE);
 			EnableWindow(GetDlgItem(hwndDlg, ID_RENDER), FALSE);
 			DWORD start = GetTickCount();
 			SetDlgItemText(hDlg, IDC_RENDER_TIME, "");
@@ -150,17 +155,13 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 	InitCommonControls();
 
 	AST *ast = Parse::Parser::parse("scene.txt");
-	Object::Scene *scene = Object::Scene::fromAST(ast);
-
-	Trace::Tracer::Settings settings;
+	scene = Object::Scene::fromAST(ast);
 
 	settings.width = 800;
 	settings.height = 600;
 	settings.lighting = true;
 	settings.maxRayGeneration = 2;
 	settings.antialias = 1;
-
-	tracer = new Trace::Tracer(scene, settings);
 
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;
@@ -184,7 +185,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdSh
 	ReleaseDC(hWnd, hDC);
 
 	hDlg = CreateDialog(hInst, (LPCSTR)IDD_RENDER_CONTROL, NULL, DialogProc);
-	SetWindowPos(hDlg, NULL, tracer->settings().width + 40, 40, 0, 0, SWP_NOSIZE);
+	SetWindowPos(hDlg, NULL, settings.width + 40, 40, 0, 0, SWP_NOSIZE);
 	ShowWindow(hDlg, SW_SHOW);
 
 	while(GetMessage(&msg, NULL, 0, 0))

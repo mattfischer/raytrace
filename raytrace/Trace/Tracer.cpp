@@ -15,8 +15,6 @@ Tracer::Tracer(Object::Scene *scene, const Settings &settings)
 
 Tracer::~Tracer()
 {
-	if(mScene)
-		delete mScene;
 }
 
 Object::Scene *Tracer::scene() const
