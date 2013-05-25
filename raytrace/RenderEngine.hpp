@@ -15,13 +15,13 @@ public:
 		virtual void onRenderDone() = 0;
 	};
 
-	RenderEngine(Object::Scene *scene, const Trace::Tracer::Settings &settings);
+	RenderEngine();
 
 	Object::Scene *scene() const;
 	const Trace::Tracer::Settings &settings() const;
 	unsigned char *bits() const;
 
-	void render(unsigned char *bits, Listener *listener);
+	void startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
 
 private:
 	void threadDone(WorkerThread *thread);

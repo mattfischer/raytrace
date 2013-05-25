@@ -1,7 +1,6 @@
 #include "App.hpp"
 
 #include "Parse/Parser.hpp"
-#include "RenderEngine.hpp"
 
 #include <commctrl.h>
 
@@ -12,19 +11,18 @@ App *App::sInstance;
 App::App()
 {
 	sInstance = this;
+	mFramebuffer = 0;
+	mRendering = false;
 }
 
 int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 {
-	MSG msg;
-	WNDCLASSEX wc;
-	HDC hDC;
-
 	InitCommonControls();
 
 	AST *ast = Parse::Parser::parse("scene.txt");
 	mScene = Object::Scene::fromAST(ast);
 
+	WNDCLASSEX wc;
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;
 	wc.lpfnWndProc = wndProcStub;
@@ -42,12 +40,13 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 
 	mHWnd = CreateWindowEx((DWORD)0, CLASSNAME, "Raytrace", WS_POPUPWINDOW | WS_CAPTION | WS_VISIBLE, 10, 10, mRenderControl.settings().width, mRenderControl.settings().height, NULL, NULL, hInst, NULL);
 
-	hDC = GetDC(mHWnd);
-	mBackBuffer = CreateCompatibleDC(hDC);
+	HDC hDC = GetDC(mHWnd);
+	mBackDC = CreateCompatibleDC(hDC);
 	ReleaseDC(mHWnd, hDC);
 
 	mRenderControl.createWindow(hInst, this);
 
+	MSG msg;
 	while(GetMessage(&msg, NULL, 0, 0))
 	{
 		TranslateMessage(&msg);
@@ -61,10 +60,7 @@ void App::onRenderDone()
 {
 	DWORD endTime = GetTickCount();
 	mRenderControl.setRenderTime(endTime - mStartTime);
-	KillTimer(mHWnd, 0);
-
-	free(mBits);
-	delete mEngine;
+	mRendering = false;
 }
 
 LRESULT CALLBACK App::wndProcStub(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -74,9 +70,6 @@ LRESULT CALLBACK App::wndProcStub(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lP
 
 LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	PAINTSTRUCT ps;
-	int x, y;
-
 	switch(iMsg)
 	{
 		case WM_DESTROY:
@@ -84,18 +77,35 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 			break;
 
 		case WM_TIMER:
-			SetDIBits(mBackBuffer, mBackBitmap, 0, mRenderControl.settings().height, mBits, &mBi, DIB_RGB_COLORS);
+		{
+			BITMAPINFO bi;
+			bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+			bi.bmiHeader.biWidth = mRenderControl.settings().width;
+			bi.bmiHeader.biHeight = mRenderControl.settings().height;
+			bi.bmiHeader.biPlanes = 1;
+			bi.bmiHeader.biBitCount = 24;
+			bi.bmiHeader.biCompression = BI_RGB;
+
+			HBITMAP hBitmap = (HBITMAP)GetCurrentObject(mBackDC, OBJ_BITMAP);
+			SetDIBits(mBackDC, hBitmap, 0, mRenderControl.settings().height, mFramebuffer, &bi, DIB_RGB_COLORS);
 			InvalidateRect(hWnd, NULL, FALSE);
-			SetTimer(hWnd, 0, 0, NULL);
+
+			if(mRendering) {
+				SetTimer(hWnd, 0, 0, NULL);
+			}
 			break;
+		}
 
 		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
 			BeginPaint(hWnd, &ps);
 
-			BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top, mBackBuffer, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+			BitBlt(ps.hdc, ps.rcPaint.left, ps.rcPaint.top, ps.rcPaint.right - ps.rcPaint.left, ps.rcPaint.bottom - ps.rcPaint.top, mBackDC, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
 
 			EndPaint(hWnd, &ps);
 			break;
+		}
 
 		case WM_LBUTTONUP:
 			mRenderControl.show();
@@ -107,33 +117,25 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 
 void App::onStartRender()
 {
-	int width;
-	int height;
-	HGDIOBJ oldBitmap;
-	HDC hDC;
-
-	width = mRenderControl.settings().width;
-	height = mRenderControl.settings().height;
+	int width = mRenderControl.settings().width;
+	int height = mRenderControl.settings().height;
 
 	SetWindowPos(mHWnd, NULL, 0, 0, width, height, SWP_NOMOVE);
-	hDC = GetDC(mHWnd);
-	mBackBitmap = CreateCompatibleBitmap(hDC, width, height);
+	HDC hDC = GetDC(mHWnd);
+	HBITMAP hBitmap = CreateCompatibleBitmap(hDC, width, height);
 	ReleaseDC(mHWnd, hDC);
-	oldBitmap = SelectObject(mBackBuffer, (HGDIOBJ)mBackBitmap);
+	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
 
-	mBits = (BYTE*)malloc(width * height * 3);
-	memset(mBits, 0, width * height * 3);
-	mBi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	mBi.bmiHeader.biWidth = width;
-	mBi.bmiHeader.biHeight = height;
-	mBi.bmiHeader.biPlanes = 1;
-	mBi.bmiHeader.biBitCount = 24;
-	mBi.bmiHeader.biCompression = BI_RGB;
+	if(mFramebuffer) {
+		delete[] mFramebuffer;
+	}
+	mFramebuffer = new BYTE[width * height * 3];
+	memset(mFramebuffer, 0, width * height * 3);
 
 	mStartTime = GetTickCount();
-	mEngine = new RenderEngine(mScene, mRenderControl.settings());
-	mEngine->render(mBits, this);
+	mEngine.startRender(mScene, mRenderControl.settings(), mFramebuffer, this);
 
+	mRendering = true;
 	SetTimer(mHWnd, 0, 0, NULL);
 }

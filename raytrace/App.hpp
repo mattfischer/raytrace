@@ -14,8 +14,8 @@ public:
 
 	int run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow);
 
-	void onRenderDone();
 	void onStartRender();
+	void onRenderDone();
 
 private:
 	static LRESULT CALLBACK wndProcStub(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
@@ -25,14 +25,14 @@ private:
 	LRESULT CALLBACK wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 	HWND mHWnd;
-	HDC mBackBuffer;
+	HDC mBackDC;
+
 	RenderControlDlg mRenderControl;
 	Object::Scene *mScene;
-	unsigned char *mBits;
-	HBITMAP mBackBitmap;
-	BITMAPINFO mBi;
+	RenderEngine mEngine;
+	unsigned char *mFramebuffer;
 	DWORD mStartTime;
-	RenderEngine *mEngine;
+	bool mRendering;
 };
 
 #endif

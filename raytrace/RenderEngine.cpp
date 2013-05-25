@@ -53,14 +53,14 @@ void WorkerThread::run()
 	mEngine->threadDone(this);
 }
 
-RenderEngine::RenderEngine(Object::Scene *scene, const Trace::Tracer::Settings &settings)
+RenderEngine::RenderEngine()
+{
+}
+
+void RenderEngine::startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
 {
 	mScene = scene;
 	mSettings = settings;
-}
-
-void RenderEngine::render(unsigned char *bits, Listener *listener)
-{
 	mBits = bits;
 	mListener = listener;
 
