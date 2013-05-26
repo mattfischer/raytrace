@@ -48,6 +48,10 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	MSG msg;
 	while(GetMessage(&msg, NULL, 0, 0))
 	{
+		if(mRenderControl.isDialogMessage(&msg)) {
+			continue;
+		}
+
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}

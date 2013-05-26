@@ -17,6 +17,7 @@ public:
 	RenderControlDlg();
 
 	void createWindow(HINSTANCE hInst, Listener *listener);
+	bool isDialogMessage(MSG *msg);
 
 	Trace::Tracer::Settings &settings();
 

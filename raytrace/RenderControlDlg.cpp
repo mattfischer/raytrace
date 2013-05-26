@@ -25,6 +25,11 @@ void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
 	ShowWindow(mHDlg, SW_SHOW);
 }
 
+bool RenderControlDlg::isDialogMessage(MSG *msg)
+{
+	return IsDialogMessage(mHDlg, msg);
+}
+
 Trace::Tracer::Settings &RenderControlDlg::settings()
 {
 	return mSettings;
