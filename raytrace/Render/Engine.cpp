@@ -1,74 +1,46 @@
-#include "RenderEngine.hpp"
+#include "Render/Engine.hpp"
 
 #include "Object/Color.hpp"
 
 #include <process.h>
 #include <windows.h>
 
+namespace Render {
+
 class WorkerThread {
 public:
-	WorkerThread(RenderEngine *engine);
-	void start();
-
-private:
-	static void kickstart(void *data);
-	void run();
-
-	RenderEngine *mEngine;
-};
-
-WorkerThread::WorkerThread(RenderEngine *engine)
-{
-	mEngine = engine;
-}
-
-void WorkerThread::start()
-{
-	_beginthread(kickstart, 0, this);
-}
-
-void WorkerThread::kickstart(void *data)
-{
-	WorkerThread *obj = (WorkerThread*)data;
-	obj->run();
-}
-
-void WorkerThread::run()
-{
-	Trace::Tracer tracer(mEngine->scene(), mEngine->settings());
-	int width = mEngine->settings().width;
-	int height = mEngine->settings().height;
-	while(true) {
-		LONG pixel = InterlockedIncrement(mEngine->nextPixel()) - 1;
-		int x = pixel % width;
-		int y = pixel / width;
-
-		if(y >= height) {
-			break;
-		}
-
-		Object::Color corners[4];
-		corners[0] = tracer.tracePixel(x, y);
-		corners[1] = tracer.tracePixel(x + 1, y);
-		corners[2] = tracer.tracePixel(x, y + 1);
-		corners[3] = tracer.tracePixel(x + 1, y + 1);
-
-		Object::Color c = mEngine->antialiasPixel(tracer, x + 0.5f, y + 0.5f, 1.0f, corners);
-		int scany = height - y - 1;
-		mEngine->bits()[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
-		mEngine->bits()[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
-		mEngine->bits()[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
+	WorkerThread(Engine *engine)
+	{
+		mEngine = engine;
 	}
 
-	mEngine->threadDone(this);
-}
+	void start()
+	{
+		_beginthread(kickstart, 0, this);
+	}
 
-RenderEngine::RenderEngine()
+private:
+	static void kickstart(void *data)
+	{
+		WorkerThread *obj = (WorkerThread*)data;
+		obj->run();
+	}
+
+	void run()
+	{
+		mEngine->renderThread();
+		mEngine->threadDone(this);
+	}
+
+	Engine *mEngine;
+};
+
+Engine::Engine()
 {
 	mRendering = false;
 }
 
-void RenderEngine::startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
+void Engine::startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
 {
 	mScene = scene;
 	mSettings = settings;
@@ -89,32 +61,12 @@ void RenderEngine::startRender(Object::Scene *scene, const Trace::Tracer::Settin
 	}
 }
 
-Object::Scene *RenderEngine::scene() const
-{
-	return mScene;
-}
-
-const Trace::Tracer::Settings &RenderEngine::settings() const
-{
-	return mSettings;
-}
-
-unsigned char *RenderEngine::bits() const
-{
-	return mBits;
-}
-
-bool RenderEngine::rendering() const
+bool Engine::rendering() const
 {
 	return mRendering;
 }
 
-LONG *RenderEngine::nextPixel()
-{
-	return &mNextPixel;
-}
-
-void RenderEngine::threadDone(WorkerThread *thread)
+void Engine::threadDone(WorkerThread *thread)
 {
 	delete thread;
 
@@ -131,7 +83,37 @@ void RenderEngine::threadDone(WorkerThread *thread)
 	}
 }
 
-Object::Color RenderEngine::antialiasPixel(const Trace::Tracer &tracer, float x, float y, float size, const Object::Color corners[4], int generation) const
+void Engine::renderThread()
+{
+	Trace::Tracer tracer(mScene, mSettings);
+	int width = mSettings.width;
+	int height = mSettings.height;
+	while(true) {
+		LONG pixel = InterlockedIncrement(&mNextPixel) - 1;
+		int x = pixel % width;
+		int y = pixel / width;
+
+		if(y >= height) {
+			break;
+		}
+
+		Object::Color corners[4];
+		corners[0] = tracer.tracePixel(x, y);
+		corners[1] = tracer.tracePixel(x + 1, y);
+		corners[2] = tracer.tracePixel(x, y + 1);
+		corners[3] = tracer.tracePixel(x + 1, y + 1);
+
+		Object::Color c = antialiasPixel(tracer, x + 0.5f, y + 0.5f, 1.0f, corners);
+		int height = mSettings.height;
+		int width = mSettings.width;
+		int scany = height - y - 1;
+		mBits[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
+		mBits[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
+		mBits[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
+	}
+}
+
+Object::Color Engine::antialiasPixel(const Trace::Tracer &tracer, float x, float y, float size, const Object::Color corners[4], int generation) const
 {
 	Object::Color ret;
 
@@ -189,7 +171,7 @@ static float colorMag(const Object::Color &x, const Object::Color &y)
 	return r * r + g * g + b * b;
 }
 
-bool RenderEngine::shouldAntialias(const Object::Color corners[4], float size) const
+bool Engine::shouldAntialias(const Object::Color corners[4], float size) const
 {
 	Object::Color center;
 	float dist = 0;
@@ -203,4 +185,6 @@ bool RenderEngine::shouldAntialias(const Object::Color corners[4], float size) c
 	}
 
 	return dist > size * mSettings.threshold * mSettings.threshold;
+}
+
 }

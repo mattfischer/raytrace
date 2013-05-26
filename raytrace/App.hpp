@@ -2,12 +2,12 @@
 #define APP_HPP
 
 #include "RenderControlDlg.hpp"
-#include "RenderEngine.hpp"
+#include "Render/Engine.hpp"
 #include "Object/Scene.hpp"
 
 #include <windows.h>
 
-class App : public RenderEngine::Listener, public RenderControlDlg::Listener
+class App : public Render::Engine::Listener, public RenderControlDlg::Listener
 {
 public:
 	App();
@@ -30,7 +30,7 @@ private:
 
 	RenderControlDlg mRenderControl;
 	Object::Scene *mScene;
-	RenderEngine mEngine;
+	Render::Engine mEngine;
 	unsigned char *mFramebuffer;
 };
 

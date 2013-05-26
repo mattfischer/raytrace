@@ -188,10 +188,6 @@
 				RelativePath=".\RenderControlDlg.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\RenderEngine.cpp"
-				>
-			</File>
 			<Filter
 				Name="Math"
 				>
@@ -406,6 +402,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Render"
+				>
+				<File
+					RelativePath=".\Render\Engine.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -418,10 +422,6 @@
 			</File>
 			<File
 				RelativePath=".\RenderControlDlg.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RenderEngine.hpp"
 				>
 			</File>
 			<File
@@ -577,6 +577,14 @@
 				</File>
 				<File
 					RelativePath=".\Scene.tab.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Render"
+				>
+				<File
+					RelativePath=".\Render\Engine.hpp"
 					>
 				</File>
 			</Filter>

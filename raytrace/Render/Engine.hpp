@@ -6,29 +6,28 @@
 
 #include <windows.h>
 
+namespace Render {
+
 class WorkerThread;
-class RenderEngine
+class Engine
 {
 public:
-	friend class WorkerThread;
-
 	class Listener {
 	public:
 		virtual void onRenderDone() = 0;
 		virtual void onRenderStatus(const char *message) = 0;
 	};
 
-	RenderEngine();
+	friend class WorkerThread;
+
+	Engine();
 
 	bool rendering() const;
-	Object::Scene *scene() const;
-	const Trace::Tracer::Settings &settings() const;
-	unsigned char *bits() const;
-	LONG *nextPixel();
 
 	void startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
 
 private:
+	void renderThread();
 	void threadDone(WorkerThread *thread);
 
 	Object::Color antialiasPixel(const Trace::Tracer &trace, float x, float y, float size, const Object::Color corners[4], int generation = 0) const;
@@ -43,5 +42,7 @@ private:
 	LONG mNextPixel;
 	LONG mNumThreads;
 };
+
+}
 
 #endif
