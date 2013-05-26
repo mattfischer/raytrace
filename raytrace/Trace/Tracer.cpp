@@ -112,9 +112,10 @@ Object::Color Tracer::traceRay(const Trace::Ray &ray) const
 	return color;
 }
 
-Object::Color Tracer::tracePixel(int x, int y) const
+Object::Color Tracer::tracePixel(float x, float y) const
 {
 	float aspectRatio = (float)mSettings.height / (float)mSettings.width;
+
 	Object::Color color;
 
 	for(int i=0; i<mSettings.antialias; i++)

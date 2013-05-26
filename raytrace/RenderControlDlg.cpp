@@ -15,6 +15,8 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.lighting = true;
 	mSettings.maxRayGeneration = 2;
 	mSettings.antialias = 1;
+	mSettings.threshold = 0.1f;
+	mSettings.maxAAGen = 5;
 }
 
 void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
@@ -65,6 +67,10 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		SendDlgItemMessage(hwndDlg, IDC_ANTIALIAS_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
 		SetDlgItemInt(hwndDlg, IDC_WIDTH, mSettings.width, TRUE);
 		SetDlgItemInt(hwndDlg, IDC_HEIGHT, mSettings.height, TRUE);
+		char buf[20];
+		sprintf_s(buf, sizeof(buf), "%f", mSettings.threshold);
+		SetDlgItemText(hwndDlg, IDC_THRESHOLD, buf);
+		SetDlgItemInt(hwndDlg, IDC_MAX_GEN, mSettings.maxAAGen, TRUE);
 		return FALSE;
 
 	case WM_COMMAND:
@@ -75,6 +81,10 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 			mSettings.width = GetDlgItemInt(hwndDlg, IDC_WIDTH, NULL, TRUE);
 			mSettings.height = GetDlgItemInt(hwndDlg, IDC_HEIGHT, NULL, TRUE);
 			mSettings.antialias = GetDlgItemInt(hwndDlg, IDC_ANTIALIAS, NULL, TRUE);
+			char buf[20];
+			GetDlgItemText(hwndDlg, IDC_THRESHOLD, buf, sizeof(buf));
+			mSettings.threshold = atof(buf);
+			mSettings.maxAAGen = GetDlgItemInt(hwndDlg, IDC_MAX_GEN, NULL, TRUE);
 			mListener->onRenderButtonClicked();
 			return TRUE;
 		}

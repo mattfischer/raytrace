@@ -19,6 +19,8 @@ public:
 		bool lighting;
 		int antialias;
 		int maxRayGeneration;
+		float threshold;
+		int maxAAGen;
 	};
 
 	Tracer(Object::Scene *scene, const Settings &settings);
@@ -29,7 +31,7 @@ public:
 
 	Settings &settings();
 
-	Object::Color tracePixel(int x, int y) const;
+	Object::Color tracePixel(float x, float y) const;
 
 protected:
 	Object::Color doLighting(const Trace::Ray &ray, const Intersection &intersection) const;

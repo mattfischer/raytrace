@@ -47,8 +47,13 @@ void WorkerThread::run()
 			break;
 		}
 
-		Object::Color c = tracer.tracePixel(x, y);
+		Object::Color corners[4];
+		corners[0] = tracer.tracePixel(x, y);
+		corners[1] = tracer.tracePixel(x + 1, y);
+		corners[2] = tracer.tracePixel(x, y + 1);
+		corners[3] = tracer.tracePixel(x + 1, y + 1);
 
+		Object::Color c = mEngine->antialiasPixel(tracer, x + 0.5f, y + 0.5f, 1.0f, corners);
 		int scany = height - y - 1;
 		mEngine->bits()[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
 		mEngine->bits()[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
@@ -124,4 +129,78 @@ void RenderEngine::threadDone(WorkerThread *thread)
 		mListener->onRenderStatus(buf);
 		mListener->onRenderDone();
 	}
+}
+
+Object::Color RenderEngine::antialiasPixel(const Trace::Tracer &tracer, float x, float y, float size, const Object::Color corners[4], int generation) const
+{
+	Object::Color ret;
+
+	if(shouldAntialias(corners, size) && generation < mSettings.maxAAGen) {
+		Object::Color subs[9];
+		int idx = 0;
+		for(int j=-1; j<=1; j++) {
+			for(int i=-1; i<=1; i++) {
+				switch(idx) {
+					case 0: subs[idx] = corners[0]; break;
+					case 2: subs[idx] = corners[1]; break;
+					case 6: subs[idx] = corners[2]; break;
+					case 8: subs[idx] = corners[3]; break;
+					default: subs[idx] = tracer.tracePixel(x + i * size / 2, y + j * size / 2); break;
+				}
+				idx++;
+			}
+		}
+
+		Object::Color subpixels[4];
+		Object::Color subcorners[4];
+
+		subcorners[0] = subs[0]; subcorners[1] = subs[1]; subcorners[2] = subs[3]; subcorners[3] = subs[4];
+		subpixels[0] = antialiasPixel(tracer, x - size/4, y - size/4, size / 2, subcorners, generation + 1);
+
+		subcorners[0] = subs[1]; subcorners[1] = subs[2]; subcorners[2] = subs[4]; subcorners[3] = subs[5];
+		subpixels[1] = antialiasPixel(tracer, x + size/4, y - size/4, size / 2, subcorners, generation + 1);
+
+		subcorners[0] = subs[3]; subcorners[1] = subs[4]; subcorners[2] = subs[6]; subcorners[3] = subs[7];
+		subpixels[2] = antialiasPixel(tracer, x - size/4, y + size/4, size / 2, subcorners, generation + 1);
+
+		subcorners[0] = subs[4]; subcorners[1] = subs[5]; subcorners[2] = subs[7]; subcorners[3] = subs[8];
+		subpixels[3] = antialiasPixel(tracer, x + size/4, y + size/4, size / 2, subcorners, generation + 1);
+
+		for(int i=0; i<4; i++) {
+			ret = ret + subpixels[i];
+		}
+		ret = ret / 4;
+	} else {
+		for(int i=0; i<4; i++) {
+			ret = ret + corners[i];
+		}
+		ret = ret / 4;
+	}
+
+	return ret;
+}
+
+static float colorMag(const Object::Color &x, const Object::Color &y)
+{
+	float r = x.red() - y.red();
+	float g = x.green() - y.green();
+	float b = x.blue() - y.blue();
+
+	return r * r + g * g + b * b;
+}
+
+bool RenderEngine::shouldAntialias(const Object::Color corners[4], float size) const
+{
+	Object::Color center;
+	float dist = 0;
+	for(int i=0; i<4; i++) {
+		center = center + corners[i];
+	}
+	center = center / 4;
+
+	for(int i=0; i<4; i++) {
+		dist += colorMag(center, corners[i]);
+	}
+
+	return dist > size * mSettings.threshold * mSettings.threshold;
 }
