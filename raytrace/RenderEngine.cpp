@@ -38,17 +38,21 @@ void WorkerThread::run()
 	Trace::Tracer tracer(mEngine->scene(), mEngine->settings());
 	int width = mEngine->settings().width;
 	int height = mEngine->settings().height;
-	for(int y=0; y<height; y++)
-	{
-		for(int x=0; x<width; x++)
-		{
-			Object::Color c = tracer.tracePixel(x, y);
+	while(true) {
+		LONG pixel = InterlockedIncrement(mEngine->nextPixel()) - 1;
+		int x = pixel % width;
+		int y = pixel / width;
 
-			int scany = height - y - 1;
-			mEngine->bits()[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
-			mEngine->bits()[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
-			mEngine->bits()[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
+		if(y >= height) {
+			break;
 		}
+
+		Object::Color c = tracer.tracePixel(x, y);
+
+		int scany = height - y - 1;
+		mEngine->bits()[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
+		mEngine->bits()[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
+		mEngine->bits()[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
 	}
 
 	mEngine->threadDone(this);
@@ -66,11 +70,18 @@ void RenderEngine::startRender(Object::Scene *scene, const Trace::Tracer::Settin
 	mBits = bits;
 	mListener = listener;
 	mRendering = true;
+	mNextPixel = 0;
 	mStartTime = GetTickCount();
 	mListener->onRenderStatus("");
 
-	WorkerThread *thread = new WorkerThread(this);
-	thread->start();
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo( &sysinfo );
+	mNumThreads = sysinfo.dwNumberOfProcessors;
+
+	for(int i=0; i<mNumThreads; i++) {
+		WorkerThread *thread = new WorkerThread(this);
+		thread->start();
+	}
 }
 
 Object::Scene *RenderEngine::scene() const
@@ -93,15 +104,24 @@ bool RenderEngine::rendering() const
 	return mRendering;
 }
 
+LONG *RenderEngine::nextPixel()
+{
+	return &mNextPixel;
+}
+
 void RenderEngine::threadDone(WorkerThread *thread)
 {
-	mRendering = false;
 	delete thread;
 
-	DWORD endTime = GetTickCount();
-	char buf[256];
-	sprintf(buf, "Render time: %ims", endTime - mStartTime);
+	LONG numThreads = InterlockedDecrement(&mNumThreads);
+	if(numThreads == 0) {
+		mRendering = false;
 
-	mListener->onRenderStatus(buf);
-	mListener->onRenderDone();
+		DWORD endTime = GetTickCount();
+		char buf[256];
+		sprintf_s(buf, sizeof(buf), "Render time: %ims", endTime - mStartTime);
+
+		mListener->onRenderStatus(buf);
+		mListener->onRenderDone();
+	}
 }

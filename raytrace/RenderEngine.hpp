@@ -24,6 +24,7 @@ public:
 	Object::Scene *scene() const;
 	const Trace::Tracer::Settings &settings() const;
 	unsigned char *bits() const;
+	LONG *nextPixel();
 
 	void startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
 
@@ -36,6 +37,8 @@ private:
 	Listener *mListener;
 	bool mRendering;
 	DWORD mStartTime;
+	LONG mNextPixel;
+	LONG mNumThreads;
 };
 
 #endif
