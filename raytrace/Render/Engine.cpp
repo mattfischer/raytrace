@@ -16,7 +16,6 @@ void Engine::startRender(Object::Scene *scene, const Trace::Tracer::Settings &se
 	mBits = bits;
 	mListener = listener;
 	mRendering = true;
-	mNextPixel = 0;
 	mStartTime = GetTickCount();
 	mListener->onRenderStatus("");
 
@@ -24,9 +23,13 @@ void Engine::startRender(Object::Scene *scene, const Trace::Tracer::Settings &se
 	GetSystemInfo( &sysinfo );
 	mNumThreads = sysinfo.dwNumberOfProcessors;
 
+	int size = mSettings.height / mNumThreads;
 	for(int i=0; i<mNumThreads; i++) {
+		int startLine = i * size;
+		int numLines = (i == mNumThreads - 1) ? mSettings.height - startLine : size;
+
 		Thread *thread = new Thread(this, mScene, mSettings, mBits);
-		thread->start();
+		thread->start(startLine, numLines);
 	}
 }
 

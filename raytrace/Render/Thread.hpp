@@ -12,7 +12,7 @@ class Thread
 public:
 	Thread(Engine *engine, Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits);
 
-	void start();
+	void start(int startLine, int numLines);
 
 private:
 	static void kickstart(void *data);
@@ -25,6 +25,8 @@ private:
 	Object::Scene *mScene;
 	const Trace::Tracer::Settings &mSettings;
 	unsigned char *mBits;
+	int mStartLine;
+	int mNumLines;
 	Trace::Tracer mTracer;
 };
 

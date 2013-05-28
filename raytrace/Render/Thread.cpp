@@ -13,8 +13,11 @@ Thread::Thread(Engine *engine, Object::Scene *scene, const Trace::Tracer::Settin
 	mBits = bits;
 }
 
-void Thread::start()
+void Thread::start(int startLine, int numLines)
 {
+	mStartLine = startLine;
+	mNumLines = numLines;
+
 	_beginthread(kickstart, 0, this);
 }
 
@@ -28,28 +31,22 @@ void Thread::run()
 {
 	int width = mSettings.width;
 	int height = mSettings.height;
-	while(true) {
-		LONG pixel = InterlockedIncrement(&mEngine->nextPixel()) - 1;
-		int x = pixel % width;
-		int y = pixel / width;
+	for(int y=mStartLine; y<mStartLine + mNumLines; y++) {
+		for(int x=0; x<width; x++) {
+			Object::Color corners[4];
+			corners[0] = mTracer.tracePixel(x, y);
+			corners[1] = mTracer.tracePixel(x + 1, y);
+			corners[2] = mTracer.tracePixel(x, y + 1);
+			corners[3] = mTracer.tracePixel(x + 1, y + 1);
 
-		if(y >= height) {
-			break;
+			Object::Color c = antialiasPixel(x + 0.5f, y + 0.5f, 1.0f, corners);
+			int height = mSettings.height;
+			int width = mSettings.width;
+			int scany = height - y - 1;
+			mBits[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
+			mBits[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
+			mBits[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
 		}
-
-		Object::Color corners[4];
-		corners[0] = mTracer.tracePixel(x, y);
-		corners[1] = mTracer.tracePixel(x + 1, y);
-		corners[2] = mTracer.tracePixel(x, y + 1);
-		corners[3] = mTracer.tracePixel(x + 1, y + 1);
-
-		Object::Color c = antialiasPixel(x + 0.5f, y + 0.5f, 1.0f, corners);
-		int height = mSettings.height;
-		int width = mSettings.width;
-		int scany = height - y - 1;
-		mBits[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
-		mBits[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
-		mBits[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
 	}
 
 	mEngine->threadDone(this);

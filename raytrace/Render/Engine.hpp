@@ -22,8 +22,6 @@ public:
 
 	bool rendering() const;
 
-	LONG &nextPixel() { return mNextPixel; }
-
 	void startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
 	void threadDone(Thread *thread);
 
@@ -34,7 +32,6 @@ private:
 	Listener *mListener;
 	bool mRendering;
 	DWORD mStartTime;
-	LONG mNextPixel;
 	LONG mNumThreads;
 };
 
