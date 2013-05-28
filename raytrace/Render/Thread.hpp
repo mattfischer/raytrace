@@ -17,9 +17,15 @@ public:
 private:
 	static void kickstart(void *data);
 
+	struct SubPixel {
+		bool valid;
+		Object::Color color;
+	};
+
 	void run();
-	Object::Color antialiasPixel(float x, float y, float size, const Object::Color corners[4], int generation = 0) const;
-	bool shouldAntialias(const Object::Color corners[4], float size) const;
+	Object::Color antialiasPixel(float x, float y, int subpixelX, int subPixelY, int subPixelSize, const Object::Color corners[4]);
+	bool shouldAntialias(const Object::Color corners[4]) const;
+	SubPixel &subPixel(int x, int y);
 
 	Engine *mEngine;
 	Object::Scene *mScene;
@@ -28,6 +34,8 @@ private:
 	int mStartLine;
 	int mNumLines;
 	Trace::Tracer mTracer;
+	SubPixel *mSubPixels;
+	int mSubPixelSize;
 };
 
 }
