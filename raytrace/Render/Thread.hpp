@@ -14,6 +14,9 @@ public:
 
 	void start(int startLine, int numLines);
 
+	int startLine();
+	int numLines();
+
 private:
 	static void kickstart(void *data);
 
@@ -23,6 +26,8 @@ private:
 	};
 
 	void run();
+	void doRender();
+
 	Object::Color antialiasPixel(float x, float y, int subpixelX, int subPixelY, int subPixelSize, const Object::Color corners[4]);
 	bool shouldAntialias(const Object::Color corners[4]) const;
 	SubPixel &subPixel(int x, int y);
@@ -36,6 +41,7 @@ private:
 	Trace::Tracer mTracer;
 	SubPixel *mSubPixels;
 	int mSubPixelSize;
+	bool mStarted;
 };
 
 }

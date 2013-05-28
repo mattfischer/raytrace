@@ -11,6 +11,7 @@ Thread::Thread(Engine *engine, Object::Scene *scene, const Trace::Tracer::Settin
 {
 	mEngine = engine;
 	mBits = bits;
+	mStarted = false;
 }
 
 void Thread::start(int startLine, int numLines)
@@ -18,7 +19,10 @@ void Thread::start(int startLine, int numLines)
 	mStartLine = startLine;
 	mNumLines = numLines;
 
-	_beginthread(kickstart, 0, this);
+	if(!mStarted) {
+		mStarted = true;
+		_beginthread(kickstart, 0, this);
+	}
 }
 
 void Thread::kickstart(void *data)
@@ -28,6 +32,28 @@ void Thread::kickstart(void *data)
 }
 
 void Thread::run()
+{
+	while(true) {
+		doRender();
+
+		bool stop = mEngine->threadDone(this);
+		if(stop) {
+			break;
+		}
+	}
+}
+
+int Thread::startLine()
+{
+	return mStartLine;
+}
+
+int Thread::numLines()
+{
+	return mNumLines;
+}
+
+void Thread::doRender()
 {
 	int width = mSettings.width;
 	int height = mSettings.height;
@@ -113,8 +139,6 @@ void Thread::run()
 	delete[] topLine;
 	delete[] bottomLine;
 	delete[] mSubPixels;
-
-	mEngine->threadDone(this);
 }
 
 Object::Color Thread::antialiasPixel(float x, float y, int subPixelX, int subPixelY, int subPixelSize, const Object::Color corners[4])

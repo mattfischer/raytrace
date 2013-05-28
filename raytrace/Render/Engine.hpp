@@ -19,11 +19,12 @@ public:
 	};
 
 	Engine();
+	~Engine();
 
 	bool rendering() const;
 
 	void startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
-	void threadDone(Thread *thread);
+	bool threadDone(Thread *thread);
 
 private:
 	Object::Scene *mScene;
@@ -32,7 +33,10 @@ private:
 	Listener *mListener;
 	bool mRendering;
 	DWORD mStartTime;
-	LONG mNumThreads;
+	CRITICAL_SECTION mCritSec;
+	Thread **mThreads;
+	int mNumThreads;
+	int mNumActiveThreads;
 };
 
 }
