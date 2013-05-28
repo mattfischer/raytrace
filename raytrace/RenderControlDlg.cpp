@@ -14,9 +14,8 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.height = 600;
 	mSettings.lighting = true;
 	mSettings.maxRayGeneration = 2;
-	mSettings.antialias = 1;
-	mSettings.threshold = 0.1f;
-	mSettings.maxAAGen = 5;
+	mSettings.threshold = 0.25f;
+	mSettings.maxAAGen = 3;
 }
 
 void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
@@ -59,29 +58,27 @@ INT_PTR CALLBACK RenderControlDlg::dialogProcStub(HWND hwndDlg, UINT uMsg, WPARA
 
 INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	char buf[20];
+
 	switch(uMsg)
 	{
 	case WM_INITDIALOG:
-		CheckDlgButton(hwndDlg, IDC_LIGHTING, mSettings.lighting ? BST_CHECKED : BST_UNCHECKED);
-		SetDlgItemInt(hwndDlg, IDC_ANTIALIAS, mSettings.antialias, TRUE);
-		SendDlgItemMessage(hwndDlg, IDC_ANTIALIAS_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
 		SetDlgItemInt(hwndDlg, IDC_WIDTH, mSettings.width, TRUE);
 		SetDlgItemInt(hwndDlg, IDC_HEIGHT, mSettings.height, TRUE);
-		char buf[20];
+		CheckDlgButton(hwndDlg, IDC_LIGHTING, mSettings.lighting ? BST_CHECKED : BST_UNCHECKED);	
 		sprintf_s(buf, sizeof(buf), "%f", mSettings.threshold);
 		SetDlgItemText(hwndDlg, IDC_THRESHOLD, buf);
 		SetDlgItemInt(hwndDlg, IDC_MAX_GEN, mSettings.maxAAGen, TRUE);
+		SendDlgItemMessage(hwndDlg, IDC_MAX_GEN_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
 		return FALSE;
 
 	case WM_COMMAND:
 		switch(LOWORD(wParam))
 		{
 		case ID_RENDER:
-			mSettings.lighting = IsDlgButtonChecked(hwndDlg, IDC_LIGHTING);
 			mSettings.width = GetDlgItemInt(hwndDlg, IDC_WIDTH, NULL, TRUE);
 			mSettings.height = GetDlgItemInt(hwndDlg, IDC_HEIGHT, NULL, TRUE);
-			mSettings.antialias = GetDlgItemInt(hwndDlg, IDC_ANTIALIAS, NULL, TRUE);
-			char buf[20];
+			mSettings.lighting = IsDlgButtonChecked(hwndDlg, IDC_LIGHTING);
 			GetDlgItemText(hwndDlg, IDC_THRESHOLD, buf, sizeof(buf));
 			mSettings.threshold = atof(buf);
 			mSettings.maxAAGen = GetDlgItemInt(hwndDlg, IDC_MAX_GEN, NULL, TRUE);

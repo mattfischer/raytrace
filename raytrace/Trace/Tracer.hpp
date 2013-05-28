@@ -17,7 +17,6 @@ public:
 		int width;
 		int height;
 		bool lighting;
-		int antialias;
 		int maxRayGeneration;
 		float threshold;
 		int maxAAGen;

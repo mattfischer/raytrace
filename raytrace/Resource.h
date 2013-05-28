@@ -10,6 +10,7 @@
 #define IDC_HEIGHT                      1010
 #define IDC_SPIN6                       1011
 #define IDC_ANTIALIAS_SPIN              1011
+#define IDC_MAX_GEN_SPIN                1011
 #define IDC_RENDER_TIME                 1012
 #define IDC_RENDER_STATUS               1012
 #define IDC_THRESHOLD                   1013

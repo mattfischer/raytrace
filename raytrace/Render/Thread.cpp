@@ -31,23 +31,43 @@ void Thread::run()
 {
 	int width = mSettings.width;
 	int height = mSettings.height;
-	for(int y=mStartLine; y<mStartLine + mNumLines; y++) {
-		for(int x=0; x<width; x++) {
-			Object::Color corners[4];
-			corners[0] = mTracer.tracePixel(x, y);
-			corners[1] = mTracer.tracePixel(x + 1, y);
-			corners[2] = mTracer.tracePixel(x, y + 1);
-			corners[3] = mTracer.tracePixel(x + 1, y + 1);
+	Object::Color *topLine = new Object::Color[width + 1];
+	Object::Color *bottomLine = new Object::Color[width + 1];
 
-			Object::Color c = antialiasPixel(x + 0.5f, y + 0.5f, 1.0f, corners);
+	for(int x=0; x<=width; x++) {
+		topLine[x] = mTracer.tracePixel(x, mStartLine);
+	}
+
+	for(int y=mStartLine+1; y<=mStartLine + mNumLines; y++) {
+		for(int x=0; x<=width; x++) {
+			bottomLine[x] = mTracer.tracePixel(x, y);
+
+			if(x == 0) {
+				continue;
+			}
+
+			Object::Color corners[4];
+			corners[0] = topLine[x-1];
+			corners[1] = topLine[x];
+			corners[2] = bottomLine[x-1];
+			corners[3] = bottomLine[x];
+
+			Object::Color c = antialiasPixel(x - 0.5f, y - 0.5f, 1.0f, corners);
 			int height = mSettings.height;
 			int width = mSettings.width;
-			int scany = height - y - 1;
-			mBits[(scany * width + x) * 3 + 0] = c.blue() * 0xFF;
-			mBits[(scany * width + x) * 3 + 1] = c.green() * 0xFF;
-			mBits[(scany * width + x) * 3 + 2] = c.red() * 0xFF;
+			int scany = height - y;
+			mBits[(scany * width + x - 1) * 3 + 0] = c.blue() * 0xFF;
+			mBits[(scany * width + x - 1) * 3 + 1] = c.green() * 0xFF;
+			mBits[(scany * width + x - 1) * 3 + 2] = c.red() * 0xFF;
 		}
+
+		Object::Color *temp = topLine;
+		topLine = bottomLine;
+		bottomLine = temp;
 	}
+
+	delete[] topLine;
+	delete[] bottomLine;
 
 	mEngine->threadDone(this);
 }
