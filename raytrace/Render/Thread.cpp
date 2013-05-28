@@ -31,35 +31,57 @@ void Thread::run()
 {
 	int width = mSettings.width;
 	int height = mSettings.height;
-	Object::Color *topLine = new Object::Color[width + 1];
-	Object::Color *bottomLine = new Object::Color[width + 1];
-
-	for(int x=0; x<=width; x++) {
-		topLine[x] = mTracer.tracePixel(x, mStartLine);
-	}
 
 	mSubPixelSize = 1 << mSettings.maxAAGen;
 	mSubPixels = new SubPixel[(mSubPixelSize + 1) * (mSubPixelSize + 1)];
 
+	SubPixel *topLine = new SubPixel[width * mSubPixelSize + 1];
+	SubPixel *bottomLine = new SubPixel[width * mSubPixelSize + 1];
+
+	for(int x=0; x<=width; x++) {
+		topLine[x * mSubPixelSize].color = mTracer.tracePixel(x, mStartLine);
+		topLine[x * mSubPixelSize].valid = true;
+
+		if(x < width) {
+			for(int i=0; i<mSubPixelSize; i++) {
+				topLine[x * mSubPixelSize + i].valid = false;
+			}
+		}
+	}
+
 	for(int y=mStartLine+1; y<=mStartLine + mNumLines; y++) {
 		for(int x=0; x<=width; x++) {
-			bottomLine[x] = mTracer.tracePixel(x, y);
+			bottomLine[x * mSubPixelSize].color = mTracer.tracePixel(x, y);
+			bottomLine[x * mSubPixelSize].valid = true;
 
 			if(x == 0) {
 				continue;
 			}
 
-			for(int j=0; j<mSubPixelSize + 1; j++) {
-				for(int i=0; i<mSubPixelSize + 1; i++) {
+			for(int i=1; i<mSubPixelSize; i++) {
+				bottomLine[(x - 1) * mSubPixelSize + i].valid = false;
+			}
+
+			for(int j=0; j<=mSubPixelSize; j++) {
+				if(x > 1) {
+					subPixel(0, j) = subPixel(mSubPixelSize, j);
+				} else {
+					subPixel(0, j).valid = false;
+				}
+			}
+
+			for(int i=1; i<=mSubPixelSize; i++) {
+				subPixel(i, 0) = topLine[(x - 1) * mSubPixelSize + i];
+				for(int j=1; j<=mSubPixelSize; j++) {
 					subPixel(i, j).valid = false;
 				}
 			}
 
 			Object::Color corners[4];
-			corners[0] = topLine[x-1];
-			corners[1] = topLine[x];
-			corners[2] = bottomLine[x-1];
-			corners[3] = bottomLine[x];
+			corners[0] = topLine[(x-1) * mSubPixelSize].color;
+			corners[1] = topLine[x * mSubPixelSize].color;
+			corners[2] = bottomLine[(x-1) * mSubPixelSize].color;
+			corners[3] = bottomLine[x * mSubPixelSize].color;
 
 			subPixel(0, 0).color = corners[0];
 			subPixel(0, 0).valid = true;
@@ -77,9 +99,13 @@ void Thread::run()
 			mBits[(scany * width + x - 1) * 3 + 0] = c.blue() * 0xFF;
 			mBits[(scany * width + x - 1) * 3 + 1] = c.green() * 0xFF;
 			mBits[(scany * width + x - 1) * 3 + 2] = c.red() * 0xFF;
+
+			for(int i=0; i<mSubPixelSize; i++) {
+				bottomLine[(x - 1) * mSubPixelSize + i] = subPixel(i, mSubPixelSize);
+			}
 		}
 
-		Object::Color *temp = topLine;
+		SubPixel *temp = topLine;
 		topLine = bottomLine;
 		bottomLine = temp;
 	}
