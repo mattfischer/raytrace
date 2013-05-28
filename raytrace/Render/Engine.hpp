@@ -3,12 +3,12 @@
 
 #include "Object/Scene.hpp"
 #include "Trace/Tracer.hpp"
+#include "Render/Thread.hpp"
 
 #include <windows.h>
 
 namespace Render {
 
-class WorkerThread;
 class Engine
 {
 public:
@@ -18,21 +18,16 @@ public:
 		virtual void onRenderStatus(const char *message) = 0;
 	};
 
-	friend class WorkerThread;
-
 	Engine();
 
 	bool rendering() const;
 
+	LONG &nextPixel() { return mNextPixel; }
+
 	void startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
+	void threadDone(Thread *thread);
 
 private:
-	void renderThread();
-	void threadDone(WorkerThread *thread);
-
-	Object::Color antialiasPixel(const Trace::Tracer &trace, float x, float y, float size, const Object::Color corners[4], int generation = 0) const;
-	bool shouldAntialias(const Object::Color corners[4], float size) const;
-
 	Object::Scene *mScene;
 	Trace::Tracer::Settings mSettings;
 	unsigned char *mBits;

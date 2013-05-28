@@ -409,6 +409,10 @@
 					RelativePath=".\Render\Engine.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\Render\Thread.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -585,6 +589,10 @@
 				>
 				<File
 					RelativePath=".\Render\Engine.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\Thread.hpp"
 					>
 				</File>
 			</Filter>
