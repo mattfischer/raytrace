@@ -15,7 +15,9 @@ public:
 	void start(int startLine, int numLines);
 
 	int startLine();
+	int currentLine();
 	int numLines();
+	void setNumLines(int numLines);
 
 private:
 	static void kickstart(void *data);
@@ -37,6 +39,7 @@ private:
 	const Trace::Tracer::Settings &mSettings;
 	unsigned char *mBits;
 	int mStartLine;
+	int mCurrentLine;
 	int mNumLines;
 	Trace::Tracer mTracer;
 	SubPixel *mSubPixels;

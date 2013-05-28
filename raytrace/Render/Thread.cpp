@@ -17,6 +17,7 @@ Thread::Thread(Engine *engine, Object::Scene *scene, const Trace::Tracer::Settin
 void Thread::start(int startLine, int numLines)
 {
 	mStartLine = startLine;
+	mCurrentLine = startLine;
 	mNumLines = numLines;
 
 	if(!mStarted) {
@@ -48,9 +49,19 @@ int Thread::startLine()
 	return mStartLine;
 }
 
+int Thread::currentLine()
+{
+	return mCurrentLine;
+}
+
 int Thread::numLines()
 {
 	return mNumLines;
+}
+
+void Thread::setNumLines(int numLines)
+{
+	mNumLines = numLines;
 }
 
 void Thread::doRender()
@@ -77,6 +88,8 @@ void Thread::doRender()
 
 	for(int y=mStartLine+1; y<=mStartLine + mNumLines; y++) {
 		for(int x=0; x<=width; x++) {
+			mCurrentLine = y - 1;
+
 			bottomLine[x * mSubPixelSize].color = mTracer.tracePixel(x, y);
 			bottomLine[x * mSubPixelSize].valid = true;
 

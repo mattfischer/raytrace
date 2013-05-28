@@ -48,33 +48,58 @@ bool Engine::rendering() const
 
 bool Engine::threadDone(Thread *thread)
 {
+	bool ret;
+
 	EnterCriticalSection(&mCritSec);
 
+	Thread *splitThread = 0;
+	int maxToGo = 0;
+	int thisThread = -1;
 	for(int i=0; i<mNumThreads; i++) {
+		if(!mThreads[i]) {
+			continue;
+		}
+
 		if(mThreads[i] == thread) {
-			mThreads[i] = 0;
-			break;
+			thisThread = i;
+		}
+
+		int toGo = mThreads[i]->numLines() - (mThreads[i]->currentLine() - mThreads[i]->startLine());
+		if(toGo > maxToGo) {
+			splitThread = mThreads[i];
+			maxToGo = toGo;
 		}
 	}
 
-	delete thread;
+	if(maxToGo > 10) {
+		int transfer = maxToGo / 2;
+		int newStart = splitThread->startLine() + splitThread->numLines() - transfer;
+		splitThread->setNumLines(splitThread->numLines() - transfer);
 
-	mNumActiveThreads--;
-	if(mNumActiveThreads == 0) {
-		mRendering = false;
-		delete[] mThreads;
+		thread->start(newStart, transfer);
+		ret = false;
+	} else {
+		mThreads[thisThread] = 0;
+		delete thread;
 
-		DWORD endTime = GetTickCount();
-		char buf[256];
-		sprintf_s(buf, sizeof(buf), "Render time: %ims", endTime - mStartTime);
+		mNumActiveThreads--;
+		if(mNumActiveThreads == 0) {
+			mRendering = false;
+			delete[] mThreads;
 
-		mListener->onRenderStatus(buf);
-		mListener->onRenderDone();
+			DWORD endTime = GetTickCount();
+			char buf[256];
+			sprintf_s(buf, sizeof(buf), "Render time: %ims", endTime - mStartTime);
+
+			mListener->onRenderStatus(buf);
+			mListener->onRenderDone();
+		}
+		ret = true;
 	}
 
 	LeaveCriticalSection(&mCritSec);
 
-	return true;
+	return ret;
 }
 
 }
