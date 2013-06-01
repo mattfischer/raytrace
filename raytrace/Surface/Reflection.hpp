@@ -8,7 +8,7 @@ namespace Surface {
 class Reflection : public Base
 {
 public:
-	virtual Object::Color color(const Trace::Ray &ray, const Trace::Intersection &intersection, const Trace::Tracer &tracer) const;
+	virtual Object::Color color(const Trace::Intersection &intersection, const Trace::Tracer &tracer) const;
 };
 
 }

@@ -9,10 +9,11 @@ Intersection::Intersection()
 	mValid = false;
 }
 
-Intersection::Intersection(const Object::Primitive::Base *primitive, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint)
+Intersection::Intersection(const Object::Primitive::Base *primitive, const Trace::Ray &ray, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint)
 {
 	mValid = true;
 	mPrimitive = primitive;
+	mRay = ray;
 	mDistance = distance;
 	mObjectNormal = objectNormal;
 	mObjectPoint = objectPoint;
@@ -24,6 +25,7 @@ Intersection::Intersection(const Intersection &c)
 {
 	mValid = c.mValid;
 	mPrimitive = c.mPrimitive;
+	mRay = c.mRay;
 	mDistance = c.mDistance;
 	mNormal = c.mNormal;
 	mObjectNormal = c.mObjectNormal;
@@ -42,6 +44,7 @@ Intersection &Intersection::operator=(const Intersection &c)
 {
 	mValid = c.mValid;
 	mPrimitive = c.mPrimitive;
+	mRay = c.mRay;
 	mDistance = c.mDistance;
 	mNormal = c.mNormal;
 	mObjectNormal = c.mObjectNormal;
@@ -79,19 +82,14 @@ bool Intersection::valid() const
 	return mValid;
 }
 
-void Intersection::setValid(bool valid)
-{
-	mValid = valid;
-}
-
 const Object::Primitive::Base *Intersection::primitive() const
 {
 	return mPrimitive;
 }
 
-void Intersection::setPrimitive(const Object::Primitive::Base *primitive)
+const Trace::Ray &Intersection::ray() const
 {
-	mPrimitive = primitive;
+	return mRay;
 }
 
 float Intersection::distance() const
@@ -99,33 +97,14 @@ float Intersection::distance() const
 	return mDistance;
 }
 
-void Intersection::setDistance(float distance)
-{
-	mDistance = distance;
-}
-
 const Math::Normal &Intersection::objectNormal() const
 {
 	return mObjectNormal;
 }
 
-void Intersection::setObjectNormal(const Math::Normal &objectNormal)
-{
-	mTransformed = false;
-
-	mObjectNormal = objectNormal;
-}
-
 const Math::Point &Intersection::objectPoint() const
 {
 	return mObjectPoint;
-}
-
-void Intersection::setObjectPoint(const Math::Point &objectPoint)
-{
-	mTransformed = false;
-
-	mObjectPoint = objectPoint;
 }
 
 void Intersection::transform(const Math::Transformation &transformation)

@@ -19,12 +19,12 @@ Composite::~Composite()
 	}
 }
 
-Object::Color Composite::color(const Trace::Ray &ray, const Trace::Intersection &intersection, const Trace::Tracer &tracer) const
+Object::Color Composite::color(const Trace::Intersection &intersection, const Trace::Tracer &tracer) const
 {
 	Object::Color totalColor;
 
 	for(int i=0; i<mNumSurfaces; i++) {
-		totalColor += mSurfaces[i]->color(ray, intersection, tracer);
+		totalColor += mSurfaces[i]->color(intersection, tracer);
 	}
 
 	return totalColor / mNumSurfaces;

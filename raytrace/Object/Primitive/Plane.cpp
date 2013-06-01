@@ -26,7 +26,7 @@ Trace::Intersection Plane::intersectPlane(const Base *primitive, const Trace::Ra
 		Math::Point point = ray.origin() + ray.direction() * scale;
 		point = point - Math::Vector(normal) * (Math::Vector(point) * normal - displacement);
 
-		return Trace::Intersection(primitive, scale, normal, point);
+		return Trace::Intersection(primitive, ray, scale, normal, point);
 	}
 
 	return Trace::Intersection();
@@ -44,7 +44,7 @@ void Plane::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &inters
 	{
 		Math::Point point = ray.origin() + ray.direction() * scale;
 
-		intersections.push_back(Trace::Intersection(this, scale, Math::Normal(0,1,0), point));
+		intersections.push_back(Trace::Intersection(this, ray, scale, Math::Normal(0,1,0), point));
 	}
 }
 

@@ -90,7 +90,7 @@ void Torus::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &inters
 
 		Math::Point point = ray.origin() + ray.direction() * results[i];
 		
-		intersections.push_back(Trace::Intersection(this, results[i], Math::Normal(point), point));
+		intersections.push_back(Trace::Intersection(this, ray, results[i], Math::Normal(point), point));
 	}
 }
 

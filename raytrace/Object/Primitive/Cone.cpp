@@ -48,7 +48,7 @@ void Cone::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &interse
 				vector.setZ(-1);
 				Math::Normal normal(vector.normalize());
 
-				intersections.push_back(Trace::Intersection(this, distance, normal, point));
+				intersections.push_back(Trace::Intersection(this, ray, distance, normal, point));
 			}
 		}
 
@@ -66,7 +66,7 @@ void Cone::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &interse
 				vector.setZ(-1);
 				Math::Normal normal(vector.normalize());
 
-				intersections.push_back(Trace::Intersection(this, distance, normal, point));
+				intersections.push_back(Trace::Intersection(this, ray, distance, normal, point));
 			}
 		}
 	}

@@ -46,7 +46,7 @@ void Cylinder::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &int
 				vector.setZ(0);
 				Math::Normal normal(vector.normalize());
 				
-				intersections.push_back(Trace::Intersection(this, distance, normal, point));
+				intersections.push_back(Trace::Intersection(this, ray, distance, normal, point));
 			}
 		}
 
@@ -62,7 +62,7 @@ void Cylinder::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &int
 				vector.setZ(0);
 				Math::Normal normal(vector.normalize());
 				
-				intersections.push_back(Trace::Intersection(this, distance, normal, point));
+				intersections.push_back(Trace::Intersection(this, ray, distance, normal, point));
 			}
 		}
 	}

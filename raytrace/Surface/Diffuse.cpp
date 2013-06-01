@@ -60,7 +60,7 @@ Diffuse *Diffuse::fromAst(AST *ast)
 	return new Diffuse(albedo, ambient, lambert, specular, specularPower);
 }
 
-Object::Color Diffuse::color(const Trace::Ray &ray, const Trace::Intersection &intersection, const Trace::Tracer &tracer) const
+Object::Color Diffuse::color(const Trace::Intersection &intersection, const Trace::Tracer &tracer) const
 {
 	Math::Point point(intersection.point());
 	Object::Color pointColor = mAlbedo->pointColor(intersection.objectPoint());

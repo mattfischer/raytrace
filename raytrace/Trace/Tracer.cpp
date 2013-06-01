@@ -52,7 +52,7 @@ Object::Color Tracer::traceRay(const Trace::Ray &ray) const
 	if(mIntersections.size() > startSize)
 	{
 		const Intersection &intersection = mIntersections[startSize];
-		color = intersection.primitive()->surface()->color(ray, intersection, *this);
+		color = intersection.primitive()->surface()->color(intersection, *this);
 	}
 	mIntersections.erase(mIntersections.begin() + startSize, mIntersections.end());
 

@@ -35,7 +35,7 @@ void Sphere::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &inter
 		if(distance > EPSILON)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			intersections.push_back(Trace::Intersection(this, distance, Math::Normal(point), point));
+			intersections.push_back(Trace::Intersection(this, ray, distance, Math::Normal(point), point));
 		}
 
 		distance = (-b + sqrt(disc)) / (2 * a);
@@ -43,7 +43,7 @@ void Sphere::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &inter
 		if(distance > EPSILON)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			intersections.push_back(Trace::Intersection(this, distance, Math::Normal(point), point));
+			intersections.push_back(Trace::Intersection(this, ray, distance, Math::Normal(point), point));
 		}
 	}
 }

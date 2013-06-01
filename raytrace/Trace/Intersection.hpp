@@ -4,6 +4,8 @@
 #include "Math/Normal.hpp"
 #include "Math/Transformation.hpp"
 
+#include "Trace/Ray.hpp"
+
 #include <vector>
 
 namespace Object {
@@ -18,7 +20,7 @@ class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Object::Primitive::Base *primitive, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint);
+	Intersection(const Object::Primitive::Base *primitive, const Trace::Ray &ray, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint);
 	Intersection(const Intersection &c);
 	Intersection &operator=(const Intersection &c);
 
@@ -29,17 +31,11 @@ public:
 	void setPrimitive(const Object::Primitive::Base *primitive);
 
 	float distance() const;
-	void setDistance(float distance);
-
+	const Trace::Ray &ray() const;
 	const Math::Normal &normal() const;
-
 	const Math::Normal &objectNormal() const;
-	void setObjectNormal(const Math::Normal &objectNormal);
-
 	const Math::Point &point() const;
-
 	const Math::Point &objectPoint() const;
-	void setObjectPoint(const Math::Point &objectPoint);
 
 	const Intersection &nearest(const Intersection &b) const;
 	
@@ -51,6 +47,7 @@ public:
 protected:
 	bool mValid;
 	const Object::Primitive::Base *mPrimitive;
+	Trace::Ray mRay;
 	float mDistance;
 	Math::Normal mObjectNormal;
 	Math::Point mObjectPoint;
