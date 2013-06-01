@@ -1,5 +1,5 @@
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef OBJECT_BASE_HPP
+#define OBJECT_BASE_HPP
 
 #include "Math/Transformation.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef PRIMITIVE_H
-#define PRIMITIVE_H
+#ifndef OBJECT_PRIMITIVE_BASE_HPP
+#define OBJECT_PRIMITIVE_BASE_HPP
 
 #include "Object/Base.hpp"
 #include "Object/Texture.hpp"

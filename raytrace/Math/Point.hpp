@@ -1,5 +1,5 @@
-#ifndef POINT_H
-#define POINT_H
+#ifndef MATH_POINT_HPP
+#define MATH_POINT_HPP
 
 #include <math.h>
 

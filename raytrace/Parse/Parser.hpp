@@ -1,5 +1,5 @@
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#ifndef PARSE_PARSER_HPP
+#define PARSE_PARSER_HPP
 
 #include "Parse/AST.h"
 

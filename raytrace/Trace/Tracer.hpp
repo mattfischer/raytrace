@@ -1,5 +1,5 @@
-#ifndef TRACE_H
-#define TRACE_H
+#ifndef TRACE_TRACER_HPP
+#define TRACE_TRACER_HPP
 
 #include "Object/Color.hpp"
 #include "Object/Scene.hpp"

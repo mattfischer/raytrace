@@ -1,5 +1,5 @@
-#ifndef COORDINATE_H
-#define COORDINATE_H
+#ifndef MATH_COORDINATE_HPP
+#define MATH_COORDINATE_HPP
 
 #include "Parse/AST.h"
 

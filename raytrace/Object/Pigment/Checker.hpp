@@ -1,5 +1,5 @@
-#ifndef CHECKER_H
-#define CHECKER_H
+#ifndef OBJECT_PIGMENT_CHECKER_HPP
+#define OBJECT_PIGMENT_CHECKER_HPP
 
 #include "Object/Pigment/Base.hpp"
 

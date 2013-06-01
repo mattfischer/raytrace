@@ -1,5 +1,5 @@
-#ifndef NORMAL_H
-#define NORMAL_H
+#ifndef MATH_NORMAL_HPP
+#define MATH_NORMAL_HPP
 
 #include <math.h>
 

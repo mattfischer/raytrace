@@ -1,5 +1,5 @@
-#ifndef BOX_H
-#define BOX_H
+#ifndef OBJECT_PRIMITIVE_BOX_HPP
+#define OBJECT_PRIMITIVE_BOX_HPP
 
 #include "Object/Primitive/Base.hpp"
 #include "Parse/AST.h"

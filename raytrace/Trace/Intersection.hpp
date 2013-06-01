@@ -1,5 +1,5 @@
-#ifndef INTERSECTION_H
-#define INTERSECTION_H
+#ifndef TRACE_INTERSECTION_H
+#define TRACE_INTERSECTION_H
 
 #include "Math/Normal.hpp"
 #include "Math/Transformation.hpp"

@@ -1,5 +1,5 @@
-#ifndef CYLINDER_H
-#define CYLINDER_H
+#ifndef OBJECT_PRIMITIVE_CYLINDER_HPP
+#define OBJECT_PRIMITIVE_CYLINDER_HPP
 
 #include "Object/Primitive/Base.hpp"
 #include "Parse/AST.h"

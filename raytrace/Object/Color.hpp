@@ -1,5 +1,5 @@
-#ifndef COLOR_H
-#define COLOR_H
+#ifndef OBJECT_COLOR_HPP
+#define OBJECT_COLOR_HPP
 
 #include "Parse/AST.h"
 

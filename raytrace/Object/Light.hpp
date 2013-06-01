@@ -1,5 +1,5 @@
-#ifndef LIGHT_H
-#define LIGHT_H
+#ifndef OBJECT_LIGHT_HPP
+#define OBJECT_LIGHT_HPP
 
 #include "Object/Base.hpp"
 #include "Object/Color.hpp"

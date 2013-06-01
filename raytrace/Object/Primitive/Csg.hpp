@@ -1,5 +1,5 @@
-#ifndef CSG_H
-#define CSG_H
+#ifndef OBJECT_PRIMITIVE_CSG_HPP
+#define OBJECT_PRIMITIVE_CSG_HPP
 
 #include "Object/Primitive/Base.hpp"
 

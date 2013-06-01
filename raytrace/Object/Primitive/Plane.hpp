@@ -1,5 +1,5 @@
-#ifndef PLANE_H
-#define PLANE_H
+#ifndef OBJECT_PRIMITIVE_PLANE_HPP
+#define OBJECT_PRIMITIVE_PLANE_HPP
 
 #include "Object/Primitive/Base.hpp"
 

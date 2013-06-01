@@ -1,5 +1,5 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef OBJECT_CAMERA_HPP
+#define OBJECT_CAMERA_HPP
 
 #include "Object/Base.hpp"
 #include "Trace/Ray.hpp"

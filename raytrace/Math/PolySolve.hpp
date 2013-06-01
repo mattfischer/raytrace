@@ -1,5 +1,5 @@
-#ifndef POLYSOLVE_H
-#define POLYSOLVE_H
+#ifndef MATH_POLYSOLVE_HPP
+#define MATH_POLYSOLVE_HPP
 
 namespace Math {
 

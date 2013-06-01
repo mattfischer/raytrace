@@ -1,5 +1,5 @@
-#ifndef SPHERE_H
-#define SPHERE_H
+#ifndef OBJECT_PRIMITIVE_SPHERE_HPP
+#define OBJECT_PRIMITIVE_SPHERE_HPP
 
 #include "Object/Primitive/Base.hpp"
 #include "Parse/AST.h"

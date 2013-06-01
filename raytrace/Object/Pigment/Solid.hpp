@@ -1,5 +1,5 @@
-#ifndef SOLID_H
-#define SOLID_H
+#ifndef OBJECT_PIGMENT_SOLID_HPP
+#define OBJECT_PIGMENT_SOLID_HPP
 
 #include "Object/Pigment/Base.hpp"
 

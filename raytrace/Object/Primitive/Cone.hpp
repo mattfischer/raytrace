@@ -1,5 +1,5 @@
-#ifndef CONE_H
-#define CONE_H
+#ifndef OBJECT_PRIMITIVE_CONE_HPP
+#define OBJECT_PRIMITIVE_CONE_HPP
 
 #include "Object/Primitive/Base.hpp"
 #include "Parse/AST.h"

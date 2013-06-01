@@ -1,5 +1,5 @@
-#ifndef AST_H
-#define AST_H
+#ifndef PARSE_AST_H
+#define PARSE_AST_H
 
 typedef enum
 {

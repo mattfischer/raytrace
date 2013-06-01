@@ -1,5 +1,5 @@
-#ifndef TORUS_H
-#define TORUS_H
+#ifndef OBJECT_PRIMITIVE_TORUS_HPP
+#define OBJECT_PRIMITIVE_TORUS_HPP
 
 #include "Object/Primitive/Base.hpp"
 

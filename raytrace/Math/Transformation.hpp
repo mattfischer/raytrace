@@ -1,5 +1,5 @@
-#ifndef TRANSFORMATION_H
-#define TRANSFORMATION_H
+#ifndef MATH_TRANSFORMATION_HPP
+#define MATH_TRANSFORMATION_HPP
 
 #include "Math/Matrix.hpp"
 #include "Math/Point.hpp"

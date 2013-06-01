@@ -1,5 +1,5 @@
-#ifndef PIGMENT_H
-#define PIGMENT_H
+#ifndef OBJECT_PIGMENT_BASE_HPP
+#define OBJECT_PIGMENT_BASE_HPP
 
 #include "Object/Color.hpp"
 #include "Math/Point.hpp"

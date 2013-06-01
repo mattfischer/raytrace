@@ -1,5 +1,5 @@
-#ifndef FINISH_H
-#define FINISH_H
+#ifndef OBJECT_FINISH_HPP
+#define OBJECT_FINISH_HPP
 
 #include "Parse/AST.h"
 

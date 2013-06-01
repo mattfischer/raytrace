@@ -1,5 +1,5 @@
-#ifndef RAY_H
-#define RAY_H
+#ifndef TRACE_RAY_HPP
+#define TRACE_RAY_HPP
 
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"

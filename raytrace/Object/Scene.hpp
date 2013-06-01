@@ -1,5 +1,5 @@
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef OBJECT_SCENE_HPP
+#define OBJECT_SCENE_HPP
 
 #include "Object/Camera.hpp"
 #include "Object/Light.hpp"

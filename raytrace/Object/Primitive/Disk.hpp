@@ -1,5 +1,5 @@
-#ifndef DISK_H
-#define DISK_H
+#ifndef OBJECT_PRIMITIVE_DISK_HPP
+#define OBJECT_PRIMITIVE_DISK_HPP
 
 #include "Object/Primitive/Base.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#ifndef OBJECT_TEXTURE_HPP
+#define OBJECT_TEXTURE_HPP
 
 #include "Math/Transformation.hpp"
 #include "Object/Pigment/Base.hpp"
