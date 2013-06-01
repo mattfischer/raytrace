@@ -29,7 +29,7 @@ public:
 protected:
 	Surface::Base *mSurface;
 
-	virtual void doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const = 0;
+	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;
 };
 

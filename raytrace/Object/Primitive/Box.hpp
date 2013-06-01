@@ -15,7 +15,7 @@ public:
 	static Box *fromAst(AST *ast);
 
 protected:
-	virtual void doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
+	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
 	virtual bool doInside(const Math::Point &point) const;
 
 	void testIntersect(const Trace::Ray &ray, const Math::Normal &normal, std::vector<Trace::Intersection> &intersections) const;

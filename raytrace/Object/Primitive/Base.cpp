@@ -80,7 +80,7 @@ void Base::setSurface(Surface::Base *surface)
 	mSurface = surface;
 }
 
-void Base::intersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Base::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
 	Trace::Ray transformedRay = mTransformation.inverse() * ray;
 

@@ -81,16 +81,17 @@ void Scene::addPrimitive(Primitive::Base *primitive)
 	mPrimitives.push_back(primitive);
 }
 
-void Scene::findIntersections(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections)
+void Scene::findIntersections(const Trace::Ray &ray, Trace::IntersectionVector &intersections)
 {
 	int i;
-	
+	int startSize = intersections.size();
+
 	for(i=0; i<mPrimitives.size(); i++)
 	{
 		mPrimitives[i]->intersect(ray, intersections);
 	}
 
-	std::sort(intersections.begin(), intersections.end());
+	std::sort(intersections.begin() + startSize, intersections.end());
 }
 
 }

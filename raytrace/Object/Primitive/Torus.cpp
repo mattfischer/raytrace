@@ -31,7 +31,7 @@ bool cylIntersect(const Trace::Ray &ray, float radius, float results[])
 	return false;
 }
 
-void Torus::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Torus::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
 	float r = 0.25;
 	float r2 = r * r;

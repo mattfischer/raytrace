@@ -32,7 +32,7 @@ Trace::Intersection Plane::intersectPlane(const Base *primitive, const Trace::Ra
 	return Trace::Intersection();
 }
 
-void Plane::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Plane::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
 	float scale;
 

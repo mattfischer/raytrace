@@ -35,7 +35,7 @@ protected:
 	Type mType;
 
 	virtual bool doInside(const Math::Point &point) const;
-	virtual void doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
+	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
 };
 
 }

@@ -37,17 +37,25 @@ void Tracer::setScene(Object::Scene *scene)
 	mScene = scene;
 }
 
+IntersectionVector &Tracer::intersections() const
+{
+	return mIntersections;
+}
+
 Object::Color Tracer::traceRay(const Trace::Ray &ray) const
 {
-	mIntersections.clear();
+	int startSize = mIntersections.size();
 	mScene->findIntersections(ray, mIntersections);
 
 	Object::Color color(.2, .2, .2);
 
-	if(mIntersections.size() > 0)
+	if(mIntersections.size() > startSize)
 	{
-		color = mIntersections[0].primitive()->surface()->color(ray, mIntersections[0], *this);
+		const Intersection &intersection = mIntersections[startSize];
+		color = intersection.primitive()->surface()->color(ray, intersection, *this);
 	}
+	mIntersections.erase(mIntersections.begin() + startSize, mIntersections.end());
+
 	return color.clamp();
 }
 

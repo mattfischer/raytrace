@@ -31,7 +31,7 @@ Trace::Intersection Disk::intersectDisk(const Base *primitive, const Trace::Ray 
 	return intersection;
 }
 
-void Disk::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Disk::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
 	Trace::Intersection intersection = intersectDisk(this, ray, Math::Normal(0, 1, 0), 0);
 	

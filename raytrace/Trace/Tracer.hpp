@@ -34,12 +34,13 @@ public:
 	Object::Color tracePixel(float x, float y) const;
 	Object::Color traceRay(const Trace::Ray &ray) const;
 
+	IntersectionVector &intersections() const;
+
 protected:
 	Object::Scene *mScene;
 	Settings mSettings;
 
-	mutable std::vector<Intersection> mIntersections;
-	mutable std::vector<Intersection> mLightIntersections;
+	mutable IntersectionVector mIntersections;
 };
 
 }

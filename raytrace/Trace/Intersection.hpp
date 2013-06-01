@@ -4,6 +4,8 @@
 #include "Math/Normal.hpp"
 #include "Math/Transformation.hpp"
 
+#include <vector>
+
 namespace Object {
 namespace Primitive {
 class Base;
@@ -60,6 +62,8 @@ protected:
 
 	void doTransform() const;
 };
+
+typedef std::vector<Intersection> IntersectionVector;
 
 }
 #endif

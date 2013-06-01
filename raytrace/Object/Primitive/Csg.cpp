@@ -97,7 +97,7 @@ bool Csg::doInside(const Math::Point &point) const
 	return false;
 }
 
-void Csg::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+void Csg::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
 	std::vector<Trace::Intersection> localIntersections;
 
