@@ -2,7 +2,7 @@
 #define OBJECT_PRIMITIVE_BASE_HPP
 
 #include "Object/Base.hpp"
-#include "Object/Texture.hpp"
+#include "Surface/Base.hpp"
 #include "Trace/Intersection.hpp"
 #include "Trace/Ray.hpp"
 #include "Math/Point.hpp"
@@ -20,14 +20,14 @@ public:
 
 	static Base *fromAst(AST *ast);
 
-	Texture *texture() const;
-	void setTexture(Texture *texture);
+	Surface::Base *surface() const;
+	void setSurface(Surface::Base *surface);
 
 	void intersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 	bool inside(const Math::Point &point) const;
 
 protected:
-	Texture *mTexture;
+	Surface::Base *mSurface;
 
 	virtual void doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;

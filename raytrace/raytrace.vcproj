@@ -254,10 +254,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Object\Finish.cpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Light.cpp"
 					>
 				</File>
@@ -282,10 +278,6 @@
 							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 						/>
 					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\Object\Texture.cpp"
-					>
 				</File>
 				<Filter
 					Name="Primitive"
@@ -324,40 +316,6 @@
 					</File>
 					<File
 						RelativePath=".\Object\Primitive\Torus.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Pigment"
-					>
-					<File
-						RelativePath=".\Object\Pigment\Base.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)2.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)2.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath=".\Object\Pigment\Checker.cpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Object\Pigment\Solid.cpp"
 						>
 					</File>
 				</Filter>
@@ -413,6 +371,78 @@
 					RelativePath=".\Render\Thread.cpp"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="Surface"
+				>
+				<File
+					RelativePath=".\Surface\Base.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)3.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)3.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)3.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)3.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Surface\Composite.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Surface\Diffuse.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Surface\Reflection.cpp"
+					>
+				</File>
+				<Filter
+					Name="Albedo"
+					>
+					<File
+						RelativePath=".\Surface\Albedo\Base.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)2.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)2.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Surface\Albedo\Checker.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Albedo\Solid.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -480,19 +510,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\Object\Finish.hpp"
-					>
-				</File>
-				<File
 					RelativePath=".\Object\Light.hpp"
 					>
 				</File>
 				<File
 					RelativePath=".\Object\Scene.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\Object\Texture.hpp"
 					>
 				</File>
 				<Filter
@@ -532,22 +554,6 @@
 					</File>
 					<File
 						RelativePath=".\Object\Primitive\Torus.hpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Pigment"
-					>
-					<File
-						RelativePath=".\Object\Pigment\Base.hpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Object\Pigment\Checker.hpp"
-						>
-					</File>
-					<File
-						RelativePath=".\Object\Pigment\Solid.hpp"
 						>
 					</File>
 				</Filter>
@@ -595,6 +601,42 @@
 					RelativePath=".\Render\Thread.hpp"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="Surface"
+				>
+				<File
+					RelativePath=".\Surface\Base.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Surface\Composite.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Surface\Diffuse.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Surface\Reflection.hpp"
+					>
+				</File>
+				<Filter
+					Name="Albedo"
+					>
+					<File
+						RelativePath=".\Surface\Albedo\Base.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Albedo\Checker.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Albedo\Solid.hpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

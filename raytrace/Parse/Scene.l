@@ -29,14 +29,14 @@ rotate return ROTATE;
 translate return TRANSLATE;
 scale return SCALE;
 
-texture return TEXTURE;
-pigment return PIGMENT;
+surface return SURFACE;
+albedo return ALBEDO;
 color return COLOR;
 checker return CHECKER;
 
-finish return FINISH;
-ambient return AMBIENT;
 diffuse return DIFFUSE;
+ambient return AMBIENT;
+lambert return LAMBERT;
 specular return SPECULAR;
 specular_power return SPECULAR_POWER;
 reflection return REFLECTION;

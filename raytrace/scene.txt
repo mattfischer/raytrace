@@ -1,7 +1,7 @@
 sphere {
-    texture {
-		pigment { color <1,0,0>	}
-		finish {
+    surface {
+		diffuse { 
+			albedo { color <1,0,0> }
 			ambient 0
 			specular 1
 		}
@@ -10,11 +10,13 @@ sphere {
 
 plane {
 	transform {	translate <0,-1,0> }
-	texture	{
-		pigment	{
-			checker color <0,1,0> color <0,0,1>
+	surface {
+		diffuse {
+			albedo {
+				checker color <0,1,0> color <0,0,1>
+			}
+			ambient 0.01
 		}
-		finish { ambient 0.01 }
 	}
 }
 

@@ -13,13 +13,13 @@ namespace Primitive {
 
 Base::Base()
 {
-	mTexture = 0;
+	mSurface = 0;
 }
 
 Base::~Base()
 {
-	if(mTexture)
-		delete mTexture;
+	if(mSurface)
+		delete mSurface;
 }
 
 Base *Base::fromAst(AST *ast)
@@ -58,8 +58,8 @@ Base *Base::fromAst(AST *ast)
 		case AstTransform:
 			primitive->transform(Math::Transformation::fromAst(sub->children[i]));
 			break;
-		case AstTexture:
-			primitive->setTexture(Texture::fromAst(sub->children[i]));
+		case AstSurface:
+			primitive->setSurface(Surface::Base::fromAst(sub->children[i]));
 			break;
 		}
 	}
@@ -67,17 +67,17 @@ Base *Base::fromAst(AST *ast)
 	return primitive;
 }
 
-Texture *Base::texture() const 
+Surface::Base *Base::surface() const 
 { 
-	return mTexture; 
+	return mSurface;
 }
 
-void Base::setTexture(Texture *texture)
+void Base::setSurface(Surface::Base *surface)
 {
-	if(mTexture)
-		delete mTexture;
+	if(mSurface)
+		delete mSurface;
 
-	mTexture = texture;
+	mSurface = surface;
 }
 
 void Base::intersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const

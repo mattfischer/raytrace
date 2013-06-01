@@ -1,13 +1,13 @@
-#include "Object/Pigment/Checker.hpp"
+#include "Surface/Albedo/Checker.hpp"
 
 #include <math.h>
 
 #define EPSILON 0.01
 
-namespace Object {
-namespace Pigment {
+namespace Surface {
+namespace Albedo {
 
-Checker::Checker(const Color &color1, const Color &color2)
+Checker::Checker(const Object::Color &color1, const Object::Color &color2)
 : mColor1(color1), mColor2(color2)
 {
 }
@@ -16,7 +16,7 @@ Checker::~Checker()
 {
 }
 
-Color Checker::pointColor(const Math::Point &point) const
+Object::Color Checker::pointColor(const Math::Point &point) const
 {
 	int x = (int)abs(point.x() + EPSILON) + ((point.x() + EPSILON > 0)?1:0);
 	int y = (int)abs(point.y() + EPSILON) + ((point.y() + EPSILON > 0)?1:0);

@@ -29,13 +29,12 @@ public:
 	void setScene(Object::Scene *scene);
 
 	Settings &settings();
+	const Settings &settings() const;
 
 	Object::Color tracePixel(float x, float y) const;
-
-protected:
-	Object::Color doLighting(const Trace::Ray &ray, const Intersection &intersection) const;
 	Object::Color traceRay(const Trace::Ray &ray) const;
 
+protected:
 	Object::Scene *mScene;
 	Settings mSettings;
 

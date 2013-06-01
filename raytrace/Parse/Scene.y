@@ -28,14 +28,14 @@
 %token ROTATE
 %token SCALE
 
-%token TEXTURE
-%token PIGMENT
+%token SURFACE
+%token ALBEDO
 %token COLOR
 %token CHECKER
 
-%token FINISH
-%token AMBIENT
 %token DIFFUSE
+%token AMBIENT
+%token LAMBERT
 %token SPECULAR
 %token SPECULAR_POWER
 %token REFLECTION
@@ -54,7 +54,7 @@
 %type <_ast> scene object_list object primitive primitive_wrap primitive_modifiers primitive_modifier
 %type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
-%type <_ast> texturedef texture_list texture_item pigmentdef pigment_type finishdef finish_list finish_item
+%type <_ast> surfacedef surface_list surface_item diffusedef albedodef diffuse_list diffuse_item reflectiondef
 %type <_ast> spheredef planedef boxdef conedef cylinderdef
 %type <_ast> lightdef light_modifiers light_modifier
 %type <_ast> cameradef camera_modifiers camera_modifier csgdef
@@ -98,7 +98,7 @@ primitive_modifiers: primitive_modifier
 				   | primitive_modifiers primitive_modifier
 	{ $$ = addChild($1, $2); }
 
-primitive_modifier: transformdef | texturedef
+primitive_modifier: transformdef | surfacedef
 	
 transformdef: TRANSFORM '{' transform_list '}'
 	{ $$ = $3; }
@@ -115,45 +115,45 @@ transform_item: TRANSLATE VECTOR
 			 | SCALE VECTOR
 	{ $$ = newAst(AstScale, 0); $$->data._vector = $2; }
 
-texturedef: TEXTURE '{' texture_list '}'
+surfacedef: SURFACE '{' surface_list '}'
 	{ $$ = $3; }
 	
-texture_list: texture_item
-	{ $$ = newAst(AstTexture, 1, $1); }
-		   | texture_list texture_item
+surface_list: surface_item
+	{ $$ = newAst(AstSurface, 1, $1); }
+		   | surface_list surface_item
 	{ $$ = addChild($1, $2); }
 
-texture_item: pigmentdef | finishdef
+surface_item: diffusedef | reflectiondef
 
-pigmentdef: PIGMENT '{' pigment_type '}'
-	{ $$ = newAst(AstPigment, 1, $3); }
-	
-pigment_type: colordef
-	{ $$ = newAst(AstPigmentColor, 1, $1); }
+diffusedef: DIFFUSE '{' diffuse_list '}'
+	{ $$ = $3; }
+
+diffuse_list: diffuse_item
+	{ $$ = newAst(AstSurfaceDiffuse, 1, $1); }
+			| diffuse_list diffuse_item
+	{ $$ = addChild($1, $2); }
+
+diffuse_item: ALBEDO '{' albedodef '}'
+	{ $$ = newAst(AstAlbedo, 1, $3); }
+			| AMBIENT FLOAT
+	{ $$ = newAst(AstAmbient, 0); $$->data._float = $2; }
+			| LAMBERT FLOAT
+	{ $$ = newAst(AstLambert, 0); $$->data._float = $2; }
+			| SPECULAR FLOAT
+	{ $$ = newAst(AstSpecular, 0); $$->data._float = $2; }
+			| SPECULAR_POWER FLOAT
+	{ $$ = newAst(AstSpecularPower, 0); $$->data._float = $2; }
+
+albedodef: colordef
+	{ $$ = newAst(AstAlbedoSolid, 1, $1); }
 			| CHECKER colordef colordef
-	{ $$ = newAst(AstPigmentChecker, 2, $2, $3); }
+	{ $$ = newAst(AstAlbedoChecker, 2, $2, $3); }
+
+reflectiondef: REFLECTION
+	{ $$ = newAst(AstSurfaceReflection, 0); }
 
 colordef: COLOR VECTOR
-	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }
-	
-finishdef: FINISH '{' finish_list '}'
-	{ $$ = $3; }
-	
-finish_list: finish_item
-	{ $$ = newAst(AstFinish, 1, $1); }
-			| finish_list finish_item
-	{ $$ = addChild($1, $2); }
-			
-finish_item: AMBIENT FLOAT
-	{ $$ = newAst(AstAmbient, 0); $$->data._float = $2; }
-		   | DIFFUSE FLOAT
-	{ $$ = newAst(AstDiffuse, 0); $$->data._float = $2; }
-		   | SPECULAR FLOAT
-	{ $$ = newAst(AstSpecular, 0); $$->data._float = $2; }
-		   | SPECULAR_POWER FLOAT
-	{ $$ = newAst(AstSpecularPower, 0); $$->data._float = $2; }
-		   | REFLECTION FLOAT
-	{ $$ = newAst(AstReflection, 0); $$->data._float = $2; }	
+	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }	
 	
 lightdef: LIGHT '{' colordef light_modifiers '}'
 	{ $$ = addChildren(newAst(AstLight, 1, $3), $4->numChildren, $4->children); }

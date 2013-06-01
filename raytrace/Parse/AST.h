@@ -17,18 +17,18 @@ typedef enum
 	AstRotate,
 	AstScale,
 	
-	AstTexture,
-	AstPigment,
-	AstPigmentColor,
-	AstPigmentChecker,
+	AstSurface,
+	AstAlbedo,
+	AstAlbedoSolid,
+	AstAlbedoChecker,
 	AstColor,
 
-	AstFinish,
+	AstSurfaceDiffuse,
 	AstAmbient,
-	AstDiffuse,
+	AstLambert,
 	AstSpecular,
 	AstSpecularPower,
-	AstReflection,
+	AstSurfaceReflection,
 
 	AstLight,
 
