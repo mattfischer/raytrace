@@ -32,14 +32,14 @@ Camera *Camera::fromAst(AST *ast)
 	return camera;
 }
 
-Trace::Ray Camera::createRay(float x, float y, float aspectRatio)
+Trace::Ray Camera::createRay(float x, float y, float aspectRatio, int generation)
 {
 	float rayX, rayY;
 
 	rayX = mWidth * (2*x - 1);
 	rayY = -mWidth * aspectRatio * (2*y - 1);
 
-	return Trace::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize());
+	return Trace::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize(), generation);
 }
 
 }

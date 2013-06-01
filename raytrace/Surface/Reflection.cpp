@@ -13,9 +13,7 @@ Object::Color Reflection::color(const Trace::Intersection &intersection, const T
 		Math::Vector incident = ray.direction();
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
-		Trace::Ray reflectRay(intersection.point(), reflect);
-		reflectRay.setGeneration(ray.generation() + 1);
-
+		Trace::Ray reflectRay(intersection.point(), reflect, ray.generation() + 1);
 		ret = tracer.traceRay(reflectRay);
 	}
 

@@ -75,7 +75,7 @@ Object::Color Diffuse::color(const Trace::Intersection &intersection, const Trac
 		float lambert_coeff = 0;
 		float specular_coeff = 0;
 		
-		Trace::Ray lightRay = Trace::Ray::createFromPoints(point, light->transformation().origin());
+		Trace::Ray lightRay = Trace::Ray::createFromPoints(point, light->transformation().origin(), 1);
 
 		Trace::IntersectionVector &intersections = tracer.intersections();
 		int startSize = intersections.size();

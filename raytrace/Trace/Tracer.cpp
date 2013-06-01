@@ -63,7 +63,7 @@ Object::Color Tracer::tracePixel(float x, float y) const
 {
 	float aspectRatio = (float)mSettings.height / (float)mSettings.width;
 
-	Trace::Ray ray = mScene->camera()->createRay(x / mSettings.width, y / mSettings.height, aspectRatio);
+	Trace::Ray ray = mScene->camera()->createRay(x / mSettings.width, y / mSettings.height, aspectRatio, 1);
 	return traceRay(ray);
 }
 

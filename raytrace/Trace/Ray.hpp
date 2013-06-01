@@ -10,21 +10,16 @@ namespace Trace {
 class Ray
 {
 public:
-	static Ray createFromPoints(const Math::Point &point1, const Math::Point &point2);
+	static Ray createFromPoints(const Math::Point &point1, const Math::Point &point2, int generation);
 
 	Ray();
-	Ray(const Math::Point &origin, const Math::Vector &direction);
+	Ray(const Math::Point &origin, const Math::Vector &direction, int generation);
 	Ray(const Ray &c);
 	Ray &operator=(const Ray &c);
 
 	const Math::Point &origin() const;
-	void setOrigin(const Math::Point &origin);
-
 	const Math::Vector &direction() const;
-	void setDirection(const Math::Vector &direction);
-
 	int generation() const;
-	void setGeneration(int generation);
 
 protected:
 	Math::Point mOrigin;
