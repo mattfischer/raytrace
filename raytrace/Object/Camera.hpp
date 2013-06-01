@@ -9,14 +9,14 @@ namespace Object {
 class Camera : public Base
 {
 public:
-	Camera(int hFOV);
+	Camera(int fov);
 
 	static Camera *fromAst(AST *ast);
 
-	Trace::Ray createRay(float x, float y, float aspectRatio, int generation);
+	Trace::Ray createRay(float x, float y, int generation);
 
 private:
-	float mWidth;
+	float mSize;
 };
 
 }

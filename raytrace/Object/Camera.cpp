@@ -5,14 +5,9 @@
 
 namespace Object {
 
-static float rad(float deg)
+Camera::Camera(int fov)
 {
-	return deg * 3.14 / 180.0;
-}
-
-Camera::Camera(int hFOV)
-{
-	mWidth = tan(rad(hFOV/2));
+	mSize = tan(fov * 3.14 / (2 * 180));
 }
 
 Camera *Camera::fromAst(AST *ast)
@@ -32,12 +27,12 @@ Camera *Camera::fromAst(AST *ast)
 	return camera;
 }
 
-Trace::Ray Camera::createRay(float x, float y, float aspectRatio, int generation)
+Trace::Ray Camera::createRay(float x, float y, int generation)
 {
 	float rayX, rayY;
 
-	rayX = mWidth * (2*x - 1);
-	rayY = -mWidth * aspectRatio * (2*y - 1);
+	rayX = mSize * x;
+	rayY = -mSize * y;
 
 	return Trace::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize(), generation);
 }
