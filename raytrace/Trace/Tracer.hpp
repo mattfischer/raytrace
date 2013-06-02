@@ -26,21 +26,19 @@ public:
 	virtual ~Tracer();
 
 	Object::Scene *scene() const;
-	void setScene(Object::Scene *scene);
 
 	Settings &settings();
-	const Settings &settings() const;
 
-	Object::Color tracePixel(float x, float y) const;
-	Object::Color traceRay(const Trace::Ray &ray) const;
+	Object::Color tracePixel(float x, float y);
+	Object::Color traceRay(const Trace::Ray &ray);
 
-	IntersectionVector &intersections() const;
+	IntersectionVector &intersections();
 
 protected:
 	Object::Scene *mScene;
 	Settings mSettings;
 
-	mutable IntersectionVector mIntersections;
+	IntersectionVector mIntersections;
 };
 
 }

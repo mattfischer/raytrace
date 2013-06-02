@@ -16,7 +16,7 @@ public:
 
 	static Base *fromAst(AST *ast);
 
-	virtual Object::Color color(const Trace::Intersection &intersection, const Trace::Tracer &tracer) const = 0;
+	virtual Object::Color color(const Trace::Intersection &intersection, Trace::Tracer &tracer) const = 0;
 };
 
 }

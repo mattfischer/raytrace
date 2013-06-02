@@ -28,22 +28,12 @@ Tracer::Settings &Tracer::settings()
 	return mSettings;
 }
 
-const Tracer::Settings &Tracer::settings() const
-{
-	return mSettings;
-}
-
-void Tracer::setScene(Object::Scene *scene)
-{
-	mScene = scene;
-}
-
-IntersectionVector &Tracer::intersections() const
+IntersectionVector &Tracer::intersections()
 {
 	return mIntersections;
 }
 
-Object::Color Tracer::traceRay(const Trace::Ray &ray) const
+Object::Color Tracer::traceRay(const Trace::Ray &ray)
 {
 	int startSize = mIntersections.size();
 	mScene->findIntersections(ray, mIntersections);
@@ -60,7 +50,7 @@ Object::Color Tracer::traceRay(const Trace::Ray &ray) const
 	return color.clamp();
 }
 
-Object::Color Tracer::tracePixel(float x, float y) const
+Object::Color Tracer::tracePixel(float x, float y)
 {
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;

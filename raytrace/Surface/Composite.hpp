@@ -11,7 +11,7 @@ public:
 	Composite(Base **surfaces, int numSurfaces);
 	virtual ~Composite();
 
-	virtual Object::Color color(const Trace::Intersection &intersection, const Trace::Tracer &tracer) const;
+	virtual Object::Color color(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
 
 private:
 	Base **mSurfaces;

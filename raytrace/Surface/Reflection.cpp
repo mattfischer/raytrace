@@ -4,7 +4,7 @@
 
 namespace Surface {
 
-Object::Color Reflection::color(const Trace::Intersection &intersection, const Trace::Tracer &tracer) const
+Object::Color Reflection::color(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
 {
 	Object::Color ret;
 
