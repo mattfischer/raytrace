@@ -1,0 +1,13 @@
+debug/
+raytrace/Debug
+release/
+raytrace/Release
+
+*.ncb
+*.suo
+raytrace/*.tab.h
+raytrace/*.tab.c
+raytrace/lex.*.c
+raytrace/*.user
+raytrace/*.aps
+
