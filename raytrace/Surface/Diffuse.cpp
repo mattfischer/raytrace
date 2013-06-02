@@ -69,10 +69,10 @@ Diffuse *Diffuse::fromAst(AST *ast)
 Object::Color Diffuse::color(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
 {
 	Math::Point point(intersection.point());
-	Object::Color pointColor = mAlbedo->pointColor(intersection.objectPoint());
+	Object::Color albedo = mAlbedo->color(intersection.objectPoint());
 	Object::Color totalColor;
 
-	Object::Color ambient = pointColor.scale(mAmbient);
+	Object::Color ambient = albedo.scale(mAmbient);
 	totalColor += ambient;
 
 	for(int i=0; i<tracer.scene()->lights().size(); i++)
@@ -105,7 +105,7 @@ Object::Color Diffuse::color(const Trace::Intersection &intersection, Trace::Tra
 
 		tracer.popTrace();
 
-		Object::Color lambert = light->color() * pointColor.scale(mLambert * lambert_coeff);
+		Object::Color lambert = light->color() * albedo.scale(mLambert * lambert_coeff);
 		Object::Color specular = light->color().scale(mSpecular * specular_coeff);
 
 		totalColor += lambert + specular;

@@ -12,7 +12,7 @@ Solid::~Solid()
 {
 }
 
-Object::Color Solid::pointColor(const Math::Point &point) const
+Object::Color Solid::color(const Math::Point &point) const
 {
 	return mColor;
 }

@@ -16,7 +16,7 @@ public:
 
 	static Base *fromAst(AST *ast);
 
-	virtual Object::Color pointColor(const Math::Point &point) const = 0;
+	virtual Object::Color color(const Math::Point &point) const = 0;
 };
 
 }

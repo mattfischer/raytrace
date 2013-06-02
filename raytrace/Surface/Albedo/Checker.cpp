@@ -19,7 +19,7 @@ Checker::~Checker()
 {
 }
 
-Object::Color Checker::pointColor(const Math::Point &point) const
+Object::Color Checker::color(const Math::Point &point) const
 {
 	int x = (int)abs(point.x() + EPSILON) + ((point.x() + EPSILON > 0)?1:0);
 	int y = (int)abs(point.y() + EPSILON) + ((point.y() + EPSILON > 0)?1:0);

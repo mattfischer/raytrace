@@ -12,7 +12,7 @@ public:
 	Solid(const Object::Color &color);
 	virtual ~Solid();
 
-	virtual Object::Color pointColor(const Math::Point &point) const;
+	virtual Object::Color color(const Math::Point &point) const;
 
 protected:
 	Object::Color mColor;

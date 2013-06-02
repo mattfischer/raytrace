@@ -12,7 +12,7 @@ public:
 	Checker(const Object::Color &color1, const Object::Color &color2);
 	virtual ~Checker();
 
-	virtual Object::Color pointColor(const Math::Point &point) const;
+	virtual Object::Color color(const Math::Point &point) const;
 
 protected:
 	Object::Color mColor1;
