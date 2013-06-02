@@ -1,9 +1,10 @@
 #include "Trace/Tracer.hpp"
 #include "Object/Base.hpp"
+#include "Object/Scene.hpp"
+#include "Object/Camera.hpp"
+#include "Object/Primitive/Base.hpp"
 
-#include <algorithm>
-
-#include <math.h>
+#include "Surface/Base.hpp"
 
 namespace Trace {
 

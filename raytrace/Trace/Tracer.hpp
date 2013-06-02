@@ -1,11 +1,11 @@
 #ifndef TRACE_TRACER_HPP
 #define TRACE_TRACER_HPP
 
-#include "Object/Color.hpp"
-#include "Object/Scene.hpp"
+#include "Trace/Forwards.hpp"
+#include "Object/Forwards.hpp"
 
+#include "Object/Color.hpp"
 #include "Trace/Intersection.hpp"
-#include <vector>
 
 namespace Trace {
 

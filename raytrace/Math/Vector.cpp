@@ -3,6 +3,8 @@
 #include "Math/Transformation.hpp"
 #include "Math/Normal.hpp"
 
+#include <cmath>
+
 namespace Math {
 
 Vector::Vector()
@@ -41,7 +43,7 @@ Vector::Vector(const Normal &normal)
 
 float Vector::magnitude() const
 {
-	return sqrt(magnitude2());
+	return std::sqrt(magnitude2());
 }
 
 float Vector::magnitude2() const

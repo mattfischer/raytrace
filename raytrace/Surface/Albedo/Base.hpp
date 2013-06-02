@@ -1,10 +1,9 @@
 #ifndef SURFACE_ALBEDO_BASE_HPP
 #define SURFACE_ALBEDO_BASE_HPP
 
+#include "Math/Forwards.hpp"
 #include "Object/Color.hpp"
-#include "Math/Point.hpp"
-#include "Math/Vector.hpp"
-#include "Parse/AST.h"
+#include "Parse/Forwards.hpp"
 
 namespace Surface {
 namespace Albedo {

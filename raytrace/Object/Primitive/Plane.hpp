@@ -1,6 +1,8 @@
 #ifndef OBJECT_PRIMITIVE_PLANE_HPP
 #define OBJECT_PRIMITIVE_PLANE_HPP
 
+#include "Parse/Forwards.hpp"
+
 #include "Object/Primitive/Base.hpp"
 
 namespace Object {

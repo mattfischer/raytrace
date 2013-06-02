@@ -1,7 +1,7 @@
 #ifndef OBJECT_COLOR_HPP
 #define OBJECT_COLOR_HPP
 
-#include "Parse/AST.h"
+#include "Parse/Forwards.hpp"
 
 namespace Object {
 

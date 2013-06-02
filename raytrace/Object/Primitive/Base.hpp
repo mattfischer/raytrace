@@ -1,11 +1,13 @@
 #ifndef OBJECT_PRIMITIVE_BASE_HPP
 #define OBJECT_PRIMITIVE_BASE_HPP
 
+#include "Object/Forwards.hpp"
+#include "Surface/Forwards.hpp"
+#include "Trace/Forwards.hpp"
+#include "Math/Forwards.hpp"
+
 #include "Object/Base.hpp"
-#include "Surface/Base.hpp"
 #include "Trace/Intersection.hpp"
-#include "Trace/Ray.hpp"
-#include "Math/Point.hpp"
 
 #include <vector>
 

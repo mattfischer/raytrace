@@ -1,6 +1,8 @@
 #ifndef OBJECT_PRIMITIVE_TORUS_HPP
 #define OBJECT_PRIMITIVE_TORUS_HPP
 
+#include "Parse/Forwards.hpp"
+
 #include "Object/Primitive/Base.hpp"
 
 namespace Object {

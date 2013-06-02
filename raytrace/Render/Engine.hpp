@@ -1,8 +1,9 @@
 #ifndef RENDER_ENGINE_HPP
 #define RENDER_ENGINE_HPP
 
-#include "Object/Scene.hpp"
-#include "Trace/Tracer.hpp"
+#include "Object/Forwards.hpp"
+#include "Trace/Forwards.hpp"
+
 #include "Render/Thread.hpp"
 
 #include <windows.h>

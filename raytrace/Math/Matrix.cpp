@@ -1,5 +1,7 @@
 #include "Math/Matrix.hpp"
 
+#include "Math/Coordinate.hpp"
+
 namespace Math {
 
 Matrix::Matrix()

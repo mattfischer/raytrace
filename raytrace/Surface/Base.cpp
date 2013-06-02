@@ -4,6 +4,8 @@
 #include "Surface/Reflection.hpp"
 #include "Surface/Composite.hpp"
 
+#include "Parse/AST.h"
+
 namespace Surface {
 
 Base::Base()

@@ -39,12 +39,13 @@ typedef enum
 	AstIntersection
 } ASTType;
 
-typedef struct
+struct _ASTVector
 {
 	float x;
 	float y;
 	float z;
-} ASTVector;
+};
+typedef struct _ASTVector ASTVector;
 
 struct _AST;
 typedef struct _AST AST;

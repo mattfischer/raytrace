@@ -3,6 +3,8 @@
 #include "Surface/Albedo/Solid.hpp"
 #include "Surface/Albedo/Checker.hpp"
 
+#include "Parse/AST.h"
+
 namespace Surface {
 namespace Albedo {
 

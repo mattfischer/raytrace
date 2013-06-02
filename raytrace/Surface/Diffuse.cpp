@@ -1,6 +1,12 @@
 #include "Surface/Diffuse.hpp"
 #include "Object/Scene.hpp"
+#include "Object/Light.hpp"
+#include "Object/Camera.hpp"
 #include "Trace/Tracer.hpp"
+
+#include "Surface/Albedo/Base.hpp"
+
+#include <cmath>
 
 #define AMBIENT_DEFAULT 0
 #define LAMBERT_DEFAULT 0.8
@@ -95,7 +101,7 @@ Object::Color Diffuse::color(const Trace::Intersection &intersection, const Trac
 			float dot = reflect * (tracer.scene()->camera()->transformation().origin() - point).normalize();
 
 			if(mSpecular > 0 && dot>0)
-				specular_coeff = pow(dot, mSpecularPower);
+				specular_coeff = std::pow(dot, mSpecularPower);
 		}
 
 		intersections.erase(intersections.begin() + startSize, intersections.end());

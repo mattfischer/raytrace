@@ -1,6 +1,8 @@
 #ifndef OBJECT_LIGHT_HPP
 #define OBJECT_LIGHT_HPP
 
+#include "Parse/Forwards.hpp"
+
 #include "Object/Base.hpp"
 #include "Object/Color.hpp"
 

@@ -1,9 +1,9 @@
 #ifndef MATH_POINT_HPP
 #define MATH_POINT_HPP
 
-#include <math.h>
-
+#include "Math/Forwards.hpp"
 #include "Math/Coordinate.hpp"
+
 #include "Parse/AST.h"
 
 namespace Math {

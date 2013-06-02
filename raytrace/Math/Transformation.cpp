@@ -1,9 +1,13 @@
 #include "Math/Transformation.hpp"
 #include "Math/Vector.hpp"
+#include "Math/Point.hpp"
 
-#include <math.h>
+#include <cmath>
 
 #pragma warning( disable : 4355 )
+
+using std::sin;
+using std::cos;
 
 namespace Math {
 

@@ -1,5 +1,7 @@
 #include "Object/Color.hpp"
 
+#include "Parse/AST.h"
+
 namespace Object {
 
 Color::Color()

@@ -8,6 +8,8 @@
 #include "Object/Primitive/Cylinder.hpp"
 #include "Object/Primitive/Csg.hpp"
 
+#include "Surface/Base.hpp"
+
 namespace Object {
 namespace Primitive {
 

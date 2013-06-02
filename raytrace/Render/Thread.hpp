@@ -1,7 +1,9 @@
 #ifndef RENDER_THREAD_HPP
 #define RENDER_THREAD_HPP
 
-#include "Object/Scene.hpp"
+#include "Object/Forwards.hpp"
+#include "Render/Forwards.hpp"
+
 #include "Trace/Tracer.hpp"
 
 namespace Render {

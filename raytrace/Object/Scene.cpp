@@ -1,5 +1,9 @@
 #include "Object/Scene.hpp"
 
+#include "Object/Light.hpp"
+#include "Object/Camera.hpp"
+#include "Object/Primitive/Base.hpp"
+
 #include <algorithm>
 
 namespace Object {

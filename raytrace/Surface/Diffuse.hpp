@@ -2,7 +2,8 @@
 #define SURFACE_DIFFUSE_HPP
 
 #include "Surface/Base.hpp"
-#include "Surface/Albedo/Base.hpp"
+
+#include "Surface/Albedo/Forwards.hpp"
 
 namespace Surface {
 

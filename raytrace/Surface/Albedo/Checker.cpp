@@ -1,8 +1,11 @@
 #include "Surface/Albedo/Checker.hpp"
+#include "Math/Point.hpp"
 
-#include <math.h>
+#include <cmath>
 
 #define EPSILON 0.01
+
+using std::abs;
 
 namespace Surface {
 namespace Albedo {

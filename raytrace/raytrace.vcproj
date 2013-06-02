@@ -470,6 +470,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Math\Forwards.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Math\Matrix.hpp"
 					>
 				</File>
@@ -510,6 +514,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Object\Forwards.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Object\Light.hpp"
 					>
 				</File>
@@ -545,6 +553,10 @@
 						>
 					</File>
 					<File
+						RelativePath=".\Object\Primitive\Forwards.hpp"
+						>
+					</File>
+					<File
 						RelativePath=".\Object\Primitive\Plane.hpp"
 						>
 					</File>
@@ -561,6 +573,10 @@
 			<Filter
 				Name="Trace"
 				>
+				<File
+					RelativePath=".\Trace\Forwards.hpp"
+					>
+				</File>
 				<File
 					RelativePath=".\Trace\Intersection.hpp"
 					>
@@ -582,6 +598,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Parse\Forwards.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Parse\Parser.hpp"
 					>
 				</File>
@@ -595,6 +615,10 @@
 				>
 				<File
 					RelativePath=".\Render\Engine.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Render\Forwards.hpp"
 					>
 				</File>
 				<File
@@ -618,6 +642,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Surface\Forwards.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\Surface\Reflection.hpp"
 					>
 				</File>
@@ -630,6 +658,10 @@
 					</File>
 					<File
 						RelativePath=".\Surface\Albedo\Checker.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Albedo\Forwards.hpp"
 						>
 					</File>
 					<File

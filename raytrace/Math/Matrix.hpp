@@ -1,7 +1,7 @@
 #ifndef MATH_MATRIX_HPP
 #define MATH_MATRIX_HPP
 
-#include "Math/Coordinate.hpp"
+#include "Math/Forwards.hpp"
 
 namespace Math {
 

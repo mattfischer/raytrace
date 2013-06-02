@@ -1,9 +1,7 @@
 #ifndef OBJECT_SCENE_HPP
 #define OBJECT_SCENE_HPP
 
-#include "Object/Camera.hpp"
-#include "Object/Light.hpp"
-#include "Object/Primitive/Base.hpp"
+#include "Object/Forwards.hpp"
 
 #include "Trace/Intersection.hpp"
 

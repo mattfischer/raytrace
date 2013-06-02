@@ -1,17 +1,10 @@
 #ifndef SURFACE_BASE_HPP
 #define SURFACE_BASE_HPP
 
+#include "Object/Forwards.hpp"
+#include "Trace/Forwards.hpp"
+
 #include "Object/Color.hpp"
-
-namespace Object {
-	class Scene;
-}
-
-namespace Trace {
-	class Ray;
-	class Intersection;
-	class Tracer;
-}
 
 namespace Surface {
 

@@ -1,18 +1,16 @@
 #ifndef TRACE_INTERSECTION_H
 #define TRACE_INTERSECTION_H
 
+#include "Object/Forwards.hpp"
+
+#include "Math/Point.hpp"
+#include "Math/Vector.hpp"
 #include "Math/Normal.hpp"
 #include "Math/Transformation.hpp"
 
 #include "Trace/Ray.hpp"
 
 #include <vector>
-
-namespace Object {
-namespace Primitive {
-class Base;
-}
-}
 
 namespace Trace {
 

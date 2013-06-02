@@ -1,8 +1,8 @@
 #ifndef OBJECT_PRIMITIVE_CONE_HPP
 #define OBJECT_PRIMITIVE_CONE_HPP
 
+#include "Parse/Forwards.hpp"
 #include "Object/Primitive/Base.hpp"
-#include "Parse/AST.h"
 
 namespace Object {
 namespace Primitive {
