@@ -4,8 +4,6 @@
 #include "Object/Camera.hpp"
 #include "Object/Primitive/Base.hpp"
 
-#include <algorithm>
-
 namespace Object {
 
 Scene::Scene()
@@ -85,17 +83,12 @@ void Scene::addPrimitive(Primitive::Base *primitive)
 	mPrimitives.push_back(primitive);
 }
 
-void Scene::findIntersections(const Trace::Ray &ray, Trace::IntersectionVector &intersections)
+void Scene::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections)
 {
-	int i;
-	int startSize = intersections.size();
-
-	for(i=0; i<mPrimitives.size(); i++)
+	for(int i=0; i<mPrimitives.size(); i++)
 	{
 		mPrimitives[i]->intersect(ray, intersections);
 	}
-
-	std::sort(intersections.begin() + startSize, intersections.end());
 }
 
 }

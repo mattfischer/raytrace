@@ -6,6 +6,8 @@
 
 #include "Surface/Base.hpp"
 
+#include <algorithm>
+
 namespace Trace {
 
 Tracer::Tracer(Object::Scene *scene, const Settings &settings)
@@ -28,24 +30,34 @@ Tracer::Settings &Tracer::settings()
 	return mSettings;
 }
 
-IntersectionVector &Tracer::intersections()
+void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
 {
-	return mIntersections;
+	mTraces.push_back(mIntersections.size());
+	mScene->intersect(ray, mIntersections);
+
+	begin = mIntersections.begin() + mTraces.back();
+	end = mIntersections.end();
+}
+
+void Tracer::popTrace()
+{
+	mIntersections.erase(mIntersections.begin() + mTraces.back(), mIntersections.end());
+	mTraces.pop_back();
 }
 
 Object::Color Tracer::traceRay(const Trace::Ray &ray)
 {
-	int startSize = mIntersections.size();
-	mScene->findIntersections(ray, mIntersections);
+	IntersectionVector::iterator begin, end;
+	intersect(ray, begin, end);
+	std::sort(begin, end);
 
 	Object::Color color(.2, .2, .2);
 
-	if(mIntersections.size() > startSize)
+	if(begin != end)
 	{
-		const Intersection &intersection = mIntersections[startSize];
-		color = intersection.primitive()->surface()->color(intersection, *this);
+		color = begin->primitive()->surface()->color(*begin, *this);
 	}
-	mIntersections.erase(mIntersections.begin() + startSize, mIntersections.end());
+	popTrace();
 
 	return color.clamp();
 }

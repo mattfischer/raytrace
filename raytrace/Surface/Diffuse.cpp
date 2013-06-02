@@ -81,17 +81,16 @@ Object::Color Diffuse::color(const Trace::Intersection &intersection, Trace::Tra
 		float lambert_coeff = 0;
 		float specular_coeff = 0;
 		
-		Trace::Ray lightRay = Trace::Ray::createFromPoints(point, light->transformation().origin(), 1);
+		Trace::Ray shadowRay = Trace::Ray::createFromPoints(point, light->transformation().origin(), 1);
 
-		Trace::IntersectionVector &intersections = tracer.intersections();
-		int startSize = intersections.size();
-		tracer.scene()->findIntersections(lightRay, intersections);
+		Trace::IntersectionVector::iterator begin, end;
+		tracer.intersect(shadowRay, begin, end);
 		
 		Math::Vector lightVector = light->transformation().origin() - point;
 		float lightMagnitude = lightVector.magnitude();
 		Math::Vector lightDir = lightVector / lightMagnitude;
 
-		if(intersections.size() == startSize || intersections[startSize].distance() >= lightMagnitude)
+		if(begin == end || begin->distance() >= lightMagnitude)
 		{
 			lambert_coeff = abs(intersection.normal() * lightDir);
 
@@ -104,7 +103,7 @@ Object::Color Diffuse::color(const Trace::Intersection &intersection, Trace::Tra
 				specular_coeff = std::pow(dot, mSpecularPower);
 		}
 
-		intersections.erase(intersections.begin() + startSize, intersections.end());
+		tracer.popTrace();
 
 		Object::Color lambert = light->color() * pointColor.scale(mLambert * lambert_coeff);
 		Object::Color specular = light->color().scale(mSpecular * specular_coeff);

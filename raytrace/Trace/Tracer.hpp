@@ -7,6 +7,8 @@
 #include "Object/Color.hpp"
 #include "Trace/Intersection.hpp"
 
+#include <vector>
+
 namespace Trace {
 
 class Tracer
@@ -26,19 +28,20 @@ public:
 	virtual ~Tracer();
 
 	Object::Scene *scene() const;
-
 	Settings &settings();
+
+	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
+	void popTrace();
 
 	Object::Color tracePixel(float x, float y);
 	Object::Color traceRay(const Trace::Ray &ray);
-
-	IntersectionVector &intersections();
 
 protected:
 	Object::Scene *mScene;
 	Settings mSettings;
 
 	IntersectionVector mIntersections;
+	std::vector<int> mTraces;
 };
 
 }
