@@ -48,6 +48,7 @@ void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begi
 
 	begin = mIntersections.begin() + mTraces.back();
 	end = mIntersections.end();
+	std::sort(begin, end);
 }
 
 void Tracer::popTrace()
@@ -60,7 +61,6 @@ Object::Color Tracer::traceRay(const Trace::Ray &ray)
 {
 	IntersectionVector::iterator begin, end;
 	intersect(ray, begin, end);
-	std::sort(begin, end);
 
 	Object::Color color(.2, .2, .2);
 
