@@ -66,50 +66,66 @@ Diffuse *Diffuse::fromAst(AST *ast)
 	return new Diffuse(albedo, ambient, lambert, specular, specularPower);
 }
 
+class Accumulator : public Lighter::Base::Accumulator
+{
+public:
+	Accumulator(const Math::Normal &normal, const Math::Vector &viewDirection, const Object::Color &albedo, float lambert, float specular, float specularPower)
+		: mNormal(normal), mViewDirection(viewDirection), mAlbedo(albedo)
+	{
+		mLambert = lambert;
+		mSpecular = specular;
+		mSpecularPower = specularPower;
+	}
+
+	const Object::Color &totalColor()
+	{
+		return mTotalColor;
+	}
+
+	virtual void accumulate(const Object::Color &color, const Math::Vector &direction)
+	{
+		float lambertCoeff = abs(mNormal * direction);
+		float specularCoeff = 0;
+
+		Math::Vector incident = -direction;
+		Math::Vector reflect = incident + Math::Vector(mNormal) * (2 * (-mNormal * incident));
+
+		float dot = reflect * mViewDirection;
+
+		if(mSpecular > 0 && dot>0)
+			specularCoeff = std::pow(dot, mSpecularPower);
+
+		Object::Color lambert = color * mAlbedo.scale(mLambert * lambertCoeff);
+		Object::Color specular = color.scale(mSpecular * specularCoeff);
+
+		mTotalColor += lambert + specular;
+	}
+
+private:
+	const Math::Normal &mNormal;
+	const Math::Vector &mViewDirection;
+	const Object::Color &mAlbedo;
+	float mLambert;
+	float mSpecular;
+	float mSpecularPower;
+	Object::Color mTotalColor;
+};
+
 Object::Color Diffuse::color(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
 {
-	Math::Point point(intersection.point());
+	Math::Vector viewDirection = (tracer.scene()->camera()->transformation().origin() - intersection.point()).normalize();
 	Object::Color albedo = mAlbedo->color(intersection.objectPoint());
-	Object::Color totalColor;
 
-	Object::Color ambient = albedo.scale(mAmbient);
-	totalColor += ambient;
+	Accumulator accumulator(intersection.normal(), viewDirection, albedo, mLambert, mSpecular, mSpecularPower);
 
-	for(int i=0; i<tracer.scene()->lights().size(); i++)
-	{
-		Object::Light *light = tracer.scene()->lights()[i];
-		float lambert_coeff = 0;
-		float specular_coeff = 0;
-		
-		Trace::Ray shadowRay = Trace::Ray::createFromPoints(point, light->transformation().origin(), 1);
-
-		Trace::IntersectionVector::iterator begin, end;
-		tracer.intersect(shadowRay, begin, end);
-		
-		Math::Vector lightVector = light->transformation().origin() - point;
-		float lightMagnitude = lightVector.magnitude();
-		Math::Vector lightDir = lightVector / lightMagnitude;
-
-		if(begin == end || begin->distance() >= lightMagnitude)
-		{
-			lambert_coeff = abs(intersection.normal() * lightDir);
-
-			Math::Vector incident = -lightDir;
-			Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
-
-			float dot = reflect * (tracer.scene()->camera()->transformation().origin() - point).normalize();
-
-			if(mSpecular > 0 && dot>0)
-				specular_coeff = std::pow(dot, mSpecularPower);
-		}
-
-		tracer.popTrace();
-
-		Object::Color lambert = light->color() * albedo.scale(mLambert * lambert_coeff);
-		Object::Color specular = light->color().scale(mSpecular * specular_coeff);
-
-		totalColor += lambert + specular;
+	const Lighter::LighterVector &lighters = tracer.lighters();
+	for(int i=0; i<lighters.size(); i++) {
+		lighters[i]->light(intersection, tracer, accumulator);
 	}
+
+	Object::Color totalColor;
+	totalColor += accumulator.totalColor();
+	totalColor += albedo.scale(mAmbient);
 
 	return totalColor;
 }

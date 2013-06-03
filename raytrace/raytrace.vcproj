@@ -444,6 +444,36 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="Lighter"
+				>
+				<File
+					RelativePath=".\Lighter\Base.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)4.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)4.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)4.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)4.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\Lighter\Direct.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -669,6 +699,22 @@
 						>
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Lighter"
+				>
+				<File
+					RelativePath=".\Lighter\Base.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Lighter\Direct.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Lighter\Forwards.hpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

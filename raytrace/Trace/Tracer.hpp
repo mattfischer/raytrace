@@ -6,6 +6,7 @@
 
 #include "Object/Color.hpp"
 #include "Trace/Intersection.hpp"
+#include "Lighter/Base.hpp"
 
 #include <vector>
 
@@ -30,6 +31,8 @@ public:
 	Object::Scene *scene() const;
 	Settings &settings();
 
+	const Lighter::LighterVector &lighters() const;
+
 	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
 	void popTrace();
 
@@ -40,6 +43,7 @@ protected:
 	Object::Scene *mScene;
 	Settings mSettings;
 
+	Lighter::LighterVector mLighters;
 	IntersectionVector mIntersections;
 	std::vector<int> mTraces;
 };

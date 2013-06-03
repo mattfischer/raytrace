@@ -6,6 +6,8 @@
 
 #include "Surface/Base.hpp"
 
+#include "Lighter/Base.hpp"
+
 #include <algorithm>
 
 namespace Trace {
@@ -14,10 +16,14 @@ Tracer::Tracer(Object::Scene *scene, const Settings &settings)
 {
 	mScene = scene;
 	mSettings = settings;
+	mLighters = Lighter::Base::createLighters();
 }
 
 Tracer::~Tracer()
 {
+	for(int i=0; i<mLighters.size(); i++) {
+		delete mLighters[i];
+	}
 }
 
 Object::Scene *Tracer::scene() const
@@ -28,6 +34,11 @@ Object::Scene *Tracer::scene() const
 Tracer::Settings &Tracer::settings()
 {
 	return mSettings;
+}
+
+const Lighter::LighterVector &Tracer::lighters() const
+{
+	return mLighters;
 }
 
 void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
