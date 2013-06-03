@@ -15,13 +15,8 @@ public:
 	Color &operator=(const Color &c);
 
 	float red() const;
-	void setRed(float red);
-
 	float green() const;
-	void setGreen(float green);
-
 	float blue() const;
-	void setBlue(float blue);
 
 	Color scale(float b) const;
 	Color clamp() const;
