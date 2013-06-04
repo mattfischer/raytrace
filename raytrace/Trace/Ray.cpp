@@ -33,7 +33,7 @@ Ray Ray::createFromPoints(const Math::Point &point1, const Math::Point &point2, 
 
 Ray operator*(const Math::BaseTransformation &transformation, const Ray &ray)
 {
-	return Ray(transformation * ray.origin(), transformation * ray.direction() - transformation * Math::Vector(0, 0, 0), ray.generation());
+	return Ray(transformation * ray.origin(), transformation * ray.direction(), ray.generation());
 }
 
 const Math::Point &Ray::origin() const
