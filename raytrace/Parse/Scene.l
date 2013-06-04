@@ -38,7 +38,7 @@ checker return CHECKER;
 diffuse return DIFFUSE;
 ambient return AMBIENT;
 lambert return LAMBERT;
-specular return SPECULAR;
+phong return PHONG;
 reflection return REFLECTION;
 
 light return LIGHT;

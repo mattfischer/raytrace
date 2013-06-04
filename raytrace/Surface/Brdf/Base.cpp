@@ -4,7 +4,7 @@
 
 #include "Surface/Brdf/Ambient.hpp"
 #include "Surface/Brdf/Lambert.hpp"
-#include "Surface/Brdf/Specular.hpp"
+#include "Surface/Brdf/Phong.hpp"
 #include "Surface/Brdf/Composite.hpp"
 
 #include <vector>
@@ -26,8 +26,8 @@ const Base *Base::fromAst(AST *ast)
 				brdfs.push_back(new Lambert(ast->children[i]->data._float));
 				break;
 
-			case AstSpecular:
-				brdfs.push_back(new Specular(ast->children[i]->data._float, ast->children[i]->children[0]->data._float));
+			case AstPhong:
+				brdfs.push_back(new Phong(ast->children[i]->data._float, ast->children[i]->children[0]->data._float));
 				break;
 		}
 	}

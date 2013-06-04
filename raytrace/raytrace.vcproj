@@ -499,7 +499,7 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Surface\Brdf\Specular.cpp"
+						RelativePath=".\Surface\Brdf\Phong.cpp"
 						>
 					</File>
 				</Filter>
@@ -783,7 +783,7 @@
 						>
 					</File>
 					<File
-						RelativePath=".\Surface\Brdf\Specular.hpp"
+						RelativePath=".\Surface\Brdf\Phong.hpp"
 						>
 					</File>
 				</Filter>

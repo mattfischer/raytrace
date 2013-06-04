@@ -5,7 +5,7 @@ sphere {
 
 			brdf {
 				lambert 0.8
-				specular 1 50
+				phong 1 50
 			}
 		}
 	}

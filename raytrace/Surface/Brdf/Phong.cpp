@@ -1,4 +1,4 @@
-#include "Surface/Brdf/Specular.hpp"
+#include "Surface/Brdf/Phong.hpp"
 
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
@@ -8,13 +8,13 @@
 namespace Surface {
 namespace Brdf {
 
-Specular::Specular(float strength, float power)
+Phong::Phong(float strength, float power)
 {
 	mStrength = strength;
 	mPower = power;
 }
 
-Object::Color Specular::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Color Phong::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	Math::Vector incident = -incidentDirection;
 	Math::Vector reflect = incident + Math::Vector(normal) * (2 * (-normal * incident));

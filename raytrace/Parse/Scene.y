@@ -37,7 +37,7 @@
 %token BRDF
 %token AMBIENT
 %token LAMBERT
-%token SPECULAR
+%token PHONG
 %token REFLECTION
 %token CAMERA
 %token LIGHT
@@ -147,8 +147,8 @@ brdf_item: AMBIENT FLOAT
 	{ $$ = newAst(AstAmbient, 0); $$->data._float = $2; }
 			| LAMBERT FLOAT
 	{ $$ = newAst(AstLambert, 0); $$->data._float = $2; }
-			| SPECULAR FLOAT FLOAT
-	{ $$ = newAst(AstSpecular, 1, newAst(AstFloat, 0)); $$->data._float = $2; $$->children[0]->data._float = $3; }
+			| PHONG FLOAT FLOAT
+	{ $$ = newAst(AstPhong, 1, newAst(AstFloat, 0)); $$->data._float = $2; $$->children[0]->data._float = $3; }
 
 albedodef: colordef
 	{ $$ = newAst(AstAlbedoSolid, 1, $1); }
