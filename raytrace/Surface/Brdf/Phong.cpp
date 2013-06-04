@@ -28,5 +28,10 @@ Object::Color Phong::color(const Object::Color &incidentColor, const Math::Vecto
 	return incidentColor * mStrength * coeff;
 }
 
+Phong *Phong::fromAst(AST *ast)
+{
+	return new Phong(ast->data._float, ast->children[0]->data._float);
+}
+
 }
 }

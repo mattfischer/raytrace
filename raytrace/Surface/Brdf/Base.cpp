@@ -19,15 +19,15 @@ const Base *Base::fromAst(AST *ast)
 	for(int i=0; i<ast->numChildren; i++) {
 		switch(ast->children[i]->type) {
 			case AstAmbient:
-				brdfs.push_back(new Ambient(ast->children[i]->data._float));
+				brdfs.push_back(Ambient::fromAst(ast->children[i]));
 				break;
 
 			case AstLambert:
-				brdfs.push_back(new Lambert(ast->children[i]->data._float));
+				brdfs.push_back(Lambert::fromAst(ast->children[i]));
 				break;
 
 			case AstPhong:
-				brdfs.push_back(new Phong(ast->children[i]->data._float, ast->children[i]->children[0]->data._float));
+				brdfs.push_back(Phong::fromAst(ast->children[i]));
 				break;
 		}
 	}

@@ -18,13 +18,13 @@ Base::~Base()
 
 const Base *Base::fromAst(AST *ast)
 {
-	AST *pigmentAst = ast->children[0];
-	switch(pigmentAst->type)
+	AST *albedoAst = ast->children[0];
+	switch(albedoAst->type)
 	{
 	case AstAlbedoSolid:
-		return new Solid(pigmentAst->children[0]->data._vector);
+		return Solid::fromAst(albedoAst);
 	case AstAlbedoChecker:
-		return new Checker(pigmentAst->children[0]->data._vector, pigmentAst->children[1]->data._vector);
+		return Checker::fromAst(albedoAst);
 	}
 
 	return 0;

@@ -25,5 +25,10 @@ Object::Color Lambert::color(const Object::Color &incidentColor, const Math::Vec
 	return incidentColor * albedo * mStrength * coeff;
 }
 
+Lambert *Lambert::fromAst(AST *ast)
+{
+	return new Lambert(ast->data._float);
+}
+
 }
 }

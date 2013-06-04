@@ -13,6 +13,8 @@ public:
 
 	virtual Object::Color color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
 
+	static Lambert *fromAst(AST *ast);
+
 private:
 	float mStrength;
 };

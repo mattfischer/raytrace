@@ -14,6 +14,8 @@ public:
 
 	virtual Object::Color color(const Math::Point &point) const;
 
+	static Solid *fromAst(AST *ast);
+
 protected:
 	Object::Color mColor;
 };
