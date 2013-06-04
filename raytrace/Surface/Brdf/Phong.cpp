@@ -25,7 +25,7 @@ Object::Color Phong::color(const Object::Color &incidentColor, const Math::Vecto
 		coeff = std::pow(dot, mPower);
 	}
 
-	return incidentColor.scale(mStrength * coeff);
+	return incidentColor * mStrength * coeff;
 }
 
 }

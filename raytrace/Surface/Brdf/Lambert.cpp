@@ -22,7 +22,7 @@ Object::Color Lambert::color(const Object::Color &incidentColor, const Math::Vec
 		coeff = dot;
 	}
 
-	return incidentColor * albedo.scale(mStrength * coeff);
+	return incidentColor * albedo * mStrength * coeff;
 }
 
 }

@@ -56,11 +56,6 @@ float Color::blue() const
 	return mBlue;
 }
 
-Color Color::scale(float b) const
-{
-	return Color(mRed * b, mGreen * b, mBlue * b);
-}
-
 Color Color::clamp() const
 {
 	Color r(mRed, mGreen, mBlue);

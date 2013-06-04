@@ -18,7 +18,6 @@ public:
 	float green() const;
 	float blue() const;
 
-	Color scale(float b) const;
 	Color clamp() const;
 
 	Color operator+(const Color &b) const;
