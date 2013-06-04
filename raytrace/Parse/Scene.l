@@ -30,6 +30,7 @@ translate return TRANSLATE;
 scale return SCALE;
 
 surface return SURFACE;
+brdf return BRDF;
 albedo return ALBEDO;
 color return COLOR;
 checker return CHECKER;
@@ -38,7 +39,6 @@ diffuse return DIFFUSE;
 ambient return AMBIENT;
 lambert return LAMBERT;
 specular return SPECULAR;
-specular_power return SPECULAR_POWER;
 reflection return REFLECTION;
 
 light return LIGHT;

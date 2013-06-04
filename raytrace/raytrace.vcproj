@@ -443,6 +443,66 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="Brdf"
+					>
+					<File
+						RelativePath=".\Surface\Brdf\Ambient.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Base.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)5.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)5.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)5.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)5.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Composite.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Lambert.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Specular.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Lighter"
@@ -696,6 +756,34 @@
 					</File>
 					<File
 						RelativePath=".\Surface\Albedo\Solid.hpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Brdf"
+					>
+					<File
+						RelativePath=".\Surface\Brdf\Ambient.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Base.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Composite.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Forwards.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Lambert.hpp"
+						>
+					</File>
+					<File
+						RelativePath=".\Surface\Brdf\Specular.hpp"
 						>
 					</File>
 				</Filter>

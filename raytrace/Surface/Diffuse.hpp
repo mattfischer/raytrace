@@ -4,13 +4,14 @@
 #include "Surface/Base.hpp"
 
 #include "Surface/Albedo/Forwards.hpp"
+#include "Surface/Brdf/Forwards.hpp"
 
 namespace Surface {
 
 class Diffuse : public Base
 {
 public:
-	Diffuse(Albedo::Base *albedo, float ambient, float lambert, float specular, float specularPower);
+	Diffuse(const Albedo::Base *albedo, const Brdf::Base *brdf);
 	virtual ~Diffuse();
 
 	static Diffuse *fromAst(AST *ast);
@@ -18,11 +19,8 @@ public:
 	virtual Object::Color color(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
 
 private:
-	Albedo::Base *mAlbedo;
-	float mAmbient;
-	float mLambert;
-	float mSpecular;
-	float mSpecularPower;
+	const Albedo::Base *mAlbedo;
+	const Brdf::Base *mBrdf;
 };
 
 }

@@ -5,23 +5,14 @@
 #include "Trace/Tracer.hpp"
 
 #include "Surface/Albedo/Base.hpp"
-
-#include <cmath>
-
-#define AMBIENT_DEFAULT 0
-#define LAMBERT_DEFAULT 0.8
-#define SPECULAR_DEFAULT 0.0
-#define SPECULARPOWER_DEFAULT 50
+#include "Surface/Brdf/Base.hpp"
 
 namespace Surface {
 
-Diffuse::Diffuse(Surface::Albedo::Base *albedo, float ambient, float lambert, float specular, float specularPower)
+Diffuse::Diffuse(const Surface::Albedo::Base *albedo, const Brdf::Base *brdf)
 {
-	mAmbient = ambient;
 	mAlbedo = albedo;
-	mLambert = lambert;
-	mSpecular = specular;
-	mSpecularPower = specularPower;
+	mBrdf = brdf;
 }
 
 Diffuse::~Diffuse()
@@ -29,15 +20,16 @@ Diffuse::~Diffuse()
 	if(mAlbedo) {
 		delete mAlbedo;
 	}
+
+	if(mBrdf) {
+		delete mBrdf;
+	}
 }
 
 Diffuse *Diffuse::fromAst(AST *ast)
 {
-	float ambient = AMBIENT_DEFAULT;
-	float lambert = LAMBERT_DEFAULT;
-	float specular = SPECULAR_DEFAULT;
-	float specularPower = SPECULARPOWER_DEFAULT;
-	Albedo::Base *albedo;
+	const Albedo::Base *albedo;
+	const Brdf::Base *brdf;
 
 	for(int i=0; i<ast->numChildren; i++) {
 		switch(ast->children[i]->type) {
@@ -45,36 +37,22 @@ Diffuse *Diffuse::fromAst(AST *ast)
 				albedo = Albedo::Base::fromAst(ast->children[i]);
 				break;
 
-			case AstAmbient:
-				ambient = ast->children[i]->data._float;
-				break;
-
-			case AstLambert:
-				lambert = ast->children[i]->data._float;
-				break;
-
-			case AstSpecular:
-				specular = ast->children[i]->data._float;
-				break;
-
-			case AstSpecularPower:
-				specularPower = ast->children[i]->data._float;
+			case AstBrdf:
+				brdf = Brdf::Base::fromAst(ast->children[i]);
 				break;
 		}
 	}
 
-	return new Diffuse(albedo, ambient, lambert, specular, specularPower);
+	return new Diffuse(albedo, brdf);
 }
 
 class Accumulator : public Lighter::Base::Accumulator
 {
 public:
-	Accumulator(const Math::Normal &normal, const Math::Vector &viewDirection, const Object::Color &albedo, float lambert, float specular, float specularPower)
+	Accumulator(const Math::Normal &normal, const Math::Vector &viewDirection, const Object::Color &albedo, const Brdf::Base *brdf)
 		: mNormal(normal), mViewDirection(viewDirection), mAlbedo(albedo)
 	{
-		mLambert = lambert;
-		mSpecular = specular;
-		mSpecularPower = specularPower;
+		mBrdf = brdf;
 	}
 
 	const Object::Color &totalColor()
@@ -84,30 +62,14 @@ public:
 
 	virtual void accumulate(const Object::Color &color, const Math::Vector &direction)
 	{
-		float lambertCoeff = abs(mNormal * direction);
-		float specularCoeff = 0;
-
-		Math::Vector incident = -direction;
-		Math::Vector reflect = incident + Math::Vector(mNormal) * (2 * (-mNormal * incident));
-
-		float dot = reflect * mViewDirection;
-
-		if(mSpecular > 0 && dot>0)
-			specularCoeff = std::pow(dot, mSpecularPower);
-
-		Object::Color lambert = color * mAlbedo.scale(mLambert * lambertCoeff);
-		Object::Color specular = color.scale(mSpecular * specularCoeff);
-
-		mTotalColor += lambert + specular;
+		mTotalColor += mBrdf->color(color, direction, mNormal, mViewDirection, mAlbedo);
 	}
 
 private:
 	const Math::Normal &mNormal;
 	const Math::Vector &mViewDirection;
 	const Object::Color &mAlbedo;
-	float mLambert;
-	float mSpecular;
-	float mSpecularPower;
+	const Brdf::Base *mBrdf;
 	Object::Color mTotalColor;
 };
 
@@ -116,18 +78,14 @@ Object::Color Diffuse::color(const Trace::Intersection &intersection, Trace::Tra
 	Math::Vector viewDirection = (tracer.scene()->camera()->transformation().origin() - intersection.point()).normalize();
 	Object::Color albedo = mAlbedo->color(intersection.objectPoint());
 
-	Accumulator accumulator(intersection.normal(), viewDirection, albedo, mLambert, mSpecular, mSpecularPower);
+	Accumulator accumulator(intersection.normal(), viewDirection, albedo, mBrdf);
 
 	const Lighter::LighterVector &lighters = tracer.lighters();
 	for(int i=0; i<lighters.size(); i++) {
 		lighters[i]->light(intersection, tracer, accumulator);
 	}
 
-	Object::Color totalColor;
-	totalColor += accumulator.totalColor();
-	totalColor += albedo.scale(mAmbient);
-
-	return totalColor;
+	return accumulator.totalColor();
 }
 
 }

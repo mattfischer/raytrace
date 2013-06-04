@@ -16,7 +16,7 @@ Base::~Base()
 {
 }
 
-Base *Base::fromAst(AST *ast)
+const Base *Base::fromAst(AST *ast)
 {
 	AST *pigmentAst = ast->children[0];
 	switch(pigmentAst->type)

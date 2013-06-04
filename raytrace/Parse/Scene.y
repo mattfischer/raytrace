@@ -34,10 +34,10 @@
 %token CHECKER
 
 %token DIFFUSE
+%token BRDF
 %token AMBIENT
 %token LAMBERT
 %token SPECULAR
-%token SPECULAR_POWER
 %token REFLECTION
 %token CAMERA
 %token LIGHT
@@ -54,7 +54,7 @@
 %type <_ast> scene object_list object primitive primitive_wrap primitive_modifiers primitive_modifier
 %type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
-%type <_ast> surfacedef surface_list surface_item diffusedef albedodef diffuse_list diffuse_item reflectiondef
+%type <_ast> surfacedef surface_list surface_item diffusedef albedodef diffuse_list diffuse_item reflectiondef brdf_list brdf_item
 %type <_ast> spheredef planedef boxdef conedef cylinderdef
 %type <_ast> lightdef light_modifiers light_modifier
 %type <_ast> cameradef camera_modifiers camera_modifier csgdef
@@ -135,14 +135,20 @@ diffuse_list: diffuse_item
 
 diffuse_item: ALBEDO '{' albedodef '}'
 	{ $$ = newAst(AstAlbedo, 1, $3); }
-			| AMBIENT FLOAT
+			| BRDF '{' brdf_list '}'
+	{ $$ = $3; }
+
+brdf_list: brdf_item
+	{ $$ = newAst(AstBrdf, 1, $1); }
+			| brdf_list brdf_item
+	{ $$ = addChild($1, $2); }
+
+brdf_item: AMBIENT FLOAT
 	{ $$ = newAst(AstAmbient, 0); $$->data._float = $2; }
 			| LAMBERT FLOAT
 	{ $$ = newAst(AstLambert, 0); $$->data._float = $2; }
-			| SPECULAR FLOAT
-	{ $$ = newAst(AstSpecular, 0); $$->data._float = $2; }
-			| SPECULAR_POWER FLOAT
-	{ $$ = newAst(AstSpecularPower, 0); $$->data._float = $2; }
+			| SPECULAR FLOAT FLOAT
+	{ $$ = newAst(AstSpecular, 1, newAst(AstFloat, 0)); $$->data._float = $2; $$->children[0]->data._float = $3; }
 
 albedodef: colordef
 	{ $$ = newAst(AstAlbedoSolid, 1, $1); }

@@ -24,6 +24,7 @@ typedef enum
 	AstColor,
 
 	AstSurfaceDiffuse,
+	AstBrdf,
 	AstAmbient,
 	AstLambert,
 	AstSpecular,
@@ -36,7 +37,9 @@ typedef enum
 
 	AstUnion,
 	AstDifference,
-	AstIntersection
+	AstIntersection,
+
+	AstFloat
 } ASTType;
 
 struct _ASTVector

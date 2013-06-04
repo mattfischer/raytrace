@@ -2,8 +2,11 @@ sphere {
     surface {
 		diffuse { 
 			albedo { color <1,0,0> }
-			ambient 0
-			specular 1
+
+			brdf {
+				lambert 0.8
+				specular 1 50
+			}
 		}
 	}
 }
@@ -15,7 +18,11 @@ plane {
 			albedo {
 				checker color <0,1,0> color <0,0,1>
 			}
-			ambient 0.01
+
+			brdf {
+				ambient 0.01
+				lambert 0.8
+			}
 		}
 	}
 }
