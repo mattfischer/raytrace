@@ -199,6 +199,14 @@ Transformation &Transformation::operator=(const BaseTransformation &c)
 	return *this;
 }
 
+Transformation &Transformation::operator=(const Transformation &c)
+{
+	mMatrix = c.matrix();
+	mInverseMatrix = c.inverseMatrix();
+
+	return *this;
+}
+
 Transformation operator*(const BaseTransformation &a, const BaseTransformation &b)
 {
 	return Transformation(b.matrix() * a.matrix(), a.inverseMatrix() * b.inverseMatrix());

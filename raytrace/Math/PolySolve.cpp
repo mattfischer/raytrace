@@ -39,7 +39,7 @@ float PolySolve::newtonRhapson(const float coeffs[], int n, float guess, float t
 		oldVal = newVal;
 		newVal = oldVal - evaluate(coeffs, n, oldVal) / evaluate(deriv, n-1, oldVal);
 		iter++;
-	} while(abs(oldVal - newVal) > threshold && iter < 50);
+	} while(fabs(oldVal - newVal) > threshold && iter < 50);
 
 	delete[] deriv;
 
