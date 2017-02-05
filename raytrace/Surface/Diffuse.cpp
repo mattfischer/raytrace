@@ -85,7 +85,22 @@ Object::Color Diffuse::color(const Trace::Intersection &intersection, Trace::Tra
 		lighters[i]->light(intersection, tracer, accumulator);
 	}
 
-	return accumulator.totalColor();
+	Object::Color color = accumulator.totalColor();
+
+	if(mBrdf->specular()) {
+		const Trace::Ray &ray = intersection.ray();
+		if(ray.generation() < tracer.settings().maxRayGeneration) {
+			Math::Vector incident = ray.direction();
+			Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
+
+			Trace::Ray reflectRay(intersection.point(), reflect, ray.generation() + 1);
+			Object::Color reflectColor = tracer.traceRay(reflectRay);
+
+			color += mBrdf->specularColor(reflectColor, albedo);
+		}
+	}
+
+	return color;
 }
 
 }

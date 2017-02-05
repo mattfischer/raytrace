@@ -28,6 +28,7 @@ typedef enum
 	AstAmbient,
 	AstLambert,
 	AstPhong,
+	AstSpecular,
 	AstSurfaceReflection,
 
 	AstLight,

@@ -1,0 +1,413 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{4a57f9ee-216d-43b4-9da8-b61e0bd1aa86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object">
+      <UniqueIdentifier>{7a0c845f-9293-42ca-a79e-e2cc34108806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object\Primitive">
+      <UniqueIdentifier>{730d451d-de0c-47dc-a08f-a24f4c95d5c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Trace">
+      <UniqueIdentifier>{9c32f763-3fa0-47b6-866c-14105d8da332}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Parse">
+      <UniqueIdentifier>{4b6943eb-f1aa-432e-b1a4-0ebcf3e52a52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render">
+      <UniqueIdentifier>{8aaad2ba-6306-4f53-b2be-4c0a9602a303}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Surface">
+      <UniqueIdentifier>{9609cf96-2715-4c36-9c10-3c828676245c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Surface\Albedo">
+      <UniqueIdentifier>{cd0e1b49-9f8f-4188-9443-15a004e8e6e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Surface\Brdf">
+      <UniqueIdentifier>{61c877e5-ac59-4867-a07b-daa6344a1d14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lighter">
+      <UniqueIdentifier>{d5532641-fe8f-4c0c-84fe-0c9edfcbea26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{306597cf-da7a-4371-93df-3cab4fa78e45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Object">
+      <UniqueIdentifier>{b93bfbfd-0f0e-453e-8c9f-ffd9edc751d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Object\Primitive">
+      <UniqueIdentifier>{7133466f-ba4b-4110-8227-dd3e5bb63e00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Trace">
+      <UniqueIdentifier>{dceebf1f-960c-4912-8f24-0a042efe2429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Parse">
+      <UniqueIdentifier>{023de584-6247-4f8d-af21-e1b3327b480f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render">
+      <UniqueIdentifier>{d63a6b26-6a11-4928-a30f-3844c0c8f848}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Surface">
+      <UniqueIdentifier>{57564801-c2bf-4cba-8ca8-4dbac5c51a7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Surface\Albedo">
+      <UniqueIdentifier>{e4b71b69-20bf-45be-a6b7-e8551c4b067f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Surface\Brdf">
+      <UniqueIdentifier>{da1978c0-fe38-4848-a4d5-94ebd277fdcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lighter">
+      <UniqueIdentifier>{50609aaa-b15c-49eb-b60c-14fcd96c42ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderControlDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Coordinate.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Matrix.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Normal.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Point.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\PolySolve.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Transformation.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Vector.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Base.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Camera.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Color.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Light.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Scene.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Base.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Box.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Cone.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Csg.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Cylinder.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Disk.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Plane.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Sphere.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive\Torus.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Intersection.cpp">
+      <Filter>Source Files\Trace</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Ray.cpp">
+      <Filter>Source Files\Trace</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Tracer.cpp">
+      <Filter>Source Files\Trace</Filter>
+    </ClCompile>
+    <ClCompile Include="lex.Scene.c">
+      <Filter>Source Files\Parse</Filter>
+    </ClCompile>
+    <ClCompile Include="Parse\Parser.cpp">
+      <Filter>Source Files\Parse</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.tab.c">
+      <Filter>Source Files\Parse</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Engine.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Thread.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Base.cpp">
+      <Filter>Source Files\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Composite.cpp">
+      <Filter>Source Files\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Diffuse.cpp">
+      <Filter>Source Files\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Reflection.cpp">
+      <Filter>Source Files\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Albedo\Base.cpp">
+      <Filter>Source Files\Surface\Albedo</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Albedo\Checker.cpp">
+      <Filter>Source Files\Surface\Albedo</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Albedo\Solid.cpp">
+      <Filter>Source Files\Surface\Albedo</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Ambient.cpp">
+      <Filter>Source Files\Surface\Brdf</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Base.cpp">
+      <Filter>Source Files\Surface\Brdf</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Composite.cpp">
+      <Filter>Source Files\Surface\Brdf</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Lambert.cpp">
+      <Filter>Source Files\Surface\Brdf</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Phong.cpp">
+      <Filter>Source Files\Surface\Brdf</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Base.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Direct.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Specular.cpp">
+      <Filter>Source Files\Surface\Brdf</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FlexGenerator Include="Parse\Scene.l">
+      <Filter>Source Files\Parse</Filter>
+    </FlexGenerator>
+  </ItemGroup>
+  <ItemGroup>
+    <BisonParser Include="Parse\Scene.y">
+      <Filter>Source Files\Parse</Filter>
+    </BisonParser>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderControlDlg.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Coordinate.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Forwards.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Matrix.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Normal.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Point.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\PolySolve.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Transformation.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Base.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Camera.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Color.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Forwards.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Light.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Scene.hpp">
+      <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Base.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Box.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Cone.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Csg.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Cylinder.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Disk.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Forwards.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Plane.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Sphere.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Torus.hpp">
+      <Filter>Header Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Forwards.hpp">
+      <Filter>Header Files\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Intersection.hpp">
+      <Filter>Header Files\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Ray.hpp">
+      <Filter>Header Files\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Tracer.hpp">
+      <Filter>Header Files\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="Parse\AST.h">
+      <Filter>Header Files\Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="Parse\Forwards.hpp">
+      <Filter>Header Files\Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="Parse\Parser.hpp">
+      <Filter>Header Files\Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.tab.h">
+      <Filter>Header Files\Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Engine.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Forwards.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Thread.hpp">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Base.hpp">
+      <Filter>Header Files\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Composite.hpp">
+      <Filter>Header Files\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Diffuse.hpp">
+      <Filter>Header Files\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Forwards.hpp">
+      <Filter>Header Files\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Reflection.hpp">
+      <Filter>Header Files\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Albedo\Base.hpp">
+      <Filter>Header Files\Surface\Albedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Albedo\Checker.hpp">
+      <Filter>Header Files\Surface\Albedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Albedo\Forwards.hpp">
+      <Filter>Header Files\Surface\Albedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Albedo\Solid.hpp">
+      <Filter>Header Files\Surface\Albedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Brdf\Ambient.hpp">
+      <Filter>Header Files\Surface\Brdf</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Brdf\Base.hpp">
+      <Filter>Header Files\Surface\Brdf</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Brdf\Composite.hpp">
+      <Filter>Header Files\Surface\Brdf</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Brdf\Forwards.hpp">
+      <Filter>Header Files\Surface\Brdf</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Brdf\Lambert.hpp">
+      <Filter>Header Files\Surface\Brdf</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Brdf\Phong.hpp">
+      <Filter>Header Files\Surface\Brdf</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Base.hpp">
+      <Filter>Header Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Direct.hpp">
+      <Filter>Header Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Forwards.hpp">
+      <Filter>Header Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface\Brdf\Specular.hpp">
+      <Filter>Header Files\Surface\Brdf</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="scene.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

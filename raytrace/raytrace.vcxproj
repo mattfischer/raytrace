@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CB888B23-4AA4-473F-9268-2C1E26ECC742}</ProjectGuid>
+    <RootNamespace>raytrace</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="..\FlexBison.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <BisonParser>
+      <Defines>true</Defines>
+    </BisonParser>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <BisonParser>
+      <Defines>true</Defines>
+    </BisonParser>
+    <ClCompile>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="lex.Scene.c" />
+    <ClCompile Include="Lighter\Base.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="Lighter\Direct.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Math\Coordinate.cpp" />
+    <ClCompile Include="Math\Matrix.cpp" />
+    <ClCompile Include="Math\Normal.cpp" />
+    <ClCompile Include="Math\Point.cpp" />
+    <ClCompile Include="Math\PolySolve.cpp" />
+    <ClCompile Include="Math\Transformation.cpp" />
+    <ClCompile Include="Math\Vector.cpp" />
+    <ClCompile Include="Object\Base.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="Object\Camera.cpp" />
+    <ClCompile Include="Object\Color.cpp" />
+    <ClCompile Include="Object\Light.cpp" />
+    <ClCompile Include="Object\Primitive\Base.cpp" />
+    <ClCompile Include="Object\Primitive\Box.cpp" />
+    <ClCompile Include="Object\Primitive\Cone.cpp" />
+    <ClCompile Include="Object\Primitive\Csg.cpp" />
+    <ClCompile Include="Object\Primitive\Cylinder.cpp" />
+    <ClCompile Include="Object\Primitive\Disk.cpp" />
+    <ClCompile Include="Object\Primitive\Plane.cpp" />
+    <ClCompile Include="Object\Primitive\Sphere.cpp" />
+    <ClCompile Include="Object\Primitive\Torus.cpp" />
+    <ClCompile Include="Object\Scene.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="Parse\Parser.cpp" />
+    <ClCompile Include="RenderControlDlg.cpp" />
+    <ClCompile Include="Render\Engine.cpp" />
+    <ClCompile Include="Render\Thread.cpp" />
+    <ClCompile Include="Scene.tab.c" />
+    <ClCompile Include="Surface\Albedo\Base.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="Surface\Albedo\Checker.cpp" />
+    <ClCompile Include="Surface\Albedo\Solid.cpp" />
+    <ClCompile Include="Surface\Base.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Ambient.cpp" />
+    <ClCompile Include="Surface\Brdf\Base.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Composite.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="Surface\Brdf\Lambert.cpp" />
+    <ClCompile Include="Surface\Brdf\Phong.cpp" />
+    <ClCompile Include="Surface\Brdf\Specular.cpp" />
+    <ClCompile Include="Surface\Composite.cpp" />
+    <ClCompile Include="Surface\Diffuse.cpp" />
+    <ClCompile Include="Surface\Reflection.cpp" />
+    <ClCompile Include="Trace\Intersection.cpp" />
+    <ClCompile Include="Trace\Ray.cpp" />
+    <ClCompile Include="Trace\Tracer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FlexGenerator Include="Parse\Scene.l" />
+  </ItemGroup>
+  <ItemGroup>
+    <BisonParser Include="Parse\Scene.y" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.hpp" />
+    <ClInclude Include="Lighter\Base.hpp" />
+    <ClInclude Include="Lighter\Direct.hpp" />
+    <ClInclude Include="Lighter\Forwards.hpp" />
+    <ClInclude Include="Math\Coordinate.hpp" />
+    <ClInclude Include="Math\Forwards.hpp" />
+    <ClInclude Include="Math\Matrix.hpp" />
+    <ClInclude Include="Math\Normal.hpp" />
+    <ClInclude Include="Math\Point.hpp" />
+    <ClInclude Include="Math\PolySolve.hpp" />
+    <ClInclude Include="Math\Transformation.hpp" />
+    <ClInclude Include="Math\Vector.hpp" />
+    <ClInclude Include="Object\Base.hpp" />
+    <ClInclude Include="Object\Camera.hpp" />
+    <ClInclude Include="Object\Color.hpp" />
+    <ClInclude Include="Object\Forwards.hpp" />
+    <ClInclude Include="Object\Light.hpp" />
+    <ClInclude Include="Object\Primitive\Base.hpp" />
+    <ClInclude Include="Object\Primitive\Box.hpp" />
+    <ClInclude Include="Object\Primitive\Cone.hpp" />
+    <ClInclude Include="Object\Primitive\Csg.hpp" />
+    <ClInclude Include="Object\Primitive\Cylinder.hpp" />
+    <ClInclude Include="Object\Primitive\Disk.hpp" />
+    <ClInclude Include="Object\Primitive\Forwards.hpp" />
+    <ClInclude Include="Object\Primitive\Plane.hpp" />
+    <ClInclude Include="Object\Primitive\Sphere.hpp" />
+    <ClInclude Include="Object\Primitive\Torus.hpp" />
+    <ClInclude Include="Object\Scene.hpp" />
+    <ClInclude Include="Parse\AST.h" />
+    <ClInclude Include="Parse\Forwards.hpp" />
+    <ClInclude Include="Parse\Parser.hpp" />
+    <ClInclude Include="RenderControlDlg.hpp" />
+    <ClInclude Include="Render\Engine.hpp" />
+    <ClInclude Include="Render\Forwards.hpp" />
+    <ClInclude Include="Render\Thread.hpp" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="Scene.tab.h" />
+    <ClInclude Include="Surface\Albedo\Base.hpp" />
+    <ClInclude Include="Surface\Albedo\Checker.hpp" />
+    <ClInclude Include="Surface\Albedo\Forwards.hpp" />
+    <ClInclude Include="Surface\Albedo\Solid.hpp" />
+    <ClInclude Include="Surface\Base.hpp" />
+    <ClInclude Include="Surface\Brdf\Ambient.hpp" />
+    <ClInclude Include="Surface\Brdf\Base.hpp" />
+    <ClInclude Include="Surface\Brdf\Composite.hpp" />
+    <ClInclude Include="Surface\Brdf\Forwards.hpp" />
+    <ClInclude Include="Surface\Brdf\Lambert.hpp" />
+    <ClInclude Include="Surface\Brdf\Phong.hpp" />
+    <ClInclude Include="Surface\Brdf\Specular.hpp" />
+    <ClInclude Include="Surface\Composite.hpp" />
+    <ClInclude Include="Surface\Diffuse.hpp" />
+    <ClInclude Include="Surface\Forwards.hpp" />
+    <ClInclude Include="Surface\Reflection.hpp" />
+    <ClInclude Include="Trace\Forwards.hpp" />
+    <ClInclude Include="Trace\Intersection.hpp" />
+    <ClInclude Include="Trace\Ray.hpp" />
+    <ClInclude Include="Trace\Tracer.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="scene.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\FlexBison.targets" />
+  </ImportGroup>
+</Project>

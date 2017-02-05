@@ -5,6 +5,9 @@ raytrace/Release
 
 *.ncb
 *.suo
+*.sdf
+*.db
+*.opendb
 raytrace/*.tab.h
 raytrace/*.tab.c
 raytrace/lex.*.c

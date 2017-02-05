@@ -31,5 +31,27 @@ Object::Color Composite::color(const Object::Color &incidentColor, const Math::V
 	return totalColor;
 }
 
+bool Composite::specular() const
+{
+	for(int i=0; i<mBrdfs.size(); i++) {
+		if(mBrdfs[i]->specular()) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+Object::Color Composite::specularColor(const Object::Color &incidentColor, const Object::Color &albedo) const
+{
+	Object::Color totalColor;
+
+	for(int i=0; i<mBrdfs.size(); i++) {
+		totalColor = totalColor + mBrdfs[i]->specularColor(incidentColor, albedo);
+	}
+
+	return totalColor;
+}
+
 }
 }
