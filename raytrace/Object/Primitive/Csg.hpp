@@ -20,20 +20,20 @@ public:
 
 	Csg();
 
-	static Csg *fromAst(AST *ast);
+	static std::unique_ptr<Csg> fromAst(AST *ast);
 
-	Primitive::Base *primitive1();
-	void setPrimitive1(Primitive::Base *primitive1);
+	const Primitive::Base &primitive1() const;
+	void setPrimitive1(std::unique_ptr<Primitive::Base> &&primitive1);
 
-	Primitive::Base *primitive2();
-	void setPrimitive2(Primitive::Base *primitive2);
+	const Primitive::Base &primitive2() const;
+	void setPrimitive2(std::unique_ptr<Primitive::Base> &&primitive2);
 
 	Type type() const;
 	void setType(Type type);
 
 protected:
-	Primitive::Base *mPrimitive1;
-	Primitive::Base *mPrimitive2;
+	std::unique_ptr<Primitive::Base> mPrimitive1;
+	std::unique_ptr<Primitive::Base> mPrimitive2;
 	Type mType;
 
 	virtual bool doInside(const Math::Point &point) const;

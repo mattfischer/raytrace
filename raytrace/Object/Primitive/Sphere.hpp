@@ -12,7 +12,7 @@ class Sphere : public Base
 {
 public:
 	Sphere();
-	static Sphere *fromAst(AST *ast);
+	static std::unique_ptr<Sphere> fromAst(AST *ast);
 
 protected:
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;

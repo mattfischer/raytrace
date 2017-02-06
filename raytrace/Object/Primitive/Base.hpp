@@ -9,6 +9,7 @@
 #include "Trace/Intersection.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace Object {
 namespace Primitive {
@@ -19,7 +20,7 @@ public:
 	Base();
 	virtual ~Base();
 
-	static Base *fromAst(AST *ast);
+	static std::unique_ptr<Base> fromAst(AST *ast);
 
 	Surface *surface() const;
 	void setSurface(Surface *surface);

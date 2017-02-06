@@ -11,9 +11,9 @@ Box::Box()
 {
 }
 
-Box *Box::fromAst(AST *ast)
+std::unique_ptr<Box> Box::fromAst(AST *ast)
 {
-	return new Box();
+	return std::make_unique<Box>();
 }
 
 void Box::testIntersect(const Trace::Ray &ray, const Math::Normal &normal, Trace::IntersectionVector &intersections) const

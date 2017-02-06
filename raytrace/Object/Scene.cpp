@@ -25,10 +25,10 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 		switch(child->type)
 		{
 		case AstPrimitive:
-			scene->addPrimitive(std::unique_ptr<Primitive::Base>(Primitive::Base::fromAst(child)));
+			scene->addPrimitive(Primitive::Base::fromAst(child));
 			break;
 		case AstLight:
-			scene->addLight(std::unique_ptr<Light>(Light::fromAst(child)));
+			scene->addLight(Light::fromAst(child));
 			break;
 		case AstCamera:
 			scene->setCamera(std::unique_ptr<Camera>(Camera::fromAst(child)));

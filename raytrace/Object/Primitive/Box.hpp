@@ -13,7 +13,7 @@ class Box : public Base
 public:
 	Box();
 
-	static Box *fromAst(AST *ast);
+	static std::unique_ptr<Box> fromAst(AST *ast);
 
 protected:
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;

@@ -3,15 +3,13 @@
 namespace Object {
 namespace Primitive {
 
-Csg::Csg() :
-	mPrimitive1(0),
-	mPrimitive2(0)
+Csg::Csg()
 {
 }
 
-Csg *Csg::fromAst(AST *ast)
+std::unique_ptr<Csg> Csg::fromAst(AST *ast)
 {
-	Csg *csg = new Csg();
+	std::unique_ptr<Csg> csg = std::make_unique<Csg>();
 
 	switch(ast->type)
 	{
@@ -33,7 +31,7 @@ Csg *Csg::fromAst(AST *ast)
 		switch(ast->children[i]->type)
 		{
 		case AstPrimitive:
-			if(csg->primitive1() == 0)
+			if(!csg->mPrimitive1)
 			{
 				csg->setPrimitive1(Primitive::Base::fromAst(ast->children[i]));
 			}
@@ -52,24 +50,24 @@ Csg *Csg::fromAst(AST *ast)
 	return csg;
 }
 
-Base *Csg::primitive1()
+const Base &Csg::primitive1() const
 {
-	return mPrimitive1;
+	return *mPrimitive1;
 }
 
-void Csg::setPrimitive1(Base *primitive1)
+void Csg::setPrimitive1(std::unique_ptr<Base> &&primitive1)
 {
-	mPrimitive1 = primitive1;
+	mPrimitive1 = std::move(primitive1);
 }
 
-Base *Csg::primitive2()
+const Base &Csg::primitive2() const
 {
-	return mPrimitive2;
+	return *mPrimitive2;
 }
 
-void Csg::setPrimitive2(Base *primitive2)
+void Csg::setPrimitive2(std::unique_ptr<Base> &&primitive2)
 {
-	mPrimitive2 = primitive2;
+	mPrimitive2 = std::move(primitive2);
 }
 
 Csg::Type Csg::type() const
@@ -111,24 +109,24 @@ void Csg::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersec
 		switch(mType)
 		{
 		case TypeUnion:
-			if(localIntersections[i].primitive() == mPrimitive1 && !mPrimitive2->inside(localIntersections[i].point()) ||
-			   localIntersections[i].primitive() == mPrimitive2 && !mPrimitive1->inside(localIntersections[i].point()))
+			if(localIntersections[i].primitive() == mPrimitive1.get() && !mPrimitive2->inside(localIntersections[i].point()) ||
+			   localIntersections[i].primitive() == mPrimitive2.get() && !mPrimitive1->inside(localIntersections[i].point()))
 			{
 				add = true;
 			}
 			break;
 
 		case TypeIntersection:
-			if(localIntersections[i].primitive() == mPrimitive1 && mPrimitive2->inside(localIntersections[i].point()) ||
-			   localIntersections[i].primitive() == mPrimitive2 && mPrimitive1->inside(localIntersections[i].point()))
+			if(localIntersections[i].primitive() == mPrimitive1.get() && mPrimitive2->inside(localIntersections[i].point()) ||
+			   localIntersections[i].primitive() == mPrimitive2.get() && mPrimitive1->inside(localIntersections[i].point()))
 			{
 				add = true;
 			}
 			break;
 
 		case TypeDifference:
-			if(localIntersections[i].primitive() == mPrimitive1 && !mPrimitive2->inside(localIntersections[i].point()) ||
-			   localIntersections[i].primitive() == mPrimitive2 && mPrimitive1->inside(localIntersections[i].point()))
+			if(localIntersections[i].primitive() == mPrimitive1.get() && !mPrimitive2->inside(localIntersections[i].point()) ||
+			   localIntersections[i].primitive() == mPrimitive2.get() && mPrimitive1->inside(localIntersections[i].point()))
 			{
 				add = true;
 			}

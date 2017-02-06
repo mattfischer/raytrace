@@ -11,9 +11,9 @@ Plane::Plane()
 {
 }
 
-Plane *Plane::fromAst(AST *ast)
+std::unique_ptr<Plane> Plane::fromAst(AST *ast)
 {
-	return new Plane;
+	return std::make_unique<Plane>();
 }
 
 Trace::Intersection Plane::intersectPlane(const Base *primitive, const Trace::Ray &ray, const Math::Normal &normal, float displacement)

@@ -13,7 +13,7 @@ public:
 	Cone();
 	~Cone();
 
-	static Cone *fromAst(AST *ast);
+	static std::unique_ptr<Cone> fromAst(AST *ast);
 
 protected:
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;

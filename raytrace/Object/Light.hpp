@@ -6,6 +6,8 @@
 #include "Object/Base.hpp"
 #include "Object/Color.hpp"
 
+#include <memory>
+
 namespace Object {
 
 class Light : public Base
@@ -13,10 +15,8 @@ class Light : public Base
 public:
 	Light();
 	Light(const Color &color);
-	Light(const Light &c);
-	Light &operator=(const Light &c);
 
-	static Light *fromAst(AST *ast);
+	static std::unique_ptr<Light> fromAst(AST *ast);
 
 	const Color &color() const;
 	void setColor(const Color &color);

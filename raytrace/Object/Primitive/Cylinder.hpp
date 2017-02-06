@@ -14,7 +14,7 @@ public:
 	Cylinder();
 	~Cylinder();
 
-	static Cylinder *fromAst(AST *ast);
+	static std::unique_ptr<Cylinder> fromAst(AST *ast);
 
 protected:
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;

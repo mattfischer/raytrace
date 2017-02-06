@@ -12,9 +12,9 @@ Sphere::Sphere()
 {
 }
 
-Sphere *Sphere::fromAst(AST *ast)
+std::unique_ptr<Sphere> Sphere::fromAst(AST *ast)
 {
-	return new Sphere();
+	return std::make_unique<Sphere>();
 }
 
 void Sphere::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const

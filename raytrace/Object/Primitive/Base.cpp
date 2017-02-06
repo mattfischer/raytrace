@@ -24,9 +24,9 @@ Base::~Base()
 		delete mSurface;
 }
 
-Base *Base::fromAst(AST *ast)
+std::unique_ptr<Base> Base::fromAst(AST *ast)
 {
-	Base *primitive;
+	std::unique_ptr<Base> primitive;
 	AST *sub = ast->children[0];
 
 	switch(sub->type)

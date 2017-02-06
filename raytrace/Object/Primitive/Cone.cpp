@@ -17,9 +17,9 @@ Cone::~Cone()
 {
 }
 
-Cone *Cone::fromAst(AST *ast)
+std::unique_ptr<Cone> Cone::fromAst(AST *ast)
 {
-	return new Cone();
+	return std::make_unique<Cone>();
 }
 
 void Cone::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const

@@ -6,19 +6,9 @@ Light::Light()
 {
 }
 
-Light::Light(const Color &color)
-: mColor(color)
+std::unique_ptr<Light> Light::fromAst(AST *ast)
 {
-}
-
-Light::Light(const Light &c)
-: mColor(c.mColor)
-{
-}
-
-Light *Light::fromAst(AST *ast)
-{
-	Light *light = new Light();
+	std::unique_ptr<Light> light = std::make_unique<Light>();
 
 	for(int i=0; i<ast->numChildren; i++)
 	{
@@ -35,13 +25,6 @@ Light *Light::fromAst(AST *ast)
 	}
 
 	return light;
-}
-
-Light &Light::operator=(const Light &c)
-{
-	mColor = c.mColor;
-
-	return *this;
 }
 
 const Color &Light::color() const

@@ -17,9 +17,9 @@ Cylinder::~Cylinder()
 {
 }
 
-Cylinder *Cylinder::fromAst(AST *ast)
+std::unique_ptr<Cylinder> Cylinder::fromAst(AST *ast)
 {
-	return new Cylinder();
+	return std::make_unique<Cylinder>();
 }
 
 void Cylinder::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
