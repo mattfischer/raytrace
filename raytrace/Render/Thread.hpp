@@ -12,13 +12,15 @@ class Engine;
 class Thread
 {
 public:
-	Thread(Engine *engine, Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits);
+	Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, unsigned char *bits);
 
 	void start(int startLine, int numLines);
 
 	int startLine();
 	int currentLine();
 	int numLines();
+	int linesToGo();
+
 	void setNumLines(int numLines);
 
 private:
@@ -36,8 +38,7 @@ private:
 	bool shouldAntialias(const Object::Color corners[4]) const;
 	SubPixel &subPixel(int x, int y);
 
-	Engine *mEngine;
-	Object::Scene *mScene;
+	Engine &mEngine;
 	const Trace::Tracer::Settings &mSettings;
 	unsigned char *mBits;
 	int mStartLine;

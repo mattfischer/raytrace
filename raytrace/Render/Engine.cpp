@@ -4,7 +4,8 @@
 
 namespace Render {
 
-Engine::Engine()
+Engine::Engine(const Object::Scene &scene)
+	: mScene(scene)
 {
 	mRendering = false;
 	InitializeCriticalSection(&mCritSec);
@@ -15,9 +16,8 @@ Engine::~Engine()
 	DeleteCriticalSection(&mCritSec);
 }
 
-void Engine::startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
+void Engine::startRender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
 {
-	mScene = scene;
 	mSettings = settings;
 	mBits = bits;
 	mListener = listener;
@@ -27,17 +27,17 @@ void Engine::startRender(Object::Scene *scene, const Trace::Tracer::Settings &se
 
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo( &sysinfo );
-	mNumThreads = sysinfo.dwNumberOfProcessors;
-	mNumActiveThreads = mNumThreads;
-	mThreads = new Thread*[mNumThreads];
+	int numThreads = sysinfo.dwNumberOfProcessors;
+	mNumActiveThreads = numThreads;
 
-	int size = mSettings.height / mNumThreads;
-	for(int i=0; i<mNumThreads; i++) {
+	int size = mSettings.height / numThreads;
+	for(int i=0; i<numThreads; i++) {
 		int startLine = i * size;
-		int numLines = (i == mNumThreads - 1) ? mSettings.height - startLine : size;
+		int numLines = (i == numThreads - 1) ? mSettings.height - startLine : size;
 
-		mThreads[i] = new Thread(this, mScene, mSettings, mBits);
-		mThreads[i]->start(startLine, numLines);
+		std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, mScene, mSettings, mBits);
+		thread->start(startLine, numLines);
+		mThreads.insert(std::move(thread));
 	}
 }
 
@@ -46,46 +46,36 @@ bool Engine::rendering() const
 	return mRendering;
 }
 
-bool Engine::threadDone(Thread *thread)
+bool Engine::threadDone(Thread *doneThread)
 {
 	bool ret;
 
 	EnterCriticalSection(&mCritSec);
 
 	Thread *splitThread = 0;
-	int maxToGo = 0;
-	int thisThread = -1;
-	for(int i=0; i<mNumThreads; i++) {
-		if(!mThreads[i]) {
-			continue;
-		}
 
-		if(mThreads[i] == thread) {
-			thisThread = i;
-		}
-
-		int toGo = mThreads[i]->numLines() - (mThreads[i]->currentLine() - mThreads[i]->startLine());
-		if(toGo > maxToGo) {
-			splitThread = mThreads[i];
-			maxToGo = toGo;
+	for(const std::unique_ptr<Thread> &thread : mThreads) {
+		if(!splitThread || thread->linesToGo() > splitThread->linesToGo()) {
+			splitThread = thread.get();
 		}
 	}
 
-	if(maxToGo > 10) {
-		int transfer = maxToGo / 2;
+	if(splitThread->linesToGo() > 10) {
+		int transfer = splitThread->linesToGo() / 2;
 		int newStart = splitThread->startLine() + splitThread->numLines() - transfer;
 		splitThread->setNumLines(splitThread->numLines() - transfer);
 
-		thread->start(newStart, transfer);
+		doneThread->start(newStart, transfer);
 		ret = false;
 	} else {
-		mThreads[thisThread] = 0;
-		delete thread;
+		for (const std::unique_ptr<Thread> &thread : mThreads) {
+			if (thread.get() == doneThread) {
+				mThreads.erase(thread);
+			}
+		}
 
-		mNumActiveThreads--;
-		if(mNumActiveThreads == 0) {
+		if(mThreads.size() == 0) {
 			mRendering = false;
-			delete[] mThreads;
 
 			DWORD endTime = GetTickCount();
 			char buf[256];

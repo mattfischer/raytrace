@@ -20,6 +20,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 
 	AST *ast = Parse::Parser::parse("scene.txt");
 	mScene = Object::Scene::fromAST(ast);
+	mEngine = std::make_unique<Render::Engine>(*mScene);
 
 	WNDCLASSEX wc;
 	wc.cbSize = sizeof(WNDCLASSEX);
@@ -86,7 +87,7 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 			SetDIBits(mBackDC, hBitmap, 0, mRenderControl.settings().height, mFramebuffer, &bi, DIB_RGB_COLORS);
 			InvalidateRect(hWnd, NULL, FALSE);
 
-			if(mEngine.rendering()) {
+			if(mEngine->rendering()) {
 				SetTimer(hWnd, 0, 0, NULL);
 			}
 			break;
@@ -131,7 +132,7 @@ void App::onRenderButtonClicked()
 
 	mRenderControl.enableRenderButton(false);
 
-	mEngine.startRender(mScene.get(), mRenderControl.settings(), mFramebuffer, this);
+	mEngine->startRender(mRenderControl.settings(), mFramebuffer, this);
 
 	SetTimer(mHWnd, 0, 0, NULL);
 }

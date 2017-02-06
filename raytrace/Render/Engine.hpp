@@ -6,6 +6,8 @@
 
 #include "Render/Thread.hpp"
 
+#include <set>
+
 #include <windows.h>
 
 namespace Render {
@@ -19,24 +21,23 @@ public:
 		virtual void onRenderStatus(const char *message) = 0;
 	};
 
-	Engine();
+	Engine(const Object::Scene &scene);
 	~Engine();
 
 	bool rendering() const;
 
-	void startRender(Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
+	void startRender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
 	bool threadDone(Thread *thread);
 
 private:
-	Object::Scene *mScene;
+	const Object::Scene &mScene;
 	Trace::Tracer::Settings mSettings;
 	unsigned char *mBits;
 	Listener *mListener;
 	bool mRendering;
 	DWORD mStartTime;
 	CRITICAL_SECTION mCritSec;
-	Thread **mThreads;
-	int mNumThreads;
+	std::set<std::unique_ptr<Thread>> mThreads;
 	int mNumActiveThreads;
 };
 

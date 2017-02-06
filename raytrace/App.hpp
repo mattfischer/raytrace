@@ -32,7 +32,7 @@ private:
 
 	RenderControlDlg mRenderControl;
 	std::unique_ptr<Object::Scene> mScene;
-	Render::Engine mEngine;
+	std::unique_ptr<Render::Engine> mEngine;
 	unsigned char *mFramebuffer;
 };
 

@@ -5,11 +5,11 @@
 
 namespace Render {
 
-Thread::Thread(Engine *engine, Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits)
-: mSettings(settings),
-  mTracer(*scene, settings)
+Thread::Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, unsigned char *bits)
+: mEngine(engine),
+  mSettings(settings),
+  mTracer(scene, settings)
 {
-	mEngine = engine;
 	mBits = bits;
 	mStarted = false;
 }
@@ -37,7 +37,7 @@ void Thread::run()
 	while(true) {
 		doRender();
 
-		bool stop = mEngine->threadDone(this);
+		bool stop = mEngine.threadDone(this);
 		if(stop) {
 			break;
 		}
@@ -57,6 +57,11 @@ int Thread::currentLine()
 int Thread::numLines()
 {
 	return mNumLines;
+}
+
+int Thread::linesToGo()
+{
+	return mNumLines - (mCurrentLine - mStartLine);
 }
 
 void Thread::setNumLines(int numLines)
