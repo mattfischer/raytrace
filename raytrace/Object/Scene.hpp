@@ -6,6 +6,7 @@
 #include "Trace/Intersection.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace Object {
 
@@ -15,23 +16,23 @@ public:
 	Scene();
 	~Scene();
 
-	static Scene *fromAST(AST *ast);
+	static std::unique_ptr<Scene> fromAST(AST *ast);
 
-	Camera *camera() const;
-	void setCamera(Camera *camera);
+	const Camera &camera() const;
+	void setCamera(std::unique_ptr<Camera> &&camera);
 
-	const std::vector<Light*> &lights() const;
-	void addLight(Light *light);
+	const std::vector<std::unique_ptr<Light>> &lights() const;
+	void addLight(std::unique_ptr<Light> &&light);
 
-	const std::vector<Primitive::Base*> &primitives() const;
-	void addPrimitive(Primitive::Base *primitive);
+	const std::vector<std::unique_ptr<Primitive::Base>> &primitives() const;
+	void addPrimitive(std::unique_ptr<Primitive::Base> &&primitive);
 
 	void intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
 
 protected:
-	Camera *mCamera;
-	std::vector<Light*> mLights;
-	std::vector<Primitive::Base*> mPrimitives;
+	std::unique_ptr<Camera> mCamera;
+	std::vector<std::unique_ptr<Light>> mLights;
+	std::vector<std::unique_ptr<Primitive::Base>> mPrimitives;
 };
 
 }

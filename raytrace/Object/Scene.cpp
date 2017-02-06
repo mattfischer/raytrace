@@ -8,26 +8,15 @@ namespace Object {
 
 Scene::Scene()
 {
-	mCamera = 0;
 }
 
 Scene::~Scene()
 {
-	int i;
-
-	if(mCamera)
-		delete mCamera;
-
-	for(i=0; i<mLights.size(); i++)
-		delete mLights[i];
-
-	for(i=0; i<mPrimitives.size(); i++)
-		delete mPrimitives[i];
 }
 
-Scene *Scene::fromAST(AST *ast)
+std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 {
-	Scene *scene = new Scene;
+	std::unique_ptr<Scene> scene = std::make_unique<Scene>();
 
 	for(int i=0; i<ast->numChildren; i++)
 	{
@@ -36,13 +25,13 @@ Scene *Scene::fromAST(AST *ast)
 		switch(child->type)
 		{
 		case AstPrimitive:
-			scene->addPrimitive(Primitive::Base::fromAst(child));
+			scene->addPrimitive(std::unique_ptr<Primitive::Base>(Primitive::Base::fromAst(child)));
 			break;
 		case AstLight:
-			scene->addLight(Light::fromAst(child));
+			scene->addLight(std::unique_ptr<Light>(Light::fromAst(child)));
 			break;
 		case AstCamera:
-			scene->setCamera(Camera::fromAst(child));
+			scene->setCamera(std::unique_ptr<Camera>(Camera::fromAst(child)));
 			break;
 		}
 	}
@@ -50,37 +39,34 @@ Scene *Scene::fromAST(AST *ast)
 	return scene;
 }
 
-Camera *Scene::camera() const
+const Camera &Scene::camera() const
 {
-	return mCamera;
+	return *mCamera;
 }
 
-void Scene::setCamera(Camera *camera)
+void Scene::setCamera(std::unique_ptr<Camera> &&camera)
 {
-	if(mCamera)
-		delete mCamera;
-
-	mCamera = camera;
+	mCamera = std::move(camera);
 }
 
-const std::vector<Light*> &Scene::lights() const
+const std::vector<std::unique_ptr<Light>> &Scene::lights() const
 {
 	return mLights;
 }
 
-void Scene::addLight(Light *light)
+void Scene::addLight(std::unique_ptr<Light> &&light)
 {
-	mLights.push_back(light);
+	mLights.push_back(std::move(light));
 }
 
-const std::vector<Primitive::Base*> &Scene::primitives() const
+const std::vector<std::unique_ptr<Primitive::Base>> &Scene::primitives() const
 {
 	return mPrimitives;
 }
 
-void Scene::addPrimitive(Primitive::Base *primitive)
+void Scene::addPrimitive(std::unique_ptr<Primitive::Base> &&primitive)
 {
-	mPrimitives.push_back(primitive);
+	mPrimitives.push_back(std::move(primitive));
 }
 
 void Scene::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const

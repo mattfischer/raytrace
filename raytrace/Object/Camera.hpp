@@ -13,7 +13,7 @@ public:
 
 	static Camera *fromAst(AST *ast);
 
-	Trace::Ray createRay(float x, float y, int generation);
+	Trace::Ray createRay(float x, float y, int generation) const;
 
 private:
 	float mSize;

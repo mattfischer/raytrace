@@ -27,7 +27,7 @@ Camera *Camera::fromAst(AST *ast)
 	return camera;
 }
 
-Trace::Ray Camera::createRay(float x, float y, int generation)
+Trace::Ray Camera::createRay(float x, float y, int generation) const
 {
 	float rayX, rayY;
 

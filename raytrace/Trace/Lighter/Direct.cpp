@@ -13,7 +13,7 @@ void Direct::light(const Trace::Intersection &intersection, Trace::Tracer &trace
 
 	for(int i=0; i<tracer.scene().lights().size(); i++)
 	{
-		Object::Light *light = tracer.scene().lights()[i];
+		const std::unique_ptr<Object::Light> &light = tracer.scene().lights()[i];
 
 		Trace::Ray shadowRay = Trace::Ray::createFromPoints(point, light->transformation().origin(), 1);
 

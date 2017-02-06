@@ -19,7 +19,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	InitCommonControls();
 
 	AST *ast = Parse::Parser::parse("scene.txt");
-	mScene = std::unique_ptr<Object::Scene>(Object::Scene::fromAST(ast));
+	mScene = Object::Scene::fromAST(ast);
 
 	WNDCLASSEX wc;
 	wc.cbSize = sizeof(WNDCLASSEX);

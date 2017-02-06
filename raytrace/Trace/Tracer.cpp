@@ -89,7 +89,7 @@ private:
 Object::Color Tracer::diffuseColor(const Intersection &intersection)
 {
 	Object::Surface *surface = intersection.primitive()->surface();
-	Math::Vector viewDirection = (mScene.camera()->transformation().origin() - intersection.point()).normalize();
+	Math::Vector viewDirection = (mScene.camera().transformation().origin() - intersection.point()).normalize();
 	Object::Color albedo = surface->albedo()->color(intersection.objectPoint());
 
 	Accumulator accumulator(intersection.normal(), viewDirection, albedo, surface->brdf());
@@ -142,7 +142,7 @@ Object::Color Tracer::tracePixel(float x, float y)
 {
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;
-	Trace::Ray ray = mScene.camera()->createRay(cx, cy, 1);
+	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
 	return traceRay(ray);
 }
 
