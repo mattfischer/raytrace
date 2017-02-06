@@ -40,6 +40,9 @@ public:
 	Object::Color traceRay(const Trace::Ray &ray);
 
 protected:
+	Object::Color diffuseColor(const Intersection &intersection);
+	Object::Color specularColor(const Intersection &intersection);
+
 	Object::Scene *mScene;
 	Settings mSettings;
 

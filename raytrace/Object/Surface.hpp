@@ -12,16 +12,17 @@ namespace Object {
 class Surface
 {
 public:
-Surface(const Albedo::Base *albedo, const Brdf::Base *brdf);
-virtual ~Surface();
+	Surface(const Albedo::Base *albedo, const Brdf::Base *brdf);
+	virtual ~Surface();
 
-static Surface *fromAst(AST *ast);
+	const Albedo::Base *albedo() const;
+	const Brdf::Base *brdf() const;
 
-virtual Object::Color color(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
+	static Surface *fromAst(AST *ast);
 
 private:
-const Albedo::Base *mAlbedo;
-const Brdf::Base *mBrdf;
+	const Albedo::Base *mAlbedo;
+	const Brdf::Base *mBrdf;
 };
 
 }
