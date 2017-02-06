@@ -83,7 +83,7 @@ void Scene::addPrimitive(Primitive::Base *primitive)
 	mPrimitives.push_back(primitive);
 }
 
-void Scene::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections)
+void Scene::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
 	for(int i=0; i<mPrimitives.size(); i++)
 	{

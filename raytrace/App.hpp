@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <memory>
+
 class App : public Render::Engine::Listener, public RenderControlDlg::Listener
 {
 public:
@@ -29,7 +31,7 @@ private:
 	HDC mBackDC;
 
 	RenderControlDlg mRenderControl;
-	Object::Scene *mScene;
+	std::unique_ptr<Object::Scene> mScene;
 	Render::Engine mEngine;
 	unsigned char *mFramebuffer;
 };

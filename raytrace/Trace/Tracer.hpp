@@ -9,6 +9,7 @@
 #include "Trace/Lighter/Base.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace Trace {
 
@@ -25,10 +26,10 @@ public:
 		int maxAAGen;
 	};
 
-	Tracer(Object::Scene *scene, const Settings &settings);
+	Tracer(const Object::Scene &scene, const Settings &settings);
 	virtual ~Tracer();
 
-	Object::Scene *scene() const;
+	const Object::Scene &scene() const;
 	Settings &settings();
 
 	const Lighter::LighterVector &lighters() const;
@@ -43,7 +44,7 @@ protected:
 	Object::Color diffuseColor(const Intersection &intersection);
 	Object::Color specularColor(const Intersection &intersection);
 
-	Object::Scene *mScene;
+	const Object::Scene &mScene;
 	Settings mSettings;
 
 	Lighter::LighterVector mLighters;

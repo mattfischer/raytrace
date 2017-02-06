@@ -7,7 +7,7 @@ namespace Render {
 
 Thread::Thread(Engine *engine, Object::Scene *scene, const Trace::Tracer::Settings &settings, unsigned char *bits)
 : mSettings(settings),
-  mTracer(scene, settings)
+  mTracer(*scene, settings)
 {
 	mEngine = engine;
 	mBits = bits;

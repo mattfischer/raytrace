@@ -14,9 +14,9 @@
 
 namespace Trace {
 
-Tracer::Tracer(Object::Scene *scene, const Settings &settings)
+Tracer::Tracer(const Object::Scene &scene, const Settings &settings)
+	: mScene(scene)
 {
-	mScene = scene;
 	mSettings = settings;
 	mLighters = Lighter::Base::createLighters();
 }
@@ -28,7 +28,7 @@ Tracer::~Tracer()
 	}
 }
 
-Object::Scene *Tracer::scene() const
+const Object::Scene &Tracer::scene() const
 {
 	return mScene;
 }
@@ -46,7 +46,7 @@ const Lighter::LighterVector &Tracer::lighters() const
 void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
 {
 	mTraces.push_back(mIntersections.size());
-	mScene->intersect(ray, mIntersections);
+	mScene.intersect(ray, mIntersections);
 
 	begin = mIntersections.begin() + mTraces.back();
 	end = mIntersections.end();
@@ -89,7 +89,7 @@ private:
 Object::Color Tracer::diffuseColor(const Intersection &intersection)
 {
 	Object::Surface *surface = intersection.primitive()->surface();
-	Math::Vector viewDirection = (mScene->camera()->transformation().origin() - intersection.point()).normalize();
+	Math::Vector viewDirection = (mScene.camera()->transformation().origin() - intersection.point()).normalize();
 	Object::Color albedo = surface->albedo()->color(intersection.objectPoint());
 
 	Accumulator accumulator(intersection.normal(), viewDirection, albedo, surface->brdf());
@@ -142,7 +142,7 @@ Object::Color Tracer::tracePixel(float x, float y)
 {
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;
-	Trace::Ray ray = mScene->camera()->createRay(cx, cy, 1);
+	Trace::Ray ray = mScene.camera()->createRay(cx, cy, 1);
 	return traceRay(ray);
 }
 
