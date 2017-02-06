@@ -8,7 +8,7 @@
 #include "Object/Albedo/Base.hpp"
 #include "Object/Primitive/Base.hpp"
 
-#include "Lighter/Base.hpp"
+#include "Trace/Lighter/Base.hpp"
 
 #include <algorithm>
 

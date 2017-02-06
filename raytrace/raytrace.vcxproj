@@ -87,13 +87,6 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="lex.Scene.c" />
-    <ClCompile Include="Lighter\Base.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)4.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)4.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="Lighter\Direct.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Math\Coordinate.cpp" />
     <ClCompile Include="Math\Matrix.cpp" />
@@ -142,6 +135,8 @@
     <ClCompile Include="Render\Thread.cpp" />
     <ClCompile Include="Scene.tab.c" />
     <ClCompile Include="Trace\Intersection.cpp" />
+    <ClCompile Include="Trace\Lighter\Base.cpp" />
+    <ClCompile Include="Trace\Lighter\Direct.cpp" />
     <ClCompile Include="Trace\Ray.cpp" />
     <ClCompile Include="Trace\Tracer.cpp" />
   </ItemGroup>
@@ -153,9 +148,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
-    <ClInclude Include="Lighter\Base.hpp" />
-    <ClInclude Include="Lighter\Direct.hpp" />
-    <ClInclude Include="Lighter\Forwards.hpp" />
     <ClInclude Include="Math\Coordinate.hpp" />
     <ClInclude Include="Math\Forwards.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />
@@ -203,6 +195,9 @@
     <ClInclude Include="Scene.tab.h" />
     <ClInclude Include="Trace\Forwards.hpp" />
     <ClInclude Include="Trace\Intersection.hpp" />
+    <ClInclude Include="Trace\Lighter\Base.hpp" />
+    <ClInclude Include="Trace\Lighter\Direct.hpp" />
+    <ClInclude Include="Trace\Lighter\Forwards.hpp" />
     <ClInclude Include="Trace\Ray.hpp" />
     <ClInclude Include="Trace\Tracer.hpp" />
   </ItemGroup>

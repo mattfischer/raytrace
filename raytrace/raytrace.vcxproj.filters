@@ -23,9 +23,6 @@
     <Filter Include="Source Files\Render">
       <UniqueIdentifier>{8aaad2ba-6306-4f53-b2be-4c0a9602a303}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Lighter">
-      <UniqueIdentifier>{d5532641-fe8f-4c0c-84fe-0c9edfcbea26}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -48,9 +45,6 @@
     <Filter Include="Header Files\Render">
       <UniqueIdentifier>{d63a6b26-6a11-4928-a30f-3844c0c8f848}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Lighter">
-      <UniqueIdentifier>{50609aaa-b15c-49eb-b60c-14fcd96c42ef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
@@ -66,6 +60,12 @@
     </Filter>
     <Filter Include="Header Files\Object\Brdf">
       <UniqueIdentifier>{f6ebb75e-1760-4fbc-bc6e-e6f6fef4c3e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Trace\Lighter">
+      <UniqueIdentifier>{e50a9df5-fbb4-4ee6-8521-6840e308f364}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Trace\Lighter">
+      <UniqueIdentifier>{07d66504-7865-44d7-be15-e4bda3c2a158}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -165,12 +165,6 @@
     <ClCompile Include="Render\Thread.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Lighter\Base.cpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Lighter\Direct.cpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Albedo\Base.cpp">
       <Filter>Source Files\Object\Albedo</Filter>
     </ClCompile>
@@ -200,6 +194,12 @@
     </ClCompile>
     <ClCompile Include="Object\Surface.cpp">
       <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\Base.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\Direct.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -327,15 +327,6 @@
     <ClInclude Include="Render\Thread.hpp">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Lighter\Base.hpp">
-      <Filter>Header Files\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Lighter\Direct.hpp">
-      <Filter>Header Files\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Lighter\Forwards.hpp">
-      <Filter>Header Files\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Albedo\Base.hpp">
       <Filter>Header Files\Object\Albedo</Filter>
     </ClInclude>
@@ -371,6 +362,15 @@
     </ClInclude>
     <ClInclude Include="Object\Surface.hpp">
       <Filter>Header Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\Base.hpp">
+      <Filter>Header Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\Direct.hpp">
+      <Filter>Header Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\Forwards.hpp">
+      <Filter>Header Files\Trace\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

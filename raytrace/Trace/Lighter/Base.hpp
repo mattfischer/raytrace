@@ -1,5 +1,5 @@
-#ifndef LIGHTER_BASE_HPP
-#define LIGHTER_BASE_HPP
+#ifndef TRACE_LIGHTER_BASE_HPP
+#define TRACE_LIGHTER_BASE_HPP
 
 #include "Trace/Forwards.hpp"
 #include "Object/Forwards.hpp"
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+namespace Trace {
 namespace Lighter {
 
 class Base;
@@ -24,6 +25,7 @@ public:
 	static LighterVector createLighters();
 };
 
+}
 }
 
 #endif

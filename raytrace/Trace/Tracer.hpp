@@ -6,7 +6,7 @@
 
 #include "Object/Color.hpp"
 #include "Trace/Intersection.hpp"
-#include "Lighter/Base.hpp"
+#include "Trace/Lighter/Base.hpp"
 
 #include <vector>
 

@@ -1,7 +1,8 @@
-#include "Lighter/Base.hpp"
+#include "Trace/Lighter/Base.hpp"
 
-#include "Lighter/Direct.hpp"
+#include "Trace/Lighter/Direct.hpp"
 
+namespace Trace {
 namespace Lighter {
 
 LighterVector Base::createLighters()
@@ -13,4 +14,5 @@ LighterVector Base::createLighters()
 	return ret;
 }
 
+}
 }

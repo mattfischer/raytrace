@@ -1,9 +1,10 @@
-#include "Lighter/Direct.hpp"
+#include "Trace/Lighter/Direct.hpp"
 
 #include "Trace/Tracer.hpp"
 #include "Object/Scene.hpp"
 #include "Object/Light.hpp"
 
+namespace Trace {
 namespace Lighter {
 
 void Direct::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Accumulator &accumulator) const
@@ -32,4 +33,5 @@ void Direct::light(const Trace::Intersection &intersection, Trace::Tracer &trace
 	}
 }
 
+}
 }
