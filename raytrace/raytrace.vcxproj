@@ -76,6 +76,7 @@
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -101,12 +102,21 @@
     <ClCompile Include="Math\PolySolve.cpp" />
     <ClCompile Include="Math\Transformation.cpp" />
     <ClCompile Include="Math\Vector.cpp" />
+    <ClCompile Include="Object\Albedo\Base.cpp" />
+    <ClCompile Include="Object\Albedo\Checker.cpp" />
+    <ClCompile Include="Object\Albedo\Solid.cpp" />
     <ClCompile Include="Object\Base.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="Object\Brdf\Ambient.cpp" />
+    <ClCompile Include="Object\Brdf\Base.cpp" />
+    <ClCompile Include="Object\Brdf\Composite.cpp" />
+    <ClCompile Include="Object\Brdf\Lambert.cpp" />
+    <ClCompile Include="Object\Brdf\Phong.cpp" />
+    <ClCompile Include="Object\Brdf\Specular.cpp" />
     <ClCompile Include="Object\Camera.cpp" />
     <ClCompile Include="Object\Color.cpp" />
     <ClCompile Include="Object\Light.cpp" />
@@ -125,44 +135,12 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="Object\Surface.cpp" />
     <ClCompile Include="Parse\Parser.cpp" />
     <ClCompile Include="RenderControlDlg.cpp" />
     <ClCompile Include="Render\Engine.cpp" />
     <ClCompile Include="Render\Thread.cpp" />
     <ClCompile Include="Scene.tab.c" />
-    <ClCompile Include="Surface\Albedo\Base.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)2.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="Surface\Albedo\Checker.cpp" />
-    <ClCompile Include="Surface\Albedo\Solid.cpp" />
-    <ClCompile Include="Surface\Base.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)3.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="Surface\Brdf\Ambient.cpp" />
-    <ClCompile Include="Surface\Brdf\Base.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)5.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)5.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="Surface\Brdf\Composite.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="Surface\Brdf\Lambert.cpp" />
-    <ClCompile Include="Surface\Brdf\Phong.cpp" />
-    <ClCompile Include="Surface\Brdf\Specular.cpp" />
-    <ClCompile Include="Surface\Composite.cpp" />
-    <ClCompile Include="Surface\Diffuse.cpp" />
-    <ClCompile Include="Surface\Reflection.cpp" />
     <ClCompile Include="Trace\Intersection.cpp" />
     <ClCompile Include="Trace\Ray.cpp" />
     <ClCompile Include="Trace\Tracer.cpp" />
@@ -186,7 +164,18 @@
     <ClInclude Include="Math\PolySolve.hpp" />
     <ClInclude Include="Math\Transformation.hpp" />
     <ClInclude Include="Math\Vector.hpp" />
+    <ClInclude Include="Object\Albedo\Base.hpp" />
+    <ClInclude Include="Object\Albedo\Checker.hpp" />
+    <ClInclude Include="Object\Albedo\Forwards.hpp" />
+    <ClInclude Include="Object\Albedo\Solid.hpp" />
     <ClInclude Include="Object\Base.hpp" />
+    <ClInclude Include="Object\Brdf\Ambient.hpp" />
+    <ClInclude Include="Object\Brdf\Base.hpp" />
+    <ClInclude Include="Object\Brdf\Composite.hpp" />
+    <ClInclude Include="Object\Brdf\Forwards.hpp" />
+    <ClInclude Include="Object\Brdf\Lambert.hpp" />
+    <ClInclude Include="Object\Brdf\Phong.hpp" />
+    <ClInclude Include="Object\Brdf\Specular.hpp" />
     <ClInclude Include="Object\Camera.hpp" />
     <ClInclude Include="Object\Color.hpp" />
     <ClInclude Include="Object\Forwards.hpp" />
@@ -202,6 +191,7 @@
     <ClInclude Include="Object\Primitive\Sphere.hpp" />
     <ClInclude Include="Object\Primitive\Torus.hpp" />
     <ClInclude Include="Object\Scene.hpp" />
+    <ClInclude Include="Object\Surface.hpp" />
     <ClInclude Include="Parse\AST.h" />
     <ClInclude Include="Parse\Forwards.hpp" />
     <ClInclude Include="Parse\Parser.hpp" />
@@ -211,22 +201,6 @@
     <ClInclude Include="Render\Thread.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene.tab.h" />
-    <ClInclude Include="Surface\Albedo\Base.hpp" />
-    <ClInclude Include="Surface\Albedo\Checker.hpp" />
-    <ClInclude Include="Surface\Albedo\Forwards.hpp" />
-    <ClInclude Include="Surface\Albedo\Solid.hpp" />
-    <ClInclude Include="Surface\Base.hpp" />
-    <ClInclude Include="Surface\Brdf\Ambient.hpp" />
-    <ClInclude Include="Surface\Brdf\Base.hpp" />
-    <ClInclude Include="Surface\Brdf\Composite.hpp" />
-    <ClInclude Include="Surface\Brdf\Forwards.hpp" />
-    <ClInclude Include="Surface\Brdf\Lambert.hpp" />
-    <ClInclude Include="Surface\Brdf\Phong.hpp" />
-    <ClInclude Include="Surface\Brdf\Specular.hpp" />
-    <ClInclude Include="Surface\Composite.hpp" />
-    <ClInclude Include="Surface\Diffuse.hpp" />
-    <ClInclude Include="Surface\Forwards.hpp" />
-    <ClInclude Include="Surface\Reflection.hpp" />
     <ClInclude Include="Trace\Forwards.hpp" />
     <ClInclude Include="Trace\Intersection.hpp" />
     <ClInclude Include="Trace\Ray.hpp" />

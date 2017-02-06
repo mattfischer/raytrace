@@ -1,9 +1,9 @@
-#ifndef SURFACE_ALBEDO_CHECKER_HPP
-#define SURFACE_ALBEDO_CHECKER_HPP
+#ifndef OBJECT_ALBEDO_CHECKER_HPP
+#define OBJECT_ALBEDO_CHECKER_HPP
 
-#include "Surface/Albedo/Base.hpp"
+#include "Object/Albedo/Base.hpp"
 
-namespace Surface {
+namespace Object {
 namespace Albedo {
 
 class Checker : public Base

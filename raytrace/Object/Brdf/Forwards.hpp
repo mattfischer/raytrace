@@ -1,7 +1,7 @@
-#ifndef SURFACE_BRDF_FORWARDS_HPP
-#define SURFACE_BRDF_FORWARDS_HPP
+#ifndef OBJECT_BRDF_FORWARDS_HPP
+#define OBJECT_BRDF_FORWARDS_HPP
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 class Ambient;

@@ -1,19 +1,19 @@
-#ifndef SURFACE_BRDF_AMBIENT_HPP
-#define SURFACE_BRDF_AMBIENT_HPP
+#ifndef OBJECT_BRDF_LAMBERT_HPP
+#define OBJECT_BRDF_LAMBERT_HPP
 
-#include "Surface/Brdf/Base.hpp"
+#include "Object/Brdf/Base.hpp"
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
-class Ambient : public Base
+class Lambert : public Base
 {
 public:
-	Ambient(float strength);
+	Lambert(float strength);
 
 	virtual Object::Color color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
 
-	static Ambient *fromAst(AST *ast);
+	static Lambert *fromAst(AST *ast);
 
 private:
 	float mStrength;

@@ -1,9 +1,9 @@
-#ifndef SURFACE_ALBEDO_SOLID_HPP
-#define SURFACE_ALBEDO_SOLID_HPP
+#ifndef OBJECT_ALBEDO_SOLID_HPP
+#define OBJECT_ALBEDO_SOLID_HPP
 
-#include "Surface/Albedo/Base.hpp"
+#include "Object/Albedo/Base.hpp"
 
-namespace Surface {
+namespace Object {
 namespace Albedo {
 
 class Solid : public Base

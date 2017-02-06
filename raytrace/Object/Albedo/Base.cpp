@@ -1,11 +1,11 @@
-#include "Surface/Albedo/Base.hpp"
+#include "Object/Albedo/Base.hpp"
 
-#include "Surface/Albedo/Solid.hpp"
-#include "Surface/Albedo/Checker.hpp"
+#include "Object/Albedo/Solid.hpp"
+#include "Object/Albedo/Checker.hpp"
 
 #include "Parse/AST.h"
 
-namespace Surface {
+namespace Object {
 namespace Albedo {
 
 Base::Base()

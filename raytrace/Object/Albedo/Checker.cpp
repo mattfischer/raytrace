@@ -1,4 +1,4 @@
-#include "Surface/Albedo/Checker.hpp"
+#include "Object/Albedo/Checker.hpp"
 #include "Math/Point.hpp"
 
 #include <cmath>
@@ -7,7 +7,7 @@
 
 using std::abs;
 
-namespace Surface {
+namespace Object {
 namespace Albedo {
 
 Checker::Checker(const Object::Color &color1, const Object::Color &color2)

@@ -1,9 +1,9 @@
-#ifndef SURFACE_BRDF_SPECULAR_HPP
-#define SURFACE_BRDF_SPECULAR_HPP
+#ifndef OBJECT_BRDF_SPECULAR_HPP
+#define OBJECT_BRDF_SPECULAR_HPP
 
-#include "Surface/Brdf/Base.hpp"
+#include "Object/Brdf/Base.hpp"
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 class Specular : public Base

@@ -1,8 +1,8 @@
-#include "Surface/Brdf/Specular.hpp"
+#include "Object/Brdf/Specular.hpp"
 
 #include "Parse/AST.h"
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 Specular::Specular(float strength)

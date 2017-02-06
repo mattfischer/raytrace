@@ -1,8 +1,8 @@
-#include "Surface/Brdf/Ambient.hpp"
+#include "Object/Brdf/Ambient.hpp"
 
 #include "Parse/AST.h"
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 Ambient::Ambient(float strength)

@@ -1,11 +1,11 @@
-#include "Surface/Brdf/Lambert.hpp"
+#include "Object/Brdf/Lambert.hpp"
 
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
 
 #include <cmath>
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 Lambert::Lambert(float strength)

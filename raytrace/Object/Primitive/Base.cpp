@@ -8,7 +8,7 @@
 #include "Object/Primitive/Cylinder.hpp"
 #include "Object/Primitive/Csg.hpp"
 
-#include "Surface/Base.hpp"
+#include "Object/Surface.hpp"
 
 namespace Object {
 namespace Primitive {
@@ -61,7 +61,7 @@ Base *Base::fromAst(AST *ast)
 			primitive->transform(Math::Transformation::fromAst(sub->children[i]));
 			break;
 		case AstSurface:
-			primitive->setSurface(Surface::Base::fromAst(sub->children[i]));
+			primitive->setSurface(Surface::fromAst(sub->children[i]));
 			break;
 		}
 	}
@@ -69,12 +69,12 @@ Base *Base::fromAst(AST *ast)
 	return primitive;
 }
 
-Surface::Base *Base::surface() const 
+Surface *Base::surface() const 
 { 
 	return mSurface;
 }
 
-void Base::setSurface(Surface::Base *surface)
+void Base::setSurface(Surface *surface)
 {
 	if(mSurface)
 		delete mSurface;

@@ -1,8 +1,8 @@
-#include "Surface/Albedo/Solid.hpp"
+#include "Object/Albedo/Solid.hpp"
 
 #include "Parse/AST.h"
 
-namespace Surface {
+namespace Object {
 namespace Albedo {
 
 Solid::Solid(const Object::Color &color)

@@ -1,12 +1,10 @@
 sphere {
     surface {
-		diffuse { 
-			albedo { color <1,0,0> }
+		albedo { color <1,0,0> }
 
-			brdf {
-				lambert 0.8
-				phong 1 50
-			}
+		brdf {
+			lambert 0.8
+			phong 1 50
 		}
 	}
 }
@@ -14,15 +12,13 @@ sphere {
 plane {
 	transform {	translate <0,-1,0> }
 	surface {
-		diffuse {
-			albedo {
-				checker color <0,1,0> color <0,0,1>
-			}
+		albedo {
+			checker color <0,1,0> color <0,0,1>
+		}
 
-			brdf {
-				ambient 0.01
-				lambert 0.8
-			}
+		brdf {
+			ambient 0.01
+			lambert 0.8
 		}
 	}
 }

@@ -10,6 +10,7 @@ class Camera;
 class Color;
 class Light;
 class Scene;
+class Surface;
 
 }
 

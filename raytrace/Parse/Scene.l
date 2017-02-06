@@ -35,12 +35,10 @@ albedo return ALBEDO;
 color return COLOR;
 checker return CHECKER;
 
-diffuse return DIFFUSE;
 ambient return AMBIENT;
 lambert return LAMBERT;
 phong return PHONG;
 specular return SPECULAR;
-reflection return REFLECTION;
 
 light return LIGHT;
 

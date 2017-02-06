@@ -1,11 +1,11 @@
-#include "Surface/Brdf/Phong.hpp"
+#include "Object/Brdf/Phong.hpp"
 
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
 
 #include <cmath>
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 Phong::Phong(float strength, float power)

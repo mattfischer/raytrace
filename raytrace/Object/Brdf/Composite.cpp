@@ -1,11 +1,11 @@
-#include "Surface/Brdf/Composite.hpp"
+#include "Object/Brdf/Composite.hpp"
 
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
 
 #include <vector>
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 Composite::Composite(const std::vector<const Base*> &brdfs)

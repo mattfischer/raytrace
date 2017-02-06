@@ -1,9 +1,9 @@
-#ifndef SURFACE_BRDF_PHONG_HPP
-#define SURFACE_BRDF_PHONG_HPP
+#ifndef OBJECT_BRDF_PHONG_HPP
+#define OBJECT_BRDF_PHONG_HPP
 
-#include "Surface/Brdf/Base.hpp"
+#include "Object/Brdf/Base.hpp"
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 class Phong : public Base

@@ -1,16 +1,16 @@
-#include "Surface/Brdf/Base.hpp"
+#include "Object/Brdf/Base.hpp"
 
 #include "Parse/AST.h"
 
-#include "Surface/Brdf/Ambient.hpp"
-#include "Surface/Brdf/Lambert.hpp"
-#include "Surface/Brdf/Phong.hpp"
-#include "Surface/Brdf/Specular.hpp"
-#include "Surface/Brdf/Composite.hpp"
+#include "Object/Brdf/Ambient.hpp"
+#include "Object/Brdf/Lambert.hpp"
+#include "Object/Brdf/Phong.hpp"
+#include "Object/Brdf/Specular.hpp"
+#include "Object/Brdf/Composite.hpp"
 
 #include <vector>
 
-namespace Surface {
+namespace Object {
 namespace Brdf {
 
 Object::Color Base::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const

@@ -4,7 +4,7 @@
 #include "Object/Camera.hpp"
 #include "Object/Primitive/Base.hpp"
 
-#include "Surface/Base.hpp"
+#include "Object/Surface.hpp"
 
 #include "Lighter/Base.hpp"
 

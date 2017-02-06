@@ -2,7 +2,6 @@
 #define OBJECT_PRIMITIVE_BASE_HPP
 
 #include "Object/Forwards.hpp"
-#include "Surface/Forwards.hpp"
 #include "Trace/Forwards.hpp"
 #include "Math/Forwards.hpp"
 
@@ -22,14 +21,14 @@ public:
 
 	static Base *fromAst(AST *ast);
 
-	Surface::Base *surface() const;
-	void setSurface(Surface::Base *surface);
+	Surface *surface() const;
+	void setSurface(Surface *surface);
 
 	void intersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 	bool inside(const Math::Point &point) const;
 
 protected:
-	Surface::Base *mSurface;
+	Surface *mSurface;
 
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;
