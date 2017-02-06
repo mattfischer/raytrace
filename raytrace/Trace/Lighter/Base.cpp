@@ -5,11 +5,11 @@
 namespace Trace {
 namespace Lighter {
 
-LighterVector Base::createLighters()
+std::vector<std::unique_ptr<Base>> Base::createLighters()
 {
-	LighterVector ret;
+	std::vector<std::unique_ptr<Base>> ret;
 
-	ret.push_back(new Direct);
+	ret.push_back(std::make_unique<Direct>());
 
 	return ret;
 }

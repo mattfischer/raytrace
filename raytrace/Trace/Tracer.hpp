@@ -27,12 +27,9 @@ public:
 	};
 
 	Tracer(const Object::Scene &scene, const Settings &settings);
-	virtual ~Tracer();
 
 	const Object::Scene &scene() const;
 	Settings &settings();
-
-	const Lighter::LighterVector &lighters() const;
 
 	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
 	void popTrace();
@@ -47,7 +44,7 @@ protected:
 	const Object::Scene &mScene;
 	Settings mSettings;
 
-	Lighter::LighterVector mLighters;
+	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
 	IntersectionVector mIntersections;
 	std::vector<int> mTraces;
 };

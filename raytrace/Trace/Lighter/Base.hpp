@@ -6,12 +6,12 @@
 #include "Math/Forwards.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace Trace {
 namespace Lighter {
 
 class Base;
-typedef std::vector<const Base*> LighterVector;
 
 class Base {
 public:
@@ -22,7 +22,7 @@ public:
 
 	virtual void light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Accumulator &accumulator) const = 0;
 
-	static LighterVector createLighters();
+	static std::vector<std::unique_ptr<Base>> createLighters();
 };
 
 }

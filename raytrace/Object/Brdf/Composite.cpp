@@ -17,8 +17,8 @@ Object::Color Composite::color(const Object::Color &incidentColor, const Math::V
 {
 	Object::Color totalColor;
 
-	for(int i=0; i<mBrdfs.size(); i++) {
-		totalColor = totalColor + mBrdfs[i]->color(incidentColor, incidentDirection, normal, outgoingDirection, albedo);
+	for(const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
+		totalColor = totalColor + brdf->color(incidentColor, incidentDirection, normal, outgoingDirection, albedo);
 	}
 
 	return totalColor;
@@ -26,8 +26,8 @@ Object::Color Composite::color(const Object::Color &incidentColor, const Math::V
 
 bool Composite::specular() const
 {
-	for(int i=0; i<mBrdfs.size(); i++) {
-		if(mBrdfs[i]->specular()) {
+	for (const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
+		if(brdf->specular()) {
 			return true;
 		}
 	}
@@ -39,8 +39,8 @@ Object::Color Composite::specularColor(const Object::Color &incidentColor, const
 {
 	Object::Color totalColor;
 
-	for(int i=0; i<mBrdfs.size(); i++) {
-		totalColor = totalColor + mBrdfs[i]->specularColor(incidentColor, albedo);
+	for (const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
+		totalColor = totalColor + brdf->specularColor(incidentColor, albedo);
 	}
 
 	return totalColor;

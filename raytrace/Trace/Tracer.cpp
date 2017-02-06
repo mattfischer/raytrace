@@ -21,13 +21,6 @@ Tracer::Tracer(const Object::Scene &scene, const Settings &settings)
 	mLighters = Lighter::Base::createLighters();
 }
 
-Tracer::~Tracer()
-{
-	for(int i=0; i<mLighters.size(); i++) {
-		delete mLighters[i];
-	}
-}
-
 const Object::Scene &Tracer::scene() const
 {
 	return mScene;
@@ -36,11 +29,6 @@ const Object::Scene &Tracer::scene() const
 Tracer::Settings &Tracer::settings()
 {
 	return mSettings;
-}
-
-const Lighter::LighterVector &Tracer::lighters() const
-{
-	return mLighters;
 }
 
 void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
@@ -93,9 +81,8 @@ Object::Color Tracer::diffuseColor(const Intersection &intersection)
 
 	Accumulator accumulator(intersection.normal(), viewDirection, albedo, surface.brdf());
 
-	const Lighter::LighterVector &lighters = mLighters;
-	for (int i = 0; i < lighters.size(); i++) {
-		lighters[i]->light(intersection, *this, accumulator);
+	for(const std::unique_ptr<Lighter::Base> &lighter: mLighters) {
+		lighter->light(intersection, *this, accumulator);
 	}
 
 	return accumulator.totalColor();
