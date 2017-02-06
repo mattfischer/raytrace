@@ -31,7 +31,7 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 			scene->addLight(Light::fromAst(child));
 			break;
 		case AstCamera:
-			scene->setCamera(std::unique_ptr<Camera>(Camera::fromAst(child)));
+			scene->setCamera(Camera::fromAst(child));
 			break;
 		}
 	}

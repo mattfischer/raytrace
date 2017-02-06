@@ -20,8 +20,6 @@ Base::Base()
 
 Base::~Base()
 {
-	if(mSurface)
-		delete mSurface;
 }
 
 std::unique_ptr<Base> Base::fromAst(AST *ast)
@@ -69,17 +67,14 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 	return primitive;
 }
 
-Surface *Base::surface() const 
+const Surface &Base::surface() const 
 { 
-	return mSurface;
+	return *mSurface;
 }
 
-void Base::setSurface(Surface *surface)
+void Base::setSurface(std::unique_ptr<Surface> &&surface)
 {
-	if(mSurface)
-		delete mSurface;
-
-	mSurface = surface;
+	mSurface = std::move(surface);
 }
 
 void Base::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const

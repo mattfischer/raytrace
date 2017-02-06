@@ -62,10 +62,9 @@ void Tracer::popTrace()
 class Accumulator : public Lighter::Base::Accumulator
 {
 public:
-	Accumulator(const Math::Normal &normal, const Math::Vector &viewDirection, const Object::Color &albedo, const Object::Brdf::Base *brdf)
-		: mNormal(normal), mViewDirection(viewDirection), mAlbedo(albedo)
+	Accumulator(const Math::Normal &normal, const Math::Vector &viewDirection, const Object::Color &albedo, const Object::Brdf::Base &brdf)
+		: mNormal(normal), mViewDirection(viewDirection), mAlbedo(albedo), mBrdf(brdf)
 	{
-		mBrdf = brdf;
 	}
 
 	const Object::Color &totalColor()
@@ -75,24 +74,24 @@ public:
 
 	virtual void accumulate(const Object::Color &color, const Math::Vector &direction)
 	{
-		mTotalColor += mBrdf->color(color, direction, mNormal, mViewDirection, mAlbedo);
+		mTotalColor += mBrdf.color(color, direction, mNormal, mViewDirection, mAlbedo);
 	}
 
 private:
 	const Math::Normal &mNormal;
 	const Math::Vector &mViewDirection;
 	const Object::Color &mAlbedo;
-	const Object::Brdf::Base *mBrdf;
+	const Object::Brdf::Base &mBrdf;
 	Object::Color mTotalColor;
 };
 
 Object::Color Tracer::diffuseColor(const Intersection &intersection)
 {
-	Object::Surface *surface = intersection.primitive()->surface();
+	const Object::Surface &surface = intersection.primitive()->surface();
 	Math::Vector viewDirection = (mScene.camera().transformation().origin() - intersection.point()).normalize();
-	Object::Color albedo = surface->albedo()->color(intersection.objectPoint());
+	Object::Color albedo = surface.albedo().color(intersection.objectPoint());
 
-	Accumulator accumulator(intersection.normal(), viewDirection, albedo, surface->brdf());
+	Accumulator accumulator(intersection.normal(), viewDirection, albedo, surface.brdf());
 
 	const Lighter::LighterVector &lighters = mLighters;
 	for (int i = 0; i < lighters.size(); i++) {
@@ -104,19 +103,19 @@ Object::Color Tracer::diffuseColor(const Intersection &intersection)
 
 Object::Color Tracer::specularColor(const Intersection &intersection)
 {
-	Object::Surface *surface = intersection.primitive()->surface();
+	const Object::Surface &surface = intersection.primitive()->surface();
 	const Trace::Ray &ray = intersection.ray();
 	Object::Color color;
 
-	if (surface->brdf()->specular() && ray.generation() < mSettings.maxRayGeneration) {
-		Object::Color albedo = surface->albedo()->color(intersection.objectPoint());
+	if (surface.brdf().specular() && ray.generation() < mSettings.maxRayGeneration) {
+		Object::Color albedo = surface.albedo().color(intersection.objectPoint());
 		Math::Vector incident = ray.direction();
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
 		Trace::Ray reflectRay(intersection.point(), reflect, ray.generation() + 1);
 		Object::Color reflectColor = traceRay(reflectRay);
 
-		color += surface->brdf()->specularColor(reflectColor, albedo);
+		color += surface.brdf().specularColor(reflectColor, albedo);
 	}
 
 	return color;

@@ -5,6 +5,8 @@
 
 #include "Object/Color.hpp"
 
+#include <memory>
+
 namespace Object {
 namespace Brdf {
 
@@ -17,7 +19,7 @@ public:
 	virtual bool specular() const;
 	virtual Object::Color specularColor(const Object::Color &incidentColor, const Object::Color &albedo) const;
 
-	static const Base *fromAst(AST *ast);
+	static std::unique_ptr<Base> fromAst(AST *ast);
 };
 
 }

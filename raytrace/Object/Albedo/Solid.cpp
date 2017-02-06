@@ -19,9 +19,9 @@ Object::Color Solid::color(const Math::Point &point) const
 	return mColor;
 }
 
-Solid *Solid::fromAst(AST *ast)
+std::unique_ptr<Solid> Solid::fromAst(AST *ast)
 {
-	return new Solid(ast->children[0]->data._vector);
+	return std::make_unique<Solid>(ast->children[0]->data._vector);
 }
 
 }

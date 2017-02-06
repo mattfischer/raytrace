@@ -5,6 +5,8 @@
 #include "Object/Color.hpp"
 #include "Parse/Forwards.hpp"
 
+#include <memory>
+
 namespace Object {
 namespace Albedo {
 
@@ -14,7 +16,7 @@ public:
 	Base();
 	virtual ~Base();
 
-	static const Base *fromAst(AST *ast);
+	static std::unique_ptr<Base> fromAst(AST *ast);
 
 	virtual Object::Color color(const Math::Point &point) const = 0;
 };

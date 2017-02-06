@@ -20,9 +20,9 @@ Object::Color Specular::specularColor(const Object::Color &incidentColor, const 
 	return incidentColor * mStrength;
 }
 
-Specular *Specular::fromAst(AST *ast)
+std::unique_ptr<Specular> Specular::fromAst(AST *ast)
 {
-	return new Specular(ast->data._float);
+	return std::make_unique<Specular>(ast->data._float);
 }
 
 }

@@ -4,6 +4,8 @@
 #include "Object/Base.hpp"
 #include "Trace/Ray.hpp"
 
+#include <memory>
+
 namespace Object {
 
 class Camera : public Base
@@ -11,7 +13,7 @@ class Camera : public Base
 public:
 	Camera(int fov);
 
-	static Camera *fromAst(AST *ast);
+	static std::unique_ptr<Camera> fromAst(AST *ast);
 
 	Trace::Ray createRay(float x, float y, int generation) const;
 

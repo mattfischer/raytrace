@@ -8,16 +8,13 @@
 namespace Object {
 namespace Brdf {
 
-Composite::Composite(const std::vector<const Base*> &brdfs)
-: mBrdfs(brdfs)
+Composite::Composite(std::vector<std::unique_ptr<Base>> &&brdfs)
+: mBrdfs(std::move(brdfs))
 {
 }
 
 Composite::~Composite()
 {
-	for(int i=0; i<mBrdfs.size(); i++) {
-		delete mBrdfs[i];
-	}
 }
 
 Object::Color Composite::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const

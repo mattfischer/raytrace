@@ -12,37 +12,30 @@
 
 namespace Object {
 
-	Surface::Surface(const Albedo::Base *albedo, const Brdf::Base *brdf)
+	Surface::Surface(std::unique_ptr<Albedo::Base> &&albedo, std::unique_ptr<Brdf::Base> &&brdf)
 	{
-		mAlbedo = albedo;
-		mBrdf = brdf;
+		mAlbedo = std::move(albedo);
+		mBrdf = std::move(brdf);
 	}
 
 	Surface::~Surface()
 	{
-		if (mAlbedo) {
-			delete mAlbedo;
-		}
-
-		if (mBrdf) {
-			delete mBrdf;
-		}
 	}
 
-	const Albedo::Base *Surface::albedo() const
+	const Albedo::Base &Surface::albedo() const
 	{
-		return mAlbedo;
+		return *mAlbedo;
 	}
 
-	const Brdf::Base *Surface::brdf() const
+	const Brdf::Base &Surface::brdf() const
 	{
-		return mBrdf;
+		return *mBrdf;
 	}
 
-	Surface *Surface::fromAst(AST *ast)
+	std::unique_ptr<Surface> Surface::fromAst(AST *ast)
 	{
-		const Albedo::Base *albedo;
-		const Brdf::Base *brdf;
+		std::unique_ptr<Albedo::Base> albedo;
+		std::unique_ptr<Brdf::Base> brdf;
 
 		for (int i = 0; i < ast->numChildren; i++) {
 			switch (ast->children[i]->type) {
@@ -56,6 +49,6 @@ namespace Object {
 			}
 		}
 
-		return new Surface(albedo, brdf);
+		return std::make_unique<Surface>(std::move(albedo), std::move(brdf));
 	}
 }

@@ -10,9 +10,9 @@ Camera::Camera(int fov)
 	mSize = tan(fov * 3.14 / (2 * 180));
 }
 
-Camera *Camera::fromAst(AST *ast)
+std::unique_ptr<Camera> Camera::fromAst(AST *ast)
 {
-	Camera *camera = new Camera(45);
+	std::unique_ptr<Camera> camera = std::make_unique<Camera>(45);
 
 	for(int i=0; i<ast->numChildren; i++)
 	{

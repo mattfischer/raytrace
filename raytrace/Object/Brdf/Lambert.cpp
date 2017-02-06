@@ -25,9 +25,9 @@ Object::Color Lambert::color(const Object::Color &incidentColor, const Math::Vec
 	return incidentColor * albedo * mStrength * coeff;
 }
 
-Lambert *Lambert::fromAst(AST *ast)
+std::unique_ptr<Lambert> Lambert::fromAst(AST *ast)
 {
-	return new Lambert(ast->data._float);
+	return std::make_unique<Lambert>(ast->data._float);
 }
 
 }

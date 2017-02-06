@@ -37,9 +37,9 @@ Object::Color Checker::color(const Math::Point &point) const
 	}
 }
 
-Checker *Checker::fromAst(AST *ast)
+std::unique_ptr<Checker> Checker::fromAst(AST *ast)
 {
-	return new Checker(ast->children[0]->data._vector, ast->children[1]->data._vector);
+	return std::make_unique<Checker>(ast->children[0]->data._vector, ast->children[1]->data._vector);
 }
 
 }

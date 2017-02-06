@@ -22,14 +22,14 @@ public:
 
 	static std::unique_ptr<Base> fromAst(AST *ast);
 
-	Surface *surface() const;
-	void setSurface(Surface *surface);
+	const Surface &surface() const;
+	void setSurface(std::unique_ptr<Surface> &&surface);
 
 	void intersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
 	bool inside(const Math::Point &point) const;
 
 protected:
-	Surface *mSurface;
+	std::unique_ptr<Surface> mSurface;
 
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;

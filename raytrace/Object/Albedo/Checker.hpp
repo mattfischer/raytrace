@@ -14,7 +14,7 @@ public:
 
 	virtual Object::Color color(const Math::Point &point) const;
 
-	static Checker *fromAst(AST *ast);
+	static std::unique_ptr<Checker> fromAst(AST *ast);
 
 protected:
 	Object::Color mColor1;

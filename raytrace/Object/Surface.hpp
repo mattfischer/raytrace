@@ -7,22 +7,24 @@
 
 #include "Object/Color.hpp"
 
+#include <memory>
+
 namespace Object {
 
 class Surface
 {
 public:
-	Surface(const Albedo::Base *albedo, const Brdf::Base *brdf);
+	Surface(std::unique_ptr<Albedo::Base> &&albedo, std::unique_ptr<Brdf::Base> &&brdf);
 	virtual ~Surface();
 
-	const Albedo::Base *albedo() const;
-	const Brdf::Base *brdf() const;
+	const Albedo::Base &albedo() const;
+	const Brdf::Base &brdf() const;
 
-	static Surface *fromAst(AST *ast);
+	static std::unique_ptr<Surface> fromAst(AST *ast);
 
 private:
-	const Albedo::Base *mAlbedo;
-	const Brdf::Base *mBrdf;
+	std::unique_ptr<Albedo::Base> mAlbedo;
+	std::unique_ptr<Brdf::Base> mBrdf;
 };
 
 }

@@ -16,7 +16,7 @@ Base::~Base()
 {
 }
 
-const Base *Base::fromAst(AST *ast)
+std::unique_ptr<Base> Base::fromAst(AST *ast)
 {
 	AST *albedoAst = ast->children[0];
 	switch(albedoAst->type)

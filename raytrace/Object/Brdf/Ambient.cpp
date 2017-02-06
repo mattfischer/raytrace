@@ -15,9 +15,9 @@ Object::Color Ambient::color(const Object::Color &incidentColor, const Math::Vec
 	return incidentColor * albedo * mStrength;
 }
 
-Ambient *Ambient::fromAst(AST *ast)
+std::unique_ptr<Ambient> Ambient::fromAst(AST *ast)
 {
-	return new Ambient(ast->data._float);
+	return std::make_unique<Ambient>(ast->data._float);
 }
 
 }

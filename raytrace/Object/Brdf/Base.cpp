@@ -28,9 +28,9 @@ Object::Color Base::specularColor(const Object::Color &incidentColor, const Obje
 	return Object::Color(0, 0, 0);
 }
 
-const Base *Base::fromAst(AST *ast)
+std::unique_ptr<Base> Base::fromAst(AST *ast)
 {
-	std::vector<const Base*> brdfs;
+	std::vector<std::unique_ptr<Base>> brdfs;
 
 	for(int i=0; i<ast->numChildren; i++) {
 		switch(ast->children[i]->type) {
@@ -53,9 +53,9 @@ const Base *Base::fromAst(AST *ast)
 	}
 
 	if(brdfs.size() == 1) {
-		return brdfs[0];
+		return std::move(brdfs[0]);
 	} else {
-		return new Composite(brdfs);
+		return std::make_unique<Composite>(std::move(brdfs));
 	}
 }
 
