@@ -11,7 +11,6 @@ namespace Primitive {
 class Torus : public Base
 {
 public:
-	Torus();
 
 protected:
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;

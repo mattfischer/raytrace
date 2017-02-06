@@ -9,14 +9,6 @@
 namespace Object {
 namespace Primitive {
 
-Cylinder::Cylinder()
-{
-}
-
-Cylinder::~Cylinder()
-{
-}
-
 std::unique_ptr<Cylinder> Cylinder::fromAst(AST *ast)
 {
 	return std::make_unique<Cylinder>();

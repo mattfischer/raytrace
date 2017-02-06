@@ -9,9 +9,6 @@ namespace Primitive {
 class Disk : public Base
 {
 public:
-	Disk();
-	virtual ~Disk();
-
 	static Trace::Intersection intersectDisk(const Base *primitive, const Trace::Ray &ray, const Math::Normal &normal, float displacement);
 
 protected:

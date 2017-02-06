@@ -10,7 +10,6 @@ class Solid : public Base
 {
 public:
 	Solid(const Object::Color &color);
-	virtual ~Solid();
 
 	virtual Object::Color color(const Math::Point &point) const;
 

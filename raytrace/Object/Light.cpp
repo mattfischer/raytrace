@@ -2,10 +2,6 @@
 
 namespace Object {
 
-Light::Light()
-{
-}
-
 std::unique_ptr<Light> Light::fromAst(AST *ast)
 {
 	std::unique_ptr<Light> light = std::make_unique<Light>();

@@ -7,10 +7,6 @@
 namespace Object {
 namespace Primitive {
 
-Plane::Plane()
-{
-}
-
 std::unique_ptr<Plane> Plane::fromAst(AST *ast)
 {
 	return std::make_unique<Plane>();

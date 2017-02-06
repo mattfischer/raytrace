@@ -11,8 +11,6 @@ namespace Primitive {
 class Plane : public Base
 {
 public:
-	Plane();
-
 	static std::unique_ptr<Plane> fromAst(AST *ast);
 
 	static Trace::Intersection intersectPlane(const Base *primitive, const Trace::Ray &ray, const Math::Normal &normal, float displacement);

@@ -9,14 +9,6 @@
 namespace Object {
 namespace Primitive {
 
-Cone::Cone()
-{
-}
-
-Cone::~Cone()
-{
-}
-
 std::unique_ptr<Cone> Cone::fromAst(AST *ast)
 {
 	return std::make_unique<Cone>();

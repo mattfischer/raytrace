@@ -13,10 +13,6 @@ Composite::Composite(std::vector<std::unique_ptr<Base>> &&brdfs)
 {
 }
 
-Composite::~Composite()
-{
-}
-
 Object::Color Composite::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	Object::Color totalColor;

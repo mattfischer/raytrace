@@ -13,15 +13,6 @@
 namespace Object {
 namespace Primitive {
 
-Base::Base()
-{
-	mSurface = 0;
-}
-
-Base::~Base()
-{
-}
-
 std::unique_ptr<Base> Base::fromAst(AST *ast)
 {
 	std::unique_ptr<Base> primitive;

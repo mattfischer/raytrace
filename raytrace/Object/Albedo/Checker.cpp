@@ -15,10 +15,6 @@ Checker::Checker(const Object::Color &color1, const Object::Color &color2)
 {
 }
 
-Checker::~Checker()
-{
-}
-
 Object::Color Checker::color(const Math::Point &point) const
 {
 	int x = (int)abs(point.x() + EPSILON) + ((point.x() + EPSILON > 0)?1:0);

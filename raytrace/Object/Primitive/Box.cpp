@@ -7,10 +7,6 @@
 namespace Object {
 namespace Primitive {
 
-Box::Box()
-{
-}
-
 std::unique_ptr<Box> Box::fromAst(AST *ast)
 {
 	return std::make_unique<Box>();

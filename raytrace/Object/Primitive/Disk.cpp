@@ -5,14 +5,6 @@
 namespace Object {
 namespace Primitive {
 
-Disk::Disk()
-{
-}
-
-Disk::~Disk()
-{
-}
-
 Trace::Intersection Disk::intersectDisk(const Base *primitive, const Trace::Ray &ray, const Math::Normal &normal, float displacement)
 {
 	Trace::Intersection intersection;

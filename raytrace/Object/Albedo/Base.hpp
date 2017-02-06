@@ -13,9 +13,6 @@ namespace Albedo {
 class Base
 {
 public:
-	Base();
-	virtual ~Base();
-
 	static std::unique_ptr<Base> fromAst(AST *ast);
 
 	virtual Object::Color color(const Math::Point &point) const = 0;

@@ -11,9 +11,6 @@ namespace Primitive {
 class Cylinder : public Base
 {
 public:
-	Cylinder();
-	~Cylinder();
-
 	static std::unique_ptr<Cylinder> fromAst(AST *ast);
 
 protected:

@@ -11,8 +11,6 @@ namespace Primitive {
 class Box : public Base
 {
 public:
-	Box();
-
 	static std::unique_ptr<Box> fromAst(AST *ast);
 
 protected:

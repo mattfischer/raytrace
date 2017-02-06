@@ -18,8 +18,6 @@ public:
 		TypeIntersection
 	};
 
-	Csg();
-
 	static std::unique_ptr<Csg> fromAst(AST *ast);
 
 	const Primitive::Base &primitive1() const;

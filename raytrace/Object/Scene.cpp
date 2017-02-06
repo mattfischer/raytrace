@@ -6,14 +6,6 @@
 
 namespace Object {
 
-Scene::Scene()
-{
-}
-
-Scene::~Scene()
-{
-}
-
 std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 {
 	std::unique_ptr<Scene> scene = std::make_unique<Scene>();

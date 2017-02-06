@@ -6,6 +6,7 @@
 #include "Math/Forwards.hpp"
 
 #include "Object/Base.hpp"
+#include "Object/Surface.hpp"
 #include "Trace/Intersection.hpp"
 
 #include <vector>
@@ -17,15 +18,12 @@ namespace Primitive {
 class Base : public Object::Base
 {
 public:
-	Base();
-	virtual ~Base();
-
 	static std::unique_ptr<Base> fromAst(AST *ast);
 
 	const Surface &surface() const;
 	void setSurface(std::unique_ptr<Surface> &&surface);
 
-	void intersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const;
+	void intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
 	bool inside(const Math::Point &point) const;
 
 protected:

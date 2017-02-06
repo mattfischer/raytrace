@@ -6,10 +6,6 @@
 namespace Object {
 namespace Primitive {
 
-Torus::Torus()
-{
-}
-
 bool cylIntersect(const Trace::Ray &ray, float radius, float results[])
 {
 	float a, b, c;

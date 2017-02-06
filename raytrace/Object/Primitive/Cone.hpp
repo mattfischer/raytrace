@@ -10,9 +10,6 @@ namespace Primitive {
 class Cone : public Base
 {
 public:
-	Cone();
-	~Cone();
-
 	static std::unique_ptr<Cone> fromAst(AST *ast);
 
 protected:

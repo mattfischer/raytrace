@@ -2,6 +2,9 @@
 #define OBJECT_SCENE_HPP
 
 #include "Object/Forwards.hpp"
+#include "Object/Camera.hpp"
+#include "Object/Primitive/Base.hpp"
+#include "Object/Light.hpp"
 
 #include "Trace/Intersection.hpp"
 
@@ -13,9 +16,6 @@ namespace Object {
 class Scene
 {
 public:
-	Scene();
-	~Scene();
-
 	static std::unique_ptr<Scene> fromAST(AST *ast);
 
 	const Camera &camera() const;

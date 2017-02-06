@@ -1,9 +1,8 @@
 #ifndef OBJECT_SURFACE_HPP
 #define OBJECT_SURFACE_HPP
 
-#include "Object/Albedo/Forwards.hpp"
-#include "Object/Brdf/Forwards.hpp"
-#include "Trace/Forwards.hpp"
+#include "Object/Albedo/Base.hpp"
+#include "Object/Brdf/Base.hpp"
 
 #include "Object/Color.hpp"
 
@@ -15,7 +14,6 @@ class Surface
 {
 public:
 	Surface(std::unique_ptr<Albedo::Base> &&albedo, std::unique_ptr<Brdf::Base> &&brdf);
-	virtual ~Surface();
 
 	const Albedo::Base &albedo() const;
 	const Brdf::Base &brdf() const;

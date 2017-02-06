@@ -8,14 +8,6 @@
 namespace Object {
 namespace Albedo {
 
-Base::Base()
-{
-}
-
-Base::~Base()
-{
-}
-
 std::unique_ptr<Base> Base::fromAst(AST *ast)
 {
 	AST *albedoAst = ast->children[0];

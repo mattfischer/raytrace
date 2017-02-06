@@ -8,10 +8,6 @@
 namespace Object {
 namespace Primitive {
 
-Sphere::Sphere()
-{
-}
-
 std::unique_ptr<Sphere> Sphere::fromAst(AST *ast)
 {
 	return std::make_unique<Sphere>();

@@ -11,7 +11,6 @@ namespace Primitive {
 class Sphere : public Base
 {
 public:
-	Sphere();
 	static std::unique_ptr<Sphere> fromAst(AST *ast);
 
 protected:

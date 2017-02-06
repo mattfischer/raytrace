@@ -3,10 +3,6 @@
 namespace Object {
 namespace Primitive {
 
-Csg::Csg()
-{
-}
-
 std::unique_ptr<Csg> Csg::fromAst(AST *ast)
 {
 	std::unique_ptr<Csg> csg = std::make_unique<Csg>();

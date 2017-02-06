@@ -2,14 +2,6 @@
 
 namespace Object {
 
-Base::Base() 
-{ 
-}
-
-Base::~Base()
-{
-}
-
 void Base::transform(const Math::Transformation &transformation)
 {
 	mTransformation = transformation * mTransformation;
