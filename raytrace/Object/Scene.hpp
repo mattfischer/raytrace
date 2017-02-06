@@ -16,16 +16,13 @@ namespace Object {
 class Scene
 {
 public:
+	Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Light>> &&lights, std::vector<std::unique_ptr<Primitive::Base>> &&primitives);
+
 	static std::unique_ptr<Scene> fromAST(AST *ast);
 
 	const Camera &camera() const;
-	void setCamera(std::unique_ptr<Camera> &&camera);
-
 	const std::vector<std::unique_ptr<Light>> &lights() const;
-	void addLight(std::unique_ptr<Light> &&light);
-
 	const std::vector<std::unique_ptr<Primitive::Base>> &primitives() const;
-	void addPrimitive(std::unique_ptr<Primitive::Base> &&primitive);
 
 	void intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
 

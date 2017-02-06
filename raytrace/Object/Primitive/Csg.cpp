@@ -3,40 +3,57 @@
 namespace Object {
 namespace Primitive {
 
+Csg::Csg(Type type, std::unique_ptr<Primitive::Base> &&primitive1, std::unique_ptr<Primitive::Base> &&primitive2)
+{
+	mType = type;
+	mPrimitive1 = std::move(primitive1);
+	mPrimitive2 = std::move(primitive2);
+}
+
 std::unique_ptr<Csg> Csg::fromAst(AST *ast)
 {
-	std::unique_ptr<Csg> csg = std::make_unique<Csg>();
+	Type type;
+	std::unique_ptr<Primitive::Base> primitive1;
+	std::unique_ptr<Primitive::Base> primitive2;
 
 	switch(ast->type)
 	{
 	case AstUnion:
-		csg->setType(TypeUnion);
+		type = TypeUnion;
 		break;
 
 	case AstDifference:
-		csg->setType(TypeDifference);
+		type = TypeDifference;
 		break;
 
 	case AstIntersection:
-		csg->setType(TypeIntersection);
+		type = TypeIntersection;
 		break;
 	}
 
-	for(int i=0; i<ast->numChildren; i++)
+	for (int i = 0; i < ast->numChildren; i++)
 	{
-		switch(ast->children[i]->type)
+		switch (ast->children[i]->type)
 		{
 		case AstPrimitive:
-			if(!csg->mPrimitive1)
+			if (primitive1)
 			{
-				csg->setPrimitive1(Primitive::Base::fromAst(ast->children[i]));
+				primitive1 = Primitive::Base::fromAst(ast->children[i]);
 			}
 			else
 			{
-				csg->setPrimitive2(Primitive::Base::fromAst(ast->children[i]));
+				primitive2 = Primitive::Base::fromAst(ast->children[i]);
 			}
 			break;
+		}
+	}
 
+	std::unique_ptr<Csg> csg = std::make_unique<Csg>(type, std::move(primitive1), std::move(primitive2));
+
+	for (int i = 0; i < ast->numChildren; i++)
+	{
+		switch (ast->children[i]->type)
+		{
 		case AstTransform:
 			csg->transform(Math::Transformation::fromAst(ast->children[i]));
 			break;
@@ -46,34 +63,19 @@ std::unique_ptr<Csg> Csg::fromAst(AST *ast)
 	return csg;
 }
 
-const Base &Csg::primitive1() const
-{
-	return *mPrimitive1;
-}
-
-void Csg::setPrimitive1(std::unique_ptr<Base> &&primitive1)
-{
-	mPrimitive1 = std::move(primitive1);
-}
-
-const Base &Csg::primitive2() const
-{
-	return *mPrimitive2;
-}
-
-void Csg::setPrimitive2(std::unique_ptr<Base> &&primitive2)
-{
-	mPrimitive2 = std::move(primitive2);
-}
-
 Csg::Type Csg::type() const
 {
 	return mType;
 }
 
-void Csg::setType(Type type)
+const Base &Csg::primitive1() const
 {
-	mType = type;
+	return *mPrimitive1;
+}
+
+const Base &Csg::primitive2() const
+{
+	return *mPrimitive2;
 }
 
 bool Csg::doInside(const Math::Point &point) const

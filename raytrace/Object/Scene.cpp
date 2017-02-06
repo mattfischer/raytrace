@@ -6,9 +6,18 @@
 
 namespace Object {
 
+Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Light>> &&lights, std::vector<std::unique_ptr<Primitive::Base>> &&primitives)
+	: mCamera(std::move(camera))
+	, mLights(std::move(lights))
+	, mPrimitives(std::move(primitives))
+{
+}
+
 std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 {
-	std::unique_ptr<Scene> scene = std::make_unique<Scene>();
+	std::unique_ptr<Camera> camera;
+	std::vector<std::unique_ptr<Light>> lights;
+	std::vector<std::unique_ptr<Primitive::Base>> primitives;
 
 	for(int i=0; i<ast->numChildren; i++)
 	{
@@ -17,16 +26,18 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 		switch(child->type)
 		{
 		case AstPrimitive:
-			scene->addPrimitive(Primitive::Base::fromAst(child));
+			primitives.push_back(Primitive::Base::fromAst(child));
 			break;
 		case AstLight:
-			scene->addLight(Light::fromAst(child));
+			lights.push_back(Light::fromAst(child));
 			break;
 		case AstCamera:
-			scene->setCamera(Camera::fromAst(child));
+			camera = Camera::fromAst(child);
 			break;
 		}
 	}
+
+	std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::move(camera), std::move(lights), std::move(primitives));
 
 	return scene;
 }
@@ -36,29 +47,14 @@ const Camera &Scene::camera() const
 	return *mCamera;
 }
 
-void Scene::setCamera(std::unique_ptr<Camera> &&camera)
-{
-	mCamera = std::move(camera);
-}
-
 const std::vector<std::unique_ptr<Light>> &Scene::lights() const
 {
 	return mLights;
 }
 
-void Scene::addLight(std::unique_ptr<Light> &&light)
-{
-	mLights.push_back(std::move(light));
-}
-
 const std::vector<std::unique_ptr<Primitive::Base>> &Scene::primitives() const
 {
 	return mPrimitives;
-}
-
-void Scene::addPrimitive(std::unique_ptr<Primitive::Base> &&primitive)
-{
-	mPrimitives.push_back(std::move(primitive));
 }
 
 void Scene::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const

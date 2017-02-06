@@ -13,10 +13,10 @@ namespace Object {
 class Light : public Base
 {
 public:
+	Light(const Color &color);
 	static std::unique_ptr<Light> fromAst(AST *ast);
 
 	const Color &color() const;
-	void setColor(const Color &color);
 
 protected:
 	Color mColor;
