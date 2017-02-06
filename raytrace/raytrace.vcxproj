@@ -192,7 +192,6 @@
     <ClInclude Include="Render\Forwards.hpp" />
     <ClInclude Include="Render\Thread.hpp" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Scene.tab.h" />
     <ClInclude Include="Trace\Forwards.hpp" />
     <ClInclude Include="Trace\Intersection.hpp" />
     <ClInclude Include="Trace\Lighter\Base.hpp" />
