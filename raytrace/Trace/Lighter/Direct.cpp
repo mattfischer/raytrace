@@ -13,7 +13,7 @@ void Direct::light(const Trace::Intersection &intersection, Trace::Tracer &trace
 
 	for(const std::unique_ptr<Object::Light> &light : tracer.scene().lights())
 	{
-		Trace::Ray shadowRay = Trace::Ray::createFromPoints(point, light->transformation().origin(), 1);
+		Trace::Ray shadowRay = Trace::Ray::createFromPoints(point, light->transformation().origin());
 
 		Trace::IntersectionVector::iterator begin, end;
 		tracer.intersect(shadowRay, begin, end);

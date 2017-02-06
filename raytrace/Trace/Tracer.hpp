@@ -35,11 +35,11 @@ public:
 	void popTrace();
 
 	Object::Color tracePixel(float x, float y);
-	Object::Color traceRay(const Trace::Ray &ray);
 
 protected:
+	Object::Color traceRay(const Trace::Ray &ray, int generation);
 	Object::Color diffuseColor(const Intersection &intersection);
-	Object::Color specularColor(const Intersection &intersection);
+	Object::Color specularColor(const Intersection &intersection, int generation);
 
 	const Object::Scene &mScene;
 	Settings mSettings;

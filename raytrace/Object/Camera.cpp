@@ -27,14 +27,14 @@ std::unique_ptr<Camera> Camera::fromAst(AST *ast)
 	return camera;
 }
 
-Trace::Ray Camera::createRay(float x, float y, int generation) const
+Trace::Ray Camera::createRay(float x, float y) const
 {
 	float rayX, rayY;
 
 	rayX = mSize * x;
 	rayY = -mSize * y;
 
-	return Trace::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize(), generation);
+	return Trace::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize());
 }
 
 }

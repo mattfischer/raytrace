@@ -88,19 +88,19 @@ Object::Color Tracer::diffuseColor(const Intersection &intersection)
 	return accumulator.totalColor();
 }
 
-Object::Color Tracer::specularColor(const Intersection &intersection)
+Object::Color Tracer::specularColor(const Intersection &intersection, int generation)
 {
 	const Object::Surface &surface = intersection.primitive()->surface();
 	const Trace::Ray &ray = intersection.ray();
 	Object::Color color;
 
-	if (surface.brdf().specular() && ray.generation() < mSettings.maxRayGeneration) {
+	if (surface.brdf().specular() && generation < mSettings.maxRayGeneration) {
 		Object::Color albedo = surface.albedo().color(intersection.objectPoint());
 		Math::Vector incident = ray.direction();
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
-		Trace::Ray reflectRay(intersection.point(), reflect, ray.generation() + 1);
-		Object::Color reflectColor = traceRay(reflectRay);
+		Trace::Ray reflectRay(intersection.point(), reflect);
+		Object::Color reflectColor = traceRay(reflectRay, generation + 1);
 
 		color += surface.brdf().specularColor(reflectColor, albedo);
 	}
@@ -108,7 +108,7 @@ Object::Color Tracer::specularColor(const Intersection &intersection)
 	return color;
 }
 
-Object::Color Tracer::traceRay(const Trace::Ray &ray)
+Object::Color Tracer::traceRay(const Trace::Ray &ray, int generation)
 {
 	IntersectionVector::iterator begin, end;
 	intersect(ray, begin, end);
@@ -117,7 +117,7 @@ Object::Color Tracer::traceRay(const Trace::Ray &ray)
 
 	if(begin != end)
 	{
-		color = diffuseColor(*begin) + specularColor(*begin);
+		color = diffuseColor(*begin) + specularColor(*begin, generation);
 	}
 	popTrace();
 
@@ -128,8 +128,8 @@ Object::Color Tracer::tracePixel(float x, float y)
 {
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;
-	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
-	return traceRay(ray);
+	Trace::Ray ray = mScene.camera().createRay(cx, cy);
+	return traceRay(ray, 1);
 }
 
 }
