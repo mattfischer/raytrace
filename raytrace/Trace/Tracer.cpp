@@ -61,12 +61,10 @@ Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
 
 	intersect(ray, begin, end);
 
-	Object::Radiance radiance(.2, .2, .2);
-
+	Object::Radiance radiance;
 	if(begin != end)
 	{
 		Intersection intersection = *begin;
-		radiance = Object::Radiance(0, 0, 0);
 		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
 			radiance += lighter->light(intersection, *this);
 		}
