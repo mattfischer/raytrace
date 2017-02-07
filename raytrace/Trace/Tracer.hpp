@@ -30,23 +30,22 @@ public:
 
 	const Object::Scene &scene() const;
 	Settings &settings();
+	int generation() const;
 
 	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
 	void popTrace();
 
 	Object::Color tracePixel(float x, float y);
+	Object::Radiance traceRay(const Trace::Ray &ray);
 
 protected:
-	Object::Radiance traceRay(const Trace::Ray &ray, int generation);
-	Object::Radiance diffuseRadiance(const Intersection &intersection);
-	Object::Radiance specularRadiance(const Intersection &intersection, int generation);
-
 	const Object::Scene &mScene;
 	Settings mSettings;
 
 	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
 	IntersectionVector mIntersections;
 	std::vector<int> mTraces;
+	int mGeneration;
 };
 
 }

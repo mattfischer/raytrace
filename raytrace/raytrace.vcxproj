@@ -139,6 +139,7 @@
     <ClCompile Include="Trace\Intersection.cpp" />
     <ClCompile Include="Trace\Lighter\Base.cpp" />
     <ClCompile Include="Trace\Lighter\Direct.cpp" />
+    <ClCompile Include="Trace\Lighter\Specular.cpp" />
     <ClCompile Include="Trace\Ray.cpp" />
     <ClCompile Include="Trace\Tracer.cpp" />
   </ItemGroup>
@@ -200,6 +201,7 @@
     <ClInclude Include="Trace\Lighter\Base.hpp" />
     <ClInclude Include="Trace\Lighter\Direct.hpp" />
     <ClInclude Include="Trace\Lighter\Forwards.hpp" />
+    <ClInclude Include="Trace\Lighter\Specular.hpp" />
     <ClInclude Include="Trace\Ray.hpp" />
     <ClInclude Include="Trace\Tracer.hpp" />
   </ItemGroup>
