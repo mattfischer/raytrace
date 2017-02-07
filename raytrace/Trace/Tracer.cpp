@@ -47,45 +47,18 @@ void Tracer::popTrace()
 	mTraces.pop_back();
 }
 
-class Accumulator : public Lighter::Base::Accumulator
-{
-public:
-	Accumulator(const Math::Normal &normal, const Math::Vector &viewDirection, const Object::Color &albedo, const Object::Brdf::Base &brdf)
-		: mNormal(normal), mViewDirection(viewDirection), mAlbedo(albedo), mBrdf(brdf)
-	{
-	}
-
-	const Object::Radiance &totalRadiance()
-	{
-		return mTotalRadiance;
-	}
-
-	virtual void accumulate(const Object::Radiance &radiance, const Math::Vector &direction)
-	{
-		mTotalRadiance += mBrdf.radiance(radiance, direction, mNormal, mViewDirection, mAlbedo);
-	}
-
-private:
-	const Math::Normal &mNormal;
-	const Math::Vector &mViewDirection;
-	const Object::Color &mAlbedo;
-	const Object::Brdf::Base &mBrdf;
-	Object::Radiance mTotalRadiance;
-};
-
 Object::Radiance Tracer::diffuseRadiance(const Intersection &intersection)
 {
 	const Object::Surface &surface = intersection.primitive()->surface();
 	Math::Vector viewDirection = (mScene.camera().transformation().origin() - intersection.point()).normalize();
 	Object::Color albedo = surface.albedo().color(intersection.objectPoint());
-
-	Accumulator accumulator(intersection.normal(), viewDirection, albedo, surface.brdf());
+	Object::Radiance radiance;
 
 	for(const std::unique_ptr<Lighter::Base> &lighter: mLighters) {
-		lighter->light(intersection, *this, accumulator);
+		radiance += lighter->light(intersection, *this);
 	}
 
-	return accumulator.totalRadiance();
+	return radiance;
 }
 
 Object::Radiance Tracer::specularRadiance(const Intersection &intersection, int generation)

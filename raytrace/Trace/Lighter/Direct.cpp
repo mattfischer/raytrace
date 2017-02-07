@@ -7,9 +7,13 @@
 namespace Trace {
 namespace Lighter {
 
-void Direct::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Accumulator &accumulator) const
+Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
 {
 	Math::Point point(intersection.point());
+	const Object::Surface &surface = intersection.primitive()->surface();
+	Math::Vector viewDirection = -intersection.ray().direction().normalize();
+	Object::Color albedo = surface.albedo().color(intersection.objectPoint());
+	Object::Radiance radiance;
 
 	for(const std::unique_ptr<Object::Light> &light : tracer.scene().lights())
 	{
@@ -24,11 +28,13 @@ void Direct::light(const Trace::Intersection &intersection, Trace::Tracer &trace
 
 		if(begin == end || begin->distance() >= lightMagnitude)
 		{
-			accumulator.accumulate(light->radiance(), lightDir);
+			radiance += surface.brdf().radiance(light->radiance(), lightDir, intersection.normal(), viewDirection, albedo);
 		}
 
 		tracer.popTrace();
 	}
+
+	return radiance;
 }
 
 }

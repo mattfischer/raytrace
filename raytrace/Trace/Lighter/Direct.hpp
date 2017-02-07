@@ -9,7 +9,7 @@ namespace Lighter {
 class Direct : public Base
 {
 public:
-	virtual void light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Accumulator &accumulator) const;
+	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
 };
 
 }
