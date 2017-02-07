@@ -28,7 +28,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 
 		if(begin == end || begin->distance() >= lightMagnitude)
 		{
-			radiance += surface.brdf().radiance(light->radiance(), lightDir, intersection.normal(), viewDirection, albedo);
+			radiance += surface.brdf().radiance(light->radiance() / (lightMagnitude * lightMagnitude), lightDir, intersection.normal(), viewDirection, albedo);
 		}
 
 		tracer.popTrace();
