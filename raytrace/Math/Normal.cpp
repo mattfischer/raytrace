@@ -3,6 +3,8 @@
 #include "Math/Transformation.hpp"
 #include "Math/Vector.hpp"
 
+#include <cmath>
+
 namespace Math {
 
 Normal::Normal()
@@ -32,6 +34,23 @@ Normal::Normal(const Coordinate &c)
 Normal::Normal(const Point &point)
 : Coordinate(point.x(), point.y(), point.z(), 0)
 {
+}
+
+float Normal::magnitude() const
+{
+	return std::sqrt(magnitude2());
+}
+
+float Normal::magnitude2() const
+{
+	return *this * *this;
+}
+
+Normal Normal::normalize() const
+{
+	float m = magnitude();
+
+	return Normal(x() / m, y() / m, z() / m);
 }
 
 float Normal::operator*(const Normal &b) const

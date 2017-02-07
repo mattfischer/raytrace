@@ -21,6 +21,10 @@ public:
 	explicit Normal(const Point &point);
 	explicit Normal(const Coordinate &c);
 
+	Normal normalize() const;
+	float magnitude() const;
+	float magnitude2() const;
+
 	float operator*(const Normal &b) const;
 	float operator*(const Vector &b) const;
 	Normal operator-() const;

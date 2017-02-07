@@ -164,6 +164,8 @@ void Intersection::doTransform() const
 		mPoint = mPrimitive->transformation() * mObjectPoint;
 	}
 
+	mNormal = mNormal.normalize();
+
 	mTransformed = true;
 }
 
