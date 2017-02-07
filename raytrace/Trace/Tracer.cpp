@@ -65,11 +65,13 @@ Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
 
 	if(begin != end)
 	{
+		Intersection intersection = *begin;
 		radiance = Object::Radiance(0, 0, 0);
 		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
-			radiance += lighter->light(*begin, *this);
+			radiance += lighter->light(intersection, *this);
 		}
 	}
+
 	popTrace();
 
 	return radiance;
