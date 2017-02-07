@@ -22,6 +22,7 @@ typedef enum
 	AstAlbedoSolid,
 	AstAlbedoChecker,
 	AstColor,
+	AstRadiance,
 
 	AstSurfaceDiffuse,
 	AstBrdf,

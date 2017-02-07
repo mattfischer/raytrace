@@ -37,9 +37,9 @@ public:
 	Object::Color tracePixel(float x, float y);
 
 protected:
-	Object::Color traceRay(const Trace::Ray &ray, int generation);
-	Object::Color diffuseColor(const Intersection &intersection);
-	Object::Color specularColor(const Intersection &intersection, int generation);
+	Object::Radiance traceRay(const Trace::Ray &ray, int generation);
+	Object::Radiance diffuseRadiance(const Intersection &intersection);
+	Object::Radiance specularRadiance(const Intersection &intersection, int generation);
 
 	const Object::Scene &mScene;
 	Settings mSettings;

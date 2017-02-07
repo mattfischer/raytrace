@@ -4,7 +4,7 @@
 #include "Parse/Forwards.hpp"
 
 #include "Object/Base.hpp"
-#include "Object/Color.hpp"
+#include "Object/Radiance.hpp"
 
 #include <memory>
 
@@ -13,13 +13,13 @@ namespace Object {
 class Light : public Base
 {
 public:
-	Light(const Color &color);
+	Light(const Radiance &radiance);
 	static std::unique_ptr<Light> fromAst(AST *ast);
 
-	const Color &color() const;
+	const Radiance &radiance() const;
 
 protected:
-	Color mColor;
+	Radiance mRadiance;
 };
 
 }

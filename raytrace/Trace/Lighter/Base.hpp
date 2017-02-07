@@ -17,7 +17,7 @@ class Base {
 public:
 	class Accumulator {
 	public:
-		virtual void accumulate(const Object::Color &color, const Math::Vector &direction) = 0;
+		virtual void accumulate(const Object::Radiance &radiance, const Math::Vector &direction) = 0;
 	};
 
 	virtual void light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Accumulator &accumulator) const = 0;

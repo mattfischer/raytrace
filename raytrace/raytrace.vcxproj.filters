@@ -170,6 +170,9 @@
     <ClCompile Include="Trace\Lighter\Direct.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Radiance.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -337,6 +340,9 @@
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Radiance.hpp">
+      <Filter>Source Files\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

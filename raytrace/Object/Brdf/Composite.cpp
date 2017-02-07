@@ -13,15 +13,15 @@ Composite::Composite(std::vector<std::unique_ptr<Base>> &&brdfs)
 {
 }
 
-Object::Color Composite::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Radiance Composite::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
-	Object::Color totalColor;
+	Object::Radiance totalRadiance;
 
 	for(const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
-		totalColor = totalColor + brdf->color(incidentColor, incidentDirection, normal, outgoingDirection, albedo);
+		totalRadiance = totalRadiance + brdf->radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
 	}
 
-	return totalColor;
+	return totalRadiance;
 }
 
 bool Composite::specular() const
@@ -35,15 +35,15 @@ bool Composite::specular() const
 	return false;
 }
 
-Object::Color Composite::specularColor(const Object::Color &incidentColor, const Object::Color &albedo) const
+Object::Radiance Composite::specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const
 {
-	Object::Color totalColor;
+	Object::Radiance totalRadiance;
 
 	for (const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
-		totalColor = totalColor + brdf->specularColor(incidentColor, albedo);
+		totalRadiance = totalRadiance + brdf->specularRadiance(incidentRadiance, albedo);
 	}
 
-	return totalColor;
+	return totalRadiance;
 }
 
 }

@@ -13,9 +13,9 @@
 namespace Object {
 namespace Brdf {
 
-Object::Color Base::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Radiance Base::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
-	return Object::Color(0, 0, 0);
+	return Object::Radiance(0, 0, 0);
 }
 
 bool Base::specular() const
@@ -23,9 +23,9 @@ bool Base::specular() const
 	return false;
 }
 
-Object::Color Base::specularColor(const Object::Color &incidentColor, const Object::Color &albedo) const
+Object::Radiance Base::specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const
 {
-	return Object::Color(0, 0, 0);
+	return Object::Radiance(0, 0, 0);
 }
 
 std::unique_ptr<Base> Base::fromAst(AST *ast)

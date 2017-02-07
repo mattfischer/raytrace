@@ -2,25 +2,25 @@
 
 namespace Object {
 
-Light::Light(const Color &color)
-	: mColor(color)
+Light::Light(const Radiance &radiance)
+	: mRadiance(radiance)
 {
 }
 
 std::unique_ptr<Light> Light::fromAst(AST *ast)
 {
-	Color color;
+	Radiance radiance;
 	for (int i = 0; i < ast->numChildren; i++)
 	{
 		switch (ast->children[i]->type)
 		{
-		case AstColor:
-			color = ast->children[i]->data._vector;
+		case AstRadiance:
+			radiance = ast->children[i]->data._vector;
 			break;
 		}
 	}
 
-	std::unique_ptr<Light> light = std::make_unique<Light>(color);
+	std::unique_ptr<Light> light = std::make_unique<Light>(radiance);
 
 	for (int i = 0; i < ast->numChildren; i++)
 	{
@@ -35,9 +35,9 @@ std::unique_ptr<Light> Light::fromAst(AST *ast)
 	return light;
 }
 
-const Color &Light::color() const
+const Radiance &Light::radiance() const
 {
-	return mColor;
+	return mRadiance;
 }
 
 }

@@ -15,9 +15,9 @@ bool Specular::specular() const
 	return true;
 }
 
-Object::Color Specular::specularColor(const Object::Color &incidentColor, const Object::Color &albedo) const
+Object::Radiance Specular::specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const
 {
-	return incidentColor * mStrength;
+	return incidentRadiance * mStrength;
 }
 
 std::unique_ptr<Specular> Specular::fromAst(AST *ast)

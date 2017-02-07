@@ -55,14 +55,14 @@ public:
 	{
 	}
 
-	const Object::Color &totalColor()
+	const Object::Radiance &totalRadiance()
 	{
-		return mTotalColor;
+		return mTotalRadiance;
 	}
 
-	virtual void accumulate(const Object::Color &color, const Math::Vector &direction)
+	virtual void accumulate(const Object::Radiance &radiance, const Math::Vector &direction)
 	{
-		mTotalColor += mBrdf.color(color, direction, mNormal, mViewDirection, mAlbedo);
+		mTotalRadiance += mBrdf.radiance(radiance, direction, mNormal, mViewDirection, mAlbedo);
 	}
 
 private:
@@ -70,10 +70,10 @@ private:
 	const Math::Vector &mViewDirection;
 	const Object::Color &mAlbedo;
 	const Object::Brdf::Base &mBrdf;
-	Object::Color mTotalColor;
+	Object::Radiance mTotalRadiance;
 };
 
-Object::Color Tracer::diffuseColor(const Intersection &intersection)
+Object::Radiance Tracer::diffuseRadiance(const Intersection &intersection)
 {
 	const Object::Surface &surface = intersection.primitive()->surface();
 	Math::Vector viewDirection = (mScene.camera().transformation().origin() - intersection.point()).normalize();
@@ -85,14 +85,14 @@ Object::Color Tracer::diffuseColor(const Intersection &intersection)
 		lighter->light(intersection, *this, accumulator);
 	}
 
-	return accumulator.totalColor();
+	return accumulator.totalRadiance();
 }
 
-Object::Color Tracer::specularColor(const Intersection &intersection, int generation)
+Object::Radiance Tracer::specularRadiance(const Intersection &intersection, int generation)
 {
 	const Object::Surface &surface = intersection.primitive()->surface();
 	const Trace::Ray &ray = intersection.ray();
-	Object::Color color;
+	Object::Radiance radiance;
 
 	if (surface.brdf().specular() && generation < mSettings.maxRayGeneration) {
 		Object::Color albedo = surface.albedo().color(intersection.objectPoint());
@@ -100,28 +100,28 @@ Object::Color Tracer::specularColor(const Intersection &intersection, int genera
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
 		Trace::Ray reflectRay(intersection.point(), reflect);
-		Object::Color reflectColor = traceRay(reflectRay, generation + 1);
+		Object::Radiance reflectRadiance = traceRay(reflectRay, generation + 1);
 
-		color += surface.brdf().specularColor(reflectColor, albedo);
+		radiance += surface.brdf().specularRadiance(reflectRadiance, albedo);
 	}
 
-	return color;
+	return radiance;
 }
 
-Object::Color Tracer::traceRay(const Trace::Ray &ray, int generation)
+Object::Radiance Tracer::traceRay(const Trace::Ray &ray, int generation)
 {
 	IntersectionVector::iterator begin, end;
 	intersect(ray, begin, end);
 
-	Object::Color color(.2, .2, .2);
+	Object::Radiance radiance(.2, .2, .2);
 
 	if(begin != end)
 	{
-		color = diffuseColor(*begin) + specularColor(*begin, generation);
+		radiance = diffuseRadiance(*begin) + specularRadiance(*begin, generation);
 	}
 	popTrace();
 
-	return color.clamp();
+	return radiance;
 }
 
 Object::Color Tracer::tracePixel(float x, float y)
@@ -129,7 +129,10 @@ Object::Color Tracer::tracePixel(float x, float y)
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;
 	Trace::Ray ray = mScene.camera().createRay(cx, cy);
-	return traceRay(ray, 1);
+	Object::Radiance radiance = traceRay(ray, 1);
+	Object::Color color(radiance.red(), radiance.green(), radiance.blue());
+
+	return color.clamp();
 }
 
 }

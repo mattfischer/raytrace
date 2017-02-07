@@ -40,7 +40,7 @@
 %token SPECULAR
 %token CAMERA
 %token LIGHT
-
+%token RADIANCE
 
 %token UNION
 %token DIFFERENCE
@@ -55,7 +55,7 @@
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> surfacedef surface_list surface_item albedodef brdf_list brdf_item
 %type <_ast> spheredef planedef boxdef conedef cylinderdef
-%type <_ast> lightdef light_modifiers light_modifier
+%type <_ast> lightdef radiancedef light_modifiers light_modifier
 %type <_ast> cameradef camera_modifiers camera_modifier csgdef
 %start scene
 
@@ -154,8 +154,11 @@ albedodef: colordef
 
 colordef: COLOR VECTOR
 	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }	
-	
-lightdef: LIGHT '{' colordef light_modifiers '}'
+
+radiancedef: RADIANCE VECTOR
+	{ $$ = newAst(AstRadiance, 0); $$->data._vector = $2; }	
+
+lightdef: LIGHT '{' radiancedef light_modifiers '}'
 	{ $$ = addChildren(newAst(AstLight, 1, $3), $4->numChildren, $4->children); }
 	
 light_modifiers: light_modifier

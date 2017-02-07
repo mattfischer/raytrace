@@ -123,6 +123,7 @@
     <ClCompile Include="Object\Primitive\Plane.cpp" />
     <ClCompile Include="Object\Primitive\Sphere.cpp" />
     <ClCompile Include="Object\Primitive\Torus.cpp" />
+    <ClCompile Include="Object\Radiance.cpp" />
     <ClCompile Include="Object\Scene.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
@@ -183,6 +184,7 @@
     <ClInclude Include="Object\Primitive\Plane.hpp" />
     <ClInclude Include="Object\Primitive\Sphere.hpp" />
     <ClInclude Include="Object\Primitive\Torus.hpp" />
+    <ClInclude Include="Object\Radiance.hpp" />
     <ClInclude Include="Object\Scene.hpp" />
     <ClInclude Include="Object\Surface.hpp" />
     <ClInclude Include="Parse\AST.h" />

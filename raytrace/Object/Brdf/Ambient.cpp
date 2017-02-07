@@ -10,9 +10,9 @@ Ambient::Ambient(float strength)
 	mStrength = strength;
 }
 
-Object::Color Ambient::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Radiance Ambient::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
-	return incidentColor * albedo * mStrength;
+	return incidentRadiance * albedo * mStrength;
 }
 
 std::unique_ptr<Ambient> Ambient::fromAst(AST *ast)

@@ -13,7 +13,7 @@ Lambert::Lambert(float strength)
 	mStrength = strength;
 }
 
-Object::Color Lambert::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Radiance Lambert::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	float dot = normal * incidentDirection;
 
@@ -22,7 +22,7 @@ Object::Color Lambert::color(const Object::Color &incidentColor, const Math::Vec
 		coeff = dot;
 	}
 
-	return incidentColor * albedo * mStrength * coeff;
+	return incidentRadiance * albedo * mStrength * coeff;
 }
 
 std::unique_ptr<Lambert> Lambert::fromAst(AST *ast)

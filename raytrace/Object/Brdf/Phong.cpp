@@ -14,7 +14,7 @@ Phong::Phong(float strength, float power)
 	mPower = power;
 }
 
-Object::Color Phong::color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Radiance Phong::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	Math::Vector incident = -incidentDirection;
 	Math::Vector reflect = incident + Math::Vector(normal) * (2 * (-normal * incident));
@@ -25,7 +25,7 @@ Object::Color Phong::color(const Object::Color &incidentColor, const Math::Vecto
 		coeff = std::pow(dot, mPower);
 	}
 
-	return incidentColor * mStrength * coeff;
+	return incidentRadiance * mStrength * coeff;
 }
 
 std::unique_ptr<Phong> Phong::fromAst(AST *ast)

@@ -41,6 +41,7 @@ phong return PHONG;
 specular return SPECULAR;
 
 light return LIGHT;
+radiance return RADIANCE;
 
 camera return CAMERA;
 

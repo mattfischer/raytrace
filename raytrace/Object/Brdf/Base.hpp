@@ -3,6 +3,7 @@
 
 #include "Math/Forwards.hpp"
 
+#include "Object/Radiance.hpp"
 #include "Object/Color.hpp"
 
 #include <memory>
@@ -12,10 +13,10 @@ namespace Brdf {
 
 class Base {
 public:
-	virtual Object::Color color(const Object::Color &incidentColor, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
+	virtual Object::Radiance radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
 
 	virtual bool specular() const;
-	virtual Object::Color specularColor(const Object::Color &incidentColor, const Object::Color &albedo) const;
+	virtual Object::Radiance specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const;
 
 	static std::unique_ptr<Base> fromAst(AST *ast);
 };

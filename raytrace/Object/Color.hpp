@@ -2,6 +2,7 @@
 #define OBJECT_COLOR_HPP
 
 #include "Parse/Forwards.hpp"
+#include "Object/Forwards.hpp"
 
 namespace Object {
 

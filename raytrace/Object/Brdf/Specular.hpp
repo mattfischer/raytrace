@@ -12,7 +12,7 @@ public:
 	Specular(float strength);
 
 	virtual bool specular() const;
-	virtual Object::Color specularColor(const Object::Color &incidentColor, const Object::Color &albedo) const;
+	virtual Object::Radiance specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const;
 
 	static std::unique_ptr<Specular> fromAst(AST *ast);
 

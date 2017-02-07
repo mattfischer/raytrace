@@ -24,7 +24,7 @@ void Direct::light(const Trace::Intersection &intersection, Trace::Tracer &trace
 
 		if(begin == end || begin->distance() >= lightMagnitude)
 		{
-			accumulator.accumulate(light->color(), lightDir);
+			accumulator.accumulate(light->radiance(), lightDir);
 		}
 
 		tracer.popTrace();
