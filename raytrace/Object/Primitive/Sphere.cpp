@@ -10,7 +10,15 @@ namespace Primitive {
 
 std::unique_ptr<Sphere> Sphere::fromAst(AST *ast)
 {
-	return std::make_unique<Sphere>();
+	std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>();
+	Math::Vector position(ast->children[0]->children[0]->data._vector);
+	float radius = ast->children[0]->children[1]->data._float;
+	sphere->transform(Math::Transformation::translate(position));
+	sphere->transform(Math::Transformation::scale(radius, radius, radius));
+
+	parseAstCommon(*sphere, ast->children[1]);
+
+	return sphere;
 }
 
 void Sphere::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const

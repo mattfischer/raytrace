@@ -9,7 +9,16 @@ namespace Primitive {
 
 std::unique_ptr<Box> Box::fromAst(AST *ast)
 {
-	return std::make_unique<Box>();
+	std::unique_ptr<Box> box = std::make_unique<Box>();
+	Math::Vector position(ast->children[0]->children[0]->data._vector);
+	Math::Vector size(ast->children[0]->children[1]->data._vector);
+
+	box->transform(Math::Transformation::translate(position + size / 2));
+	box->transform(Math::Transformation::scale(size / 2));
+
+	parseAstCommon(*box, ast->children[1]);
+
+	return box;
 }
 
 void Box::testIntersect(const Trace::Ray &ray, const Math::Normal &normal, Trace::IntersectionVector &intersections) const

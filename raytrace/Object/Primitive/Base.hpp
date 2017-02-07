@@ -27,6 +27,8 @@ public:
 	bool inside(const Math::Point &point) const;
 
 protected:
+	static void parseAstCommon(Base &base, AST *ast);
+
 	std::unique_ptr<Surface> mSurface;
 
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const = 0;

@@ -42,20 +42,25 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 		break;
 	}
 
-	for(int i=0; i<sub->numChildren; i++)
+	parseAstCommon(*primitive, sub);
+
+	return primitive;
+}
+
+void Base::parseAstCommon(Base &primitive, AST *ast)
+{
+	for (int i = 0; i<ast->numChildren; i++)
 	{
-		switch(sub->children[i]->type)
+		switch (ast->children[i]->type)
 		{
 		case AstTransform:
-			primitive->transform(Math::Transformation::fromAst(sub->children[i]));
+			primitive.transform(Math::Transformation::fromAst(ast->children[i]));
 			break;
 		case AstSurface:
-			primitive->setSurface(Surface::fromAst(sub->children[i]));
+			primitive.setSurface(Surface::fromAst(ast->children[i]));
 			break;
 		}
 	}
-
-	return primitive;
 }
 
 const Surface &Base::surface() const 

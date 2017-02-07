@@ -30,7 +30,9 @@ Object::Color Phong::color(const Object::Color &incidentColor, const Math::Vecto
 
 std::unique_ptr<Phong> Phong::fromAst(AST *ast)
 {
-	return std::make_unique<Phong>(ast->data._float, ast->children[0]->data._float);
+	float strength = ast->children[0]->data._float;
+	float power = ast->children[1]->data._float;
+	return std::make_unique<Phong>(strength, power);
 }
 
 }

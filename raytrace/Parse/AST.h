@@ -39,7 +39,7 @@ typedef enum
 	AstDifference,
 	AstIntersection,
 
-	AstFloat
+	AstConstant
 } ASTType;
 
 struct _ASTVector

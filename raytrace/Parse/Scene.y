@@ -77,14 +77,18 @@ primitive: primitive_wrap
 	
 primitive_wrap: spheredef | planedef | boxdef | conedef | cylinderdef | csgdef
 	
-spheredef: SPHERE '{' primitive_modifiers '}'
-	{ $$ = addChildren(newAst(AstSphere, 0), $3->numChildren, $3->children); }
+spheredef: SPHERE '{' VECTOR FLOAT primitive_modifiers '}'
+	{ $$ = newAst(AstSphere, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5); 
+	  $$->children[0]->children[0]->data._vector = $3;
+	  $$->children[0]->children[1]->data._float = $4; }
 
 planedef: PLANE '{' primitive_modifiers '}'
 	{ $$ = addChildren(newAst(AstPlane, 0), $3->numChildren, $3->children); }
 
-boxdef: BOX '{' primitive_modifiers '}'
-	{ $$ = addChildren(newAst(AstBox, 0), $3->numChildren, $3->children); }
+boxdef: BOX '{' VECTOR VECTOR primitive_modifiers '}'
+	{ $$ = newAst(AstBox, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5);
+	  $$->children[0]->children[0]->data._vector = $3;
+	  $$->children[0]->children[1]->data._vector = $4; }
 
 conedef: CONE '{' primitive_modifiers '}'
 	{ $$ = addChildren(newAst(AstCone, 0), $3->numChildren, $3->children); }
@@ -137,7 +141,9 @@ brdf_item: AMBIENT FLOAT
 			| LAMBERT FLOAT
 	{ $$ = newAst(AstLambert, 0); $$->data._float = $2; }
 			| PHONG FLOAT FLOAT
-	{ $$ = newAst(AstPhong, 1, newAst(AstFloat, 0)); $$->data._float = $2; $$->children[0]->data._float = $3; }
+	{ $$ = newAst(AstPhong, 2, newAst(AstConstant, 0), newAst(AstConstant, 0));
+	  $$->children[0]->data._float = $2;
+	  $$->children[1]->data._float = $3; }
 			| SPECULAR FLOAT
 	{ $$ = newAst(AstSpecular, 0); $$->data._float = $2; }
 
