@@ -32,7 +32,6 @@ public:
 	Settings &settings();
 
 	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
-	void popTrace();
 
 	Object::Color tracePixel(float x, float y);
 	Object::Radiance traceRay(const Trace::Ray &ray);
@@ -43,7 +42,6 @@ protected:
 
 	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
 	IntersectionVector mIntersections;
-	std::vector<int> mTraces;
 };
 
 }

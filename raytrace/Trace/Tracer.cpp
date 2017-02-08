@@ -33,18 +33,12 @@ Tracer::Settings &Tracer::settings()
 
 void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
 {
-	mTraces.push_back(mIntersections.size());
+	mIntersections.clear();
 	mScene.intersect(ray, mIntersections);
 
-	begin = mIntersections.begin() + mTraces.back();
+	begin = mIntersections.begin();
 	end = mIntersections.end();
 	std::sort(begin, end);
-}
-
-void Tracer::popTrace()
-{
-	mIntersections.erase(mIntersections.begin() + mTraces.back(), mIntersections.end());
-	mTraces.pop_back();
 }
 
 Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
@@ -61,8 +55,6 @@ Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
 			radiance += lighter->light(intersection, *this);
 		}
 	}
-
-	popTrace();
 
 	return radiance;
 }

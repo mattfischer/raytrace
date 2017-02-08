@@ -37,8 +37,6 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 				radiance += surface.brdf().radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
 			}
 		}
-
-		tracer.popTrace();
 	}
 
 	return radiance;
