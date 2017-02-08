@@ -11,7 +11,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 {
 	Math::Point point(intersection.point());
 	const Object::Surface &surface = intersection.primitive()->surface();
-	Math::Vector viewDirection = -intersection.ray().direction().normalize();
+	Math::Vector outgoingDirection = -intersection.ray().direction().normalize();
 	Object::Color albedo = surface.albedo().color(intersection.objectPoint());
 	Object::Radiance radiance;
 
@@ -24,11 +24,17 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 
 		Math::Vector lightVector = light->transformation().origin() - point;
 		float lightMagnitude = lightVector.magnitude();
-		Math::Vector lightDir = lightVector / lightMagnitude;
 
 		if(begin == end || begin->distance() >= lightMagnitude)
 		{
-			radiance += surface.brdf().radiance(light->radiance() / (lightMagnitude * lightMagnitude), lightDir, intersection.normal(), viewDirection, albedo);
+			Math::Vector incidentDirection = lightVector / lightMagnitude;
+			const Math::Normal &normal = intersection.normal();
+
+			float dot = normal * incidentDirection;
+			if (dot > 0) {
+				Object::Radiance incidentRadiance = light->radiance() * dot / (lightMagnitude * lightMagnitude);
+				radiance += surface.brdf().radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
+			}
 		}
 
 		tracer.popTrace();
