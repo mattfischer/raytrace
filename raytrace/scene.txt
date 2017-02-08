@@ -46,6 +46,15 @@ sphere {
 	}
 }
 
+box {
+	<-2,10,-2> <4,-0.5,4>
+	surface {
+		brdf { lambert 0 }
+		albedo { color <1,1,1> }
+		radiance <10000,10000,10000>
+	}
+}
+
 light {
 	radiance <50000,50000,50000>
 	transform { translate <2,8,-6> }
