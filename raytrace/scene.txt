@@ -5,7 +5,7 @@ sphere {
 
 		brdf {
 			lambert 0.8
-			phong 1 50
+			phong 0.2 50
 		}
 	}
 }
@@ -26,7 +26,7 @@ plane {
 }
 
 light {
-	radiance <25,25,25>
+	radiance <2000,2000,2000>
 	transform { translate <0,3,-5> }
 }
 

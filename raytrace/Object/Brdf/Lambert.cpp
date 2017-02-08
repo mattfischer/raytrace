@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "Object/Brdf/Lambert.hpp"
 
 #include "Math/Normal.hpp"
@@ -15,7 +16,7 @@ Lambert::Lambert(float strength)
 
 Object::Radiance Lambert::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
-	return incidentRadiance * albedo * mStrength;
+	return incidentRadiance * albedo * mStrength / (2 * M_PI);
 }
 
 std::unique_ptr<Lambert> Lambert::fromAst(AST *ast)

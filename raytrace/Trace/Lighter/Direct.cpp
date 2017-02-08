@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "Trace/Lighter/Direct.hpp"
 
 #include "Trace/Tracer.hpp"
@@ -32,7 +33,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 
 			float dot = normal * incidentDirection;
 			if (dot > 0) {
-				Object::Radiance incidentRadiance = light->radiance() * dot / (lightMagnitude * lightMagnitude);
+				Object::Radiance incidentRadiance = light->radiance() * dot / (4 * M_PI * lightMagnitude * lightMagnitude);
 				radiance += surface.brdf().radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
 			}
 		}
