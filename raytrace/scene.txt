@@ -42,7 +42,7 @@ sphere {
 	<-5,-6,0>,4
 	surface {
 		albedo { color <1,0.5,0.25> }
-		brdf { lambert 1 }
+		brdf { lambert 1 phong 1 100 }
 	}
 }
 
