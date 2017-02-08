@@ -34,7 +34,6 @@
 %token CHECKER
 
 %token BRDF
-%token AMBIENT
 %token LAMBERT
 %token PHONG
 %token SPECULAR
@@ -130,15 +129,15 @@ surface_item: ALBEDO '{' albedodef '}'
 	{ $$ = newAst(AstAlbedo, 1, $3); }
 			| BRDF '{' brdf_list '}'
 	{ $$ = $3; }
+			| RADIANCE VECTOR
+	{ $$ = newAst(AstRadiance, 0); $$->data._vector = $2; }
 
 brdf_list: brdf_item
 	{ $$ = newAst(AstBrdf, 1, $1); }
 			| brdf_list brdf_item
 	{ $$ = addChild($1, $2); }
 
-brdf_item: AMBIENT FLOAT
-	{ $$ = newAst(AstAmbient, 0); $$->data._float = $2; }
-			| LAMBERT FLOAT
+brdf_item: LAMBERT FLOAT
 	{ $$ = newAst(AstLambert, 0); $$->data._float = $2; }
 			| PHONG FLOAT FLOAT
 	{ $$ = newAst(AstPhong, 2, newAst(AstConstant, 0), newAst(AstConstant, 0));

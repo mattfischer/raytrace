@@ -26,7 +26,6 @@ typedef enum
 
 	AstSurfaceDiffuse,
 	AstBrdf,
-	AstAmbient,
 	AstLambert,
 	AstPhong,
 	AstSpecular,

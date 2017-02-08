@@ -13,12 +13,13 @@ sphere {
 plane {
 	transform {	translate <0,-1,0> }
 	surface {
+		radiance <0.01,0.01,0.01>
+
 		albedo {
 			checker color <0,1,0> color <0,0,1>
 		}
 
 		brdf {
-			ambient 0.01
 			lambert 0.8
 		}
 	}

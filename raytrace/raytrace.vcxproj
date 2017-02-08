@@ -105,7 +105,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
     </ClCompile>
-    <ClCompile Include="Object\Brdf\Ambient.cpp" />
     <ClCompile Include="Object\Brdf\Base.cpp" />
     <ClCompile Include="Object\Brdf\Composite.cpp" />
     <ClCompile Include="Object\Brdf\Lambert.cpp" />
@@ -139,6 +138,7 @@
     <ClCompile Include="Trace\Intersection.cpp" />
     <ClCompile Include="Trace\Lighter\Base.cpp" />
     <ClCompile Include="Trace\Lighter\Direct.cpp" />
+    <ClCompile Include="Trace\Lighter\Radiant.cpp" />
     <ClCompile Include="Trace\Lighter\Specular.cpp" />
     <ClCompile Include="Trace\Ray.cpp" />
     <ClCompile Include="Trace\Tracer.cpp" />
@@ -164,7 +164,6 @@
     <ClInclude Include="Object\Albedo\Forwards.hpp" />
     <ClInclude Include="Object\Albedo\Solid.hpp" />
     <ClInclude Include="Object\Base.hpp" />
-    <ClInclude Include="Object\Brdf\Ambient.hpp" />
     <ClInclude Include="Object\Brdf\Base.hpp" />
     <ClInclude Include="Object\Brdf\Composite.hpp" />
     <ClInclude Include="Object\Brdf\Forwards.hpp" />
@@ -201,6 +200,7 @@
     <ClInclude Include="Trace\Lighter\Base.hpp" />
     <ClInclude Include="Trace\Lighter\Direct.hpp" />
     <ClInclude Include="Trace\Lighter\Forwards.hpp" />
+    <ClInclude Include="Trace\Lighter\Radiant.hpp" />
     <ClInclude Include="Trace\Lighter\Specular.hpp" />
     <ClInclude Include="Trace\Ray.hpp" />
     <ClInclude Include="Trace\Tracer.hpp" />

@@ -2,7 +2,6 @@
 
 #include "Parse/AST.h"
 
-#include "Object/Brdf/Ambient.hpp"
 #include "Object/Brdf/Lambert.hpp"
 #include "Object/Brdf/Phong.hpp"
 #include "Object/Brdf/Specular.hpp"
@@ -34,10 +33,6 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 
 	for(int i=0; i<ast->numChildren; i++) {
 		switch(ast->children[i]->type) {
-			case AstAmbient:
-				brdfs.push_back(Ambient::fromAst(ast->children[i]));
-				break;
-
 			case AstLambert:
 				brdfs.push_back(Lambert::fromAst(ast->children[i]));
 				break;

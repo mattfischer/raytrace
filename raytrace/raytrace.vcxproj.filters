@@ -143,9 +143,6 @@
     <ClCompile Include="Object\Albedo\Solid.cpp">
       <Filter>Source Files\Object\Albedo</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Brdf\Ambient.cpp">
-      <Filter>Source Files\Object\Brdf</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Brdf\Base.cpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClCompile>
@@ -174,6 +171,9 @@
       <Filter>Source Files\Object</Filter>
     </ClCompile>
     <ClCompile Include="Trace\Lighter\Specular.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\Radiant.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
@@ -223,9 +223,6 @@
     </ClInclude>
     <ClInclude Include="Object\Albedo\Solid.hpp">
       <Filter>Source Files\Object\Albedo</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Brdf\Ambient.hpp">
-      <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
     <ClInclude Include="Object\Brdf\Base.hpp">
       <Filter>Source Files\Object\Brdf</Filter>
@@ -348,6 +345,9 @@
       <Filter>Source Files\Object</Filter>
     </ClInclude>
     <ClInclude Include="Trace\Lighter\Specular.hpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\Radiant.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
   </ItemGroup>

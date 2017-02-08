@@ -35,7 +35,6 @@ albedo return ALBEDO;
 color return COLOR;
 checker return CHECKER;
 
-ambient return AMBIENT;
 lambert return LAMBERT;
 phong return PHONG;
 specular return SPECULAR;
