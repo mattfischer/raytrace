@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#define EPSILON 0.0001
+#define EPSILON 0.001
 
 namespace Object {
 namespace Primitive {
