@@ -38,7 +38,13 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 
 	RegisterClassEx(&wc);
 
-	mHWnd = CreateWindowEx((DWORD)0, CLASSNAME, "Raytrace", WS_POPUPWINDOW | WS_CAPTION | WS_VISIBLE, 10, 10, mRenderControl.settings().width, mRenderControl.settings().height, NULL, NULL, hInst, NULL);
+	RECT rect;
+	rect.left = 10;
+	rect.top = 50;
+	rect.right = rect.left + mRenderControl.settings().width;
+	rect.bottom = rect.top + mRenderControl.settings().height;
+	AdjustWindowRect(&rect, WS_POPUPWINDOW | WS_CAPTION, FALSE);
+	mHWnd = CreateWindowEx((DWORD)0, CLASSNAME, "Raytrace", WS_POPUPWINDOW | WS_CAPTION | WS_VISIBLE, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, NULL, NULL, hInst, NULL);
 
 	HDC hDC = GetDC(mHWnd);
 	mBackDC = CreateCompatibleDC(hDC);
@@ -117,7 +123,14 @@ void App::onRenderButtonClicked()
 	int width = mRenderControl.settings().width;
 	int height = mRenderControl.settings().height;
 
-	SetWindowPos(mHWnd, NULL, 0, 0, width, height, SWP_NOMOVE);
+	RECT rect;
+	rect.left = 0;
+	rect.top = 0;
+	rect.right = width;
+	rect.bottom = height;
+	AdjustWindowRect(&rect, WS_POPUPWINDOW | WS_CAPTION, FALSE);
+
+	SetWindowPos(mHWnd, NULL, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE);
 	HDC hDC = GetDC(mHWnd);
 	HBITMAP hBitmap = CreateCompatibleBitmap(hDC, width, height);
 	ReleaseDC(mHWnd, hDC);

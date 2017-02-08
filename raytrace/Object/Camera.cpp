@@ -12,7 +12,7 @@ Camera::Camera(int fov)
 
 std::unique_ptr<Camera> Camera::fromAst(AST *ast)
 {
-	std::unique_ptr<Camera> camera = std::make_unique<Camera>(45);
+	std::unique_ptr<Camera> camera = std::make_unique<Camera>(60);
 
 	for(int i=0; i<ast->numChildren; i++)
 	{
