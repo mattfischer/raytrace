@@ -69,6 +69,7 @@ Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
 
 float toneMap(float radiance)
 {
+	radiance *= 1000;
 	float color = radiance / (radiance + 1);
 
 	return color;

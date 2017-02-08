@@ -51,12 +51,12 @@ box {
 	surface {
 		brdf { lambert 0 }
 		albedo { color <1,1,1> }
-		radiance <10000,10000,10000>
+		radiance <10,10,10>
 	}
 }
 
 light {
-	radiance <50000,50000,50000>
+	radiance <50,50,50>
 	transform { translate <2,8,-6> }
 }
 
