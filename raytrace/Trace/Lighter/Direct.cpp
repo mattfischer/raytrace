@@ -17,7 +17,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 
 	for(const std::unique_ptr<Object::Light> &light : tracer.scene().lights())
 	{
-		Trace::Ray shadowRay = Trace::Ray::createFromPoints(point, light->transformation().origin());
+		Trace::Ray shadowRay = Trace::Ray::createFromPoints(point, light->transformation().origin(), intersection.ray().generation() + 1);
 
 		Trace::IntersectionVector::iterator begin, end;
 		tracer.intersect(shadowRay, begin, end);

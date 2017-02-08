@@ -19,7 +19,6 @@ Tracer::Tracer(const Object::Scene &scene, const Settings &settings)
 {
 	mSettings = settings;
 	mLighters = Lighter::Base::createLighters();
-	mGeneration = 0;
 }
 
 const Object::Scene &Tracer::scene() const
@@ -32,14 +31,8 @@ Tracer::Settings &Tracer::settings()
 	return mSettings;
 }
 
-int Tracer::generation() const
-{
-	return mGeneration;
-}
-
 void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
 {
-	mGeneration++;
 	mTraces.push_back(mIntersections.size());
 	mScene.intersect(ray, mIntersections);
 
@@ -52,7 +45,6 @@ void Tracer::popTrace()
 {
 	mIntersections.erase(mIntersections.begin() + mTraces.back(), mIntersections.end());
 	mTraces.pop_back();
-	mGeneration--;
 }
 
 Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
@@ -79,7 +71,7 @@ Object::Color Tracer::tracePixel(float x, float y)
 {
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;
-	Trace::Ray ray = mScene.camera().createRay(cx, cy);
+	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
 	Object::Radiance radiance = traceRay(ray);
 	Object::Color color(radiance.red(), radiance.green(), radiance.blue());
 

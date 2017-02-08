@@ -30,7 +30,6 @@ public:
 
 	const Object::Scene &scene() const;
 	Settings &settings();
-	int generation() const;
 
 	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
 	void popTrace();
@@ -45,7 +44,6 @@ protected:
 	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
 	IntersectionVector mIntersections;
 	std::vector<int> mTraces;
-	int mGeneration;
 };
 
 }
