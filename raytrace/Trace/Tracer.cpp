@@ -67,15 +67,22 @@ Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
 	return radiance;
 }
 
+float toneMap(float radiance)
+{
+	float color = radiance / (radiance + 1);
+
+	return color;
+}
+
 Object::Color Tracer::tracePixel(float x, float y)
 {
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;
 	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
 	Object::Radiance radiance = traceRay(ray);
-	Object::Color color(radiance.red(), radiance.green(), radiance.blue());
+	Object::Color color(toneMap(radiance.red()), toneMap(radiance.green()), toneMap(radiance.blue()));
 
-	return color.clamp();
+	return color;
 }
 
 }

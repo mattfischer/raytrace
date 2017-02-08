@@ -19,8 +19,6 @@ namespace Object {
 		float green() const;
 		float blue() const;
 
-		Radiance clamp() const;
-
 		Radiance operator+(const Radiance &b) const;
 		Radiance &operator+=(const Radiance &b);
 		Radiance operator/(float b) const;

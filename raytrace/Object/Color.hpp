@@ -19,8 +19,6 @@ public:
 	float green() const;
 	float blue() const;
 
-	Color clamp() const;
-
 	Color operator+(const Color &b) const;
 	Color &operator+=(const Color &b);
 	Color operator/(float b) const;

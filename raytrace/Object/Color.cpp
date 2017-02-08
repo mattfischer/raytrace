@@ -56,22 +56,6 @@ float Color::blue() const
 	return mBlue;
 }
 
-Color Color::clamp() const
-{
-	Color r(mRed, mGreen, mBlue);
-
-	if(r.mRed < 0.0) r.mRed = 0;
-	if(r.mRed > 1.0) r.mRed = 1;
-
-	if(r.mGreen < 0.0) r.mGreen = 0;
-	if(r.mGreen > 1.0) r.mGreen = 1;
-
-	if(r.mBlue < 0.0) r.mBlue = 0;
-	if(r.mBlue > 1.0) r.mBlue = 1;
-
-	return r;
-}
-
 Color Color::operator+(const Color &b) const
 {
 	return Color(mRed + b.mRed, mGreen + b.mGreen, mBlue + b.mBlue);
