@@ -58,7 +58,7 @@ Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tra
 	orthoBasis(normal, x, y);
 
 	Object::Radiance radiance;
-	const int rootN = 20;
+	const int rootN = 5 / intersection.ray().generation();
 	for (int i = 0; i < rootN * rootN; i++) {
 		float phi, r;
 		randomAngles(i, rootN, phi, r);
@@ -70,7 +70,11 @@ Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tra
 		tracer.intersect(ray, begin, end);
 
 		if (begin != end) {
-			const Object::Radiance &incidentRadiance = begin->primitive()->surface().radiance();
+			Trace::Intersection intersection2 = *begin;
+			Object::Radiance incidentRadiance = intersection2.primitive()->surface().radiance();
+			if (ray.generation() < 3) {
+				incidentRadiance += light(intersection2, tracer);
+			}
 			radiance += brdf.radiance(incidentRadiance, incidentDirection, intersection.normal(), outgoingDirection, albedo);
 		}
 	}
