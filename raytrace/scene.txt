@@ -47,17 +47,12 @@ sphere {
 }
 
 box {
-	<-2,10,-2> <4,-0.5,4>
+	<-4,10,-4> <8,-0.5,8>
 	surface {
 		brdf { lambert 0 }
 		albedo { color <1,1,1> }
 		radiance <10,10,10>
 	}
-}
-
-light {
-	radiance <30,30,30>
-	transform { translate <2,8,-6> }
 }
 
 camera {
