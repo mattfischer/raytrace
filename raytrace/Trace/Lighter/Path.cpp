@@ -12,7 +12,7 @@
 namespace Trace {
 namespace Lighter {
 
-void orthoBasis(const Math::Vector &n, Math::Vector &x, Math::Vector &y)
+void Path::orthoBasis(const Math::Vector &n, Math::Vector &x, Math::Vector &y) const
 {
 	x = Math::Vector();
 	y = Math::Vector();
@@ -36,6 +36,17 @@ void orthoBasis(const Math::Vector &n, Math::Vector &x, Math::Vector &y)
 	y = y.normalize();
 }
 
+void Path::randomAngles(int i, int rootN, float &phi, float &r) const
+{
+	int a = i / rootN;
+	int b = i % rootN;
+	std::uniform_real_distribution<float> d(0, 1);
+	float u = (a + d(mRandomEngine)) / rootN;
+	float v = (b + d(mRandomEngine)) / rootN;
+	phi = v * 2 * M_PI;
+	r = std::sqrt(u);
+}
+
 Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
 {
 	const Math::Vector normal(intersection.normal());
@@ -46,15 +57,13 @@ Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tra
 	Math::Vector x, y;
 	orthoBasis(normal, x, y);
 
-	std::uniform_real_distribution<float> d(0, 1);
-
 	Object::Radiance radiance;
-	const int N = 10;
-	for (int i = 0; i < N; i++) {
-		float phi = d(mRandomEngine) * 2 * M_PI;
-		float u = d(mRandomEngine);
-		float r = std::sqrt(u);
-		Math::Vector incidentDirection = x * r * cos(phi) + y * r * sin(phi) + normal * std::sqrt(1 - u);
+	const int rootN = 20;
+	for (int i = 0; i < rootN * rootN; i++) {
+		float phi, r;
+		randomAngles(i, rootN, phi, r);
+
+		Math::Vector incidentDirection = x * r * cos(phi) + y * r * sin(phi) + normal * std::sqrt(1 - r * r);
 
 		Trace::Ray ray(intersection.point(), incidentDirection, intersection.ray().generation() + 1);
 		Trace::IntersectionVector::iterator begin, end;
@@ -66,7 +75,7 @@ Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tra
 		}
 	}
 
-	radiance = radiance * 2 * M_PI / N;
+	radiance = radiance * 2 * M_PI / (rootN * rootN);
 
 	return radiance;
 }
