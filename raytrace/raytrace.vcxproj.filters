@@ -185,6 +185,9 @@
     <ClCompile Include="Trace\Lighter\Utils.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
+    <ClCompile Include="Trace\Lighter\DirectPoint.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -366,6 +369,9 @@
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Trace\Lighter\Utils.hpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\DirectPoint.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
