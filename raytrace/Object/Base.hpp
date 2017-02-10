@@ -12,6 +12,8 @@ public:
 	const Math::Transformation &transformation() const;
 
 protected:
+	virtual void doTransform();
+
 	Math::Transformation mTransformation;
 };
 

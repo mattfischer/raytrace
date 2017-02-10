@@ -16,6 +16,7 @@ public:
 protected:
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
 	virtual bool doInside(const Math::Point &point) const;
+	virtual BoundingSphere doBoundingSphere() const;
 };
 
 }

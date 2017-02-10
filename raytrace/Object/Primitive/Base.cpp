@@ -10,6 +10,8 @@
 
 #include "Object/Surface.hpp"
 
+#include <algorithm>
+
 namespace Object {
 namespace Primitive {
 
@@ -73,6 +75,11 @@ void Base::setSurface(std::unique_ptr<Surface> &&surface)
 	mSurface = std::move(surface);
 }
 
+const BoundingSphere &Base::boundingSphere() const
+{
+	return mBoundingSphere;
+}
+
 void Base::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
 	Trace::Ray transformedRay = mTransformation.inverse() * ray;
@@ -85,6 +92,26 @@ bool Base::inside(const Math::Point &point) const
 	Math::Point transformedPoint = mTransformation.inverse() * point;
 
 	return doInside(transformedPoint);
+}
+
+void Base::doTransform()
+{
+	BoundingSphere objectSphere = doBoundingSphere();
+
+	if (objectSphere.radius() > 0) {
+		const Math::Point &origin = mTransformation * objectSphere.origin();
+		float xScale = (mTransformation * Math::Vector(1, 0, 0)).magnitude();
+		float yScale = (mTransformation * Math::Vector(0, 1, 0)).magnitude();
+		float zScale = (mTransformation * Math::Vector(0, 0, 1)).magnitude();
+		float scale = std::max(std::max(xScale, yScale), zScale);
+
+		mBoundingSphere = BoundingSphere(origin, objectSphere.radius() * scale);
+	}
+}
+
+BoundingSphere Base::doBoundingSphere() const
+{
+	return BoundingSphere();
 }
 
 }

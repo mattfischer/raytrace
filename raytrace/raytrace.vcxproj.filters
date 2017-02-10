@@ -179,6 +179,9 @@
     <ClCompile Include="Trace\Lighter\Path.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Primitive\BoundingSphere.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -355,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="Trace\Lighter\Path.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\BoundingSphere.hpp">
+      <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
