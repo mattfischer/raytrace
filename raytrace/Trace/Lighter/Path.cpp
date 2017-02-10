@@ -6,55 +6,16 @@
 #include "Object/Primitive/Base.hpp"
 #include "Trace/Ray.hpp"
 #include "Trace/Tracer.hpp"
+#include "Trace/Lighter/Utils.hpp"
 
 #include <cmath>
 
 namespace Trace {
 namespace Lighter {
 
-void Path::orthoBasis(const Math::Vector &n, Math::Vector &x, Math::Vector &y) const
+Path::Path()
+	: mDirectLighter(10)
 {
-	x = Math::Vector();
-	y = Math::Vector();
-
-	Math::Vector vectors[] = { Math::Vector(1,0,0), Math::Vector(0,1,0), Math::Vector(0,0,1) };
-
-	for (const Math::Vector &v : vectors) {
-		Math::Vector p = v - n * (v * n);
-		if (p.magnitude2() > x.magnitude2()) {
-			y = x;
-			x = p;
-		}
-		else if (p.magnitude2() > y.magnitude2()) {
-			y = p;
-		}
-	}
-
-	x = x.normalize();
-	y = y - x * (x * y);
-
-	y = y.normalize();
-}
-
-void Path::randomAngles(int i, int N, float &phi, float &r) const
-{
-	int A = sqrt(N);
-	int B = N / A;
-	std::uniform_real_distribution<float> d(0, 1);
-
-	float u, v;
-	if (i < A * B) {
-		int a = i / A;
-		int b = i % A;
-		u = (a + d(mRandomEngine)) / A;
-		v = (b + d(mRandomEngine)) / B;
-	} else {
-		u = d(mRandomEngine);
-		v = d(mRandomEngine);
-	}
-
-	phi = v * 2 * M_PI;
-	r = std::sqrt(u);
 }
 
 Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
@@ -65,15 +26,13 @@ Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tra
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
 	Math::Vector x, y;
-	orthoBasis(normal, x, y);
+	Utils::orthonormalBasis(normal, x, y);
 
 	Object::Radiance radiance;
-	const int N = 25 / intersection.ray().generation();
+	const int N = 25;
 	for (int i = 0; i < N; i++) {
-		float phi, r;
-		randomAngles(i, N, phi, r);
-
-		Math::Vector incidentDirection = x * r * cos(phi) + y * r * sin(phi) + normal * std::sqrt(1 - r * r);
+		Math::Vector v = Utils::sampleHemisphereCosineWeighted(i, N, mRandomEngine);
+		Math::Vector incidentDirection = x * v.x() + y * v.y() + normal * v.z();
 
 		Trace::Ray ray(intersection.point(), incidentDirection, intersection.ray().generation() + 1);
 		Trace::IntersectionVector::iterator begin, end;
@@ -81,10 +40,7 @@ Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tra
 
 		if (begin != end) {
 			Trace::Intersection intersection2 = *begin;
-			Object::Radiance incidentRadiance = intersection2.primitive()->surface().radiance();
-			if (ray.generation() < 3) {
-				incidentRadiance += light(intersection2, tracer);
-			}
+			Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer);
 			radiance += brdf.radiance(incidentRadiance, incidentDirection, intersection.normal(), outgoingDirection, albedo);
 		}
 	}

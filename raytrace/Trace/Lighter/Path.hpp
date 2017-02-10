@@ -2,6 +2,7 @@
 #define TRACE_LIGHTER_PATH_HPP
 
 #include "Trace/Lighter/Base.hpp"
+#include "Trace/Lighter/Direct.hpp"
 
 #include <random>
 
@@ -11,13 +12,12 @@ namespace Trace {
 		class Path : public Base
 		{
 		public:
+			Path();
 			virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
 
 		private:
-			void orthoBasis(const Math::Vector &n, Math::Vector &x, Math::Vector &y) const;
-			void randomAngles(int i, int N, float &phi, float &r) const;
-
 			mutable std::default_random_engine mRandomEngine;
+			Direct mDirectLighter;
 		};
 
 	}
