@@ -36,13 +36,23 @@ void Path::orthoBasis(const Math::Vector &n, Math::Vector &x, Math::Vector &y) c
 	y = y.normalize();
 }
 
-void Path::randomAngles(int i, int rootN, float &phi, float &r) const
+void Path::randomAngles(int i, int N, float &phi, float &r) const
 {
-	int a = i / rootN;
-	int b = i % rootN;
+	int A = sqrt(N);
+	int B = N / A;
 	std::uniform_real_distribution<float> d(0, 1);
-	float u = (a + d(mRandomEngine)) / rootN;
-	float v = (b + d(mRandomEngine)) / rootN;
+
+	float u, v;
+	if (i < A * B) {
+		int a = i / A;
+		int b = i % A;
+		u = (a + d(mRandomEngine)) / A;
+		v = (b + d(mRandomEngine)) / B;
+	} else {
+		u = d(mRandomEngine);
+		v = d(mRandomEngine);
+	}
+
 	phi = v * 2 * M_PI;
 	r = std::sqrt(u);
 }
@@ -58,10 +68,10 @@ Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tra
 	orthoBasis(normal, x, y);
 
 	Object::Radiance radiance;
-	const int rootN = 5 / intersection.ray().generation();
-	for (int i = 0; i < rootN * rootN; i++) {
+	const int N = 25 / intersection.ray().generation();
+	for (int i = 0; i < N; i++) {
 		float phi, r;
-		randomAngles(i, rootN, phi, r);
+		randomAngles(i, N, phi, r);
 
 		Math::Vector incidentDirection = x * r * cos(phi) + y * r * sin(phi) + normal * std::sqrt(1 - r * r);
 
@@ -79,7 +89,7 @@ Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tra
 		}
 	}
 
-	radiance = radiance * 2 * M_PI / (rootN * rootN);
+	radiance = radiance * 2 * M_PI / N;
 
 	return radiance;
 }
