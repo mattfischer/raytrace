@@ -140,7 +140,7 @@
     <ClCompile Include="Trace\Lighter\Base.cpp" />
     <ClCompile Include="Trace\Lighter\Direct.cpp" />
     <ClCompile Include="Trace\Lighter\DirectPoint.cpp" />
-    <ClCompile Include="Trace\Lighter\Path.cpp" />
+    <ClCompile Include="Trace\Lighter\Indirect.cpp" />
     <ClCompile Include="Trace\Lighter\Radiant.cpp" />
     <ClCompile Include="Trace\Lighter\Specular.cpp" />
     <ClCompile Include="Trace\Lighter\Utils.cpp" />
@@ -206,7 +206,7 @@
     <ClInclude Include="Trace\Lighter\Direct.hpp" />
     <ClInclude Include="Trace\Lighter\DirectPoint.hpp" />
     <ClInclude Include="Trace\Lighter\Forwards.hpp" />
-    <ClInclude Include="Trace\Lighter\Path.hpp" />
+    <ClInclude Include="Trace\Lighter\Indirect.hpp" />
     <ClInclude Include="Trace\Lighter\Radiant.hpp" />
     <ClInclude Include="Trace\Lighter\Specular.hpp" />
     <ClInclude Include="Trace\Lighter\Utils.hpp" />

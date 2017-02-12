@@ -176,9 +176,6 @@
     <ClCompile Include="Trace\Lighter\Radiant.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\Lighter\Path.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Primitive\BoundingSphere.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
@@ -186,6 +183,9 @@
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
     <ClCompile Include="Trace\Lighter\DirectPoint.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\Indirect.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
@@ -362,9 +362,6 @@
     <ClInclude Include="Trace\Lighter\Radiant.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\Lighter\Path.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Primitive\BoundingSphere.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
@@ -372,6 +369,9 @@
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="Trace\Lighter\DirectPoint.hpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\Indirect.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
   </ItemGroup>

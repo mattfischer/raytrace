@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "Trace/Lighter/Path.hpp"
+#include "Trace/Lighter/Indirect.hpp"
 
 #include "Object/Radiance.hpp"
 #include "Trace/Intersection.hpp"
@@ -13,12 +13,12 @@
 namespace Trace {
 namespace Lighter {
 
-Path::Path()
+Indirect::Indirect()
 	: mDirectLighter(10)
 {
 }
 
-Object::Radiance Path::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
+Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
 {
 	const Math::Vector normal(intersection.normal());
 	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());

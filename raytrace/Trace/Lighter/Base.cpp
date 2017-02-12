@@ -2,7 +2,7 @@
 
 #include "Trace/Lighter/Direct.hpp"
 #include "Trace/Lighter/DirectPoint.hpp"
-#include "Trace/Lighter/Path.hpp"
+#include "Trace/Lighter/Indirect.hpp"
 #include "Trace/Lighter/Radiant.hpp"
 #include "Trace/Lighter/Specular.hpp"
 
@@ -15,7 +15,7 @@ std::vector<std::unique_ptr<Base>> Base::createLighters()
 
 	ret.push_back(std::make_unique<Direct>(100));
 	//ret.push_back(std::make_unique<DirectPoint>());
-	ret.push_back(std::make_unique<Path>());
+	ret.push_back(std::make_unique<Indirect>());
 	ret.push_back(std::make_unique<Radiant>());
 	ret.push_back(std::make_unique<Specular>());
 

@@ -1,5 +1,5 @@
-#ifndef TRACE_LIGHTER_PATH_HPP
-#define TRACE_LIGHTER_PATH_HPP
+#ifndef TRACE_LIGHTER_INDIRECT_HPP
+#define TRACE_LIGHTER_INDIRECT_HPP
 
 #include "Trace/Lighter/Base.hpp"
 #include "Trace/Lighter/Direct.hpp"
@@ -9,10 +9,10 @@
 namespace Trace {
 	namespace Lighter {
 
-		class Path : public Base
+		class Indirect : public Base
 		{
 		public:
-			Path();
+			Indirect();
 			virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
 
 		private:
