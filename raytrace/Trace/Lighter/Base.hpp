@@ -16,8 +16,6 @@ class Base;
 class Base {
 public:
 	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const = 0;
-
-	static std::vector<std::unique_ptr<Base>> createLighters();
 };
 
 }

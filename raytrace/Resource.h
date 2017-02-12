@@ -15,14 +15,22 @@
 #define IDC_RENDER_STATUS               1012
 #define IDC_THRESHOLD                   1013
 #define IDC_MAX_GEN                     1014
+#define IDC_RADIANT                     1015
+#define IDC_DIRECT                      1016
+#define IDC_DIRECT_SAMPLES              1017
+#define IDC_INDIRECT                    1018
+#define IDC_INDIRECT_SAMPLES            1019
+#define IDC_EDIT3                       1020
+#define IDC_INDIRECT_DIRECT_SAMPLES     1020
+#define IDC_SPECULAR                    1022
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        102
+#define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

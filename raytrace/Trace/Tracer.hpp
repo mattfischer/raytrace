@@ -24,6 +24,13 @@ public:
 		int maxRayGeneration;
 		float threshold;
 		int maxAAGen;
+		bool radiantLighting;
+		bool specularLighting;
+		bool directLighting;
+		int directSamples;
+		bool indirectLighting;
+		int indirectSamples;
+		int indirectDirectSamples;
 	};
 
 	Tracer(const Object::Scene &scene, const Settings &settings);

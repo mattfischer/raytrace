@@ -161,9 +161,6 @@
     <ClCompile Include="Object\Surface.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\Lighter\Base.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Trace\Lighter\Direct.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>

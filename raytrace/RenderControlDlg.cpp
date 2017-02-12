@@ -16,6 +16,13 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.maxRayGeneration = 2;
 	mSettings.threshold = 0.25f;
 	mSettings.maxAAGen = 3;
+	mSettings.radiantLighting = true;
+	mSettings.specularLighting = true;
+	mSettings.directLighting = true;
+	mSettings.directSamples = 100;
+	mSettings.indirectLighting = true;
+	mSettings.indirectSamples = 25;
+	mSettings.indirectDirectSamples = 10;
 }
 
 void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
@@ -70,6 +77,13 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		SetDlgItemText(hwndDlg, IDC_THRESHOLD, buf);
 		SetDlgItemInt(hwndDlg, IDC_MAX_GEN, mSettings.maxAAGen, TRUE);
 		SendDlgItemMessage(hwndDlg, IDC_MAX_GEN_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
+		CheckDlgButton(hwndDlg, IDC_RADIANT, mSettings.radiantLighting ? BST_CHECKED : BST_UNCHECKED);
+		CheckDlgButton(hwndDlg, IDC_SPECULAR, mSettings.specularLighting ? BST_CHECKED : BST_UNCHECKED);
+		CheckDlgButton(hwndDlg, IDC_DIRECT, mSettings.directLighting ? BST_CHECKED : BST_UNCHECKED);
+		SetDlgItemInt(hwndDlg, IDC_DIRECT_SAMPLES, mSettings.directSamples, TRUE);
+		CheckDlgButton(hwndDlg, IDC_INDIRECT, mSettings.indirectLighting ? BST_CHECKED : BST_UNCHECKED);
+		SetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, mSettings.indirectSamples, TRUE);
+		SetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, mSettings.indirectDirectSamples, TRUE);
 		return FALSE;
 
 	case WM_COMMAND:
@@ -82,6 +96,13 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 			GetDlgItemText(hwndDlg, IDC_THRESHOLD, buf, sizeof(buf));
 			mSettings.threshold = atof(buf);
 			mSettings.maxAAGen = GetDlgItemInt(hwndDlg, IDC_MAX_GEN, NULL, TRUE);
+			mSettings.radiantLighting = IsDlgButtonChecked(hwndDlg, IDC_RADIANT);
+			mSettings.specularLighting = IsDlgButtonChecked(hwndDlg, IDC_SPECULAR);
+			mSettings.directLighting = IsDlgButtonChecked(hwndDlg, IDC_DIRECT);
+			mSettings.directSamples = GetDlgItemInt(hwndDlg, IDC_DIRECT_SAMPLES, NULL, TRUE);
+			mSettings.indirectLighting = IsDlgButtonChecked(hwndDlg, IDC_INDIRECT);
+			mSettings.indirectSamples = GetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, NULL, TRUE);
+			mSettings.indirectDirectSamples = GetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, NULL, TRUE);
 			mListener->onRenderButtonClicked();
 			return TRUE;
 		}

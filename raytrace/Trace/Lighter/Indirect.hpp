@@ -12,11 +12,12 @@ namespace Trace {
 		class Indirect : public Base
 		{
 		public:
-			Indirect();
+			Indirect(int indirectSamples, int indirectDirectSamples);
 			virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
 
 		private:
 			mutable std::default_random_engine mRandomEngine;
+			int mIndirectSamples;
 			Direct mDirectLighter;
 		};
 

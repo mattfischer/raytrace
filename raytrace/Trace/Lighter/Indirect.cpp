@@ -13,9 +13,10 @@
 namespace Trace {
 namespace Lighter {
 
-Indirect::Indirect()
-	: mDirectLighter(10)
+Indirect::Indirect(int indirectSamples, int indirectDirectSamples)
+	: mDirectLighter(indirectDirectSamples)
 {
+	mIndirectSamples = indirectSamples;
 }
 
 Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
@@ -29,9 +30,8 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 	Utils::orthonormalBasis(normal, x, y);
 
 	Object::Radiance radiance;
-	const int N = 25;
-	for (int i = 0; i < N; i++) {
-		Math::Vector v = Utils::sampleHemisphereCosineWeighted(i, N, mRandomEngine);
+	for (int i = 0; i < mIndirectSamples; i++) {
+		Math::Vector v = Utils::sampleHemisphereCosineWeighted(i, mIndirectSamples, mRandomEngine);
 		Math::Vector incidentDirection = x * v.x() + y * v.y() + normal * v.z();
 
 		Trace::Ray ray(intersection.point(), incidentDirection, intersection.ray().generation() + 1);
@@ -45,7 +45,7 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 		}
 	}
 
-	radiance = radiance * 2 * M_PI / N;
+	radiance = radiance * 2 * M_PI / mIndirectSamples;
 
 	return radiance;
 }

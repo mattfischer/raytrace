@@ -137,7 +137,6 @@
     <ClCompile Include="Render\Thread.cpp" />
     <ClCompile Include="Scene.tab.c" />
     <ClCompile Include="Trace\Intersection.cpp" />
-    <ClCompile Include="Trace\Lighter\Base.cpp" />
     <ClCompile Include="Trace\Lighter\Direct.cpp" />
     <ClCompile Include="Trace\Lighter\DirectPoint.cpp" />
     <ClCompile Include="Trace\Lighter\Indirect.cpp" />

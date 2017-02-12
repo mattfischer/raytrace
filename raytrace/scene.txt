@@ -55,11 +55,6 @@ box {
 	}
 }
 
-light {
-	radiance <18000,18000,18000>
-	transform { translate <0,8,0> }
-}
-
 camera {
 	transform { translate <0,0,-30> }
 }

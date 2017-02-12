@@ -8,7 +8,11 @@
 #include "Object/Albedo/Base.hpp"
 #include "Object/Primitive/Base.hpp"
 
-#include "Trace/Lighter/Base.hpp"
+#include "Trace/Lighter/Direct.hpp"
+#include "Trace/Lighter/DirectPoint.hpp"
+#include "Trace/Lighter/Indirect.hpp"
+#include "Trace/Lighter/Radiant.hpp"
+#include "Trace/Lighter/Specular.hpp"
 
 #include <algorithm>
 
@@ -18,7 +22,23 @@ Tracer::Tracer(const Object::Scene &scene, const Settings &settings)
 	: mScene(scene)
 {
 	mSettings = settings;
-	mLighters = Lighter::Base::createLighters();
+
+	if (settings.directLighting) {
+		mLighters.push_back(std::make_unique<Lighter::Direct>(settings.directSamples));
+		mLighters.push_back(std::make_unique<Lighter::DirectPoint>());
+	}
+
+	if (settings.indirectLighting) {
+		mLighters.push_back(std::make_unique<Lighter::Indirect>(settings.indirectSamples, settings.indirectDirectSamples));
+	}
+
+	if (settings.radiantLighting) {
+		mLighters.push_back(std::make_unique<Lighter::Radiant>());
+	}
+
+	if (settings.specularLighting) {
+		mLighters.push_back(std::make_unique<Lighter::Specular>());
+	}
 }
 
 const Object::Scene &Tracer::scene() const
@@ -71,9 +91,26 @@ Object::Color Tracer::tracePixel(float x, float y)
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;
 	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
-	Object::Radiance radiance = traceRay(ray);
-	Object::Color color(toneMap(radiance.red()), toneMap(radiance.green()), toneMap(radiance.blue()));
 
+	Object::Color color;
+	if (mSettings.lighting)
+	{
+		Object::Radiance radiance = traceRay(ray);
+		color = Object::Color(toneMap(radiance.red()), toneMap(radiance.green()), toneMap(radiance.blue()));
+	}
+	else
+	{
+		IntersectionVector::iterator begin, end;
+
+		intersect(ray, begin, end);
+
+		if (begin != end)
+		{
+			const Intersection &intersection = *begin;
+			color = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+		}
+	}
+	
 	return color;
 }
 
