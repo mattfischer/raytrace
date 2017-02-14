@@ -9,7 +9,6 @@
 #include "Object/Primitive/Base.hpp"
 
 #include "Trace/Lighter/Direct.hpp"
-#include "Trace/Lighter/DirectPoint.hpp"
 #include "Trace/Lighter/Indirect.hpp"
 #include "Trace/Lighter/Radiant.hpp"
 #include "Trace/Lighter/Specular.hpp"
@@ -26,7 +25,6 @@ Tracer::Tracer(const Object::Scene &scene, const Settings &settings, RenderData 
 
 	if (settings.directLighting) {
 		mLighters.push_back(std::make_unique<Lighter::Direct>(settings.directSamples));
-		mLighters.push_back(std::make_unique<Lighter::DirectPoint>());
 	}
 
 	if (settings.indirectLighting) {

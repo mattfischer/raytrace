@@ -31,8 +31,6 @@ typedef enum
 	AstSpecular,
 	AstSurfaceReflection,
 
-	AstLight,
-
 	AstCamera,
 
 	AstUnion,

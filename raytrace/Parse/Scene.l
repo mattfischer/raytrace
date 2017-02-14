@@ -30,6 +30,7 @@ translate return TRANSLATE;
 scale return SCALE;
 
 surface return SURFACE;
+radiance return RADIANCE;
 brdf return BRDF;
 albedo return ALBEDO;
 color return COLOR;
@@ -38,9 +39,6 @@ checker return CHECKER;
 lambert return LAMBERT;
 phong return PHONG;
 specular return SPECULAR;
-
-light return LIGHT;
-radiance return RADIANCE;
 
 camera return CAMERA;
 

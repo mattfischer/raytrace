@@ -77,9 +77,6 @@
     <ClCompile Include="Object\Color.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Light.cpp">
-      <Filter>Source Files\Object</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Scene.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
@@ -177,9 +174,6 @@
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="Trace\Lighter\Utils.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Lighter\DirectPoint.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
     <ClCompile Include="Trace\Lighter\Indirect.cpp">
@@ -302,9 +296,6 @@
     <ClInclude Include="Object\Forwards.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Light.hpp">
-      <Filter>Source Files\Object</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Scene.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
@@ -372,9 +363,6 @@
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Trace\Lighter\Utils.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\DirectPoint.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="Trace\Lighter\Indirect.hpp">
