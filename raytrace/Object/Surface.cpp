@@ -1,7 +1,6 @@
 #include "Object/Surface.hpp"
 
 #include "Object/Scene.hpp"
-#include "Object/Light.hpp"
 #include "Object/Camera.hpp"
 #include "Trace/Tracer.hpp"
 

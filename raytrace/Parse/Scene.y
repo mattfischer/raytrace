@@ -38,7 +38,6 @@
 %token PHONG
 %token SPECULAR
 %token CAMERA
-%token LIGHT
 %token RADIANCE
 
 %token UNION
@@ -54,7 +53,6 @@
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> surfacedef surface_list surface_item albedodef brdf_list brdf_item
 %type <_ast> spheredef planedef boxdef conedef cylinderdef
-%type <_ast> lightdef radiancedef light_modifiers light_modifier
 %type <_ast> cameradef camera_modifiers camera_modifier csgdef
 %start scene
 
@@ -68,7 +66,6 @@ object_list: object
 	{ $$ = addChild($1, $2); }
 			  
 object: primitive
-	  | lightdef
 	  | cameradef
 	
 primitive: primitive_wrap
@@ -153,19 +150,6 @@ albedodef: colordef
 
 colordef: COLOR VECTOR
 	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }	
-
-radiancedef: RADIANCE VECTOR
-	{ $$ = newAst(AstRadiance, 0); $$->data._vector = $2; }	
-
-lightdef: LIGHT '{' radiancedef light_modifiers '}'
-	{ $$ = addChildren(newAst(AstLight, 1, $3), $4->numChildren, $4->children); }
-	
-light_modifiers: light_modifier
-	{ $$ = newAst(AstList, 1, $1); }
-			   | light_modifiers light_modifier
-	{ $$ = addChild($1, $2); }
-
-light_modifier: transformdef
 
 cameradef: CAMERA '{' camera_modifiers '}'
 	{ $$ = addChildren(newAst(AstCamera, 0), $3->numChildren, $3->children); }

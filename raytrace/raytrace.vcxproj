@@ -112,7 +112,6 @@
     <ClCompile Include="Object\Brdf\Specular.cpp" />
     <ClCompile Include="Object\Camera.cpp" />
     <ClCompile Include="Object\Color.cpp" />
-    <ClCompile Include="Object\Light.cpp" />
     <ClCompile Include="Object\Primitive\Base.cpp" />
     <ClCompile Include="Object\Primitive\BoundingSphere.cpp" />
     <ClCompile Include="Object\Primitive\Box.cpp" />
@@ -138,7 +137,6 @@
     <ClCompile Include="Scene.tab.c" />
     <ClCompile Include="Trace\Intersection.cpp" />
     <ClCompile Include="Trace\Lighter\Direct.cpp" />
-    <ClCompile Include="Trace\Lighter\DirectPoint.cpp" />
     <ClCompile Include="Trace\Lighter\Indirect.cpp" />
     <ClCompile Include="Trace\Lighter\Radiant.cpp" />
     <ClCompile Include="Trace\Lighter\Specular.cpp" />
@@ -176,7 +174,6 @@
     <ClInclude Include="Object\Camera.hpp" />
     <ClInclude Include="Object\Color.hpp" />
     <ClInclude Include="Object\Forwards.hpp" />
-    <ClInclude Include="Object\Light.hpp" />
     <ClInclude Include="Object\Primitive\Base.hpp" />
     <ClInclude Include="Object\Primitive\BoundingSphere.hpp" />
     <ClInclude Include="Object\Primitive\Box.hpp" />
@@ -203,7 +200,6 @@
     <ClInclude Include="Trace\Intersection.hpp" />
     <ClInclude Include="Trace\Lighter\Base.hpp" />
     <ClInclude Include="Trace\Lighter\Direct.hpp" />
-    <ClInclude Include="Trace\Lighter\DirectPoint.hpp" />
     <ClInclude Include="Trace\Lighter\Forwards.hpp" />
     <ClInclude Include="Trace\Lighter\Indirect.hpp" />
     <ClInclude Include="Trace\Lighter\Radiant.hpp" />

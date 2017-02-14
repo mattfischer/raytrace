@@ -8,7 +8,6 @@ namespace Object {
 class Base;
 class Camera;
 class Color;
-class Light;
 class Radiance;
 class Scene;
 class Surface;

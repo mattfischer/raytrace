@@ -5,7 +5,6 @@
 
 #include "Trace/Tracer.hpp"
 #include "Object/Scene.hpp"
-#include "Object/Light.hpp"
 
 namespace Trace {
 namespace Lighter {
