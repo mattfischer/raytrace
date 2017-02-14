@@ -18,6 +18,8 @@ public:
 	virtual bool specular() const;
 	virtual Object::Radiance specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const;
 
+	virtual float lambert() const;
+
 	static std::unique_ptr<Base> fromAst(AST *ast);
 };
 

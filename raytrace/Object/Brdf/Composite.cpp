@@ -35,6 +35,17 @@ bool Composite::specular() const
 	return false;
 }
 
+float Composite::lambert() const
+{
+	float lambert = 0;
+
+	for (const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
+		lambert += brdf->lambert();
+	}
+
+	return lambert;
+}
+
 Object::Radiance Composite::specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const
 {
 	Object::Radiance totalRadiance;

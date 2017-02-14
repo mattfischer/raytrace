@@ -50,7 +50,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 			tracer.intersect(ray, begin, end);
 
 			if (begin != end && begin->primitive() == primitive.get()) {
-				outgoingRadiance += brdf.radiance(objectRadiance, incidentDirection, intersection.normal(), outgoingDirection, albedo) * dot;
+				outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot / (2 * M_PI);
 			}
 		}
 

@@ -41,7 +41,7 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 		if (begin != end) {
 			Trace::Intersection intersection2 = *begin;
 			Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer);
-			radiance += brdf.radiance(incidentRadiance, incidentDirection, intersection.normal(), outgoingDirection, albedo);
+			radiance += incidentRadiance * albedo * brdf.lambert() / (2 * M_PI);
 		}
 	}
 
