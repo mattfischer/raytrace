@@ -80,7 +80,7 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 
 			mean += 1 / intersection2.distance();
 			Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer);
-			cacheRadiance += brdf.radiance(incidentRadiance, incidentDirection, intersection.normal(), outgoingDirection, Object::Color(1, 1, 1));
+			cacheRadiance += incidentRadiance * brdf.lambert() / (2 * M_PI);
 			radiance += brdf.radiance(incidentRadiance, incidentDirection, intersection.normal(), outgoingDirection, albedo);
 		}
 	}

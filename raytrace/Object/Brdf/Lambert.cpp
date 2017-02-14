@@ -14,6 +14,11 @@ Lambert::Lambert(float strength)
 	mStrength = strength;
 }
 
+float Lambert::lambert() const
+{
+	return mStrength;
+}
+
 Object::Radiance Lambert::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	return incidentRadiance * albedo * mStrength / (2 * M_PI);

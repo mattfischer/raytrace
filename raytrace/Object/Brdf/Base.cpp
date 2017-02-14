@@ -17,6 +17,11 @@ Object::Radiance Base::radiance(const Object::Radiance &incidentRadiance, const 
 	return Object::Radiance(0, 0, 0);
 }
 
+float Base::lambert() const
+{
+	return 0;
+}
+
 bool Base::specular() const
 {
 	return false;
