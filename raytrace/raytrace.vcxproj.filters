@@ -185,6 +185,15 @@
     <ClCompile Include="Trace\Lighter\Indirect.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
+    <ClCompile Include="Trace\IrradianceCache.cpp">
+      <Filter>Source Files\Trace</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\Base.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\PrerenderThread.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -370,6 +379,12 @@
     </ClInclude>
     <ClInclude Include="Trace\Lighter\Indirect.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\IrradianceCache.hpp">
+      <Filter>Source Files\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\PrerenderThread.hpp">
+      <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

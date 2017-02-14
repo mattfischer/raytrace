@@ -7,6 +7,7 @@
 #include "Object/Color.hpp"
 #include "Trace/Intersection.hpp"
 #include "Trace/Lighter/Base.hpp"
+#include "Trace/IrradianceCache.hpp"
 
 #include <vector>
 #include <memory>
@@ -33,19 +34,28 @@ public:
 		int indirectDirectSamples;
 	};
 
-	Tracer(const Object::Scene &scene, const Settings &settings);
+	struct RenderData
+	{
+		IrradianceCache irradianceCache;
+	};
+
+	Tracer(const Object::Scene &scene, const Settings &settings, RenderData &renderData);
 
 	const Object::Scene &scene() const;
 	Settings &settings();
+	RenderData &renderData();
 
 	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
 
 	Object::Color tracePixel(float x, float y);
 	Object::Radiance traceRay(const Trace::Ray &ray);
 
+	bool prerenderPixel(float x, float y);
+
 protected:
 	const Object::Scene &mScene;
 	Settings mSettings;
+	RenderData &mRenderData;
 
 	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
 	IntersectionVector mIntersections;

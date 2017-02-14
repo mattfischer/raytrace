@@ -19,6 +19,7 @@ public:
 	void onRenderButtonClicked();
 	void onRenderStatus(const char *message);
 	void onRenderDone();
+	void onPrerenderDone();
 
 private:
 	static LRESULT CALLBACK wndProcStub(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);

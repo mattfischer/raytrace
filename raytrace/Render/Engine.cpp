@@ -16,6 +16,15 @@ Engine::~Engine()
 	DeleteCriticalSection(&mCritSec);
 }
 
+void Engine::startPrerender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
+{
+	mRenderData.irradianceCache.clear();
+
+	mListener = listener;
+	mPrerenderThread = std::make_unique<PrerenderThread>(*this, mScene, settings, mRenderData, bits);
+	mPrerenderThread->start();
+}
+
 void Engine::startRender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
 {
 	mSettings = settings;
@@ -35,7 +44,7 @@ void Engine::startRender(const Trace::Tracer::Settings &settings, unsigned char 
 		int startLine = i * size;
 		int numLines = (i == numThreads - 1) ? mSettings.height - startLine : size;
 
-		std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, mScene, mSettings, mBits);
+		std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, mScene, mSettings, mRenderData, mBits);
 		thread->start(startLine, numLines);
 		mThreads.insert(std::move(thread));
 	}
@@ -90,6 +99,12 @@ bool Engine::threadDone(Thread *doneThread)
 	LeaveCriticalSection(&mCritSec);
 
 	return ret;
+}
+
+void Engine::prerenderThreadDone()
+{
+	mListener->onPrerenderDone();
+	mPrerenderThread.reset();
 }
 
 }

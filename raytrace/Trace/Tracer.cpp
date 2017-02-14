@@ -18,8 +18,9 @@
 
 namespace Trace {
 
-Tracer::Tracer(const Object::Scene &scene, const Settings &settings)
+Tracer::Tracer(const Object::Scene &scene, const Settings &settings, RenderData &renderData)
 	: mScene(scene)
+	, mRenderData(renderData)
 {
 	mSettings = settings;
 
@@ -49,6 +50,11 @@ const Object::Scene &Tracer::scene() const
 Tracer::Settings &Tracer::settings()
 {
 	return mSettings;
+}
+
+Tracer::RenderData &Tracer::renderData()
+{
+	return mRenderData;
 }
 
 void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
@@ -112,6 +118,27 @@ Object::Color Tracer::tracePixel(float x, float y)
 	}
 	
 	return color;
+}
+
+bool Tracer::prerenderPixel(float x, float y)
+{
+	bool ret = false;
+	float cx = (2 * x - mSettings.width) / mSettings.width;
+	float cy = (2 * y - mSettings.height) / mSettings.width;
+	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
+
+	IntersectionVector::iterator begin, end;
+	intersect(ray, begin, end);
+
+	if (begin != end)
+	{
+		Intersection intersection = *begin;
+		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
+			ret |= lighter->prerender(intersection, *this);
+		}
+	}
+
+	return ret;
 }
 
 }

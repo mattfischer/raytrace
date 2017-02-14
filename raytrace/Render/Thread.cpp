@@ -5,10 +5,11 @@
 
 namespace Render {
 
-Thread::Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, unsigned char *bits)
+Thread::Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, unsigned char *bits)
 : mEngine(engine),
   mSettings(settings),
-  mTracer(scene, settings)
+  mRenderData(renderData),
+  mTracer(scene, settings, renderData)
 {
 	mBits = bits;
 	mStarted = false;
