@@ -91,7 +91,7 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 		IrradianceCache::Entry newEntry;
 		newEntry.point = point;
 		newEntry.normal = intersection.normal();
-		newEntry.radius = std::max(5.0f, mIndirectSamples / mean);
+		newEntry.radius = mIndirectSamples / mean;
 		newEntry.radiance = cacheRadiance * 2 * M_PI / mIndirectSamples;
 		irradianceCache.add(newEntry);
 	}

@@ -3,6 +3,8 @@
 
 #include "Parse/AST.h"
 
+#include <cmath>
+
 namespace Object {
 
 	Radiance::Radiance()
@@ -55,6 +57,11 @@ namespace Object {
 	float Radiance::blue() const
 	{
 		return mBlue;
+	}
+
+	float Radiance::magnitude() const
+	{
+		return std::sqrt(red() * red() + green() * green() + blue() * blue());
 	}
 
 	Radiance Radiance::operator+(const Radiance &b) const
