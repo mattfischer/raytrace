@@ -18,6 +18,7 @@ Engine::~Engine()
 
 void Engine::startPrerender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
 {
+	mStartTime = GetTickCount();
 	mRenderData.irradianceCache.clear();
 
 	mListener = listener;
@@ -31,7 +32,6 @@ void Engine::startRender(const Trace::Tracer::Settings &settings, unsigned char 
 	mBits = bits;
 	mListener = listener;
 	mRendering = true;
-	mStartTime = GetTickCount();
 	mListener->onRenderStatus("");
 
 	SYSTEM_INFO sysinfo;
