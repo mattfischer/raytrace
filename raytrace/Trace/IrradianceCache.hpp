@@ -20,6 +20,7 @@ public:
 		Object::Radiance radiance;
 	};
 
+	IrradianceCache();
 	float weight(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 	float error(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 	std::vector<Entry> lookup(const Math::Point &point, const Math::Normal &normal) const;
@@ -27,7 +28,17 @@ public:
 	void clear();
 
 private:
-	std::vector<Entry> mEntries;
+	struct OctreeNode
+	{
+		std::vector<Entry> entries;
+		std::unique_ptr<OctreeNode> children[8];
+	};
+
+	void lookupOctreeNode(OctreeNode *node, Math::Point origin, float size, const Math::Point &point, const Math::Normal &normal, std::vector<Entry> &entries) const;
+
+	std::unique_ptr<OctreeNode> mOctree;
+	Math::Point mOctreeOrigin;
+	float mOctreeSize;
 	mutable std::mutex mMutex;
 };
 
