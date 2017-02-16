@@ -3,6 +3,7 @@
 
 #include "Math/Point.hpp"
 #include "Math/Normal.hpp"
+#include "Math/Vector.hpp"
 #include "Object/Radiance.hpp"
 
 #include <vector>
@@ -18,6 +19,9 @@ public:
 		Math::Normal normal;
 		float radius;
 		Object::Radiance radiance;
+		Math::Vector rotGradR;
+		Math::Vector rotGradG;
+		Math::Vector rotGradB;
 	};
 
 	IrradianceCache();

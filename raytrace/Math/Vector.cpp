@@ -88,6 +88,11 @@ Vector Vector::operator-() const
 	return *this * -1;
 }
 
+Vector Vector::operator%(const Math::Vector &b) const
+{
+	return Vector(y() * b.z() - z() * b.y(), z() * b.x() - x() * b.z(), x() * b.y() - y() * b.x());
+}
+
 Vector operator*(const BaseTransformation &transformation, const Vector &vector)
 {
 

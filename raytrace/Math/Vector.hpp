@@ -32,6 +32,7 @@ public:
 	Vector operator*(float b) const;
 	Vector operator/(float b) const;
 	Vector operator-() const;
+	Vector operator%(const Vector &b) const;
 };
 
 Vector operator*(const BaseTransformation &transformation, const Vector &vector);
