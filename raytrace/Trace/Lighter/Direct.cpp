@@ -23,6 +23,10 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
 	Object::Radiance radiance;
+	if (brdf.lambert() == 0) {
+		return radiance;
+	}
+
 	for (const std::unique_ptr<Object::Primitive::Base> &primitive : tracer.scene().primitives()) {
 		const Object::Radiance &objectRadiance = primitive->surface().radiance();
 		if (objectRadiance.red() == 0 && objectRadiance.green() == 0 && objectRadiance.blue() == 0) {
