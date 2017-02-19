@@ -23,7 +23,7 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.indirectLighting = true;
 	mSettings.indirectSamples = 25;
 	mSettings.indirectDirectSamples = 10;
-	mSettings.indirectCacheThreshold = 2;
+	mSettings.indirectCacheThreshold = 5;
 }
 
 void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
