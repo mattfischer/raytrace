@@ -23,6 +23,7 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.indirectLighting = true;
 	mSettings.indirectSamples = 25;
 	mSettings.indirectDirectSamples = 10;
+	mSettings.indirectCacheThreshold = 2;
 }
 
 void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
@@ -84,6 +85,7 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		CheckDlgButton(hwndDlg, IDC_INDIRECT, mSettings.indirectLighting ? BST_CHECKED : BST_UNCHECKED);
 		SetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, mSettings.indirectSamples, TRUE);
 		SetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, mSettings.indirectDirectSamples, TRUE);
+		SetDlgItemInt(hwndDlg, IDC_INDIRECT_CACHE_THRESHOLD, mSettings.indirectCacheThreshold, TRUE);
 		return FALSE;
 
 	case WM_COMMAND:
@@ -103,6 +105,7 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 			mSettings.indirectLighting = IsDlgButtonChecked(hwndDlg, IDC_INDIRECT);
 			mSettings.indirectSamples = GetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, NULL, TRUE);
 			mSettings.indirectDirectSamples = GetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, NULL, TRUE);
+			mSettings.indirectCacheThreshold = GetDlgItemInt(hwndDlg, IDC_INDIRECT_CACHE_THRESHOLD, NULL, TRUE);
 			mListener->onRenderButtonClicked();
 			return TRUE;
 		}

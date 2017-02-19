@@ -20,6 +20,7 @@ void Engine::startPrerender(const Trace::Tracer::Settings &settings, unsigned ch
 {
 	mStartTime = GetTickCount();
 	mRenderData.irradianceCache.clear();
+	mRenderData.irradianceCache.setThreshold(settings.indirectCacheThreshold);
 
 	mListener = listener;
 	mPrerenderThread = std::make_unique<PrerenderThread>(*this, mScene, settings, mRenderData, bits);

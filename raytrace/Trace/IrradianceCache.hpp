@@ -25,6 +25,7 @@ public:
 	};
 
 	IrradianceCache();
+	void setThreshold(float threshold);
 	float weight(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 	float error(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 	std::vector<Entry> lookup(const Math::Point &point, const Math::Normal &normal) const;
@@ -44,6 +45,7 @@ private:
 	Math::Point mOctreeOrigin;
 	float mOctreeSize;
 	mutable std::mutex mMutex;
+	float mThreshold;
 };
 
 }

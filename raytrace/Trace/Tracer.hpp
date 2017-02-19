@@ -32,6 +32,7 @@ public:
 		bool indirectLighting;
 		int indirectSamples;
 		int indirectDirectSamples;
+		int indirectCacheThreshold;
 	};
 
 	struct RenderData

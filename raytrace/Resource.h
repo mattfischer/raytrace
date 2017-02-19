@@ -20,8 +20,9 @@
 #define IDC_DIRECT_SAMPLES              1017
 #define IDC_INDIRECT                    1018
 #define IDC_INDIRECT_SAMPLES            1019
-#define IDC_EDIT3                       1020
 #define IDC_INDIRECT_DIRECT_SAMPLES     1020
+#define IDC_INDIRECT_DIRECT_SAMPLES2    1021
+#define IDC_INDIRECT_CACHE_THRESHOLD    1021
 #define IDC_SPECULAR                    1022
 
 // Next default values for new objects

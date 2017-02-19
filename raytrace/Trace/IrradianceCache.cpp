@@ -7,13 +7,16 @@
 
 namespace Trace {
 
-float a = 2.0f;
-
 IrradianceCache::IrradianceCache()
 {
 	mOctree = std::make_unique<OctreeNode>();
 	mOctreeOrigin = Math::Point(-20, -20, -20);
 	mOctreeSize = 40;
+}
+
+void IrradianceCache::setThreshold(float threshold)
+{
+	mThreshold = threshold;
 }
 
 float IrradianceCache::weight(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const 
@@ -32,7 +35,7 @@ void IrradianceCache::lookupOctreeNode(OctreeNode *node, Math::Point origin, flo
 	for (const Entry &e : node->entries)
 	{
 		float d = (point - e.point) * ((normal + e.normal) / 2);
-		if (d >= -0.01 && error(e, point, normal) < 1 / a)
+		if (d >= -0.01 && error(e, point, normal) < 1 / mThreshold)
 		{
 			entries.push_back(e);
 		}
@@ -75,7 +78,7 @@ void IrradianceCache::add(const Entry &entry)
 {
 	std::lock_guard<std::mutex> guard(mMutex);
 
-	float R = entry.radius * a;
+	float R = entry.radius * mThreshold;
 
 	Math::Point origin = mOctreeOrigin;
 	float size = mOctreeSize;
