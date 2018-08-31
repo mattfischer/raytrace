@@ -141,6 +141,7 @@
     <ClCompile Include="Trace\IrradianceCache.cpp" />
     <ClCompile Include="Trace\Lighter\Direct.cpp" />
     <ClCompile Include="Trace\Lighter\Indirect.cpp" />
+    <ClCompile Include="Trace\Lighter\IndirectCached.cpp" />
     <ClCompile Include="Trace\Lighter\Radiant.cpp" />
     <ClCompile Include="Trace\Lighter\Base.cpp" />
     <ClCompile Include="Trace\Lighter\Specular.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="Trace\Lighter\Direct.hpp" />
     <ClInclude Include="Trace\Lighter\Forwards.hpp" />
     <ClInclude Include="Trace\Lighter\Indirect.hpp" />
+    <ClInclude Include="Trace\Lighter\IndirectCached.hpp" />
     <ClInclude Include="Trace\Lighter\Radiant.hpp" />
     <ClInclude Include="Trace\Lighter\Specular.hpp" />
     <ClInclude Include="Trace\Lighter\Utils.hpp" />

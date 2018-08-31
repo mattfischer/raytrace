@@ -1,6 +1,7 @@
 #include "LightProbeDlg.hpp"
 
 #include "Trace/Lighter/Direct.hpp"
+#include "Trace/Lighter/Indirect.hpp"
 
 #include <commctrl.h>
 
@@ -63,7 +64,7 @@ INT_PTR CALLBACK LightProbeDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
 			float y = std::sin(sample.azimuth) * radius + size / 2;
 			HBRUSH brush = CreateSolidBrush(RGB(sample.color.red() * 0xff, sample.color.green() * 0xff, sample.color.blue() * 0xff));
 			HBRUSH oldBrush = (HBRUSH)SelectObject(ps.hdc, brush);
-			Ellipse(ps.hdc, x - 2, y - 2, x + 2, y + 2);
+			Ellipse(ps.hdc, x - 5, y - 5, x + 5, y + 5);
 			SelectObject(ps.hdc, oldBrush);
 			DeleteObject(brush);
 		}
@@ -84,10 +85,11 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 	if (begin != end) {
 		Trace::Intersection intersection = *begin;
 
-		Trace::Lighter::Direct direct(engine.settings().directSamples);
+		Trace::Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples);
+		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
 		std::vector<Trace::Lighter::Base::ProbeEntry> probe;
-		direct.setProbe(&probe);
-		direct.light(intersection, tracer);
+		lighter.setProbe(&probe);
+		lighter.light(intersection, tracer);
 
 		mSamples.clear();
 		for (Trace::Lighter::Base::ProbeEntry &entry : probe) {

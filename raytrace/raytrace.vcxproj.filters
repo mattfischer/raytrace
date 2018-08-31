@@ -176,9 +176,6 @@
     <ClCompile Include="Trace\Lighter\Utils.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\Lighter\Indirect.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Trace\IrradianceCache.cpp">
       <Filter>Source Files\Trace</Filter>
     </ClCompile>
@@ -190,6 +187,12 @@
     </ClCompile>
     <ClCompile Include="LightProbeDlg.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\IndirectCached.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\Indirect.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -368,9 +371,6 @@
     <ClInclude Include="Trace\Lighter\Utils.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\Lighter\Indirect.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Trace\IrradianceCache.hpp">
       <Filter>Source Files\Trace</Filter>
     </ClInclude>
@@ -379,6 +379,12 @@
     </ClInclude>
     <ClInclude Include="LightProbeDlg.hpp">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\IndirectCached.hpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\Indirect.hpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
