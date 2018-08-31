@@ -61,8 +61,8 @@ void Utils::stratifiedSamples(int i, int N, float &u, float &v, std::default_ran
 	std::uniform_real_distribution<float> dist(0, 1);
 
 	if (i < A * B) {
-		int a = i / A;
-		int b = i % A;
+		int a = i / B;
+		int b = i % B;
 		u = (a + dist(engine)) / A;
 		v = (b + dist(engine)) / B;
 	}
