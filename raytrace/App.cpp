@@ -113,6 +113,8 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 
 		case WM_LBUTTONUP:
 			mRenderControl.show();
+			mRenderControl.refreshSettings();
+			mEngine->setSettings(mRenderControl.settings());
 			mLightProbe.show();
 			mLightProbe.renderProbe(*mEngine, LOWORD(lParam), HIWORD(lParam));
 			break;
@@ -148,7 +150,8 @@ void App::onRenderButtonClicked()
 
 	mRenderControl.enableRenderButton(false);
 
-	mEngine->startPrerender(mRenderControl.settings(), mFramebuffer, this);
+	mEngine->setSettings(mRenderControl.settings());
+	mEngine->startPrerender(mFramebuffer, this);
 
 	SetTimer(mHWnd, 0, 0, NULL);
 }
@@ -165,5 +168,6 @@ void App::onRenderStatus(const char *message)
 
 void App::onPrerenderDone()
 {
-	mEngine->startRender(mRenderControl.settings(), mFramebuffer, this);
+	mEngine->setSettings(mRenderControl.settings());
+	mEngine->startRender(mFramebuffer, this);
 }

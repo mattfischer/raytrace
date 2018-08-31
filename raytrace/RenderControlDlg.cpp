@@ -92,20 +92,7 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		switch(LOWORD(wParam))
 		{
 		case ID_RENDER:
-			mSettings.width = GetDlgItemInt(hwndDlg, IDC_WIDTH, NULL, TRUE);
-			mSettings.height = GetDlgItemInt(hwndDlg, IDC_HEIGHT, NULL, TRUE);
-			mSettings.lighting = IsDlgButtonChecked(hwndDlg, IDC_LIGHTING);
-			GetDlgItemText(hwndDlg, IDC_THRESHOLD, buf, sizeof(buf));
-			mSettings.threshold = atof(buf);
-			mSettings.maxAAGen = GetDlgItemInt(hwndDlg, IDC_MAX_GEN, NULL, TRUE);
-			mSettings.radiantLighting = IsDlgButtonChecked(hwndDlg, IDC_RADIANT);
-			mSettings.specularLighting = IsDlgButtonChecked(hwndDlg, IDC_SPECULAR);
-			mSettings.directLighting = IsDlgButtonChecked(hwndDlg, IDC_DIRECT);
-			mSettings.directSamples = GetDlgItemInt(hwndDlg, IDC_DIRECT_SAMPLES, NULL, TRUE);
-			mSettings.indirectLighting = IsDlgButtonChecked(hwndDlg, IDC_INDIRECT);
-			mSettings.indirectSamples = GetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, NULL, TRUE);
-			mSettings.indirectDirectSamples = GetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, NULL, TRUE);
-			mSettings.indirectCacheThreshold = GetDlgItemInt(hwndDlg, IDC_INDIRECT_CACHE_THRESHOLD, NULL, TRUE);
+			refreshSettings();
 			mListener->onRenderButtonClicked();
 			return TRUE;
 		}
@@ -116,4 +103,24 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		return TRUE;
 	}
 	return FALSE;
+}
+
+void RenderControlDlg::refreshSettings()
+{
+	char buf[20];
+
+	mSettings.width = GetDlgItemInt(mHDlg, IDC_WIDTH, NULL, TRUE);
+	mSettings.height = GetDlgItemInt(mHDlg, IDC_HEIGHT, NULL, TRUE);
+	mSettings.lighting = IsDlgButtonChecked(mHDlg, IDC_LIGHTING);
+	GetDlgItemText(mHDlg, IDC_THRESHOLD, buf, sizeof(buf));
+	mSettings.threshold = atof(buf);
+	mSettings.maxAAGen = GetDlgItemInt(mHDlg, IDC_MAX_GEN, NULL, TRUE);
+	mSettings.radiantLighting = IsDlgButtonChecked(mHDlg, IDC_RADIANT);
+	mSettings.specularLighting = IsDlgButtonChecked(mHDlg, IDC_SPECULAR);
+	mSettings.directLighting = IsDlgButtonChecked(mHDlg, IDC_DIRECT);
+	mSettings.directSamples = GetDlgItemInt(mHDlg, IDC_DIRECT_SAMPLES, NULL, TRUE);
+	mSettings.indirectLighting = IsDlgButtonChecked(mHDlg, IDC_INDIRECT);
+	mSettings.indirectSamples = GetDlgItemInt(mHDlg, IDC_INDIRECT_SAMPLES, NULL, TRUE);
+	mSettings.indirectDirectSamples = GetDlgItemInt(mHDlg, IDC_INDIRECT_DIRECT_SAMPLES, NULL, TRUE);
+	mSettings.indirectCacheThreshold = GetDlgItemInt(mHDlg, IDC_INDIRECT_CACHE_THRESHOLD, NULL, TRUE);
 }

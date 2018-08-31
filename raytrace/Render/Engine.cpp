@@ -16,20 +16,19 @@ Engine::~Engine()
 	DeleteCriticalSection(&mCritSec);
 }
 
-void Engine::startPrerender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
+void Engine::startPrerender(unsigned char *bits, Listener *listener)
 {
 	mStartTime = GetTickCount();
 	mRenderData.irradianceCache.clear();
-	mRenderData.irradianceCache.setThreshold(settings.indirectCacheThreshold);
+	mRenderData.irradianceCache.setThreshold(mSettings.indirectCacheThreshold);
 
 	mListener = listener;
-	mPrerenderThread = std::make_unique<PrerenderThread>(*this, mScene, settings, mRenderData, bits);
+	mPrerenderThread = std::make_unique<PrerenderThread>(*this, mScene, mSettings, mRenderData, bits);
 	mPrerenderThread->start();
 }
 
-void Engine::startRender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener)
+void Engine::startRender(unsigned char *bits, Listener *listener)
 {
-	mSettings = settings;
 	mBits = bits;
 	mListener = listener;
 	mRendering = true;
@@ -116,6 +115,11 @@ Trace::Tracer Engine::createTracer()
 Trace::Tracer::Settings &Engine::settings()
 {
 	return mSettings;
+}
+
+void Engine::setSettings(const Trace::Tracer::Settings &settings)
+{
+	mSettings = settings;
 }
 
 }

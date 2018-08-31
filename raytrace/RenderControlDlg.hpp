@@ -25,6 +25,7 @@ public:
 	void enableRenderButton(bool enabled);
 
 	void show();
+	void refreshSettings();
 
 private:
 	static INT_PTR CALLBACK dialogProcStub(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);

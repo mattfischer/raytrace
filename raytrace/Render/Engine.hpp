@@ -28,10 +28,11 @@ public:
 
 	bool rendering() const;
 
-	void startPrerender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
-	void startRender(const Trace::Tracer::Settings &settings, unsigned char *bits, Listener *listener);
+	void startPrerender(unsigned char *bits, Listener *listener);
+	void startRender(unsigned char *bits, Listener *listener);
 	bool threadDone(Thread *thread);
 	void prerenderThreadDone();
+	void setSettings(const Trace::Tracer::Settings &settings);
 
 	Trace::Tracer createTracer();
 	Trace::Tracer::Settings &settings();
