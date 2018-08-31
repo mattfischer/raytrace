@@ -48,10 +48,13 @@ public:
 
 	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
 
+	Trace::Ray createCameraRay(float x, float y);
 	Object::Color tracePixel(float x, float y);
 	Object::Radiance traceRay(const Trace::Ray &ray);
 
 	bool prerenderPixel(float x, float y);
+
+	Object::Color toneMap(const Object::Radiance &radiance);
 
 protected:
 	const Object::Scene &mScene;

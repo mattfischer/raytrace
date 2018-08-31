@@ -83,24 +83,33 @@ Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
 	return radiance;
 }
 
-float toneMap(float radiance)
+Object::Color Tracer::toneMap(const Object::Radiance &radiance)
 {
-	float color = radiance / (radiance + 1);
+	float red = radiance.red() / (radiance.red() + 1);
+	float green = radiance.green() / (radiance.green() + 1);
+	float blue = radiance.blue() / (radiance.blue() + 1);
 
-	return color;
+	return Object::Color(red, green, blue);
 }
 
-Object::Color Tracer::tracePixel(float x, float y)
+Trace::Ray Tracer::createCameraRay(float x, float y)
 {
 	float cx = (2 * x - mSettings.width) / mSettings.width;
 	float cy = (2 * y - mSettings.height) / mSettings.width;
 	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
 
+	return ray;
+}
+
+Object::Color Tracer::tracePixel(float x, float y)
+{
+	Trace::Ray ray = createCameraRay(x, y);
+
 	Object::Color color;
 	if (mSettings.lighting)
 	{
 		Object::Radiance radiance = traceRay(ray);
-		color = Object::Color(toneMap(radiance.red()), toneMap(radiance.green()), toneMap(radiance.blue()));
+		color = toneMap(radiance);
 	}
 	else
 	{
@@ -121,9 +130,7 @@ Object::Color Tracer::tracePixel(float x, float y)
 bool Tracer::prerenderPixel(float x, float y)
 {
 	bool ret = false;
-	float cx = (2 * x - mSettings.width) / mSettings.width;
-	float cy = (2 * y - mSettings.height) / mSettings.width;
-	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
+	Trace::Ray ray = createCameraRay(x, y);
 
 	IntersectionVector::iterator begin, end;
 	intersect(ray, begin, end);

@@ -188,6 +188,9 @@
     <ClCompile Include="Render\PrerenderThread.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="LightProbeDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -373,6 +376,9 @@
     </ClInclude>
     <ClInclude Include="Render\PrerenderThread.hpp">
       <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="LightProbeDlg.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

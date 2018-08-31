@@ -33,6 +33,9 @@ public:
 	bool threadDone(Thread *thread);
 	void prerenderThreadDone();
 
+	Trace::Tracer createTracer();
+	Trace::Tracer::Settings &settings();
+
 private:
 	const Object::Scene &mScene;
 	Trace::Tracer::Settings mSettings;

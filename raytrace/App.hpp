@@ -2,6 +2,7 @@
 #define APP_HPP
 
 #include "RenderControlDlg.hpp"
+#include "LightProbeDlg.hpp"
 #include "Render/Engine.hpp"
 #include "Object/Scene.hpp"
 
@@ -32,6 +33,7 @@ private:
 	HDC mBackDC;
 
 	RenderControlDlg mRenderControl;
+	LightProbeDlg mLightProbe;
 	std::unique_ptr<Object::Scene> mScene;
 	std::unique_ptr<Render::Engine> mEngine;
 	unsigned char *mFramebuffer;

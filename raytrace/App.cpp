@@ -51,6 +51,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 	ReleaseDC(mHWnd, hDC);
 
 	mRenderControl.createWindow(hInst, this);
+	mLightProbe.createWindow(hInst);
 
 	MSG msg;
 	while(GetMessage(&msg, NULL, 0, 0))
@@ -112,6 +113,8 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 
 		case WM_LBUTTONUP:
 			mRenderControl.show();
+			mLightProbe.show();
+			mLightProbe.renderProbe(*mEngine, LOWORD(lParam), HIWORD(lParam));
 			break;
 	}
 

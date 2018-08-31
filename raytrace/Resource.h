@@ -3,6 +3,8 @@
 // Used by resources.rc
 //
 #define IDD_RENDER_CONTROL              101
+#define IDD_DIALOG1                     103
+#define IDD_LIGHT_PROBE                 103
 #define ID_RENDER                       1006
 #define IDC_LIGHTING                    1007
 #define IDC_ANTIALIAS                   1008
@@ -21,7 +23,6 @@
 #define IDC_INDIRECT                    1018
 #define IDC_INDIRECT_SAMPLES            1019
 #define IDC_INDIRECT_DIRECT_SAMPLES     1020
-#define IDC_INDIRECT_DIRECT_SAMPLES2    1021
 #define IDC_INDIRECT_CACHE_THRESHOLD    1021
 #define IDC_SPECULAR                    1022
 
@@ -29,7 +30,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_RESOURCE_VALUE        105
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           101

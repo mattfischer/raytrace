@@ -108,4 +108,14 @@ void Engine::prerenderThreadDone()
 	mPrerenderThread.reset();
 }
 
+Trace::Tracer Engine::createTracer()
+{
+	return Trace::Tracer(mScene, mSettings, mRenderData);
+}
+
+Trace::Tracer::Settings &Engine::settings()
+{
+	return mSettings;
+}
+
 }
