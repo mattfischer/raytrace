@@ -56,7 +56,9 @@ INT_PTR CALLBACK LightProbeDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
 		BeginPaint(mHDlg, &ps);
 		RECT rect;
 		GetClientRect(mHDlg, &rect);
-		FillRect(ps.hdc, &rect, (HBRUSH)GetStockObject(BLACK_BRUSH));
+		HBRUSH brush = CreateSolidBrush(RGB(0x40, 0x40, 0x40));
+		FillRect(ps.hdc, &rect, brush);
+		DeleteObject(brush);
 		for (Sample &sample : mSamples) {
 			float size = (rect.right - rect.left);
 			float radius = std::cos(sample.elevation) * size / 2;

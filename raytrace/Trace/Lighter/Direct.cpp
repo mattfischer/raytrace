@@ -56,6 +56,8 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 				outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot / (2 * M_PI);
 
 				addProbeEntry(v, objectRadiance);
+			} else {
+				addProbeEntry(v, Object::Radiance(0, 0, 0));
 			}
 		}
 
