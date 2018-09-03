@@ -98,6 +98,26 @@ bool Base::inside(const Math::Point &point) const
 	return doInside(transformedPoint);
 }
 
+void Base::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
+{
+	Math::Point objectPoint;
+	Math::Vector objectDu;
+	Math::Vector objectDv;
+	Math::Normal objectNormal;
+
+	doSample(u, v, objectPoint, objectDu, objectDv, objectNormal);
+
+	point = mTransformation * objectPoint;
+	du = mTransformation * objectDu;
+	dv = mTransformation * objectDv;
+	normal = mTransformation * objectNormal;
+}
+
+bool Base::canSample() const
+{
+	return false;
+}
+
 void Base::doTransform()
 {
 	BoundingSphere objectSphere = doBoundingSphere();
@@ -116,6 +136,10 @@ void Base::doTransform()
 BoundingSphere Base::doBoundingSphere() const
 {
 	return BoundingSphere();
+}
+
+void Base::doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
+{
 }
 
 }

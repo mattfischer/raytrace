@@ -33,35 +33,76 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 			continue;
 		}
 
-		Math::Vector sphereDirection = primitive->boundingSphere().origin() - point;
-		float sphereDistance = sphereDirection.magnitude();
-		float sphereAngle = std::atan(primitive->boundingSphere().radius() / sphereDistance);
-		sphereDirection = sphereDirection / sphereDistance;
+		if(primitive->canSample()) {
+			Object::Radiance outgoingRadiance;
+			Math::Vector x, y;
+			Utils::orthonormalBasis(normal, x, y);
 
-		Math::Vector x, y;
-		Utils::orthonormalBasis(sphereDirection, x, y);
-		float solidAngle = 2 * M_PI * (1 - std::cos(sphereAngle));
+			for (int i = 0; i < mNumSamples; i++) {
+				float u;
+				float v;
 
-		Object::Radiance outgoingRadiance;
-		for (int i = 0; i < mNumSamples; i++) {
-			Math::Vector v = Utils::sampleHemisphere(i, mNumSamples, sphereAngle, mRandomEngine);
-			Math::Vector incidentDirection = x * v.x() + y * v.y() + sphereDirection * v.z();
-			float dot = incidentDirection * normal;
+				Utils::stratifiedSamples(i, mNumSamples, u, v, mRandomEngine);
 
-			Trace::Ray ray(intersection.point(), incidentDirection, intersection.ray().generation() + 1);
-			Trace::IntersectionVector::iterator begin, end;
-			tracer.intersect(ray, begin, end);
+				Math::Point samplePoint;
+				Math::Vector du;
+				Math::Vector dv;
+				Math::Normal sampleNormal;
 
-			if (begin != end && begin->primitive() == primitive.get()) {
-				outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot / (2 * M_PI);
+				primitive->sample(u, v, samplePoint, du, dv, sampleNormal);
+				float area = (du % dv).magnitude();
 
-				addProbeEntry(v, objectRadiance);
-			} else {
-				addProbeEntry(v, Object::Radiance(0, 0, 0));
+				Math::Vector incidentDirection = samplePoint - point;
+				float distance = incidentDirection.magnitude();
+				incidentDirection = incidentDirection / distance;
+				Trace::Ray ray(intersection.point(), incidentDirection, intersection.ray().generation() + 1);
+				Trace::IntersectionVector::iterator begin, end;
+				tracer.intersect(ray, begin, end);
+
+				Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
+				if (begin != end && begin->primitive() == primitive.get()) {
+					float dot = incidentDirection * normal;
+					float sampleDot = abs(incidentDirection * sampleNormal);
+
+					outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot * sampleDot * area / (mNumSamples * distance * distance * 2 * M_PI);
+					addProbeEntry(viewVector, objectRadiance);
+				} else {
+					addProbeEntry(viewVector, Object::Radiance(0, 0, 0));
+				}
 			}
-		}
 
-		radiance += outgoingRadiance * (solidAngle / mNumSamples);
+			radiance += outgoingRadiance;
+		} else {
+			Math::Vector sphereDirection = primitive->boundingSphere().origin() - point;
+			float sphereDistance = sphereDirection.magnitude();
+			float sphereAngle = std::atan(primitive->boundingSphere().radius() / sphereDistance);
+			sphereDirection = sphereDirection / sphereDistance;
+
+			Math::Vector x, y;
+			Utils::orthonormalBasis(sphereDirection, x, y);
+			float solidAngle = 2 * M_PI * (1 - std::cos(sphereAngle));
+
+			Object::Radiance outgoingRadiance;
+			for (int i = 0; i < mNumSamples; i++) {
+				Math::Vector v = Utils::sampleHemisphere(i, mNumSamples, sphereAngle, mRandomEngine);
+				Math::Vector incidentDirection = x * v.x() + y * v.y() + sphereDirection * v.z();
+				float dot = incidentDirection * normal;
+
+				Trace::Ray ray(intersection.point(), incidentDirection, intersection.ray().generation() + 1);
+				Trace::IntersectionVector::iterator begin, end;
+				tracer.intersect(ray, begin, end);
+
+				if (begin != end && begin->primitive() == primitive.get()) {
+					outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot / (2 * M_PI);
+					addProbeEntry(v, objectRadiance);
+				}
+				else {
+					addProbeEntry(v, Object::Radiance(0, 0, 0));
+				}
+			}
+
+			radiance += outgoingRadiance * (solidAngle / mNumSamples);
+		}
 	}
 
 	return radiance;

@@ -16,14 +16,20 @@ namespace Object {
 			Math::Vector position(ast->children[0]->children[0]->data._vector);
 			float width = ast->children[0]->children[1]->data._float;
 			float height = ast->children[0]->children[2]->data._float;
-			Math::Vector size(width, 1, height);
+			Math::Vector size(width, 0, height);
 
 			quad->transform(Math::Transformation::translate(position + size / 2));
+			size.setY(2);
 			quad->transform(Math::Transformation::scale(size / 2));
 
 			parseAstCommon(*quad, ast->children[1]);
 
 			return quad;
+		}
+
+		bool Quad::canSample() const
+		{
+			return true;
 		}
 
 		void Quad::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
@@ -54,6 +60,14 @@ namespace Object {
 		BoundingSphere Quad::doBoundingSphere() const
 		{
 			return BoundingSphere(Math::Point(0, 0, 0), std::sqrt(2));
+		}
+
+		void Quad::doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
+		{
+			point = Math::Point(u * 2 - 1, 0, v * 2 - 1);
+			du = Math::Vector(2, 0, 0);
+			dv = Math::Vector(0, 0, 2);
+			normal = Math::Normal(0, -1, 0);
 		}
 	}
 }

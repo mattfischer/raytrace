@@ -6,8 +6,32 @@ plane {
 	}
 }
 
-plane {
-	transform {	translate <0,10,0> rotate <180,0,0> }
+quad {
+	<-10,10,-10> 20 6
+	surface {
+		albedo { color <1,1,1> }
+		brdf { lambert 1 }
+	}
+}
+
+quad {
+	<-10,10,4> 20 6
+	surface {
+		albedo { color <1,1,1> }
+		brdf { lambert 1 }
+	}
+}
+
+quad {
+	<-10,10,-4> 6 8
+	surface {
+		albedo { color <1,1,1> }
+		brdf { lambert 1 }
+	}
+}
+
+quad {
+	<4,10,-4> 6 8
 	surface {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
@@ -47,7 +71,7 @@ sphere {
 }
 
 quad {
-	<-4,9,-4> 8 8
+	<-4,10,-4> 8 8
 	surface {
 		brdf { lambert 0 }
 		albedo { color <1,1,1> }
