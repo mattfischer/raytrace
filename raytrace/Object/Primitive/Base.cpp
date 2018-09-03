@@ -6,6 +6,7 @@
 #include "Object/Primitive/Cone.hpp"
 #include "Object/Primitive/Disk.hpp"
 #include "Object/Primitive/Cylinder.hpp"
+#include "Object/Primitive/Quad.hpp"
 #include "Object/Primitive/Csg.hpp"
 
 #include "Object/Surface.hpp"
@@ -36,6 +37,9 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 		break;
 	case AstCylinder:
 		primitive = Cylinder::fromAst(sub);
+		break;
+	case AstQuad:
+		primitive = Quad::fromAst(sub);
 		break;
 	case AstUnion:
 	case AstDifference:

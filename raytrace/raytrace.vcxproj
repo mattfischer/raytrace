@@ -121,6 +121,7 @@
     <ClCompile Include="Object\Primitive\Cylinder.cpp" />
     <ClCompile Include="Object\Primitive\Disk.cpp" />
     <ClCompile Include="Object\Primitive\Plane.cpp" />
+    <ClCompile Include="Object\Primitive\Quad.cpp" />
     <ClCompile Include="Object\Primitive\Sphere.cpp" />
     <ClCompile Include="Object\Primitive\Torus.cpp" />
     <ClCompile Include="Object\Radiance.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Object\Primitive\Disk.hpp" />
     <ClInclude Include="Object\Primitive\Forwards.hpp" />
     <ClInclude Include="Object\Primitive\Plane.hpp" />
+    <ClInclude Include="Object\Primitive\Quad.hpp" />
     <ClInclude Include="Object\Primitive\Sphere.hpp" />
     <ClInclude Include="Object\Primitive\Torus.hpp" />
     <ClInclude Include="Object\Radiance.hpp" />

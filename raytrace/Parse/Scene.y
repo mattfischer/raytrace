@@ -22,6 +22,7 @@
 %token CONE
 %token CYLINDER
 %token BOX
+%token QUAD
 
 %token TRANSFORM
 %token TRANSLATE
@@ -52,7 +53,7 @@
 %type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> surfacedef surface_list surface_item albedodef brdf_list brdf_item
-%type <_ast> spheredef planedef boxdef conedef cylinderdef
+%type <_ast> spheredef planedef boxdef conedef cylinderdef quaddef
 %type <_ast> cameradef camera_modifiers camera_modifier csgdef
 %start scene
 
@@ -71,7 +72,7 @@ object: primitive
 primitive: primitive_wrap
 	{ $$ = newAst(AstPrimitive, 1, $1); }
 	
-primitive_wrap: spheredef | planedef | boxdef | conedef | cylinderdef | csgdef
+primitive_wrap: spheredef | planedef | boxdef | conedef | cylinderdef | quaddef | csgdef
 	
 spheredef: SPHERE '{' VECTOR FLOAT primitive_modifiers '}'
 	{ $$ = newAst(AstSphere, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5); 
@@ -91,6 +92,13 @@ conedef: CONE '{' primitive_modifiers '}'
 
 cylinderdef: CYLINDER '{' primitive_modifiers '}'
 	{ $$ = addChildren(newAst(AstCylinder, 0), $3->numChildren, $3->children); }
+
+quaddef: QUAD '{' VECTOR FLOAT FLOAT primitive_modifiers '}'
+    { $$ = newAst(AstQuad, 2, newAst(AstList, 3, newAst(AstConstant, 0), newAst(AstConstant, 0), newAst(AstConstant, 0)), $6);
+	  $$->children[0]->children[0]->data._vector = $3;
+	  $$->children[0]->children[1]->data._float = $4;
+	  $$->children[0]->children[2]->data._float = $5; 
+	}
 
 primitive_modifiers: primitive_modifier
 	{ $$ = newAst(AstList, 1, $1); }

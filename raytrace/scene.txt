@@ -46,8 +46,8 @@ sphere {
 	}
 }
 
-box {
-	<-4,10,-4> <8,-0.5,8>
+quad {
+	<-4,9,-4> 8 8
 	surface {
 		brdf { lambert 0 }
 		albedo { color <1,1,1> }

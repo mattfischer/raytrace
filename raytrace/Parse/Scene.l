@@ -23,6 +23,7 @@ plane return PLANE;
 box return BOX;
 cone return CONE;
 cylinder return CYLINDER;
+quad return QUAD;
 
 transform return TRANSFORM;
 rotate return ROTATE;
