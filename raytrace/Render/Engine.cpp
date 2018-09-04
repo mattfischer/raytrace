@@ -32,7 +32,6 @@ void Engine::startPrerender(unsigned char *bits, Listener *listener)
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo(&sysinfo);
 	int numThreads = sysinfo.dwNumberOfProcessors;
-	mNumActiveThreads = numThreads;
 	mBlocksStarted = 0;
 	for (int i = 0; i<numThreads; i++) {
 		int x, y;
@@ -55,7 +54,6 @@ void Engine::startRender(unsigned char *bits, Listener *listener)
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo( &sysinfo );
 	int numThreads = sysinfo.dwNumberOfProcessors;
-	mNumActiveThreads = numThreads;
 	mBlocksStarted = 0;
 	for(int i=0; i<numThreads; i++) {
 		int x, y;

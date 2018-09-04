@@ -52,7 +52,6 @@ private:
 	CRITICAL_SECTION mCritSec;
 	std::set<std::unique_ptr<Thread>> mThreads;
 	std::set<std::unique_ptr<PrerenderThread>> mPrerenderThreads;
-	int mNumActiveThreads;
 	int mBlocksStarted;
 };
 
