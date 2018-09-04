@@ -1,8 +1,13 @@
+#define NOMINMAX
 #include "Render/Engine.hpp"
 
 #include "Object/Color.hpp"
 
+#include <algorithm>
+
 namespace Render {
+
+static const int BLOCK_SIZE = 64;
 
 Engine::Engine(const Object::Scene &scene)
 	: mScene(scene)
@@ -38,15 +43,15 @@ void Engine::startRender(unsigned char *bits, Listener *listener)
 	GetSystemInfo( &sysinfo );
 	int numThreads = sysinfo.dwNumberOfProcessors;
 	mNumActiveThreads = numThreads;
-
-	int size = mSettings.height / numThreads;
+	mBlocksStarted = 0;
 	for(int i=0; i<numThreads; i++) {
-		int startLine = i * size;
-		int numLines = (i == numThreads - 1) ? mSettings.height - startLine : size;
-
+		int x, y;
+		int w, h;
+		getBlock(mBlocksStarted, x, y, w, h);
 		std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, mScene, mSettings, mRenderData, mBits);
-		thread->start(startLine, numLines);
+		thread->start(x, y, w, h);
 		mThreads.insert(std::move(thread));
+		mBlocksStarted++;
 	}
 }
 
@@ -61,29 +66,23 @@ bool Engine::threadDone(Thread *doneThread)
 
 	EnterCriticalSection(&mCritSec);
 
-	Thread *splitThread = 0;
+	if (mBlocksStarted < widthInBlocks() * heightInBlocks()) {
+		int x, y;
+		int w, h;
 
-	for(const std::unique_ptr<Thread> &thread : mThreads) {
-		if(!splitThread || thread->linesToGo() > splitThread->linesToGo()) {
-			splitThread = thread.get();
-		}
-	}
-
-	if(splitThread->linesToGo() > 10) {
-		int transfer = splitThread->linesToGo() / 2;
-		int newStart = splitThread->startLine() + splitThread->numLines() - transfer;
-		splitThread->setNumLines(splitThread->numLines() - transfer);
-
-		doneThread->start(newStart, transfer);
+		getBlock(mBlocksStarted, x, y, w, h);
+		doneThread->start(x, y, w, h);
+		mBlocksStarted++;
 		ret = false;
-	} else {
+	}
+	else {
 		for (const std::unique_ptr<Thread> &thread : mThreads) {
 			if (thread.get() == doneThread) {
 				mThreads.erase(thread);
 			}
 		}
 
-		if(mThreads.size() == 0) {
+		if (mThreads.size() == 0) {
 			mRendering = false;
 
 			DWORD endTime = GetTickCount();
@@ -95,10 +94,30 @@ bool Engine::threadDone(Thread *doneThread)
 		}
 		ret = true;
 	}
-
 	LeaveCriticalSection(&mCritSec);
 
 	return ret;
+}
+
+void Engine::getBlock(int block, int &x, int &y, int &w, int &h)
+{
+	int row = block / widthInBlocks();
+	int col = block % widthInBlocks();
+
+	x = col * BLOCK_SIZE;
+	y = row * BLOCK_SIZE;
+	w = std::min(BLOCK_SIZE, mSettings.width - x);
+	h = std::min(BLOCK_SIZE, mSettings.height - y);
+}
+
+int Engine::widthInBlocks()
+{
+	return (mSettings.width + BLOCK_SIZE - 1) / BLOCK_SIZE;
+}
+
+int Engine::heightInBlocks()
+{
+	return (mSettings.height + BLOCK_SIZE - 1) / BLOCK_SIZE;
 }
 
 void Engine::prerenderThreadDone()

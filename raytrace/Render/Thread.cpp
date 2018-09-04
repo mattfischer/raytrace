@@ -17,11 +17,12 @@ Thread::Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::
 	mStarted = false;
 }
 
-void Thread::start(int startLine, int numLines)
+void Thread::start(int startX, int startY, int width, int height)
 {
-	mStartLine = startLine;
-	mCurrentLine = startLine;
-	mNumLines = numLines;
+	mStartX = startX;
+	mStartY = startY;
+	mWidth = width;
+	mHeight = height;
 
 	if(!mStarted) {
 		mStarted = true;
@@ -47,31 +48,6 @@ void Thread::run()
 	}
 }
 
-int Thread::startLine()
-{
-	return mStartLine;
-}
-
-int Thread::currentLine()
-{
-	return mCurrentLine;
-}
-
-int Thread::numLines()
-{
-	return mNumLines;
-}
-
-int Thread::linesToGo()
-{
-	return mNumLines - (mCurrentLine - mStartLine);
-}
-
-void Thread::setNumLines(int numLines)
-{
-	mNumLines = numLines;
-}
-
 void Thread::doRender()
 {
 	int width = mSettings.width;
@@ -79,10 +55,8 @@ void Thread::doRender()
 
 	std::default_random_engine randomEngine;
 
-	for (int y = mStartLine; y < mStartLine + mNumLines; y++) {
-		mCurrentLine = y;
-
-		for (int x = 0; x < width; x++) {
+	for (int y = mStartY; y < mStartY + mHeight; y++) {
+		for (int x = mStartX; x < mStartX + mWidth; x++) {
 			Object::Color color;
 			for (int i = 0; i < mSettings.antialiasSamples; i++) {
 				float u;

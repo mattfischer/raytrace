@@ -38,6 +38,10 @@ public:
 	Trace::Tracer::Settings &settings();
 
 private:
+	void getBlock(int block, int &x, int &y, int &w, int &h);
+	int widthInBlocks();
+	int heightInBlocks();
+
 	const Object::Scene &mScene;
 	Trace::Tracer::Settings mSettings;
 	Trace::Tracer::RenderData mRenderData;
@@ -49,6 +53,7 @@ private:
 	std::set<std::unique_ptr<Thread>> mThreads;
 	std::unique_ptr<PrerenderThread> mPrerenderThread;
 	int mNumActiveThreads;
+	int mBlocksStarted;
 };
 
 }
