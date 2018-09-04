@@ -16,6 +16,7 @@
 #define IDC_RENDER_TIME                 1012
 #define IDC_RENDER_STATUS               1012
 #define IDC_THRESHOLD                   1013
+#define IDC_AA_SAMPLES                  1013
 #define IDC_MAX_GEN                     1014
 #define IDC_RADIANT                     1015
 #define IDC_DIRECT                      1016

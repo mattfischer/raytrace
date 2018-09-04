@@ -23,8 +23,7 @@ public:
 		int height;
 		bool lighting;
 		int maxRayGeneration;
-		float threshold;
-		int maxAAGen;
+		int antialiasSamples;
 		bool radiantLighting;
 		bool specularLighting;
 		bool directLighting;

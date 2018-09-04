@@ -26,17 +26,8 @@ public:
 private:
 	static void kickstart(void *data);
 
-	struct SubPixel {
-		bool valid;
-		Object::Color color;
-	};
-
 	void run();
 	void doRender();
-
-	Object::Color antialiasPixel(float x, float y, int subpixelX, int subPixelY, int subPixelSize, const Object::Color corners[4]);
-	bool shouldAntialias(const Object::Color corners[4]) const;
-	SubPixel &subPixel(int x, int y);
 
 	Engine &mEngine;
 	const Trace::Tracer::Settings &mSettings;
@@ -46,8 +37,6 @@ private:
 	int mCurrentLine;
 	int mNumLines;
 	Trace::Tracer mTracer;
-	SubPixel *mSubPixels;
-	int mSubPixelSize;
 	bool mStarted;
 };
 

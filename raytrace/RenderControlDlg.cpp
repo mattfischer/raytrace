@@ -14,14 +14,13 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.height = 600;
 	mSettings.lighting = true;
 	mSettings.maxRayGeneration = 2;
-	mSettings.threshold = 0.25f;
-	mSettings.maxAAGen = 3;
+	mSettings.antialiasSamples = 9;
 	mSettings.radiantLighting = true;
 	mSettings.specularLighting = true;
 	mSettings.directLighting = true;
-	mSettings.directSamples = 100;
+	mSettings.directSamples = 10;
 	mSettings.indirectLighting = true;
-	mSettings.indirectSamples = 25;
+	mSettings.indirectSamples = 1000;
 	mSettings.indirectDirectSamples = 10;
 	mSettings.indirectCacheThreshold = 5;
 }
@@ -73,10 +72,8 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 	case WM_INITDIALOG:
 		SetDlgItemInt(hwndDlg, IDC_WIDTH, mSettings.width, TRUE);
 		SetDlgItemInt(hwndDlg, IDC_HEIGHT, mSettings.height, TRUE);
-		CheckDlgButton(hwndDlg, IDC_LIGHTING, mSettings.lighting ? BST_CHECKED : BST_UNCHECKED);	
-		sprintf_s(buf, sizeof(buf), "%f", mSettings.threshold);
-		SetDlgItemText(hwndDlg, IDC_THRESHOLD, buf);
-		SetDlgItemInt(hwndDlg, IDC_MAX_GEN, mSettings.maxAAGen, TRUE);
+		CheckDlgButton(hwndDlg, IDC_LIGHTING, mSettings.lighting ? BST_CHECKED : BST_UNCHECKED);
+		SetDlgItemInt(hwndDlg, IDC_AA_SAMPLES, mSettings.antialiasSamples, TRUE);
 		SendDlgItemMessage(hwndDlg, IDC_MAX_GEN_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
 		CheckDlgButton(hwndDlg, IDC_RADIANT, mSettings.radiantLighting ? BST_CHECKED : BST_UNCHECKED);
 		CheckDlgButton(hwndDlg, IDC_SPECULAR, mSettings.specularLighting ? BST_CHECKED : BST_UNCHECKED);
@@ -113,8 +110,7 @@ void RenderControlDlg::refreshSettings()
 	mSettings.height = GetDlgItemInt(mHDlg, IDC_HEIGHT, NULL, TRUE);
 	mSettings.lighting = IsDlgButtonChecked(mHDlg, IDC_LIGHTING);
 	GetDlgItemText(mHDlg, IDC_THRESHOLD, buf, sizeof(buf));
-	mSettings.threshold = atof(buf);
-	mSettings.maxAAGen = GetDlgItemInt(mHDlg, IDC_MAX_GEN, NULL, TRUE);
+	mSettings.antialiasSamples = GetDlgItemInt(mHDlg, IDC_AA_SAMPLES, NULL, TRUE);
 	mSettings.radiantLighting = IsDlgButtonChecked(mHDlg, IDC_RADIANT);
 	mSettings.specularLighting = IsDlgButtonChecked(mHDlg, IDC_SPECULAR);
 	mSettings.directLighting = IsDlgButtonChecked(mHDlg, IDC_DIRECT);
