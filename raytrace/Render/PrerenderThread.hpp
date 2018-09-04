@@ -14,13 +14,18 @@ namespace Render {
 	public:
 		PrerenderThread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, unsigned char *bits);
 
-		void start();
+		void start(int startX, int startY, int width, int height);
 
 	private:
 		static void kickstart(void *data);
 
 		void run();
+		void doPrerender();
 
+		int mStartX;
+		int mStartY;
+		int mWidth;
+		int mHeight;
 		Engine &mEngine;
 		const Trace::Tracer::Settings &mSettings;
 		Trace::Tracer::RenderData &mRenderData;

@@ -15,8 +15,13 @@ namespace Render {
 		mStarted = false;
 	}
 
-	void PrerenderThread::start()
+	void PrerenderThread::start(int startX, int startY, int width, int height)
 	{
+		mStartX = startX;
+		mStartY = startY;
+		mWidth = width;
+		mHeight = height;
+
 		if (!mStarted) {
 			mStarted = true;
 			_beginthread(kickstart, 0, this);
@@ -31,8 +36,20 @@ namespace Render {
 
 	void PrerenderThread::run()
 	{
-		for (int y = 0; y < mSettings.height; y++) {
-			for (int x = 0; x < mSettings.width; x++) {
+		while (true) {
+			doPrerender();
+
+			bool stop = mEngine.prerenderThreadDone(this);
+			if (stop) {
+				break;
+			}
+		}
+	}
+
+	void PrerenderThread::doPrerender()
+	{
+		for (int y = mStartY; y < mStartY + mHeight; y++) {
+			for (int x = mStartX; x < mStartX + mWidth; x++) {
 				if (mTracer.prerenderPixel(x, y)) {
 					mBits[((mSettings.height - y - 1) * mSettings.width + x) * 3 + 0] = 0xFF;
 					mBits[((mSettings.height - y - 1) * mSettings.width + x) * 3 + 1] = 0xFF;
@@ -40,7 +57,5 @@ namespace Render {
 				}
 			}
 		}
-
-		mEngine.prerenderThreadDone();
 	}
 }

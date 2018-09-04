@@ -28,8 +28,21 @@ void Engine::startPrerender(unsigned char *bits, Listener *listener)
 	mRenderData.irradianceCache.setThreshold(mSettings.indirectCacheThreshold);
 
 	mListener = listener;
-	mPrerenderThread = std::make_unique<PrerenderThread>(*this, mScene, mSettings, mRenderData, bits);
-	mPrerenderThread->start();
+
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+	int numThreads = sysinfo.dwNumberOfProcessors;
+	mNumActiveThreads = numThreads;
+	mBlocksStarted = 0;
+	for (int i = 0; i<numThreads; i++) {
+		int x, y;
+		int w, h;
+		getBlock(mBlocksStarted, x, y, w, h);
+		std::unique_ptr<PrerenderThread> thread = std::make_unique<PrerenderThread>(*this, mScene, mSettings, mRenderData, bits);
+		thread->start(x, y, w, h);
+		mPrerenderThreads.insert(std::move(thread));
+		mBlocksStarted++;
+	}
 }
 
 void Engine::startRender(unsigned char *bits, Listener *listener)
@@ -120,10 +133,36 @@ int Engine::heightInBlocks()
 	return (mSettings.height + BLOCK_SIZE - 1) / BLOCK_SIZE;
 }
 
-void Engine::prerenderThreadDone()
+bool Engine::prerenderThreadDone(PrerenderThread *doneThread)
 {
-	mListener->onPrerenderDone();
-	mPrerenderThread.reset();
+	bool ret;
+
+	EnterCriticalSection(&mCritSec);
+
+	if (mBlocksStarted < widthInBlocks() * heightInBlocks()) {
+		int x, y;
+		int w, h;
+
+		getBlock(mBlocksStarted, x, y, w, h);
+		doneThread->start(x, y, w, h);
+		mBlocksStarted++;
+		ret = false;
+	}
+	else {
+		for (const std::unique_ptr<PrerenderThread> &thread : mPrerenderThreads) {
+			if (thread.get() == doneThread) {
+				mPrerenderThreads.erase(thread);
+			}
+		}
+
+		if (mPrerenderThreads.size() == 0) {
+			mListener->onPrerenderDone();
+		}
+		ret = true;
+	}
+	LeaveCriticalSection(&mCritSec);
+
+	return ret;
 }
 
 Trace::Tracer Engine::createTracer()

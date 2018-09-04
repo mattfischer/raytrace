@@ -31,7 +31,7 @@ public:
 	void startPrerender(unsigned char *bits, Listener *listener);
 	void startRender(unsigned char *bits, Listener *listener);
 	bool threadDone(Thread *thread);
-	void prerenderThreadDone();
+	bool prerenderThreadDone(PrerenderThread *thread);
 	void setSettings(const Trace::Tracer::Settings &settings);
 
 	Trace::Tracer createTracer();
@@ -51,7 +51,7 @@ private:
 	DWORD mStartTime;
 	CRITICAL_SECTION mCritSec;
 	std::set<std::unique_ptr<Thread>> mThreads;
-	std::unique_ptr<PrerenderThread> mPrerenderThread;
+	std::set<std::unique_ptr<PrerenderThread>> mPrerenderThreads;
 	int mNumActiveThreads;
 	int mBlocksStarted;
 };
