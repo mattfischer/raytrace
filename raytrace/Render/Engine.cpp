@@ -100,7 +100,7 @@ bool Engine::threadDone(Thread *doneThread)
 
 			DWORD endTime = GetTickCount();
 			char buf[256];
-			sprintf_s(buf, sizeof(buf), "Render time: %ims", endTime - mStartTime);
+			sprintf_s(buf, sizeof(buf), "Render time: %.3fs", (endTime - mStartTime) / 1000.0f);
 
 			mListener->onRenderStatus(buf);
 			mListener->onRenderDone();
