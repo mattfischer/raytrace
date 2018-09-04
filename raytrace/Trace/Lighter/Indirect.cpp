@@ -24,6 +24,8 @@ namespace Trace {
 		{
 			const Math::Point &point = intersection.point();
 			const Math::Normal &normal = intersection.normal();
+			const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+			const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
 
 			Math::Vector x, y;
 			Utils::orthonormalBasis(Math::Vector(normal), x, y);
@@ -47,8 +49,7 @@ namespace Trace {
 				}
 			}
 
-			return radiance;
+			return radiance * albedo * brdf.lambert() * 2 / mIndirectSamples;
 		}
-
 	}
 }

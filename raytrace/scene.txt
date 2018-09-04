@@ -75,7 +75,7 @@ quad {
 	surface {
 		brdf { lambert 0 }
 		albedo { color <1,1,1> }
-		radiance <10,10,10>
+		radiance <30,30,30>
 	}
 }
 

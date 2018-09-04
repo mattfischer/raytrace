@@ -36,7 +36,7 @@ Object::Radiance IndirectCached::light(const Trace::Intersection &intersection, 
 		for (const IrradianceCache::Entry &entry : entries) {
 			float weight = irradianceCache.weight(entry, point, normal);
 			if (std::isinf(weight)) {
-				return entry.radiance * albedo * brdf.lambert() / (2 * M_PI);
+				return entry.radiance * albedo * brdf.lambert() / M_PI;
 			}
 			Math::Vector cross = Math::Vector(normal % entry.normal);
 			Object::Radiance rotRad(entry.rotGradR * cross, entry.rotGradG * cross, entry.rotGradB * cross);
@@ -44,7 +44,7 @@ Object::Radiance IndirectCached::light(const Trace::Intersection &intersection, 
 			den += weight;
 		}
 		incidentRadiance = incidentRadiance / den;
-		return incidentRadiance * albedo * brdf.lambert() / (2 * M_PI);
+		return incidentRadiance * albedo * brdf.lambert() / M_PI;
 	}
 
 	return Object::Radiance();

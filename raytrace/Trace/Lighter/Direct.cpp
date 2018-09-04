@@ -64,14 +64,14 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 					float dot = incidentDirection * normal;
 					float sampleDot = abs(incidentDirection * sampleNormal);
 
-					outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot * sampleDot * area / (mNumSamples * distance * distance);
+					outgoingRadiance += objectRadiance * dot * sampleDot * area / (distance * distance);
 					addProbeEntry(viewVector, objectRadiance);
 				} else {
 					addProbeEntry(viewVector, Object::Radiance(0, 0, 0));
 				}
 			}
 
-			radiance += outgoingRadiance;
+			radiance += outgoingRadiance * albedo * brdf.lambert() / (M_PI * mNumSamples);
 		} else {
 			Math::Vector sphereDirection = primitive->boundingSphere().origin() - point;
 			float sphereDistance = sphereDirection.magnitude();
@@ -93,7 +93,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 				tracer.intersect(ray, begin, end);
 
 				if (begin != end && begin->primitive() == primitive.get()) {
-					outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot;
+					outgoingRadiance += objectRadiance * dot;
 					addProbeEntry(v, objectRadiance);
 				}
 				else {
@@ -101,7 +101,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 				}
 			}
 
-			radiance += outgoingRadiance * (solidAngle / mNumSamples);
+			radiance += outgoingRadiance * albedo * brdf.lambert() * solidAngle / (M_PI * mNumSamples);
 		}
 	}
 
