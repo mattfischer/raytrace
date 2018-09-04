@@ -64,7 +64,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 					float dot = incidentDirection * normal;
 					float sampleDot = abs(incidentDirection * sampleNormal);
 
-					outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot * sampleDot * area / (mNumSamples * distance * distance * 2 * M_PI);
+					outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot * sampleDot * area / (mNumSamples * distance * distance);
 					addProbeEntry(viewVector, objectRadiance);
 				} else {
 					addProbeEntry(viewVector, Object::Radiance(0, 0, 0));
@@ -93,7 +93,7 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 				tracer.intersect(ray, begin, end);
 
 				if (begin != end && begin->primitive() == primitive.get()) {
-					outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot / (2 * M_PI);
+					outgoingRadiance += objectRadiance * albedo * brdf.lambert() * dot;
 					addProbeEntry(v, objectRadiance);
 				}
 				else {
