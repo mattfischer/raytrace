@@ -22,6 +22,9 @@ public:
 		Math::Vector rotGradR;
 		Math::Vector rotGradG;
 		Math::Vector rotGradB;
+		Math::Vector transGradR;
+		Math::Vector transGradG;
+		Math::Vector transGradB;
 	};
 
 	IrradianceCache();
