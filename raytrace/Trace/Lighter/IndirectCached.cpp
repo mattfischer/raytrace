@@ -103,9 +103,9 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 		newEntry.normal = normal;
 		newEntry.radius = mIndirectSamples / mean;
 		newEntry.radiance = radiance;
-		newEntry.rotGradR = rotGradR;
-		newEntry.rotGradG = rotGradG;
-		newEntry.rotGradB = rotGradB;
+		newEntry.rotGradR = rotGradR * (-M_PI / mIndirectSamples);
+		newEntry.rotGradG = rotGradG * (-M_PI / mIndirectSamples);
+		newEntry.rotGradB = rotGradB * (-M_PI / mIndirectSamples);
 
 		irradianceCache.add(newEntry);
 	}
