@@ -35,7 +35,7 @@ void IrradianceCache::lookupOctreeNode(OctreeNode *node, Math::Point origin, flo
 	for (const Entry &e : node->entries)
 	{
 		float d = (point - e.point) * ((normal + e.normal) / 2);
-		if (d >= -0.01 && error(e, point, normal) < 1 / mThreshold)
+		if (d >= -0.01 && weight(e, point, normal) > 1 / mThreshold)
 		{
 			entries.push_back(e);
 		}

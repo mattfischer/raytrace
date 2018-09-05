@@ -101,7 +101,7 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 		IrradianceCache::Entry newEntry;
 		newEntry.point = point;
 		newEntry.normal = normal;
-		newEntry.radius = std::max(std::min(mIndirectSamples / mean, 10.0f), 1.0f);
+		newEntry.radius = mIndirectSamples / mean;
 		newEntry.radiance = radiance;
 		newEntry.rotGradR = rotGradR;
 		newEntry.rotGradG = rotGradG;
