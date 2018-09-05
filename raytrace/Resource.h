@@ -25,7 +25,9 @@
 #define IDC_INDIRECT_SAMPLES            1019
 #define IDC_INDIRECT_DIRECT_SAMPLES     1020
 #define IDC_INDIRECT_CACHE_THRESHOLD    1021
+#define IDC_IRRADIANCE_CACHE_THRESHOLD  1021
 #define IDC_SPECULAR                    1022
+#define IDC_IRRADIANCE_CACHING          1023
 
 // Next default values for new objects
 // 
@@ -33,7 +35,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        105
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

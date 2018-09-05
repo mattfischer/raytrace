@@ -9,6 +9,7 @@
 #include "Object/Primitive/Base.hpp"
 
 #include "Trace/Lighter/Direct.hpp"
+#include "Trace/Lighter/Indirect.hpp"
 #include "Trace/Lighter/IndirectCached.hpp"
 #include "Trace/Lighter/Radiant.hpp"
 #include "Trace/Lighter/Specular.hpp"
@@ -28,7 +29,11 @@ Tracer::Tracer(const Object::Scene &scene, const Settings &settings, RenderData 
 	}
 
 	if (settings.indirectLighting) {
-		mLighters.push_back(std::make_unique<Lighter::IndirectCached>(settings.indirectSamples, settings.indirectDirectSamples));
+		if (settings.irradianceCaching) {
+			mLighters.push_back(std::make_unique<Lighter::IndirectCached>(settings.indirectSamples, settings.indirectDirectSamples));
+		} else {
+			mLighters.push_back(std::make_unique<Lighter::Indirect>(settings.indirectSamples, settings.indirectDirectSamples));
+		}
 	}
 
 	if (settings.radiantLighting) {

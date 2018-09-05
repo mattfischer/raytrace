@@ -25,7 +25,7 @@ void Engine::startPrerender(unsigned char *bits, Listener *listener)
 {
 	mStartTime = GetTickCount();
 	mRenderData.irradianceCache.clear();
-	mRenderData.irradianceCache.setThreshold(mSettings.indirectCacheThreshold);
+	mRenderData.irradianceCache.setThreshold(mSettings.irradianceCacheThreshold);
 
 	mListener = listener;
 

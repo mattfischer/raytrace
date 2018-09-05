@@ -22,7 +22,8 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.indirectLighting = true;
 	mSettings.indirectSamples = 1000;
 	mSettings.indirectDirectSamples = 10;
-	mSettings.indirectCacheThreshold = 0.15;
+	mSettings.irradianceCaching = true;
+	mSettings.irradianceCacheThreshold = 0.15;
 }
 
 void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
@@ -82,8 +83,9 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		CheckDlgButton(hwndDlg, IDC_INDIRECT, mSettings.indirectLighting ? BST_CHECKED : BST_UNCHECKED);
 		SetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, mSettings.indirectSamples, TRUE);
 		SetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, mSettings.indirectDirectSamples, TRUE);
-		sprintf_s(buf, sizeof(buf), "%f", mSettings.indirectCacheThreshold);
-		SetDlgItemText(hwndDlg, IDC_INDIRECT_CACHE_THRESHOLD, buf);
+		CheckDlgButton(hwndDlg, IDC_IRRADIANCE_CACHING, mSettings.irradianceCaching ? BST_CHECKED : BST_UNCHECKED);
+		sprintf_s(buf, sizeof(buf), "%f", mSettings.irradianceCacheThreshold);
+		SetDlgItemText(hwndDlg, IDC_IRRADIANCE_CACHE_THRESHOLD, buf);
 		return FALSE;
 
 	case WM_COMMAND:
@@ -118,6 +120,7 @@ void RenderControlDlg::refreshSettings()
 	mSettings.indirectLighting = IsDlgButtonChecked(mHDlg, IDC_INDIRECT);
 	mSettings.indirectSamples = GetDlgItemInt(mHDlg, IDC_INDIRECT_SAMPLES, NULL, TRUE);
 	mSettings.indirectDirectSamples = GetDlgItemInt(mHDlg, IDC_INDIRECT_DIRECT_SAMPLES, NULL, TRUE);
-	GetDlgItemText(mHDlg, IDC_INDIRECT_CACHE_THRESHOLD, buf, sizeof(buf));
-	mSettings.indirectCacheThreshold = atof(buf);
+	mSettings.irradianceCaching = IsDlgButtonChecked(mHDlg, IDC_IRRADIANCE_CACHING);
+	GetDlgItemText(mHDlg, IDC_IRRADIANCE_CACHE_THRESHOLD, buf, sizeof(buf));
+	mSettings.irradianceCacheThreshold = atof(buf);
 }

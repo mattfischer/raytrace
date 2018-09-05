@@ -31,7 +31,8 @@ public:
 		bool indirectLighting;
 		int indirectSamples;
 		int indirectDirectSamples;
-		float indirectCacheThreshold;
+		bool irradianceCaching;
+		float irradianceCacheThreshold;
 	};
 
 	struct RenderData
