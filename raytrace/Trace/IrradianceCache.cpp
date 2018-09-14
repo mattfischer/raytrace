@@ -9,9 +9,7 @@ namespace Trace {
 
 IrradianceCache::IrradianceCache()
 {
-	mOctree = std::make_unique<OctreeNode>();
-	mOctreeOrigin = Math::Point(0, 0, 0);
-	mOctreeSize = 20;
+	mOctreeSize = 0;
 }
 
 void IrradianceCache::setThreshold(float threshold)
@@ -32,6 +30,10 @@ float IrradianceCache::error(const Entry &entry, const Math::Point &point, const
 
 void IrradianceCache::lookupOctreeNode(OctreeNode *node, Math::Point origin, float size, const Math::Point &point, const Math::Normal &normal, std::vector<Entry> &entries) const
 {
+	if (!node) {
+		return;
+	}
+
 	for (const Entry &e : node->entries)
 	{
 		float d = (point - e.point) * ((normal + e.normal) / 2);
@@ -59,7 +61,7 @@ void IrradianceCache::lookupOctreeNode(OctreeNode *node, Math::Point origin, flo
 		if (point.z() > childOrigin.z() + childSize) { d = (point.z() - (childOrigin.z() + childSize)); distance += d * d; }
 		distance = std::sqrt(distance);
 
-		if (distance < childSize && node->children[i]) {
+		if (distance < childSize) {
 			lookupOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal, entries);
 		}
 	}
@@ -70,7 +72,7 @@ std::vector<IrradianceCache::Entry> IrradianceCache::lookup(const Math::Point &p
 	std::vector<Entry> entries;
 	std::lock_guard<std::mutex> guard(mMutex);
 
-	lookupOctreeNode(mOctree.get(), mOctreeOrigin, mOctreeSize, point, normal, entries);
+	lookupOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, normal, entries);
 
 	return entries;
 }
@@ -81,36 +83,55 @@ void IrradianceCache::add(const Entry &entry)
 
 	float R = entry.radius * mThreshold;
 
+	if (!mOctreeRoot) {
+		mOctreeRoot = std::make_unique<OctreeNode>();
+		mOctreeSize = R;
+		mOctreeOrigin = entry.point;
+	}
+
+	while (std::abs(entry.point.x() - mOctreeOrigin.x()) > mOctreeSize ||
+		   std::abs(entry.point.y() - mOctreeOrigin.y()) > mOctreeSize ||
+		   std::abs(entry.point.z() - mOctreeOrigin.z()) > mOctreeSize ||
+		   mOctreeSize < R) {
+		float x = (entry.point.x() > mOctreeOrigin.x()) ? 1 : -1;
+		float y = (entry.point.y() > mOctreeOrigin.y()) ? 1 : -1;
+		float z = (entry.point.z() > mOctreeOrigin.z()) ? 1 : -1;
+
+		int idx = ((x < 0) ? 1 : 0) + ((y < 0) ? 2 : 0) + ((z < 0) ? 4 : 0);
+		std::unique_ptr<OctreeNode> newRoot = std::make_unique<OctreeNode>();
+		newRoot->children[idx] = std::move(mOctreeRoot);
+		mOctreeRoot = std::move(newRoot);
+		mOctreeOrigin = mOctreeOrigin + Math::Vector(x, y, z) * mOctreeSize;
+		mOctreeSize *= 2;
+	}
+
 	Math::Point origin = mOctreeOrigin;
 	float size = mOctreeSize;
-	OctreeNode *node = mOctree.get();
-	while (true) {
-		if (size > R * 2) {
-			float x = (entry.point.x() > origin.x()) ? 1 : -1;
-			float y = (entry.point.y() > origin.y()) ? 1 : -1;
-			float z = (entry.point.z() > origin.z()) ? 1 : -1;
+	OctreeNode *node = mOctreeRoot.get();
+	while (size > R * 2) {
+		float x = (entry.point.x() > origin.x()) ? 1 : -1;
+		float y = (entry.point.y() > origin.y()) ? 1 : -1;
+		float z = (entry.point.z() > origin.z()) ? 1 : -1;
 
-			int idx = ((x > 0) ? 1 : 0) + ((y > 0) ? 2 : 0) + ((z > 0) ? 4 : 0);
-			Math::Point newOrigin = origin + Math::Vector(x, y, z) * size / 2;
+		int idx = ((x > 0) ? 1 : 0) + ((y > 0) ? 2 : 0) + ((z > 0) ? 4 : 0);
+		Math::Point newOrigin = origin + Math::Vector(x, y, z) * size / 2;
 
-			if (!node->children[idx])
-			{
-				node->children[idx] = std::make_unique<OctreeNode>();
-			}
-
-			origin = newOrigin;
-			size /= 2;
-			node = node->children[idx].get();
-		} else {
-			node->entries.push_back(entry);
-			break;
+		if (!node->children[idx])
+		{
+			node->children[idx] = std::make_unique<OctreeNode>();
 		}
+
+		origin = newOrigin;
+		size /= 2;
+		node = node->children[idx].get();
 	}
+
+	node->entries.push_back(entry);
 }
 
 void IrradianceCache::clear()
 {
-	mOctree = std::make_unique<OctreeNode>();
+	mOctreeRoot.release();
 }
 
 }

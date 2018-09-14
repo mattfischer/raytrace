@@ -44,7 +44,7 @@ private:
 
 	void lookupOctreeNode(OctreeNode *node, Math::Point origin, float size, const Math::Point &point, const Math::Normal &normal, std::vector<Entry> &entries) const;
 
-	std::unique_ptr<OctreeNode> mOctree;
+	std::unique_ptr<OctreeNode> mOctreeRoot;
 	Math::Point mOctreeOrigin;
 	float mOctreeSize;
 	mutable std::mutex mMutex;
