@@ -10,8 +10,8 @@ namespace Trace {
 IrradianceCache::IrradianceCache()
 {
 	mOctree = std::make_unique<OctreeNode>();
-	mOctreeOrigin = Math::Point(-20, -20, -20);
-	mOctreeSize = 40;
+	mOctreeOrigin = Math::Point(0, 0, 0);
+	mOctreeSize = 20;
 }
 
 void IrradianceCache::setThreshold(float threshold)
@@ -42,23 +42,24 @@ void IrradianceCache::lookupOctreeNode(OctreeNode *node, Math::Point origin, flo
 	}
 
 	for (int i = 0; i < 8; i++) {
-		Math::Point childOrigin = origin;
+		float x = (i & 1) ? 1 : -1;
+		float y = (i & 2) ? 1 : -1;
+		float z = (i & 4) ? 1 : -1;
+
 		float childSize = size / 2;
-		if (i & 1) childOrigin.setX(childOrigin.x() + childSize);
-		if (i & 2) childOrigin.setY(childOrigin.y() + childSize);
-		if (i & 4) childOrigin.setZ(childOrigin.z() + childSize);
+		Math::Point childOrigin = origin + Math::Vector(x, y, z) * childSize;
 
 		float distance = 0;
 		float d;
-		if (point.x() < childOrigin.x()) { d = (childOrigin.x() - point.x()); distance += d * d; }
-		if (point.y() < childOrigin.y()) { d = (childOrigin.y() - point.y()); distance += d * d; }
-		if (point.z() < childOrigin.z()) { d = (childOrigin.z() - point.z()); distance += d * d; }
+		if (point.x() < childOrigin.x() - childSize) { d = ((childOrigin.x() - childSize) - point.x()); distance += d * d; }
+		if (point.y() < childOrigin.y() - childSize) { d = ((childOrigin.y() - childSize) - point.y()); distance += d * d; }
+		if (point.z() < childOrigin.z() - childSize) { d = ((childOrigin.z() - childSize) - point.z()); distance += d * d; }
 		if (point.x() > childOrigin.x() + childSize) { d = (point.x() - (childOrigin.x() + childSize)); distance += d * d; }
 		if (point.y() > childOrigin.y() + childSize) { d = (point.y() - (childOrigin.y() + childSize)); distance += d * d; }
 		if (point.z() > childOrigin.z() + childSize) { d = (point.z() - (childOrigin.z() + childSize)); distance += d * d; }
 		distance = std::sqrt(distance);
 
-		if (distance < childSize / 2 && node->children[i]) {
+		if (distance < childSize && node->children[i]) {
 			lookupOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal, entries);
 		}
 	}
@@ -84,21 +85,13 @@ void IrradianceCache::add(const Entry &entry)
 	float size = mOctreeSize;
 	OctreeNode *node = mOctree.get();
 	while (true) {
-		if (size > R * 4) {
-			Math::Point newOrigin = origin;
-			int idx = 0;
-			if (entry.point.x() > origin.x() + size / 2) {
-				newOrigin.setX(newOrigin.x() + size / 2);
-				idx += 1;
-			}
-			if (entry.point.y() > origin.y() + size / 2) {
-				newOrigin.setY(newOrigin.y() + size / 2);
-				idx += 2;
-			}
-			if (entry.point.z() > origin.z() + size / 2) {
-				newOrigin.setZ(newOrigin.z() + size / 2);
-				idx += 4;
-			}
+		if (size > R * 2) {
+			float x = (entry.point.x() > origin.x()) ? 1 : -1;
+			float y = (entry.point.y() > origin.y()) ? 1 : -1;
+			float z = (entry.point.z() > origin.z()) ? 1 : -1;
+
+			int idx = ((x > 0) ? 1 : 0) + ((y > 0) ? 2 : 0) + ((z > 0) ? 4 : 0);
+			Math::Point newOrigin = origin + Math::Vector(x, y, z) * size / 2;
 
 			if (!node->children[idx])
 			{
