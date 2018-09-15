@@ -7,13 +7,13 @@
 
 namespace Render {
 
-Thread::Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, unsigned char *bits)
+Thread::Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, Framebuffer *framebuffer)
 : mEngine(engine),
   mSettings(settings),
   mRenderData(renderData),
   mTracer(scene, settings, renderData)
 {
-	mBits = bits;
+	mFramebuffer = framebuffer;
 	mStarted = false;
 }
 
@@ -67,10 +67,7 @@ void Thread::doRender()
 			}
 			color = color / mSettings.antialiasSamples;
 
-			int scany = height - y - 1;
-			mBits[(scany * width + x) * 3 + 0] = color.blue() * 0xFF;
-			mBits[(scany * width + x) * 3 + 1] = color.green() * 0xFF;
-			mBits[(scany * width + x) * 3 + 2] = color.red() * 0xFF;
+			mFramebuffer->setPixel(x, y, color);
 		}
 	}
 }

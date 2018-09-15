@@ -4,6 +4,7 @@
 #include "RenderControlDlg.hpp"
 #include "LightProbeDlg.hpp"
 #include "Render/Engine.hpp"
+#include "Render/Framebuffer.hpp"
 #include "Object/Scene.hpp"
 
 #include <windows.h>
@@ -36,7 +37,7 @@ private:
 	LightProbeDlg mLightProbe;
 	std::unique_ptr<Object::Scene> mScene;
 	std::unique_ptr<Render::Engine> mEngine;
-	unsigned char *mFramebuffer;
+	std::unique_ptr<Render::Framebuffer> mFramebuffer;
 };
 
 #endif

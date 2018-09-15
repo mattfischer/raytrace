@@ -197,6 +197,9 @@
     <ClCompile Include="Object\Primitive\Quad.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
+    <ClCompile Include="Render\Framebuffer.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -391,6 +394,9 @@
     </ClInclude>
     <ClInclude Include="Object\Primitive\Quad.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Framebuffer.hpp">
+      <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

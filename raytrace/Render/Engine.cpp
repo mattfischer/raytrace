@@ -21,7 +21,7 @@ Engine::~Engine()
 	DeleteCriticalSection(&mCritSec);
 }
 
-void Engine::startPrerender(unsigned char *bits, Listener *listener)
+void Engine::startPrerender(Framebuffer *framebuffer, Listener *listener)
 {
 	mStartTime = GetTickCount();
 	mRenderData.irradianceCache.clear();
@@ -37,16 +37,15 @@ void Engine::startPrerender(unsigned char *bits, Listener *listener)
 		int x, y;
 		int w, h;
 		getBlock(mBlocksStarted, x, y, w, h);
-		std::unique_ptr<PrerenderThread> thread = std::make_unique<PrerenderThread>(*this, mScene, mSettings, mRenderData, bits);
+		std::unique_ptr<PrerenderThread> thread = std::make_unique<PrerenderThread>(*this, mScene, mSettings, mRenderData, framebuffer);
 		thread->start(x, y, w, h);
 		mPrerenderThreads.insert(std::move(thread));
 		mBlocksStarted++;
 	}
 }
 
-void Engine::startRender(unsigned char *bits, Listener *listener)
+void Engine::startRender(Framebuffer *framebuffer, Listener *listener)
 {
-	mBits = bits;
 	mListener = listener;
 	mRendering = true;
 	mListener->onRenderStatus("");
@@ -59,7 +58,7 @@ void Engine::startRender(unsigned char *bits, Listener *listener)
 		int x, y;
 		int w, h;
 		getBlock(mBlocksStarted, x, y, w, h);
-		std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, mScene, mSettings, mRenderData, mBits);
+		std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, mScene, mSettings, mRenderData, framebuffer);
 		thread->start(x, y, w, h);
 		mThreads.insert(std::move(thread));
 		mBlocksStarted++;

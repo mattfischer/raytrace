@@ -91,7 +91,7 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 			bi.bmiHeader.biCompression = BI_RGB;
 
 			HBITMAP hBitmap = (HBITMAP)GetCurrentObject(mBackDC, OBJ_BITMAP);
-			SetDIBits(mBackDC, hBitmap, 0, mRenderControl.settings().height, mFramebuffer, &bi, DIB_RGB_COLORS);
+			SetDIBits(mBackDC, hBitmap, 0, mRenderControl.settings().height, mFramebuffer->bits(), &bi, DIB_RGB_COLORS);
 			InvalidateRect(hWnd, NULL, FALSE);
 
 			if(mEngine->rendering()) {
@@ -142,16 +142,12 @@ void App::onRenderButtonClicked()
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
 
-	if(mFramebuffer) {
-		delete[] mFramebuffer;
-	}
-	mFramebuffer = new BYTE[width * height * 3];
-	memset(mFramebuffer, 0, width * height * 3);
+	mFramebuffer = std::make_unique<Render::Framebuffer>(width, height);
 
 	mRenderControl.enableRenderButton(false);
 
 	mEngine->setSettings(mRenderControl.settings());
-	mEngine->startPrerender(mFramebuffer, this);
+	mEngine->startPrerender(mFramebuffer.get(), this);
 
 	SetTimer(mHWnd, 0, 0, NULL);
 }
@@ -169,5 +165,5 @@ void App::onRenderStatus(const char *message)
 void App::onPrerenderDone()
 {
 	mEngine->setSettings(mRenderControl.settings());
-	mEngine->startRender(mFramebuffer, this);
+	mEngine->startRender(mFramebuffer.get(), this);
 }

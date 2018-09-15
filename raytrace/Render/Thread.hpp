@@ -12,7 +12,7 @@ class Engine;
 class Thread
 {
 public:
-	Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, unsigned char *bits);
+	Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, Framebuffer *framebuffer);
 
 	void start(int startX, int startY, int width, int height);
 
@@ -25,7 +25,7 @@ private:
 	Engine &mEngine;
 	const Trace::Tracer::Settings &mSettings;
 	Trace::Tracer::RenderData &mRenderData;
-	unsigned char *mBits;
+	Framebuffer *mFramebuffer;
 	int mStartX;
 	int mStartY;
 	int mWidth;

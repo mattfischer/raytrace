@@ -6,6 +6,7 @@
 
 #include "Render/Thread.hpp"
 #include "Render/PrerenderThread.hpp"
+#include "Render/Framebuffer.hpp"
 
 #include <set>
 
@@ -28,8 +29,8 @@ public:
 
 	bool rendering() const;
 
-	void startPrerender(unsigned char *bits, Listener *listener);
-	void startRender(unsigned char *bits, Listener *listener);
+	void startPrerender(Framebuffer *framebuffer, Listener *listener);
+	void startRender(Framebuffer *framebuffer, Listener *listener);
 	bool threadDone(Thread *thread);
 	bool prerenderThreadDone(PrerenderThread *thread);
 	void setSettings(const Trace::Tracer::Settings &settings);
@@ -45,7 +46,6 @@ private:
 	const Object::Scene &mScene;
 	Trace::Tracer::Settings mSettings;
 	Trace::Tracer::RenderData mRenderData;
-	unsigned char *mBits;
 	Listener *mListener;
 	bool mRendering;
 	DWORD mStartTime;

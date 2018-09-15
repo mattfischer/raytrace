@@ -5,6 +5,7 @@ namespace Render {
 
 class Engine;
 class Thread;
+class Framebuffer;
 
 }
 

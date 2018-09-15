@@ -12,7 +12,7 @@ namespace Render {
 	class PrerenderThread
 	{
 	public:
-		PrerenderThread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, unsigned char *bits);
+		PrerenderThread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, Framebuffer *framebuffer);
 
 		void start(int startX, int startY, int width, int height);
 
@@ -29,7 +29,7 @@ namespace Render {
 		Engine &mEngine;
 		const Trace::Tracer::Settings &mSettings;
 		Trace::Tracer::RenderData &mRenderData;
-		unsigned char *mBits;
+		Framebuffer *mFramebuffer;
 		Trace::Tracer mTracer;
 		bool mStarted;
 	};
