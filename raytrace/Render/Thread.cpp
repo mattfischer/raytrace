@@ -1,8 +1,6 @@
 #include "Render/Thread.hpp"
 #include "Render/Engine.hpp"
 
-#include <process.h>
-
 namespace Render {
 
 Thread::Thread(Listener *listener, Framebuffer *framebuffer)
@@ -21,20 +19,20 @@ void Thread::start(int startX, int startY, int width, int height)
 
 	if(!mStarted) {
 		mStarted = true;
-		_beginthread(kickstart, 0, this);
+		mThread = std::thread([=] { run(); });
+		mThread.detach();
 	}
-}
-
-void Thread::kickstart(void *data)
-{
-	Thread *obj = (Thread*)data;
-	obj->run();
 }
 
 void Thread::run()
 {
 	while(true) {
-		doRender();
+		for (int y = mStartY; y < mStartY + mHeight; y++) {
+			for (int x = mStartX; x < mStartX + mWidth; x++) {
+				Object::Color color = renderPixel(x, y);
+				mFramebuffer->setPixel(x, y, color);
+			}
+		}
 
 		bool stop = mListener->threadDone(this);
 		if(stop) {
@@ -43,13 +41,4 @@ void Thread::run()
 	}
 }
 
-void Thread::doRender()
-{
-	for (int y = mStartY; y < mStartY + mHeight; y++) {
-		for (int x = mStartX; x < mStartX + mWidth; x++) {
-			Object::Color color = renderPixel(x, y);
-			mFramebuffer->setPixel(x, y, color);
-		}
-	}
-}
 }

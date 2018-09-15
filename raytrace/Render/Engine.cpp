@@ -15,12 +15,6 @@ Engine::Engine(const Object::Scene &scene)
 	: mScene(scene)
 {
 	mState = State::Stopped;
-	InitializeCriticalSection(&mCritSec);
-}
-
-Engine::~Engine()
-{
-	DeleteCriticalSection(&mCritSec);
 }
 
 void Engine::startRender(Framebuffer *framebuffer, Listener *listener)
@@ -46,7 +40,7 @@ bool Engine::threadDone(Thread *doneThread)
 {
 	bool ret;
 
-	EnterCriticalSection(&mCritSec);
+	std::lock_guard<std::mutex> guard(mMutex);
 
 	if (mBlocksStarted < widthInBlocks() * heightInBlocks()) {
 		int x, y;
@@ -69,7 +63,6 @@ bool Engine::threadDone(Thread *doneThread)
 		}
 		ret = true;
 	}
-	LeaveCriticalSection(&mCritSec);
 
 	return ret;
 }

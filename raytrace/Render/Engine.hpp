@@ -9,8 +9,9 @@
 #include "Trace/Tracer.hpp"
 
 #include <set>
+#include <thread>
 
-#include <windows.h>
+#include <Windows.h>
 
 namespace Render {
 
@@ -24,7 +25,6 @@ public:
 	};
 
 	Engine(const Object::Scene &scene);
-	~Engine();
 
 	bool rendering() const;
 
@@ -55,7 +55,7 @@ private:
 	};
 	State mState;
 	DWORD mStartTime;
-	CRITICAL_SECTION mCritSec;
+	std::mutex mMutex;
 	std::set<std::unique_ptr<Thread>> mThreads;
 	int mBlocksStarted;
 };

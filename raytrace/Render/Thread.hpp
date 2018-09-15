@@ -4,6 +4,8 @@
 #include "Object/Forwards.hpp"
 #include "Render/Forwards.hpp"
 
+#include <thread>
+
 namespace Render {
 
 class Engine;
@@ -23,10 +25,7 @@ protected:
 	virtual Object::Color renderPixel(int x, int y) = 0;
 
 private:
-	static void kickstart(void *data);
-
 	void run();
-	void doRender();
 
 	int mStartX;
 	int mStartY;
@@ -35,6 +34,7 @@ private:
 	bool mStarted;
 	Listener *mListener;
 	Framebuffer *mFramebuffer;
+	std::thread mThread;
 };
 
 }
