@@ -12,13 +12,13 @@ namespace Render
 class ThreadRender : public Engine::Thread
 {
 public:
-	ThreadRender(Engine *engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, Framebuffer *framebuffer);
+	ThreadRender(Engine &engine);
 
 protected:
 	virtual Object::Color renderPixel(int x, int y);
 
 private:
-	Trace::Tracer mTracer;
+	std::unique_ptr<Trace::Tracer> mTracer;
 	std::default_random_engine mRandomEngine;
 };
 

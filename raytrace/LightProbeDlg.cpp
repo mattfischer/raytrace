@@ -79,11 +79,11 @@ INT_PTR CALLBACK LightProbeDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
 
 void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 {
-	Trace::Tracer tracer = engine.createTracer();
-	Trace::Ray ray = tracer.createCameraRay(x, y);
+	std::unique_ptr<Trace::Tracer> tracer = engine.createTracer();
+	Trace::Ray ray = tracer->createCameraRay(x, y);
 	Trace::IntersectionVector::iterator begin, end;
 
-	tracer.intersect(ray, begin, end);
+	tracer->intersect(ray, begin, end);
 	if (begin != end) {
 		Trace::Intersection intersection = *begin;
 
@@ -91,11 +91,11 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
 		std::vector<Trace::Lighter::Base::ProbeEntry> probe;
 		lighter.setProbe(&probe);
-		lighter.light(intersection, tracer);
+		lighter.light(intersection, *tracer);
 
 		mSamples.clear();
 		for (Trace::Lighter::Base::ProbeEntry &entry : probe) {
-			Object::Color color = tracer.toneMap(entry.radiance);
+			Object::Color color = tracer->toneMap(entry.radiance);
 			float azimuth = std::atan2(entry.direction.y(), entry.direction.x());
 			float elevation = std::asin(entry.direction.z());
 			mSamples.push_back(Sample{ color, azimuth, elevation });

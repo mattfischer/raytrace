@@ -11,10 +11,9 @@ namespace Render {
 
 static const int BLOCK_SIZE = 64;
 
-Engine::Thread::Thread(Engine *engine, Framebuffer *framebuffer)
+Engine::Thread::Thread(Engine &engine)
+	: mEngine(engine)
 {
-	mEngine = engine;
-	mFramebuffer = framebuffer;
 	mStarted = false;
 }
 
@@ -38,11 +37,11 @@ void Engine::Thread::run()
 		for (int y = mStartY; y < mStartY + mHeight; y++) {
 			for (int x = mStartX; x < mStartX + mWidth; x++) {
 				Object::Color color = renderPixel(x, y);
-				mFramebuffer->setPixel(x, y, color);
+				mEngine.framebuffer()->setPixel(x, y, color);
 			}
 		}
 
-		bool stop = mEngine->threadDone(this);
+		bool stop = mEngine.threadDone(this);
 		if (stop) {
 			break;
 		}
@@ -130,10 +129,10 @@ void Engine::beginPhase()
 		std::unique_ptr<Thread> thread;
 		switch (mState) {
 		case State::Prerender:
-			thread = std::make_unique<ThreadPrerender>(this, mScene, mSettings, mRenderData, mFramebuffer);
+			thread = std::make_unique<ThreadPrerender>(*this);
 			break;
 		case State::Render:
-			thread = std::make_unique<ThreadRender>(this, mScene, mSettings, mRenderData, mFramebuffer);
+			thread = std::make_unique<ThreadRender>(*this);
 			break;
 		default:
 			break;
@@ -181,9 +180,9 @@ int Engine::heightInBlocks()
 	return (mSettings.height + BLOCK_SIZE - 1) / BLOCK_SIZE;
 }
 
-Trace::Tracer Engine::createTracer()
+std::unique_ptr<Trace::Tracer> Engine::createTracer()
 {
-	return Trace::Tracer(mScene, mSettings, mRenderData);
+	return std::make_unique<Trace::Tracer>(mScene, mSettings, mRenderData);
 }
 
 Trace::Tracer::Settings &Engine::settings()
@@ -194,6 +193,11 @@ Trace::Tracer::Settings &Engine::settings()
 void Engine::setSettings(const Trace::Tracer::Settings &settings)
 {
 	mSettings = settings;
+}
+
+Framebuffer *Engine::framebuffer()
+{
+	return mFramebuffer;
 }
 
 }

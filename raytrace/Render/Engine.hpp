@@ -26,7 +26,7 @@ public:
 	class Thread
 	{
 	public:
-		Thread(Engine *engine, Framebuffer *framebuffer);
+		Thread(Engine &engine);
 
 		void start(int startX, int startY, int width, int height);
 
@@ -41,8 +41,7 @@ public:
 		int mWidth;
 		int mHeight;
 		bool mStarted;
-		Engine *mEngine;
-		Framebuffer *mFramebuffer;
+		Engine &mEngine;
 		std::thread mThread;
 	};
 
@@ -54,8 +53,9 @@ public:
 	bool threadDone(Thread *thread);
 	void setSettings(const Trace::Tracer::Settings &settings);
 
-	Trace::Tracer createTracer();
+	std::unique_ptr<Trace::Tracer> createTracer();
 	Trace::Tracer::Settings &settings();
+	Framebuffer *framebuffer();
 
 private:
 	void getBlock(int block, int &x, int &y, int &w, int &h);
