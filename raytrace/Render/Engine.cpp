@@ -11,6 +11,44 @@ namespace Render {
 
 static const int BLOCK_SIZE = 64;
 
+Engine::Thread::Thread(Engine *engine, Framebuffer *framebuffer)
+{
+	mEngine = engine;
+	mFramebuffer = framebuffer;
+	mStarted = false;
+}
+
+void Engine::Thread::start(int startX, int startY, int width, int height)
+{
+	mStartX = startX;
+	mStartY = startY;
+	mWidth = width;
+	mHeight = height;
+
+	if (!mStarted) {
+		mStarted = true;
+		mThread = std::thread([=] { run(); });
+		mThread.detach();
+	}
+}
+
+void Engine::Thread::run()
+{
+	while (true) {
+		for (int y = mStartY; y < mStartY + mHeight; y++) {
+			for (int x = mStartX; x < mStartX + mWidth; x++) {
+				Object::Color color = renderPixel(x, y);
+				mFramebuffer->setPixel(x, y, color);
+			}
+		}
+
+		bool stop = mEngine->threadDone(this);
+		if (stop) {
+			break;
+		}
+	}
+}
+
 Engine::Engine(const Object::Scene &scene)
 	: mScene(scene)
 {

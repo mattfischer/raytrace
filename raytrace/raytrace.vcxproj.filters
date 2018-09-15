@@ -128,9 +128,6 @@
     <ClCompile Include="Render\Engine.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Thread.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Albedo\Base.cpp">
       <Filter>Source Files\Object\Albedo</Filter>
     </ClCompile>
@@ -330,9 +327,6 @@
       <Filter>Source Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Render\Forwards.hpp">
-      <Filter>Source Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Thread.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Trace\Lighter\Base.hpp">

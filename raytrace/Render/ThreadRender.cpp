@@ -4,8 +4,8 @@
 
 namespace Render {
 
-ThreadRender::ThreadRender(Thread::Listener *listener, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, Framebuffer *framebuffer)
-	: Thread(listener, framebuffer), mTracer(scene, settings, renderData)
+ThreadRender::ThreadRender(Engine *engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, Framebuffer *framebuffer)
+	: Thread(engine, framebuffer), mTracer(scene, settings, renderData)
 {}
 
 Object::Color ThreadRender::renderPixel(int x, int y)

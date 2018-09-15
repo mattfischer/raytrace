@@ -4,24 +4,46 @@
 #include "Object/Forwards.hpp"
 #include "Trace/Forwards.hpp"
 
-#include "Render/Thread.hpp"
 #include "Render/Framebuffer.hpp"
 #include "Trace/Tracer.hpp"
 
 #include <set>
 #include <thread>
 
-#include <Windows.h>
+#include <windows.h>
 
 namespace Render {
 
-class Engine : public Thread::Listener
+class Engine
 {
 public:
 	class Listener {
 	public:
 		virtual void onRenderDone() = 0;
 		virtual void onRenderStatus(const char *message) = 0;
+	};
+
+	class Thread
+	{
+	public:
+		Thread(Engine *engine, Framebuffer *framebuffer);
+
+		void start(int startX, int startY, int width, int height);
+
+	protected:
+		virtual Object::Color renderPixel(int x, int y) = 0;
+
+	private:
+		void run();
+
+		int mStartX;
+		int mStartY;
+		int mWidth;
+		int mHeight;
+		bool mStarted;
+		Engine *mEngine;
+		Framebuffer *mFramebuffer;
+		std::thread mThread;
 	};
 
 	Engine(const Object::Scene &scene);
