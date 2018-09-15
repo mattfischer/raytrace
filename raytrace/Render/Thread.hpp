@@ -4,17 +4,23 @@
 #include "Object/Forwards.hpp"
 #include "Render/Forwards.hpp"
 
-#include "Trace/Tracer.hpp"
-
 namespace Render {
 
 class Engine;
 class Thread
 {
 public:
-	Thread(Engine &engine, const Object::Scene &scene, const Trace::Tracer::Settings &settings, Trace::Tracer::RenderData &renderData, Framebuffer *framebuffer);
+	class Listener {
+	public:
+		virtual bool threadDone(Thread *thread) = 0;
+	};
+
+	Thread(Listener *listener, Framebuffer *framebuffer);
 
 	void start(int startX, int startY, int width, int height);
+
+protected:
+	virtual Object::Color renderPixel(int x, int y) = 0;
 
 private:
 	static void kickstart(void *data);
@@ -22,16 +28,13 @@ private:
 	void run();
 	void doRender();
 
-	Engine &mEngine;
-	const Trace::Tracer::Settings &mSettings;
-	Trace::Tracer::RenderData &mRenderData;
-	Framebuffer *mFramebuffer;
 	int mStartX;
 	int mStartY;
 	int mWidth;
 	int mHeight;
-	Trace::Tracer mTracer;
 	bool mStarted;
+	Listener *mListener;
+	Framebuffer *mFramebuffer;
 };
 
 }

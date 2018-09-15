@@ -147,7 +147,7 @@ void App::onRenderButtonClicked()
 	mRenderControl.enableRenderButton(false);
 
 	mEngine->setSettings(mRenderControl.settings());
-	mEngine->startPrerender(mFramebuffer.get(), this);
+	mEngine->startRender(mFramebuffer.get(), this);
 
 	SetTimer(mHWnd, 0, 0, NULL);
 }
@@ -160,10 +160,4 @@ void App::onRenderDone()
 void App::onRenderStatus(const char *message)
 {
 	mRenderControl.setStatusMessage(message);
-}
-
-void App::onPrerenderDone()
-{
-	mEngine->setSettings(mRenderControl.settings());
-	mEngine->startRender(mFramebuffer.get(), this);
 }

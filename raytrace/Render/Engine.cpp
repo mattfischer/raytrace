@@ -1,9 +1,11 @@
 #define NOMINMAX
 #include "Render/Engine.hpp"
 
-#include "Object/Color.hpp"
+#include "Render/ThreadRender.hpp"
+#include "Render/ThreadPrerender.hpp"
 
 #include <algorithm>
+#include <memory>
 
 namespace Render {
 
@@ -12,7 +14,7 @@ static const int BLOCK_SIZE = 64;
 Engine::Engine(const Object::Scene &scene)
 	: mScene(scene)
 {
-	mRendering = false;
+	mState = State::Stopped;
 	InitializeCriticalSection(&mCritSec);
 }
 
@@ -21,53 +23,23 @@ Engine::~Engine()
 	DeleteCriticalSection(&mCritSec);
 }
 
-void Engine::startPrerender(Framebuffer *framebuffer, Listener *listener)
+void Engine::startRender(Framebuffer *framebuffer, Listener *listener)
 {
+	mListener = listener;
+	mFramebuffer = framebuffer;
+	mState = State::Prerender;
+	mListener->onRenderStatus("");
+
 	mStartTime = GetTickCount();
 	mRenderData.irradianceCache.clear();
 	mRenderData.irradianceCache.setThreshold(mSettings.irradianceCacheThreshold);
 
-	mListener = listener;
-
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo(&sysinfo);
-	int numThreads = sysinfo.dwNumberOfProcessors;
-	mBlocksStarted = 0;
-	for (int i = 0; i<numThreads; i++) {
-		int x, y;
-		int w, h;
-		getBlock(mBlocksStarted, x, y, w, h);
-		std::unique_ptr<PrerenderThread> thread = std::make_unique<PrerenderThread>(*this, mScene, mSettings, mRenderData, framebuffer);
-		thread->start(x, y, w, h);
-		mPrerenderThreads.insert(std::move(thread));
-		mBlocksStarted++;
-	}
-}
-
-void Engine::startRender(Framebuffer *framebuffer, Listener *listener)
-{
-	mListener = listener;
-	mRendering = true;
-	mListener->onRenderStatus("");
-
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo( &sysinfo );
-	int numThreads = sysinfo.dwNumberOfProcessors;
-	mBlocksStarted = 0;
-	for(int i=0; i<numThreads; i++) {
-		int x, y;
-		int w, h;
-		getBlock(mBlocksStarted, x, y, w, h);
-		std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, mScene, mSettings, mRenderData, framebuffer);
-		thread->start(x, y, w, h);
-		mThreads.insert(std::move(thread));
-		mBlocksStarted++;
-	}
+	beginPhase();
 }
 
 bool Engine::rendering() const
 {
-	return mRendering;
+	return mState != State::Stopped;
 }
 
 bool Engine::threadDone(Thread *doneThread)
@@ -93,14 +65,7 @@ bool Engine::threadDone(Thread *doneThread)
 		}
 
 		if (mThreads.size() == 0) {
-			mRendering = false;
-
-			DWORD endTime = GetTickCount();
-			char buf[256];
-			sprintf_s(buf, sizeof(buf), "Render time: %.3fs", (endTime - mStartTime) / 1000.0f);
-
-			mListener->onRenderStatus(buf);
-			mListener->onRenderDone();
+			endPhase();
 		}
 		ret = true;
 	}
@@ -120,6 +85,61 @@ void Engine::getBlock(int block, int &x, int &y, int &w, int &h)
 	h = std::min(BLOCK_SIZE, mSettings.height - y);
 }
 
+void Engine::beginPhase()
+{
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+	int numThreads = sysinfo.dwNumberOfProcessors;
+	mBlocksStarted = 0;
+	for (int i = 0; i<numThreads; i++) {
+		int x, y;
+		int w, h;
+		getBlock(mBlocksStarted, x, y, w, h);
+
+		std::unique_ptr<Thread> thread;
+		switch (mState) {
+		case State::Prerender:
+			thread = std::make_unique<ThreadPrerender>(this, mScene, mSettings, mRenderData, mFramebuffer);
+			break;
+		case State::Render:
+			thread = std::make_unique<ThreadRender>(this, mScene, mSettings, mRenderData, mFramebuffer);
+			break;
+		default:
+			break;
+		}
+		thread->start(x, y, w, h);
+		mThreads.insert(std::move(thread));
+		mBlocksStarted++;
+	}
+
+}
+
+void Engine::endPhase()
+{
+	switch (mState) {
+	case State::Prerender:
+		mState = State::Render;
+		beginPhase();
+		break;
+
+	case State::Render:
+	{
+		mState = State::Stopped;
+
+		DWORD endTime = GetTickCount();
+		char buf[256];
+		sprintf_s(buf, sizeof(buf), "Render time: %.3fs", (endTime - mStartTime) / 1000.0f);
+
+		mListener->onRenderStatus(buf);
+		mListener->onRenderDone();
+		break;
+	}
+
+	default:
+		break;
+	}
+}
+
 int Engine::widthInBlocks()
 {
 	return (mSettings.width + BLOCK_SIZE - 1) / BLOCK_SIZE;
@@ -128,38 +148,6 @@ int Engine::widthInBlocks()
 int Engine::heightInBlocks()
 {
 	return (mSettings.height + BLOCK_SIZE - 1) / BLOCK_SIZE;
-}
-
-bool Engine::prerenderThreadDone(PrerenderThread *doneThread)
-{
-	bool ret;
-
-	EnterCriticalSection(&mCritSec);
-
-	if (mBlocksStarted < widthInBlocks() * heightInBlocks()) {
-		int x, y;
-		int w, h;
-
-		getBlock(mBlocksStarted, x, y, w, h);
-		doneThread->start(x, y, w, h);
-		mBlocksStarted++;
-		ret = false;
-	}
-	else {
-		for (const std::unique_ptr<PrerenderThread> &thread : mPrerenderThreads) {
-			if (thread.get() == doneThread) {
-				mPrerenderThreads.erase(thread);
-			}
-		}
-
-		if (mPrerenderThreads.size() == 0) {
-			mListener->onPrerenderDone();
-		}
-		ret = true;
-	}
-	LeaveCriticalSection(&mCritSec);
-
-	return ret;
 }
 
 Trace::Tracer Engine::createTracer()

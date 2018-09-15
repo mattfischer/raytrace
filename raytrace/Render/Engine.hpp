@@ -5,8 +5,8 @@
 #include "Trace/Forwards.hpp"
 
 #include "Render/Thread.hpp"
-#include "Render/PrerenderThread.hpp"
 #include "Render/Framebuffer.hpp"
+#include "Trace/Tracer.hpp"
 
 #include <set>
 
@@ -14,14 +14,13 @@
 
 namespace Render {
 
-class Engine
+class Engine : public Thread::Listener
 {
 public:
 	class Listener {
 	public:
 		virtual void onRenderDone() = 0;
 		virtual void onRenderStatus(const char *message) = 0;
-		virtual void onPrerenderDone() = 0;
 	};
 
 	Engine(const Object::Scene &scene);
@@ -29,10 +28,8 @@ public:
 
 	bool rendering() const;
 
-	void startPrerender(Framebuffer *framebuffer, Listener *listener);
 	void startRender(Framebuffer *framebuffer, Listener *listener);
 	bool threadDone(Thread *thread);
-	bool prerenderThreadDone(PrerenderThread *thread);
 	void setSettings(const Trace::Tracer::Settings &settings);
 
 	Trace::Tracer createTracer();
@@ -43,15 +40,23 @@ private:
 	int widthInBlocks();
 	int heightInBlocks();
 
+	void beginPhase();
+	void endPhase();
+
 	const Object::Scene &mScene;
 	Trace::Tracer::Settings mSettings;
 	Trace::Tracer::RenderData mRenderData;
 	Listener *mListener;
-	bool mRendering;
+	Framebuffer *mFramebuffer;
+	enum class State {
+		Stopped,
+		Prerender,
+		Render
+	};
+	State mState;
 	DWORD mStartTime;
 	CRITICAL_SECTION mCritSec;
 	std::set<std::unique_ptr<Thread>> mThreads;
-	std::set<std::unique_ptr<PrerenderThread>> mPrerenderThreads;
 	int mBlocksStarted;
 };
 

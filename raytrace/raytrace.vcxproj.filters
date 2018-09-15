@@ -182,9 +182,6 @@
     <ClCompile Include="Trace\Lighter\Base.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
-    <ClCompile Include="Render\PrerenderThread.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="LightProbeDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -198,6 +195,12 @@
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="Render\Framebuffer.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\ThreadPrerender.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\ThreadRender.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>
@@ -380,9 +383,6 @@
     <ClInclude Include="Trace\IrradianceCache.hpp">
       <Filter>Source Files\Trace</Filter>
     </ClInclude>
-    <ClInclude Include="Render\PrerenderThread.hpp">
-      <Filter>Source Files\Render</Filter>
-    </ClInclude>
     <ClInclude Include="LightProbeDlg.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -396,6 +396,12 @@
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Render\Framebuffer.hpp">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\ThreadPrerender.hpp">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\ThreadRender.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>

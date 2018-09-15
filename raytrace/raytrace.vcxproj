@@ -136,7 +136,8 @@
     <ClCompile Include="RenderControlDlg.cpp" />
     <ClCompile Include="Render\Engine.cpp" />
     <ClCompile Include="Render\Framebuffer.cpp" />
-    <ClCompile Include="Render\PrerenderThread.cpp" />
+    <ClCompile Include="Render\ThreadPrerender.cpp" />
+    <ClCompile Include="Render\ThreadRender.cpp" />
     <ClCompile Include="Render\Thread.cpp" />
     <ClCompile Include="Scene.tab.c" />
     <ClCompile Include="Trace\Intersection.cpp" />
@@ -204,7 +205,8 @@
     <ClInclude Include="Render\Engine.hpp" />
     <ClInclude Include="Render\Forwards.hpp" />
     <ClInclude Include="Render\Framebuffer.hpp" />
-    <ClInclude Include="Render\PrerenderThread.hpp" />
+    <ClInclude Include="Render\ThreadPrerender.hpp" />
+    <ClInclude Include="Render\ThreadRender.hpp" />
     <ClInclude Include="Render\Thread.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Trace\Forwards.hpp" />
