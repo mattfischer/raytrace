@@ -11,7 +11,6 @@ App *App::sInstance;
 App::App()
 {
 	sInstance = this;
-	mFramebuffer = 0;
 }
 
 int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
@@ -91,7 +90,7 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 			bi.bmiHeader.biCompression = BI_RGB;
 
 			HBITMAP hBitmap = (HBITMAP)GetCurrentObject(mBackDC, OBJ_BITMAP);
-			SetDIBits(mBackDC, hBitmap, 0, mRenderControl.settings().height, mFramebuffer->bits(), &bi, DIB_RGB_COLORS);
+			SetDIBits(mBackDC, hBitmap, 0, mRenderControl.settings().height, mEngine->framebuffer().bits(), &bi, DIB_RGB_COLORS);
 			InvalidateRect(hWnd, NULL, FALSE);
 
 			if(mEngine->rendering()) {
@@ -115,6 +114,8 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 			mRenderControl.show();
 			mRenderControl.refreshSettings();
 			mEngine->setSettings(mRenderControl.settings());
+			updateFramebuffer();
+
 			mLightProbe.show();
 			mLightProbe.renderProbe(*mEngine, LOWORD(lParam), HIWORD(lParam));
 			break;
@@ -124,6 +125,28 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 }
 
 void App::onRenderButtonClicked()
+{
+	updateFramebuffer();
+
+	mRenderControl.enableRenderButton(false);
+
+	mEngine->setSettings(mRenderControl.settings());
+	mEngine->startRender(this);
+
+	SetTimer(mHWnd, 0, 0, NULL);
+}
+
+void App::onRenderDone()
+{
+	mRenderControl.enableRenderButton(true);
+}
+
+void App::onRenderStatus(const char *message)
+{
+	mRenderControl.setStatusMessage(message);
+}
+
+void App::updateFramebuffer()
 {
 	int width = mRenderControl.settings().width;
 	int height = mRenderControl.settings().height;
@@ -141,23 +164,4 @@ void App::onRenderButtonClicked()
 	ReleaseDC(mHWnd, hDC);
 	HGDIOBJ oldBitmap = SelectObject(mBackDC, (HGDIOBJ)hBitmap);
 	DeleteObject(oldBitmap);
-
-	mFramebuffer = std::make_unique<Render::Framebuffer>(width, height);
-
-	mRenderControl.enableRenderButton(false);
-
-	mEngine->setSettings(mRenderControl.settings());
-	mEngine->startRender(mFramebuffer.get(), this);
-
-	SetTimer(mHWnd, 0, 0, NULL);
-}
-
-void App::onRenderDone()
-{
-	mRenderControl.enableRenderButton(true);
-}
-
-void App::onRenderStatus(const char *message)
-{
-	mRenderControl.setStatusMessage(message);
 }

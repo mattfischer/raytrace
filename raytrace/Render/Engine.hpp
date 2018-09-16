@@ -49,13 +49,13 @@ public:
 
 	bool rendering() const;
 
-	void startRender(Framebuffer *framebuffer, Listener *listener);
+	void startRender(Listener *listener);
 	bool threadDone(Thread *thread);
 	void setSettings(const Trace::Tracer::Settings &settings);
 
 	std::unique_ptr<Trace::Tracer> createTracer();
 	Trace::Tracer::Settings &settings();
-	Framebuffer *framebuffer();
+	Framebuffer &framebuffer();
 
 private:
 	void getBlock(int block, int &x, int &y, int &w, int &h);
@@ -69,7 +69,7 @@ private:
 	Trace::Tracer::Settings mSettings;
 	Trace::Tracer::RenderData mRenderData;
 	Listener *mListener;
-	Framebuffer *mFramebuffer;
+	std::unique_ptr<Framebuffer> mFramebuffer;
 	enum class State {
 		Stopped,
 		Prerender,

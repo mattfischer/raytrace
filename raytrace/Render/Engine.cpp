@@ -37,7 +37,7 @@ void Engine::Thread::run()
 		for (int y = mStartY; y < mStartY + mHeight; y++) {
 			for (int x = mStartX; x < mStartX + mWidth; x++) {
 				Object::Color color = renderPixel(x, y);
-				mEngine.framebuffer()->setPixel(x, y, color);
+				mEngine.framebuffer().setPixel(x, y, color);
 			}
 		}
 
@@ -52,12 +52,12 @@ Engine::Engine(const Object::Scene &scene)
 	: mScene(scene)
 {
 	mState = State::Stopped;
+	mFramebuffer = std::make_unique<Framebuffer>(0, 0);
 }
 
-void Engine::startRender(Framebuffer *framebuffer, Listener *listener)
+void Engine::startRender(Listener *listener)
 {
 	mListener = listener;
-	mFramebuffer = framebuffer;
 	mState = State::Prerender;
 	mListener->onRenderStatus("");
 
@@ -193,11 +193,12 @@ Trace::Tracer::Settings &Engine::settings()
 void Engine::setSettings(const Trace::Tracer::Settings &settings)
 {
 	mSettings = settings;
+	mFramebuffer = std::make_unique<Framebuffer>(mSettings.width, mSettings.height);
 }
 
-Framebuffer *Engine::framebuffer()
+Framebuffer &Engine::framebuffer()
 {
-	return mFramebuffer;
+	return *mFramebuffer;
 }
 
 }

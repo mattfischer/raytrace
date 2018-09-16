@@ -28,6 +28,7 @@ private:
 	static App *sInstance;
 
 	LRESULT CALLBACK wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	void updateFramebuffer();
 
 	HWND mHWnd;
 	HDC mBackDC;
@@ -36,7 +37,6 @@ private:
 	LightProbeDlg mLightProbe;
 	std::unique_ptr<Object::Scene> mScene;
 	std::unique_ptr<Render::Engine> mEngine;
-	std::unique_ptr<Render::Framebuffer> mFramebuffer;
 };
 
 #endif
