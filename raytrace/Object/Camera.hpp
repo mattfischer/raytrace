@@ -16,6 +16,7 @@ public:
 	static std::unique_ptr<Camera> fromAst(AST *ast);
 
 	Trace::Ray createRay(float x, float y, int generation) const;
+	float projectSize(float size, float distance) const;
 
 private:
 	float mSize;

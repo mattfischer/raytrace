@@ -55,6 +55,7 @@ public:
 	bool prerenderPixel(float x, float y);
 
 	Object::Color toneMap(const Object::Radiance &radiance);
+	float projectedPixelSize(float distance);
 
 protected:
 	const Object::Scene &mScene;

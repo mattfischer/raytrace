@@ -151,4 +151,9 @@ bool Tracer::prerenderPixel(float x, float y)
 	return ret;
 }
 
+float Tracer::projectedPixelSize(float distance)
+{
+	return mScene.camera().projectSize(2.0f / mSettings.width, distance);
+}
+
 }

@@ -37,4 +37,9 @@ Trace::Ray Camera::createRay(float x, float y, int generation) const
 	return Trace::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize(), generation);
 }
 
+float Camera::projectSize(float size, float distance) const
+{
+	return size * mSize * distance;
+}
+
 }

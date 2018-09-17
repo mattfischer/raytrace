@@ -115,8 +115,14 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 		IrradianceCache::Entry newEntry;
 		newEntry.point = point;
 		newEntry.normal = normal;
-		newEntry.radius = M * N / mean;
 		newEntry.radiance = radiance;
+
+		float radius = M * N / mean;
+		float minDistance = 3 * tracer.projectedPixelSize(intersection.distance()) / tracer.settings().irradianceCacheThreshold;
+		float maxDistance = 20 * minDistance;
+		radius = std::min(std::max(radius, minDistance), maxDistance);
+		newEntry.radius = radius;
+
 		newEntry.rotGradR = rotGradR;
 		newEntry.rotGradG = rotGradG;
 		newEntry.rotGradB = rotGradB;
