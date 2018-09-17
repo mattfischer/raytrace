@@ -101,12 +101,15 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 				Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer);
 
 				samples[k * M + j] = incidentRadiance;
-				sampleDistances[k * M + j] = intersection2.distance();
+				sampleDistances[k * M + j] = std::max(intersection2.distance(), 0.1f);
 
 				radiance += incidentRadiance * M_PI / (M * N);
 				rotGradR = rotGradR - v * tan * incidentRadiance.red() * M_PI / (M * N);
 				rotGradG = rotGradG - v * tan * incidentRadiance.green() * M_PI / (M * N);
 				rotGradB = rotGradB - v * tan * incidentRadiance.blue() * M_PI / (M * N);
+			}
+			else {
+				sampleDistances[k * M + j] = FLT_MAX;
 			}
 		}
 	}
@@ -118,10 +121,9 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 		newEntry.radiance = radiance;
 
 		float radius = M * N / mean;
-		float minDistance = 3 * tracer.projectedPixelSize(intersection.distance()) / tracer.settings().irradianceCacheThreshold;
-		float maxDistance = 20 * minDistance;
-		radius = std::min(std::max(radius, minDistance), maxDistance);
-		newEntry.radius = radius;
+		float minRadius = 3 * tracer.projectedPixelSize(intersection.distance()) / tracer.settings().irradianceCacheThreshold;
+		float maxRadius = 20 * minRadius;
+		newEntry.radius = std::min(std::max(radius, minRadius), maxRadius);
 
 		newEntry.rotGradR = rotGradR;
 		newEntry.rotGradG = rotGradG;
@@ -144,12 +146,6 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 				float theta = std::asin(std::sqrt((float)j / M));
 				Math::Vector c = u * std::sin(theta) * std::cos(theta) * std::cos(theta) * 2 * M_PI / (N * std::min(sampleDistances[k * M + j], sampleDistances[k * M + j1]));
 
-				if (std::isinf(c.x()) || std::isnan(c.x()) || std::abs(c.x()) > 1 ||
-					std::isinf(c.y()) || std::isnan(c.y()) || std::abs(c.y()) > 1 ||
-					std::isinf(c.z()) || std::isnan(c.z()) || std::abs(c.z()) > 1) {
-					continue;
-				}
-
 				transGradR = transGradR + c * (samples[k * M + j].red() - samples[k * M + j1].red());
 				transGradG = transGradG + c * (samples[k * M + j].green() - samples[k * M + j1].green());
 				transGradB = transGradB + c * (samples[k * M + j].blue() - samples[k * M + j1].blue());
@@ -160,17 +156,18 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 				float thetaPlus = std::asin(std::sqrt((float)(j + 1) / M));
 				Math::Vector c = v * (std::sin(thetaPlus) - std::sin(thetaMinus)) / std::min(sampleDistances[k * M + j], sampleDistances[k1 * M + j]);
 
-				if (std::isinf(c.x()) || std::isnan(c.x()) || std::abs(c.x()) > 1 ||
-					std::isinf(c.y()) || std::isnan(c.y()) || std::abs(c.y()) > 1 ||
-					std::isinf(c.z()) || std::isnan(c.z()) || std::abs(c.z()) > 1) {
-					continue;
-				}
-
 				transGradR = transGradR + c * (samples[k * M + j].red() - samples[k1 * M + j].red());
 				transGradG = transGradG + c * (samples[k * M + j].green() - samples[k1 * M + j].green());
 				transGradB = transGradB + c * (samples[k * M + j].blue() - samples[k1 * M + j].blue());
 			}
 		}
+
+		if (radius < minRadius) {
+			transGradR = transGradR * radius / minRadius;
+			transGradG = transGradG * radius / minRadius;
+			transGradB = transGradB * radius / minRadius;
+		}
+
 		newEntry.transGradR = transGradR;
 		newEntry.transGradG = transGradG;
 		newEntry.transGradB = transGradB;

@@ -192,8 +192,10 @@ Trace::Tracer::Settings &Engine::settings()
 
 void Engine::setSettings(const Trace::Tracer::Settings &settings)
 {
+	if (settings.width != mSettings.width || settings.height != mSettings.height) {
+		mFramebuffer = std::make_unique<Framebuffer>(settings.width, settings.height);
+	}
 	mSettings = settings;
-	mFramebuffer = std::make_unique<Framebuffer>(mSettings.width, mSettings.height);
 }
 
 Framebuffer &Engine::framebuffer()
