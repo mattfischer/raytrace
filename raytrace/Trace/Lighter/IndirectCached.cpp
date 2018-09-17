@@ -101,7 +101,7 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 				Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer);
 
 				samples[k * M + j] = incidentRadiance;
-				sampleDistances[k * M + j] = std::max(intersection2.distance(), 0.1f);
+				sampleDistances[k * M + j] = intersection2.distance();
 
 				radiance += incidentRadiance * M_PI / (M * N);
 				rotGradR = rotGradR - v * tan * incidentRadiance.red() * M_PI / (M * N);

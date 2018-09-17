@@ -68,6 +68,9 @@ void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begi
 	begin = mIntersections.begin();
 	end = mIntersections.end();
 	std::sort(begin, end);
+	if (begin->distance() < 0.01) {
+		begin++;
+	}
 }
 
 Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
