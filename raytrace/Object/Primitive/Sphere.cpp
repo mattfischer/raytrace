@@ -3,8 +3,6 @@
 
 #include <math.h>
 
-#define EPSILON 0.001
-
 namespace Object {
 namespace Primitive {
 
@@ -36,7 +34,7 @@ void Sphere::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &inter
 	{
 		float distance = (-b - sqrt(disc)) / (2 * a);
 
-		if(distance > EPSILON)
+		if(distance > 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
 			intersections.push_back(Trace::Intersection(this, ray, distance, Math::Normal(point), point));
@@ -44,7 +42,7 @@ void Sphere::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &inter
 
 		distance = (-b + sqrt(disc)) / (2 * a);
 
-		if(distance > EPSILON)
+		if(distance > 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
 			intersections.push_back(Trace::Intersection(this, ray, distance, Math::Normal(point), point));

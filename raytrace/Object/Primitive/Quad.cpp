@@ -4,8 +4,6 @@
 
 #include <math.h>
 
-#define EPSILON .01
-
 namespace Object {
 	namespace Primitive {
 

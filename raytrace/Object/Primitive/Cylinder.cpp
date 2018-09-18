@@ -4,8 +4,6 @@
 
 #include <math.h>
 
-#define EPSILON 0.01
-
 namespace Object {
 namespace Primitive {
 
@@ -28,7 +26,7 @@ void Cylinder::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &int
 	{
 		float distance = (-b - sqrt(disc)) / (2 * a);
 
-		if(distance > EPSILON)
+		if(distance > 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
 			
@@ -44,7 +42,7 @@ void Cylinder::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &int
 
 		distance = (-b + sqrt(disc)) / (2 * a);
 
-		if(distance > EPSILON)
+		if(distance > 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
 			

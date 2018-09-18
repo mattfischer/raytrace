@@ -2,8 +2,6 @@
 
 #include <math.h>
 
-#define EPSILON .01
-
 namespace Object {
 namespace Primitive {
 
@@ -17,7 +15,7 @@ Trace::Intersection Plane::intersectPlane(const Base *primitive, const Trace::Ra
 	float scale;
 
 	scale = (Math::Vector(ray.origin()) * normal - displacement) / (ray.direction() * -normal);
-	if(scale > EPSILON)
+	if(scale > 0)
 	{
 		Math::Point point = ray.origin() + ray.direction() * scale;
 		point = point - Math::Vector(normal) * (Math::Vector(point) * normal - displacement);
@@ -36,7 +34,7 @@ void Plane::doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &inters
 		ray.origin().y() < 0 && ray.direction().y() < 0) return;
 
 	scale = -ray.origin().y() / ray.direction().y();
-	if(scale > EPSILON)
+	if(scale > 0)
 	{
 		Math::Point point = ray.origin() + ray.direction() * scale;
 
