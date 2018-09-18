@@ -27,6 +27,7 @@ namespace Object {
 		Radiance operator*(const Radiance &b) const;
 		Radiance operator*(float b) const;
 		Radiance operator*(const Color &b) const;
+		Radiance operator-(const Radiance &b) const;
 
 	protected:
 		float mRed;

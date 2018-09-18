@@ -5,6 +5,7 @@
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
 #include "Object/Radiance.hpp"
+#include "Trace/RadianceGradient.hpp"
 
 #include <vector>
 #include <mutex>
@@ -19,12 +20,8 @@ public:
 		Math::Normal normal;
 		float radius;
 		Object::Radiance radiance;
-		Math::Vector rotGradR;
-		Math::Vector rotGradG;
-		Math::Vector rotGradB;
-		Math::Vector transGradR;
-		Math::Vector transGradG;
-		Math::Vector transGradB;
+		Trace::RadianceGradient rotGrad;
+		Trace::RadianceGradient transGrad;
 	};
 
 	IrradianceCache();

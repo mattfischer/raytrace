@@ -200,6 +200,9 @@
     <ClCompile Include="Render\ThreadRender.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Trace\RadianceGradient.cpp">
+      <Filter>Source Files\Trace</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -397,6 +400,9 @@
     </ClInclude>
     <ClInclude Include="Render\ThreadRender.hpp">
       <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\RadianceGradient.hpp">
+      <Filter>Source Files\Trace</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

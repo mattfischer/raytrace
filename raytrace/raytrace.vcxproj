@@ -148,6 +148,7 @@
     <ClCompile Include="Trace\Lighter\Base.cpp" />
     <ClCompile Include="Trace\Lighter\Specular.cpp" />
     <ClCompile Include="Trace\Lighter\Utils.cpp" />
+    <ClCompile Include="Trace\RadianceGradient.cpp" />
     <ClCompile Include="Trace\Ray.cpp" />
     <ClCompile Include="Trace\Tracer.cpp" />
   </ItemGroup>
@@ -218,6 +219,7 @@
     <ClInclude Include="Trace\Lighter\Radiant.hpp" />
     <ClInclude Include="Trace\Lighter\Specular.hpp" />
     <ClInclude Include="Trace\Lighter\Utils.hpp" />
+    <ClInclude Include="Trace\RadianceGradient.hpp" />
     <ClInclude Include="Trace\Ray.hpp" />
     <ClInclude Include="Trace\Tracer.hpp" />
   </ItemGroup>

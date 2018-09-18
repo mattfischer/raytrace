@@ -97,4 +97,9 @@ namespace Object {
 	{
 		return Radiance(mRed * b.red(), mGreen * b.green(), mBlue * b.blue());
 	}
+
+	Radiance Radiance::operator-(const Radiance &b) const
+	{
+		return Radiance(mRed - b.mRed, mGreen - b.mGreen, mBlue - b.mBlue);
+	}
 }
