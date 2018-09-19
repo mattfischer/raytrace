@@ -14,6 +14,8 @@ public:
 	Direct(int numSamples);
 	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
 
+	Object::Radiance sampleHemisphere(const Trace::Intersection &intersection, Trace::Tracer &tracer, std::vector<ProbeEntry> *probe) const;
+
 private:
 	int mNumSamples;
 	mutable std::default_random_engine mRandomEngine;

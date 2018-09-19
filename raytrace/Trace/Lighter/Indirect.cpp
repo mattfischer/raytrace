@@ -28,42 +28,46 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
-	Object::Radiance incidentRadiance;
+	Object::Radiance radiance;
 	if (tracer.settings().irradianceCaching) {
 		Trace::IrradianceCache &irradianceCache = tracer.renderData().irradianceCache;
 
 		std::vector<IrradianceCache::Entry> entries = irradianceCache.lookup(point, normal);
+		Object::Radiance irradiance;
 		if (entries.size() > 0) {
 			float den = 0;
 			for (const IrradianceCache::Entry &entry : entries) {
 				float weight = irradianceCache.weight(entry, point, normal);
 				if (std::isinf(weight)) {
-					incidentRadiance = entry.radiance;
+					irradiance = entry.radiance;
 					break;
 				}
 				Math::Vector cross = Math::Vector(normal % entry.normal);
 				Math::Vector dist = point - entry.point;
-				incidentRadiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * weight;
+				irradiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * weight;
 				den += weight;
 			}
-			incidentRadiance = incidentRadiance / den;
+			irradiance = irradiance / den;
 		}
+		radiance = irradiance * albedo * brdf.lambert() / M_PI;
 	}
 	else {
-		incidentRadiance = sampleHemisphere(intersection, tracer);
+		radiance = sampleHemisphere(intersection, tracer, 0);
 	}
 
-	return incidentRadiance * albedo * brdf.lambert() / M_PI;
+	return radiance;
 }
 
-Object::Radiance Indirect::sampleHemisphere(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
+Object::Radiance Indirect::sampleHemisphere(const Trace::Intersection &intersection, Trace::Tracer &tracer, std::vector<ProbeEntry> *probe) const
 {
 	Math::Vector x, y;
 	Utils::orthonormalBasis(Math::Vector(intersection.normal()), x, y);
+	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
 
 	const int M = std::sqrt(mIndirectSamples);
 	const int N = mIndirectSamples / M;
-	Object::Radiance incidentRadiance;
+	Object::Radiance radiance;
 	for (int k = 0; k < N; k++) {
 		for (int j = 0; j < M; j++) {
 			std::uniform_real_distribution<float> dist(0, 1);
@@ -76,18 +80,22 @@ Object::Radiance Indirect::sampleHemisphere(const Trace::Intersection &intersect
 			Trace::IntersectionVector::iterator begin, end;
 			tracer.intersect(ray, begin, end);
 
+			ProbeEntry probeEntry;
+			probeEntry.direction = Math::Vector(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
 			if (begin != end) {
 				Trace::Intersection intersection2 = *begin;
-				Object::Radiance radiance = mDirectLighter.light(intersection2, tracer);
-				incidentRadiance += radiance * M_PI / (M * N);
+				Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer);
+				radiance += irradiance *  albedo * brdf.lambert() / (M * N);
+				probeEntry.radiance = irradiance;
+			}
 
-				Math::Vector v(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
-				addProbeEntry(v, radiance);
+			if (probe) {
+				probe->push_back(probeEntry);
 			}
 		}
 	}
 
-	return incidentRadiance;
+	return radiance;
 }
 
 bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer) const

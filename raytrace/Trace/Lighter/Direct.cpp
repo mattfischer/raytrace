@@ -16,6 +16,11 @@ Direct::Direct(int numSamples)
 
 Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
 {
+	return sampleHemisphere(intersection, tracer, 0);
+}
+
+Object::Radiance Direct::sampleHemisphere(const Trace::Intersection &intersection, Trace::Tracer &tracer, std::vector<ProbeEntry> *probe) const
+{
 	const Math::Point &point = intersection.point();
 	const Math::Vector normal(intersection.normal());
 	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
@@ -60,14 +65,18 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 				tracer.intersect(ray, begin, end);
 
 				Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
+				ProbeEntry probeEntry;
+				probeEntry.direction = viewVector;
 				if (begin != end && begin->primitive() == primitive.get()) {
 					float dot = incidentDirection * normal;
 					float sampleDot = abs(incidentDirection * sampleNormal);
 
 					outgoingRadiance += objectRadiance * dot * sampleDot * area / (distance * distance);
-					addProbeEntry(viewVector, objectRadiance);
-				} else {
-					addProbeEntry(viewVector, Object::Radiance(0, 0, 0));
+					probeEntry.radiance = objectRadiance;
+				}
+
+				if(probe) {
+					probe->push_back(probeEntry);
 				}
 			}
 
@@ -92,12 +101,15 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 				Trace::IntersectionVector::iterator begin, end;
 				tracer.intersect(ray, begin, end);
 
+				ProbeEntry probeEntry;
+				probeEntry.direction = v;
 				if (begin != end && begin->primitive() == primitive.get()) {
 					outgoingRadiance += objectRadiance * dot;
-					addProbeEntry(v, objectRadiance);
+					probeEntry.radiance = objectRadiance;
 				}
-				else {
-					addProbeEntry(v, Object::Radiance(0, 0, 0));
+
+				if (probe) {
+					probe->push_back(probeEntry);
 				}
 			}
 

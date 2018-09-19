@@ -27,13 +27,6 @@ public:
 		Math::Vector direction;
 		Object::Radiance radiance;
 	};
-	void setProbe(std::vector<ProbeEntry> *probe);
-
-protected:
-	void addProbeEntry(const Math::Vector &direction, const Object::Radiance &radiance) const;
-
-private:
-	std::vector<ProbeEntry>* mProbe;
 };
 
 }
