@@ -182,12 +182,6 @@
     <ClCompile Include="LightProbeDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\Lighter\IndirectCached.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Lighter\Indirect.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Primitive\Quad.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
@@ -202,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="Trace\RadianceGradient.cpp">
       <Filter>Source Files\Trace</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\Indirect.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -383,12 +380,6 @@
     <ClInclude Include="LightProbeDlg.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\Lighter\IndirectCached.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\Indirect.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Primitive\Quad.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
@@ -403,6 +394,9 @@
     </ClInclude>
     <ClInclude Include="Trace\RadianceGradient.hpp">
       <Filter>Source Files\Trace</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\Indirect.hpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

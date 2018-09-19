@@ -91,7 +91,7 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
 		std::vector<Trace::Lighter::Base::ProbeEntry> probe;
 		lighter.setProbe(&probe);
-		lighter.light(intersection, *tracer);
+		lighter.sampleHemisphere(intersection, *tracer);
 
 		mSamples.clear();
 		for (Trace::Lighter::Base::ProbeEntry &entry : probe) {
