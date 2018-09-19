@@ -66,7 +66,6 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 
 	float mean = 0;
 	Object::Radiance radiance;
-	Trace::RadianceGradient rotGrad;
 	const int M = std::sqrt(mIndirectSamples);
 	const int N = mIndirectSamples / M;
 	std::vector<Object::Radiance> samples;
@@ -79,16 +78,11 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 
 			float phi = 2 * M_PI * (k + dist(mRandomEngine)) / N;
 			float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
-			Math::Vector localDirection(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
-			Math::Vector direction = x * localDirection.x() + y * localDirection.y() + Math::Vector(normal) * localDirection.z();
+			Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(normal) * std::sin(theta);
 
 			Trace::Ray ray(intersection.point(), direction, intersection.ray().generation() + 1);
 			Trace::IntersectionVector::iterator begin, end;
 			tracer.intersect(ray, begin, end);
-
-			Math::Vector localV(std::cos(phi + M_PI / 2), std::sin(phi + M_PI / 2), 0);
-			Math::Vector v = x * localV.x() + y * localV.y();
-			float tan = std::tan(theta);
 
 			if (begin != end) {
 				Trace::Intersection intersection2 = *begin;
@@ -100,7 +94,6 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 				sampleDistances[k * M + j] = intersection2.distance();
 
 				radiance += incidentRadiance * M_PI / (M * N);
-				rotGrad += RadianceGradient(incidentRadiance, v) * tan * M_PI / (M * N);
 			}
 			else {
 				sampleDistances[k * M + j] = FLT_MAX;
@@ -109,40 +102,41 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 	}
 
 	if (mean > 0) {
+		mean = M * N / mean;
+
 		IrradianceCache::Entry newEntry;
 		newEntry.point = point;
 		newEntry.normal = normal;
 		newEntry.radiance = radiance;
 
-		float radius = M * N / mean;
+		float radius = mean;
 		float minRadius = 3 * tracer.projectedPixelSize(intersection.distance()) / tracer.settings().irradianceCacheThreshold;
 		float maxRadius = 20 * minRadius;
 		newEntry.radius = std::min(std::max(radius, minRadius), maxRadius);
 
-		newEntry.rotGrad = rotGrad;
-
 		Trace::RadianceGradient transGrad;
+		Trace::RadianceGradient rotGrad;
 		for (int k = 0; k < N; k++) {
 			int k1 = (k > 0) ? (k - 1) : N - 1;
 			float phi = 2 * M_PI * k / N;
-			Math::Vector localU(std::cos(phi), std::sin(phi), 0);
-			Math::Vector u = x * localU.x() + y * localU.y();
-
-			Math::Vector localV(std::cos(phi + M_PI / 2), std::sin(phi + M_PI / 2), 0);
-			Math::Vector v = x * localV.x() + y * localV.y();
-
-			for (int j = 1; j < M; j++) {
-				int j1 = j - 1;
-				float theta = std::asin(std::sqrt((float)j / M));
-				Math::Vector c = u * std::sin(theta) * std::cos(theta) * std::cos(theta) * 2 * M_PI / (N * std::min(sampleDistances[k * M + j], sampleDistances[k * M + j1]));
-				transGrad += RadianceGradient(samples[k * M + j] - samples[k * M + j1], c);
-			}
+			Math::Vector u = x * std::cos(phi) + y * std::sin(phi);
+			Math::Vector v = x * std::cos(phi + M_PI / 2) + y * std::sin(phi + M_PI / 2);
 
 			for (int j = 0; j < M; j++) {
 				float thetaMinus = std::asin(std::sqrt((float)j / M));
 				float thetaPlus = std::asin(std::sqrt((float)(j + 1) / M));
+
+				if (j > 0) {
+					int j1 = j - 1;
+
+					Math::Vector c = u * std::sin(thetaMinus) * std::cos(thetaMinus) * std::cos(thetaMinus) * 2 * M_PI / (N * std::min(sampleDistances[k * M + j], sampleDistances[k * M + j1]));
+					transGrad += RadianceGradient(samples[k * M + j] - samples[k * M + j1], c);
+				}
+
 				Math::Vector c = v * (std::sin(thetaPlus) - std::sin(thetaMinus)) / std::min(sampleDistances[k * M + j], sampleDistances[k1 * M + j]);
 				transGrad += RadianceGradient(samples[k * M + j] - samples[k1 * M + j], c);
+
+				rotGrad += RadianceGradient(samples[k * M + j], v) * std::tan(thetaMinus) * M_PI / (M * N);
 			}
 		}
 
@@ -151,6 +145,7 @@ bool IndirectCached::prerender(const Trace::Intersection &intersection, Trace::T
 		}
 
 		newEntry.transGrad = transGrad;
+		newEntry.rotGrad = rotGrad;
 
 		irradianceCache.add(newEntry);
 	}
