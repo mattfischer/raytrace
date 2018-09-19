@@ -32,7 +32,7 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 	if (tracer.settings().irradianceCaching) {
 		Trace::IrradianceCache &irradianceCache = tracer.renderData().irradianceCache;
 
-		std::vector<IrradianceCache::Entry> entries = irradianceCache.lookup(point, normal);
+		std::vector<IrradianceCache::Entry> entries = irradianceCache.lookupUnlocked(point, normal);
 		Object::Radiance irradiance;
 		if (entries.size() > 0) {
 			float den = 0;

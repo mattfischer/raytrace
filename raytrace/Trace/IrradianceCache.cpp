@@ -69,8 +69,13 @@ void IrradianceCache::lookupOctreeNode(OctreeNode *node, Math::Point origin, flo
 
 std::vector<IrradianceCache::Entry> IrradianceCache::lookup(const Math::Point &point, const Math::Normal &normal) const
 {
-	std::vector<Entry> entries;
 	std::lock_guard<std::mutex> guard(mMutex);
+	return lookupUnlocked(point, normal);
+}
+
+std::vector<IrradianceCache::Entry> IrradianceCache::lookupUnlocked(const Math::Point &point, const Math::Normal &normal) const
+{
+	std::vector<Entry> entries;
 
 	lookupOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, normal, entries);
 

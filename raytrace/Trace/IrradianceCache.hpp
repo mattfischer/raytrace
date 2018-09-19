@@ -29,6 +29,7 @@ public:
 	float weight(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 	float error(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 	std::vector<Entry> lookup(const Math::Point &point, const Math::Normal &normal) const;
+	std::vector<Entry> lookupUnlocked(const Math::Point &point, const Math::Normal &normal) const;
 	void add(const Entry &entry);
 	void clear();
 
