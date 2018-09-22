@@ -58,7 +58,13 @@ Tracer::RenderData &Tracer::renderData()
 void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
 {
 	mIntersections.clear();
-	mScene.intersect(ray, mIntersections);
+
+	for (const std::unique_ptr<Object::Primitive::Base> &primitive : mScene.primitives())
+	{
+		if (primitive->boundingVolume().intersectRay(ray)) {
+			primitive->intersect(ray, mIntersections);
+		}
+	}
 
 	begin = mIntersections.begin();
 	end = mIntersections.end();

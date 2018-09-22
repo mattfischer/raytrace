@@ -46,16 +46,4 @@ const std::vector<std::unique_ptr<Primitive::Base>> &Scene::primitives() const
 	return mPrimitives;
 }
 
-void Scene::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
-{
-	Object::Primitive::BoundingVolume::RayData rayData = Object::Primitive::BoundingVolume::getRayData(ray);
-
-	for(int i=0; i<mPrimitives.size(); i++)
-	{
-		if (mPrimitives[i]->boundingVolume().intersectRay(rayData)) {
-			mPrimitives[i]->intersect(ray, intersections);
-		}
-	}
-}
-
 }

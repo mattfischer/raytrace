@@ -22,8 +22,6 @@ public:
 	const Camera &camera() const;
 	const std::vector<std::unique_ptr<Primitive::Base>> &primitives() const;
 
-	void intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
-
 protected:
 	std::unique_ptr<Camera> mCamera;
 	std::vector<std::unique_ptr<Primitive::Base>> mPrimitives;
