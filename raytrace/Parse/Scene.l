@@ -20,8 +20,6 @@ FLOAT -?[[:digit:]]+(\.[[:digit:]]+)?
 
 sphere	return SPHERE;
 box return BOX;
-cone return CONE;
-cylinder return CYLINDER;
 quad return QUAD;
 
 transform return TRANSFORM;
@@ -41,10 +39,6 @@ phong return PHONG;
 specular return SPECULAR;
 
 camera return CAMERA;
-
-union return UNION;
-difference return DIFFERENCE;
-intersection return INTERSECTION;
 
 \{|\}		return *yytext;
 <<EOF>>	return END;

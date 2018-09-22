@@ -7,10 +7,7 @@ typedef enum
 
 	AstPrimitive,
 	AstSphere,
-	AstPlane,
 	AstBox,
-	AstCone,
-	AstCylinder,
 	AstQuad,
 
 	AstTransform,
@@ -33,10 +30,6 @@ typedef enum
 	AstSurfaceReflection,
 
 	AstCamera,
-
-	AstUnion,
-	AstDifference,
-	AstIntersection,
 
 	AstConstant
 } ASTType;

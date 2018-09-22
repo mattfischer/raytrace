@@ -18,8 +18,6 @@
 };
 
 %token SPHERE
-%token CONE
-%token CYLINDER
 %token BOX
 %token QUAD
 
@@ -40,10 +38,6 @@
 %token CAMERA
 %token RADIANCE
 
-%token UNION
-%token DIFFERENCE
-%token INTERSECTION
-
 %token END
 %token <_vector> VECTOR
 %token <_float> FLOAT
@@ -52,8 +46,8 @@
 %type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> surfacedef surface_list surface_item albedodef brdf_list brdf_item
-%type <_ast> spheredef boxdef conedef cylinderdef quaddef
-%type <_ast> cameradef camera_modifiers camera_modifier csgdef
+%type <_ast> spheredef boxdef quaddef
+%type <_ast> cameradef camera_modifiers camera_modifier
 %start scene
 
 %%
@@ -71,7 +65,7 @@ object: primitive
 primitive: primitive_wrap
 	{ $$ = newAst(AstPrimitive, 1, $1); }
 	
-primitive_wrap: spheredef | boxdef | conedef | cylinderdef | quaddef | csgdef
+primitive_wrap: spheredef | boxdef | quaddef
 	
 spheredef: SPHERE '{' VECTOR FLOAT primitive_modifiers '}'
 	{ $$ = newAst(AstSphere, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5); 
@@ -82,12 +76,6 @@ boxdef: BOX '{' VECTOR VECTOR primitive_modifiers '}'
 	{ $$ = newAst(AstBox, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5);
 	  $$->children[0]->children[0]->data._vector = $3;
 	  $$->children[0]->children[1]->data._vector = $4; }
-
-conedef: CONE '{' primitive_modifiers '}'
-	{ $$ = addChildren(newAst(AstCone, 0), $3->numChildren, $3->children); }
-
-cylinderdef: CYLINDER '{' primitive_modifiers '}'
-	{ $$ = addChildren(newAst(AstCylinder, 0), $3->numChildren, $3->children); }
 
 quaddef: QUAD '{' VECTOR FLOAT FLOAT primitive_modifiers '}'
     { $$ = newAst(AstQuad, 2, newAst(AstList, 3, newAst(AstConstant, 0), newAst(AstConstant, 0), newAst(AstConstant, 0)), $6);
@@ -164,13 +152,6 @@ camera_modifiers: camera_modifier
 	{ $$ = addChild($1, $2); }
 	
 camera_modifier: transformdef
-
-csgdef: UNION '{' primitive primitive primitive_modifiers '}'
-	{ $$ = addChildren(newAst(AstUnion, 2, $3, $4), $5->numChildren, $5->children); }
-	  | DIFFERENCE '{' primitive primitive primitive_modifiers '}'
-	{ $$ = addChildren(newAst(AstDifference, 2, $3, $4), $5->numChildren, $5->children); }
-	  | INTERSECTION '{' primitive primitive primitive_modifiers '}'
-	{ $$ = addChildren(newAst(AstIntersection, 2, $3, $4), $5->numChildren, $5->children); }
 
 %%
 

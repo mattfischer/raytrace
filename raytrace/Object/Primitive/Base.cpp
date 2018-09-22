@@ -2,11 +2,7 @@
 
 #include "Object/Primitive/Sphere.hpp"
 #include "Object/Primitive/Box.hpp"
-#include "Object/Primitive/Cone.hpp"
-#include "Object/Primitive/Disk.hpp"
-#include "Object/Primitive/Cylinder.hpp"
 #include "Object/Primitive/Quad.hpp"
-#include "Object/Primitive/Csg.hpp"
 
 #include "Object/Surface.hpp"
 
@@ -28,19 +24,8 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 	case AstBox:
 		primitive = Box::fromAst(sub);
 		break;
-	case AstCone:
-		primitive = Cone::fromAst(sub);
-		break;
-	case AstCylinder:
-		primitive = Cylinder::fromAst(sub);
-		break;
 	case AstQuad:
 		primitive = Quad::fromAst(sub);
-		break;
-	case AstUnion:
-	case AstDifference:
-	case AstIntersection:
-		primitive = Csg::fromAst(sub);
 		break;
 	}
 

@@ -115,13 +115,8 @@
     <ClCompile Include="Object\Color.cpp" />
     <ClCompile Include="Object\Primitive\Base.cpp" />
     <ClCompile Include="Object\Primitive\Box.cpp" />
-    <ClCompile Include="Object\Primitive\Cone.cpp" />
-    <ClCompile Include="Object\Primitive\Csg.cpp" />
-    <ClCompile Include="Object\Primitive\Cylinder.cpp" />
-    <ClCompile Include="Object\Primitive\Disk.cpp" />
     <ClCompile Include="Object\Primitive\Quad.cpp" />
     <ClCompile Include="Object\Primitive\Sphere.cpp" />
-    <ClCompile Include="Object\Primitive\Torus.cpp" />
     <ClCompile Include="Object\Radiance.cpp" />
     <ClCompile Include="Object\Scene.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -182,14 +177,9 @@
     <ClInclude Include="Object\Forwards.hpp" />
     <ClInclude Include="Object\Primitive\Base.hpp" />
     <ClInclude Include="Object\Primitive\Box.hpp" />
-    <ClInclude Include="Object\Primitive\Cone.hpp" />
-    <ClInclude Include="Object\Primitive\Csg.hpp" />
-    <ClInclude Include="Object\Primitive\Cylinder.hpp" />
-    <ClInclude Include="Object\Primitive\Disk.hpp" />
     <ClInclude Include="Object\Primitive\Forwards.hpp" />
     <ClInclude Include="Object\Primitive\Quad.hpp" />
     <ClInclude Include="Object\Primitive\Sphere.hpp" />
-    <ClInclude Include="Object\Primitive\Torus.hpp" />
     <ClInclude Include="Object\Radiance.hpp" />
     <ClInclude Include="Object\Scene.hpp" />
     <ClInclude Include="Object\Surface.hpp" />

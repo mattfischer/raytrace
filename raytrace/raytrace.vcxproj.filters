@@ -86,22 +86,7 @@
     <ClCompile Include="Object\Primitive\Box.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Primitive\Cone.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Primitive\Csg.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Primitive\Cylinder.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Primitive\Disk.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Primitive\Sphere.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Primitive\Torus.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="Trace\Intersection.cpp">
@@ -266,25 +251,10 @@
     <ClInclude Include="Object\Primitive\Box.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Primitive\Cone.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Primitive\Csg.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Primitive\Cylinder.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Primitive\Disk.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Primitive\Forwards.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Object\Primitive\Sphere.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Primitive\Torus.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Object\Base.hpp">

@@ -6,14 +6,7 @@ namespace Primitive {
 
 class Base;
 class Box;
-class BoundingSphere;
-class Cone;
-class Csg;
-class Cylinder;
-class Disk;
-class Plane;
 class Sphere;
-class Torus;
 
 }
 }
