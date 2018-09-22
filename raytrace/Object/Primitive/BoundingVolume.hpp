@@ -2,6 +2,7 @@
 #define OBJECT_PRIMITIVE_BOUNDING_VOLUME_HPP
 
 #include "Math/Vector.hpp"
+#include "Trace/Ray.hpp"
 
 #include <vector>
 
@@ -15,6 +16,8 @@ public:
 	BoundingVolume(const std::vector<float> &mins, const std::vector<float> &maxes);
 
 	BoundingVolume translate(const Math::Vector &translate);
+
+	bool intersectRay(const Trace::Ray &ray) const;
 
 	static const std::vector<Math::Vector> &vectors();
 

@@ -1,5 +1,7 @@
 #include "BoundingVolume.hpp"
 
+#include <algorithm>
+
 namespace Object {
 namespace Primitive {
 
@@ -28,6 +30,34 @@ BoundingVolume BoundingVolume::translate(const Math::Vector &translate)
 	}
 
 	return BoundingVolume(mins, maxes);
+}
+
+bool BoundingVolume::intersectRay(const Trace::Ray &ray) const
+{
+	float minDist = -FLT_MAX;
+	float maxDist = FLT_MAX;
+
+	for (int i = 0; i < vectors().size(); i++) {
+		const Math::Vector &vector = vectors()[i];
+		float offset = Math::Vector(ray.origin()) * vector;
+		float dot = vector * ray.direction();
+
+		if (std::abs(dot) < 0.001) {
+			continue;
+		}
+
+		float min = (mMins[i] - offset) / dot;
+		float max = (mMaxes[i] - offset) / dot;
+
+		if (dot < 0) {
+			std::swap(min, max);
+		}
+
+		minDist = std::max(minDist, min);
+		maxDist = std::min(maxDist, max);
+	}
+
+	return (minDist <= maxDist && maxDist > 0);
 }
 
 }

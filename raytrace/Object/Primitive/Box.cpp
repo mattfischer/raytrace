@@ -77,9 +77,9 @@ BoundingVolume Box::doBoundingVolume(const std::vector<Math::Vector> &vectors) c
 
 	for (const Math::Vector &vector : vectors) {
 		float min = FLT_MAX;
-		float max = FLT_MIN;
+		float max = -FLT_MAX;
 		for (const Math::Point &point : points) {
-			float dist = vector * Math::Vector(point);
+			float dist = vector * Math::Vector(point) / (vector.magnitude2());
 			min = std::min(min, dist);
 			max = std::max(max, dist);
 		}

@@ -62,6 +62,10 @@ void Base::setSurface(std::unique_ptr<Surface> &&surface)
 
 void Base::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
+	if (!mBoundingVolume.intersectRay(ray)) {
+		return;
+	}
+
 	Trace::Ray transformedRay = mTransformation.inverse() * ray;
 
 	doIntersect(transformedRay, intersections);
