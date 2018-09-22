@@ -1,7 +1,5 @@
 #include "Object/Primitive/Quad.hpp"
 
-#include "Object/Primitive/Plane.hpp"
-
 #include <math.h>
 
 namespace Object {
@@ -36,7 +34,17 @@ namespace Object {
 			Math::Point v = ray.origin() + ray.direction() * t;
 			if (Math::Vector(v).magnitude2()>2) return;
 
-			Trace::Intersection intersection = Plane::intersectPlane(this, ray, Math::Normal(0, 1, 0), 0);
+			Trace::Intersection intersection;
+			Math::Normal normal(0, 1, 0);
+			float scale = (Math::Vector(ray.origin()) * normal) / (ray.direction() * -normal);
+			if (scale > 0)
+			{
+				Math::Point point = ray.origin() + ray.direction() * scale;
+				point = point - Math::Vector(normal) * (Math::Vector(point) * normal);
+
+				intersection = Trace::Intersection(this, ray, scale, normal, point);
+			}
+
 			Math::Point point;
 
 			if (intersection.valid())

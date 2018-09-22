@@ -18,7 +18,6 @@
 };
 
 %token SPHERE
-%token PLANE
 %token CONE
 %token CYLINDER
 %token BOX
@@ -53,7 +52,7 @@
 %type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> surfacedef surface_list surface_item albedodef brdf_list brdf_item
-%type <_ast> spheredef planedef boxdef conedef cylinderdef quaddef
+%type <_ast> spheredef boxdef conedef cylinderdef quaddef
 %type <_ast> cameradef camera_modifiers camera_modifier csgdef
 %start scene
 
@@ -72,15 +71,12 @@ object: primitive
 primitive: primitive_wrap
 	{ $$ = newAst(AstPrimitive, 1, $1); }
 	
-primitive_wrap: spheredef | planedef | boxdef | conedef | cylinderdef | quaddef | csgdef
+primitive_wrap: spheredef | boxdef | conedef | cylinderdef | quaddef | csgdef
 	
 spheredef: SPHERE '{' VECTOR FLOAT primitive_modifiers '}'
 	{ $$ = newAst(AstSphere, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5); 
 	  $$->children[0]->children[0]->data._vector = $3;
 	  $$->children[0]->children[1]->data._float = $4; }
-
-planedef: PLANE '{' primitive_modifiers '}'
-	{ $$ = addChildren(newAst(AstPlane, 0), $3->numChildren, $3->children); }
 
 boxdef: BOX '{' VECTOR VECTOR primitive_modifiers '}'
 	{ $$ = newAst(AstBox, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5);

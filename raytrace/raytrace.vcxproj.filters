@@ -98,9 +98,6 @@
     <ClCompile Include="Object\Primitive\Disk.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Primitive\Plane.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Primitive\Sphere.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
@@ -285,9 +282,6 @@
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Object\Primitive\Forwards.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Primitive\Plane.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Object\Primitive\Sphere.hpp">

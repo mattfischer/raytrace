@@ -2,7 +2,6 @@
 
 #include "Object/Primitive/Sphere.hpp"
 #include "Object/Primitive/Box.hpp"
-#include "Object/Primitive/Plane.hpp"
 #include "Object/Primitive/Cone.hpp"
 #include "Object/Primitive/Disk.hpp"
 #include "Object/Primitive/Cylinder.hpp"
@@ -25,9 +24,6 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 	{
 	case AstSphere:
 		primitive = Sphere::fromAst(sub);
-		break;
-	case AstPlane:
-		primitive = Plane::fromAst(sub);
 		break;
 	case AstBox:
 		primitive = Box::fromAst(sub);

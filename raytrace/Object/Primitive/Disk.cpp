@@ -1,14 +1,20 @@
 #include "Object/Primitive/Disk.hpp"
 
-#include "Object/Primitive/Plane.hpp"
-
 namespace Object {
 namespace Primitive {
 
 Trace::Intersection Disk::intersectDisk(const Base *primitive, const Trace::Ray &ray, const Math::Normal &normal, float displacement)
 {
 	Trace::Intersection intersection;
-	Trace::Intersection planeIntersection = Plane::intersectPlane(primitive, ray, normal, displacement);
+	Trace::Intersection planeIntersection;
+	float scale = (Math::Vector(ray.origin()) * normal - displacement) / (ray.direction() * -normal);
+	if (scale > 0)
+	{
+		Math::Point point = ray.origin() + ray.direction() * scale;
+		point = point - Math::Vector(normal) * (Math::Vector(point) * normal - displacement);
+
+		planeIntersection = Trace::Intersection(primitive, ray, scale, normal, point);
+	}
 
 	if(planeIntersection.valid())
 	{

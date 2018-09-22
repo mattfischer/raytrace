@@ -1,7 +1,5 @@
 #include "Object/Primitive/Box.hpp"
 
-#include "Object/Primitive/Plane.hpp"
-
 #include <math.h>
 
 namespace Object {
@@ -23,7 +21,16 @@ std::unique_ptr<Box> Box::fromAst(AST *ast)
 
 void Box::testIntersect(const Trace::Ray &ray, const Math::Normal &normal, Trace::IntersectionVector &intersections) const
 {
-	Trace::Intersection newIntersection = Plane::intersectPlane(this, ray, normal, 1);
+	Trace::Intersection newIntersection;
+	float scale = (Math::Vector(ray.origin()) * normal - 1) / (ray.direction() * -normal);
+	if (scale > 0)
+	{
+		Math::Point point = ray.origin() + ray.direction() * scale;
+		point = point - Math::Vector(normal) * (Math::Vector(point) * normal - 1);
+
+		newIntersection = Trace::Intersection(this, ray, scale, normal, point);
+	}
+
 	Math::Point point;
 
 	if(newIntersection.valid())
