@@ -1,6 +1,7 @@
 #include "Object/Primitive/Box.hpp"
 
 #include <math.h>
+#include <algorithm>
 
 namespace Object {
 namespace Primitive {
@@ -65,6 +66,28 @@ void Box::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &i
 bool Box::doInside(const Math::Point &point) const
 {
 	return abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1;
+}
+
+BoundingVolume Box::doBoundingVolume(const std::vector<Math::Vector> &vectors) const
+{
+	std::vector<float> mins;
+	std::vector<float> maxes;
+	Math::Point points[] = { Math::Point(1, 1, 1), Math::Point(1, 1, -1), Math::Point(-1, 1, -1), Math::Point(-1, 1, 1),
+							 Math::Point(1, -1, 1), Math::Point(1, -1, -1), Math::Point(-1, -1, -1), Math::Point(-1, -1, 1) };
+
+	for (const Math::Vector &vector : vectors) {
+		float min = FLT_MAX;
+		float max = FLT_MIN;
+		for (const Math::Point &point : points) {
+			float dist = vector * Math::Vector(point);
+			min = std::min(min, dist);
+			max = std::max(max, dist);
+		}
+		mins.push_back(min);
+		maxes.push_back(max);
+	}
+
+	return BoundingVolume(mins, maxes);
 }
 
 }

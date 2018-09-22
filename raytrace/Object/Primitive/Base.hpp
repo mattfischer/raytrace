@@ -8,6 +8,7 @@
 #include "Object/Base.hpp"
 #include "Object/Surface.hpp"
 #include "Trace/Intersection.hpp"
+#include "Object/Primitive/BoundingVolume.hpp"
 
 #include <vector>
 #include <memory>
@@ -30,12 +31,16 @@ public:
 	virtual bool canSample() const;
 
 protected:
+	virtual void doTransform();
+
 	static void parseAstCommon(Base &base, AST *ast);
 
 	std::unique_ptr<Surface> mSurface;
+	BoundingVolume mBoundingVolume;
 
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;
+	virtual BoundingVolume doBoundingVolume(const std::vector<Math::Vector> &vectors) const = 0;
 	virtual void doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 };
 

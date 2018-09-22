@@ -98,5 +98,16 @@ void Base::doSample(float u, float v, Math::Point &point, Math::Vector &du, Math
 {
 }
 
+void Base::doTransform()
+{
+	std::vector<Math::Vector> vectors;
+	for (const Math::Vector &vector : BoundingVolume::vectors()) {
+		vectors.push_back(mTransformation.inverse() * vector);
+	}
+
+	BoundingVolume objectVolume = doBoundingVolume(vectors);
+	mBoundingVolume = objectVolume.translate(Math::Vector(mTransformation.origin()));
+}
+
 }
 }

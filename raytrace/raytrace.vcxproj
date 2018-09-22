@@ -114,6 +114,7 @@
     <ClCompile Include="Object\Camera.cpp" />
     <ClCompile Include="Object\Color.cpp" />
     <ClCompile Include="Object\Primitive\Base.cpp" />
+    <ClCompile Include="Object\Primitive\BoundingVolume.cpp" />
     <ClCompile Include="Object\Primitive\Box.cpp" />
     <ClCompile Include="Object\Primitive\Quad.cpp" />
     <ClCompile Include="Object\Primitive\Sphere.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="Object\Color.hpp" />
     <ClInclude Include="Object\Forwards.hpp" />
     <ClInclude Include="Object\Primitive\Base.hpp" />
+    <ClInclude Include="Object\Primitive\BoundingVolume.hpp" />
     <ClInclude Include="Object\Primitive\Box.hpp" />
     <ClInclude Include="Object\Primitive\Forwards.hpp" />
     <ClInclude Include="Object\Primitive\Quad.hpp" />

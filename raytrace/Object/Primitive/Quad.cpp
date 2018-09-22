@@ -1,6 +1,7 @@
 #include "Object/Primitive/Quad.hpp"
 
 #include <math.h>
+#include <algorithm>
 
 namespace Object {
 	namespace Primitive {
@@ -70,5 +71,27 @@ namespace Object {
 			dv = Math::Vector(0, 0, 2);
 			normal = Math::Normal(0, -1, 0);
 		}
+
+		BoundingVolume Quad::doBoundingVolume(const std::vector<Math::Vector> &vectors) const
+		{
+			std::vector<float> mins;
+			std::vector<float> maxes;
+			Math::Point points[] = { Math::Point(1, 0, 1), Math::Point(1, 0, -1), Math::Point(-1, 0, -1), Math::Point(-1, 0, 1) };
+
+			for (const Math::Vector &vector : vectors) {
+				float min = FLT_MAX;
+				float max = FLT_MIN;
+				for (const Math::Point &point : points) {
+					float dist = vector * Math::Vector(point);
+					min = std::min(min, dist);
+					max = std::max(max, dist);
+				}
+				mins.push_back(min);
+				maxes.push_back(max);
+			}
+
+			return BoundingVolume(mins, maxes);
+		}
+
 	}
 }
