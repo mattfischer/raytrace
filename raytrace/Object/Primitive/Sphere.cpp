@@ -55,10 +55,5 @@ bool Sphere::doInside(const Math::Point &point) const
 	return Math::Vector(point).magnitude2() <= 1;
 }
 
-BoundingSphere Sphere::doBoundingSphere() const
-{
-	return BoundingSphere(Math::Point(0, 0, 0), 1);
-}
-
 }
 }

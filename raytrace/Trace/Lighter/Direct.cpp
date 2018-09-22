@@ -81,39 +81,6 @@ Object::Radiance Direct::sampleHemisphere(const Trace::Intersection &intersectio
 			}
 
 			radiance += outgoingRadiance * albedo * brdf.lambert() / (M_PI * mNumSamples);
-		} else {
-			Math::Vector sphereDirection = primitive->boundingSphere().origin() - point;
-			float sphereDistance = sphereDirection.magnitude();
-			float sphereAngle = std::atan(primitive->boundingSphere().radius() / sphereDistance);
-			sphereDirection = sphereDirection / sphereDistance;
-
-			Math::Vector x, y;
-			Utils::orthonormalBasis(sphereDirection, x, y);
-			float solidAngle = 2 * M_PI * (1 - std::cos(sphereAngle));
-
-			Object::Radiance outgoingRadiance;
-			for (int i = 0; i < mNumSamples; i++) {
-				Math::Vector v = Utils::sampleHemisphere(i, mNumSamples, sphereAngle, mRandomEngine);
-				Math::Vector incidentDirection = x * v.x() + y * v.y() + sphereDirection * v.z();
-				float dot = incidentDirection * normal;
-
-				Trace::Ray ray(intersection.point(), incidentDirection, intersection.ray().generation() + 1);
-				Trace::IntersectionVector::iterator begin, end;
-				tracer.intersect(ray, begin, end);
-
-				ProbeEntry probeEntry;
-				probeEntry.direction = v;
-				if (begin != end && begin->primitive() == primitive.get()) {
-					outgoingRadiance += objectRadiance * dot;
-					probeEntry.radiance = objectRadiance;
-				}
-
-				if (probe) {
-					probe->push_back(probeEntry);
-				}
-			}
-
-			radiance += outgoingRadiance * albedo * brdf.lambert() * solidAngle / (M_PI * mNumSamples);
 		}
 	}
 

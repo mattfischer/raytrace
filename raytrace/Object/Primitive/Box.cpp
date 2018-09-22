@@ -67,10 +67,5 @@ bool Box::doInside(const Math::Point &point) const
 	return abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1;
 }
 
-BoundingSphere Box::doBoundingSphere() const
-{
-	return BoundingSphere(Math::Point(0, 0, 0), std::sqrt(3));
-}
-
 }
 }

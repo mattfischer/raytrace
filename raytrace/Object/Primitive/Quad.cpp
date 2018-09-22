@@ -63,11 +63,6 @@ namespace Object {
 			return false;
 		}
 
-		BoundingSphere Quad::doBoundingSphere() const
-		{
-			return BoundingSphere(Math::Point(0, 0, 0), std::sqrt(2));
-		}
-
 		void Quad::doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
 		{
 			point = Math::Point(u * 2 - 1, 0, v * 2 - 1);

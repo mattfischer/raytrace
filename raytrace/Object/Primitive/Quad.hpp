@@ -18,7 +18,6 @@ public:
 protected:
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
 	virtual bool doInside(const Math::Point &point) const;
-	virtual BoundingSphere doBoundingSphere() const;
 	virtual void doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
 };

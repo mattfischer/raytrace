@@ -7,7 +7,6 @@
 
 #include "Object/Base.hpp"
 #include "Object/Surface.hpp"
-#include "Object/Primitive/BoundingSphere.hpp"
 #include "Trace/Intersection.hpp"
 
 #include <vector>
@@ -24,8 +23,6 @@ public:
 	const Surface &surface() const;
 	void setSurface(std::unique_ptr<Surface> &&surface);
 
-	const BoundingSphere &boundingSphere() const;
-
 	void intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
 	bool inside(const Math::Point &point) const;
 	void sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
@@ -33,13 +30,9 @@ public:
 	virtual bool canSample() const;
 
 protected:
-	virtual void doTransform();
-	virtual BoundingSphere doBoundingSphere() const;
-
 	static void parseAstCommon(Base &base, AST *ast);
 
 	std::unique_ptr<Surface> mSurface;
-	BoundingSphere mBoundingSphere;
 
 	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;
