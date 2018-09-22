@@ -28,6 +28,8 @@ public:
 	bool inside(const Math::Point &point) const;
 	void sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
+	const BoundingVolume &boundingVolume() const;
+
 	virtual bool canSample() const;
 
 protected:

@@ -62,10 +62,6 @@ void Base::setSurface(std::unique_ptr<Surface> &&surface)
 
 void Base::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
 {
-	if (!mBoundingVolume.intersectRay(ray)) {
-		return;
-	}
-
 	Trace::Ray transformedRay = mTransformation.inverse() * ray;
 
 	doIntersect(transformedRay, intersections);
@@ -96,6 +92,11 @@ void Base::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::
 bool Base::canSample() const
 {
 	return false;
+}
+
+const BoundingVolume &Base::boundingVolume() const
+{
+	return mBoundingVolume;
 }
 
 void Base::doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const

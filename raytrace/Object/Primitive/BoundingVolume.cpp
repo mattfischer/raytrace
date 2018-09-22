@@ -17,6 +17,17 @@ const std::vector<Math::Vector> &BoundingVolume::vectors()
 	return sVectors;
 }
 
+BoundingVolume::RayData BoundingVolume::getRayData(const Trace::Ray &ray)
+{
+	RayData rayData;
+	for (const Math::Vector &vector : vectors()) {
+		rayData.offsets.push_back(Math::Vector(ray.origin()) * vector);
+		rayData.invdots.push_back(1 / (ray.direction() * vector));
+	}
+
+	return rayData;
+}
+
 BoundingVolume BoundingVolume::translate(const Math::Vector &translate)
 {
 	std::vector<float> mins;
@@ -32,24 +43,24 @@ BoundingVolume BoundingVolume::translate(const Math::Vector &translate)
 	return BoundingVolume(mins, maxes);
 }
 
-bool BoundingVolume::intersectRay(const Trace::Ray &ray) const
+bool BoundingVolume::intersectRay(const RayData &rayData) const
 {
 	float minDist = -FLT_MAX;
 	float maxDist = FLT_MAX;
 
 	for (int i = 0; i < vectors().size(); i++) {
 		const Math::Vector &vector = vectors()[i];
-		float offset = Math::Vector(ray.origin()) * vector;
-		float dot = vector * ray.direction();
+		float offset = rayData.offsets[i];
+		float invdot = rayData.invdots[i];
 
-		if (std::abs(dot) < 0.001) {
+		if (std::isnan(invdot)) {
 			continue;
 		}
 
-		float min = (mMins[i] - offset) / dot;
-		float max = (mMaxes[i] - offset) / dot;
+		float min = (mMins[i] - offset) * invdot;
+		float max = (mMaxes[i] - offset) * invdot;
 
-		if (dot < 0) {
+		if (invdot < 0) {
 			std::swap(min, max);
 		}
 
