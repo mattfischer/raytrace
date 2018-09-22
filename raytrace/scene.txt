@@ -1,5 +1,6 @@
-plane {
-	transform {	translate <0,-10,0> }
+quad {
+	<-15,0,-15> 30 30
+	transform { translate <0,-10,0> }
 	surface {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
@@ -38,7 +39,8 @@ quad {
 	}
 }
 
-plane {
+quad {
+    <-15,0,-15> 30 30
 	transform {	translate <-10,0,0> rotate <0,0,90> }
 	surface {
 		albedo { color <1,0.05,0.05> }
@@ -46,7 +48,8 @@ plane {
 	}
 }
 
-plane {
+quad {
+    <-15,0,-15> 30 30
 	transform {	translate <10,0,0> rotate <0,0,-90> }
 	surface {
 		albedo { color <0.05,0.05,1> }
@@ -54,7 +57,8 @@ plane {
 	}
 }
 
-plane {
+quad {
+	<-10,0,-10> 30 30
 	transform {	translate <0,0,10> rotate <-90,0,0> }
 	surface {
 		albedo { color <1,1,1> }

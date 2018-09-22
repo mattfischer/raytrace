@@ -11,6 +11,8 @@ namespace Object {
 		{
 			std::unique_ptr<Quad> quad = std::make_unique<Quad>();
 
+			parseAstCommon(*quad, ast->children[1]);
+
 			Math::Vector position(ast->children[0]->children[0]->data._vector);
 			float width = ast->children[0]->children[1]->data._float;
 			float height = ast->children[0]->children[2]->data._float;
@@ -19,8 +21,6 @@ namespace Object {
 			quad->transform(Math::Transformation::translate(position + size / 2));
 			size.setY(2);
 			quad->transform(Math::Transformation::scale(size / 2));
-
-			parseAstCommon(*quad, ast->children[1]);
 
 			return quad;
 		}

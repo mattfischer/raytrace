@@ -63,8 +63,10 @@ void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begi
 	begin = mIntersections.begin();
 	end = mIntersections.end();
 	std::sort(begin, end);
-	if (begin->distance() < 0.01) {
-		begin++;
+	if (begin != end) {
+		if (begin->distance() < 0.001) {
+			begin++;
+		}
 	}
 }
 
