@@ -47,7 +47,7 @@ quad {
     <-15,0,-15> 30 30
 	transform {	translate <-10,0,0> rotate <0,0,90> }
 	surface {
-		albedo { color <1,0.05,0.05> }
+		albedo { color <1,0,0> }
 		brdf { lambert 1 }
 	}
 }
@@ -56,7 +56,7 @@ quad {
     <-15,0,-15> 30 30
 	transform {	translate <10,0,0> rotate <0,0,-90> }
 	surface {
-		albedo { color <0.05,0.05,1> }
+		albedo { color <0,0,1> }
 		brdf { lambert 1 }
 	}
 }
