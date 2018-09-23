@@ -1,11 +1,12 @@
 #define _USE_MATH_DEFINES
-#include "Trace/IrradianceCache.hpp"
+#include "Trace/Lighter/IrradianceCache.hpp"
 
 #include "Math/Vector.hpp"
 
 #include <algorithm>
 
 namespace Trace {
+namespace Lighter {
 
 IrradianceCache::IrradianceCache()
 {
@@ -15,6 +16,11 @@ IrradianceCache::IrradianceCache()
 void IrradianceCache::setThreshold(float threshold)
 {
 	mThreshold = threshold;
+}
+
+float IrradianceCache::threshold() const
+{
+	return mThreshold;
 }
 
 float IrradianceCache::weight(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const 
@@ -139,4 +145,5 @@ void IrradianceCache::clear()
 	mOctreeRoot.release();
 }
 
+}
 }

@@ -67,8 +67,6 @@ void Engine::startRender(Listener *listener)
 	mListener->onRenderStatus("");
 
 	mStartTime = GetTickCount();
-	mRenderData.irradianceCache.clear();
-	mRenderData.irradianceCache.setThreshold(mSettings.irradianceCacheThreshold);
 
 	mLighters.clear();
 	if (mSettings.directLighting) {
@@ -76,7 +74,7 @@ void Engine::startRender(Listener *listener)
 	}
 
 	if (mSettings.indirectLighting) {
-		mLighters.push_back(std::make_unique<Trace::Lighter::Indirect>(mSettings.indirectSamples, mSettings.indirectDirectSamples));
+		mLighters.push_back(std::make_unique<Trace::Lighter::Indirect>(mSettings.indirectSamples, mSettings.indirectDirectSamples, mSettings.irradianceCaching, mSettings.irradianceCacheThreshold));
 	}
 
 	if (mSettings.radiantLighting) {
@@ -204,7 +202,7 @@ int Engine::heightInBlocks()
 
 std::unique_ptr<Trace::Tracer> Engine::createTracer()
 {
-	return std::make_unique<Trace::Tracer>(mScene, mSettings, mRenderData, mLighters);
+	return std::make_unique<Trace::Tracer>(mScene, mSettings, mLighters);
 }
 
 Trace::Tracer::Settings &Engine::settings()

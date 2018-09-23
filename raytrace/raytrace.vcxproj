@@ -134,14 +134,14 @@
     <ClCompile Include="Render\ThreadRender.cpp" />
     <ClCompile Include="Scene.tab.c" />
     <ClCompile Include="Trace\Intersection.cpp" />
-    <ClCompile Include="Trace\IrradianceCache.cpp" />
     <ClCompile Include="Trace\Lighter\Direct.cpp" />
     <ClCompile Include="Trace\Lighter\Indirect.cpp" />
+    <ClCompile Include="Trace\Lighter\IrradianceCache.cpp" />
+    <ClCompile Include="Trace\Lighter\RadianceGradient.cpp" />
     <ClCompile Include="Trace\Lighter\Radiant.cpp" />
     <ClCompile Include="Trace\Lighter\Base.cpp" />
     <ClCompile Include="Trace\Lighter\Specular.cpp" />
     <ClCompile Include="Trace\Lighter\Utils.cpp" />
-    <ClCompile Include="Trace\RadianceGradient.cpp" />
     <ClCompile Include="Trace\Ray.cpp" />
     <ClCompile Include="Trace\Tracer.cpp" />
   </ItemGroup>
@@ -197,15 +197,15 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Trace\Forwards.hpp" />
     <ClInclude Include="Trace\Intersection.hpp" />
-    <ClInclude Include="Trace\IrradianceCache.hpp" />
     <ClInclude Include="Trace\Lighter\Base.hpp" />
     <ClInclude Include="Trace\Lighter\Direct.hpp" />
     <ClInclude Include="Trace\Lighter\Forwards.hpp" />
     <ClInclude Include="Trace\Lighter\Indirect.hpp" />
+    <ClInclude Include="Trace\Lighter\IrradianceCache.hpp" />
+    <ClInclude Include="Trace\Lighter\RadianceGradient.hpp" />
     <ClInclude Include="Trace\Lighter\Radiant.hpp" />
     <ClInclude Include="Trace\Lighter\Specular.hpp" />
     <ClInclude Include="Trace\Lighter\Utils.hpp" />
-    <ClInclude Include="Trace\RadianceGradient.hpp" />
     <ClInclude Include="Trace\Ray.hpp" />
     <ClInclude Include="Trace\Tracer.hpp" />
   </ItemGroup>

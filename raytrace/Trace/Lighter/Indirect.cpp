@@ -14,10 +14,13 @@
 namespace Trace {
 namespace Lighter {
 
-Indirect::Indirect(int indirectSamples, int indirectDirectSamples)
+Indirect::Indirect(int indirectSamples, int indirectDirectSamples, bool irradianceCaching, float irradianceCacheThreshold)
 	: mDirectLighter(indirectDirectSamples)
+	, mIrradianceCache()
 {
 	mIndirectSamples = indirectSamples;
+	mIrradianceCaching = irradianceCaching;
+	mIrradianceCache.setThreshold(irradianceCacheThreshold);
 }
 
 Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
@@ -29,15 +32,13 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
 	Object::Radiance radiance;
-	if (tracer.settings().irradianceCaching) {
-		Trace::IrradianceCache &irradianceCache = tracer.renderData().irradianceCache;
-
-		std::vector<IrradianceCache::Entry> entries = irradianceCache.lookupUnlocked(point, normal);
+	if (mIrradianceCaching) {
+		std::vector<IrradianceCache::Entry> entries = mIrradianceCache.lookupUnlocked(point, normal);
 		Object::Radiance irradiance;
 		if (entries.size() > 0) {
 			float den = 0;
 			for (const IrradianceCache::Entry &entry : entries) {
-				float weight = irradianceCache.weight(entry, point, normal);
+				float weight = mIrradianceCache.weight(entry, point, normal);
 				if (std::isinf(weight)) {
 					irradiance = entry.radiance;
 					break;
@@ -97,17 +98,16 @@ Object::Radiance Indirect::sampleHemisphere(const Trace::Intersection &intersect
 	return radiance;
 }
 
-bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
+bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer)
 {
-	if (!tracer.settings().irradianceCaching) {
+	if (!mIrradianceCaching) {
 		return false;
 	}
 
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
-	Trace::IrradianceCache &irradianceCache = tracer.renderData().irradianceCache;
 
-	std::vector<IrradianceCache::Entry> entries = irradianceCache.lookup(point, normal);
+	std::vector<IrradianceCache::Entry> entries = mIrradianceCache.lookup(point, normal);
 	if (entries.size() > 0) {
 		return false;
 	}
@@ -161,12 +161,12 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 		newEntry.radiance = radiance;
 
 		float radius = mean;
-		float minRadius = 3 * tracer.projectedPixelSize(intersection.distance()) / tracer.settings().irradianceCacheThreshold;
+		float minRadius = 3 * tracer.projectedPixelSize(intersection.distance()) / mIrradianceCache.threshold();
 		float maxRadius = 20 * minRadius;
 		newEntry.radius = std::min(std::max(radius, minRadius), maxRadius);
 
-		Trace::RadianceGradient transGrad;
-		Trace::RadianceGradient rotGrad;
+		RadianceGradient transGrad;
+		RadianceGradient rotGrad;
 		for (int k = 0; k < N; k++) {
 			int k1 = (k > 0) ? (k - 1) : N - 1;
 			float phi = 2 * M_PI * k / N;
@@ -198,7 +198,7 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 		newEntry.transGrad = transGrad;
 		newEntry.rotGrad = rotGrad;
 
-		irradianceCache.add(newEntry);
+		mIrradianceCache.add(newEntry);
 	}
 
 	return true;

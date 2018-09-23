@@ -84,7 +84,7 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 
 	Trace::Intersection intersection = tracer->intersect(ray);
 	if (intersection.valid()) {
-		Trace::Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples);
+		Trace::Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples, false, 0);
 		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
 		std::vector<Trace::Lighter::Base::ProbeEntry> probe;
 		lighter.sampleHemisphere(intersection, *tracer, &probe);

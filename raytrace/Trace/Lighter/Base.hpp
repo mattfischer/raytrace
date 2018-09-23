@@ -21,7 +21,7 @@ public:
 	Base();
 
 	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const = 0;
-	virtual bool prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
+	virtual bool prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer);
 
 	struct ProbeEntry {
 		Math::Vector direction;

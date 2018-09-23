@@ -12,9 +12,8 @@
 
 namespace Trace {
 
-Tracer::Tracer(const Object::Scene &scene, const Settings &settings, RenderData &renderData, const std::vector<std::unique_ptr<Lighter::Base>> &lighters)
+Tracer::Tracer(const Object::Scene &scene, const Settings &settings, const std::vector<std::unique_ptr<Lighter::Base>> &lighters)
 	: mScene(scene)
-	, mRenderData(renderData)
 	, mLighters(lighters)
 {
 	mSettings = settings;
@@ -28,11 +27,6 @@ const Object::Scene &Tracer::scene() const
 Tracer::Settings &Tracer::settings()
 {
 	return mSettings;
-}
-
-Tracer::RenderData &Tracer::renderData()
-{
-	return mRenderData;
 }
 
 Trace::Intersection Tracer::intersect(const Trace::Ray &ray)

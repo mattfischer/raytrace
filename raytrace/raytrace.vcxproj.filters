@@ -152,9 +152,6 @@
     <ClCompile Include="Trace\Lighter\Utils.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\IrradianceCache.cpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClCompile>
     <ClCompile Include="Trace\Lighter\Base.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
@@ -173,14 +170,17 @@
     <ClCompile Include="Render\ThreadRender.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\RadianceGradient.cpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClCompile>
     <ClCompile Include="Trace\Lighter\Indirect.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
     <ClCompile Include="Object\Primitive\BoundingVolume.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\IrradianceCache.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Trace\Lighter\RadianceGradient.cpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -335,9 +335,6 @@
     <ClInclude Include="Trace\Lighter\Utils.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\IrradianceCache.hpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClInclude>
     <ClInclude Include="LightProbeDlg.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -353,14 +350,17 @@
     <ClInclude Include="Render\ThreadRender.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\RadianceGradient.hpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClInclude>
     <ClInclude Include="Trace\Lighter\Indirect.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="Object\Primitive\BoundingVolume.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\IrradianceCache.hpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Trace\Lighter\RadianceGradient.hpp">
+      <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

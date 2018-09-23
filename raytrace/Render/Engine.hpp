@@ -9,6 +9,7 @@
 
 #include <set>
 #include <thread>
+#include <mutex>
 
 #include <windows.h>
 
@@ -67,7 +68,6 @@ private:
 
 	const Object::Scene &mScene;
 	Trace::Tracer::Settings mSettings;
-	Trace::Tracer::RenderData mRenderData;
 	Listener *mListener;
 	std::unique_ptr<Framebuffer> mFramebuffer;
 	enum class State {

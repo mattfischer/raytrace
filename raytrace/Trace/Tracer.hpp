@@ -7,7 +7,6 @@
 #include "Object/Color.hpp"
 #include "Trace/Intersection.hpp"
 #include "Trace/Lighter/Base.hpp"
-#include "Trace/IrradianceCache.hpp"
 
 #include <vector>
 #include <memory>
@@ -35,16 +34,10 @@ public:
 		float irradianceCacheThreshold;
 	};
 
-	struct RenderData
-	{
-		IrradianceCache irradianceCache;
-	};
-
-	Tracer(const Object::Scene &scene, const Settings &settings, RenderData &renderData, const std::vector<std::unique_ptr<Lighter::Base>> &lighters);
+	Tracer(const Object::Scene &scene, const Settings &settings, const std::vector<std::unique_ptr<Lighter::Base>> &lighters);
 
 	const Object::Scene &scene() const;
 	Settings &settings();
-	RenderData &renderData();
 
 	Trace::Intersection intersect(const Trace::Ray &ray);
 
@@ -60,7 +53,6 @@ public:
 protected:
 	const Object::Scene &mScene;
 	Settings mSettings;
-	RenderData &mRenderData;
 
 	const std::vector<std::unique_ptr<Lighter::Base>> &mLighters;
 };
