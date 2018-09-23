@@ -8,36 +8,16 @@
 #include "Object/Albedo/Base.hpp"
 #include "Object/Primitive/Base.hpp"
 
-#include "Trace/Lighter/Direct.hpp"
-#include "Trace/Lighter/Indirect.hpp"
-#include "Trace/Lighter/Radiant.hpp"
-#include "Trace/Lighter/Specular.hpp"
-
 #include <algorithm>
 
 namespace Trace {
 
-Tracer::Tracer(const Object::Scene &scene, const Settings &settings, RenderData &renderData)
+Tracer::Tracer(const Object::Scene &scene, const Settings &settings, RenderData &renderData, const std::vector<std::unique_ptr<Lighter::Base>> &lighters)
 	: mScene(scene)
 	, mRenderData(renderData)
+	, mLighters(lighters)
 {
 	mSettings = settings;
-
-	if (settings.directLighting) {
-		mLighters.push_back(std::make_unique<Lighter::Direct>(settings.directSamples));
-	}
-
-	if (settings.indirectLighting) {
-		mLighters.push_back(std::make_unique<Lighter::Indirect>(settings.indirectSamples, settings.indirectDirectSamples));
-	}
-
-	if (settings.radiantLighting) {
-		mLighters.push_back(std::make_unique<Lighter::Radiant>());
-	}
-
-	if (settings.specularLighting) {
-		mLighters.push_back(std::make_unique<Lighter::Specular>());
-	}
 }
 
 const Object::Scene &Tracer::scene() const

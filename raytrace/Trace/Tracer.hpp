@@ -40,7 +40,7 @@ public:
 		IrradianceCache irradianceCache;
 	};
 
-	Tracer(const Object::Scene &scene, const Settings &settings, RenderData &renderData);
+	Tracer(const Object::Scene &scene, const Settings &settings, RenderData &renderData, const std::vector<std::unique_ptr<Lighter::Base>> &lighters);
 
 	const Object::Scene &scene() const;
 	Settings &settings();
@@ -62,7 +62,7 @@ protected:
 	Settings mSettings;
 	RenderData &mRenderData;
 
-	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
+	const std::vector<std::unique_ptr<Lighter::Base>> &mLighters;
 };
 
 }

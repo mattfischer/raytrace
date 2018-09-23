@@ -80,6 +80,7 @@ private:
 	std::mutex mMutex;
 	std::set<std::unique_ptr<Thread>> mThreads;
 	int mBlocksStarted;
+	std::vector<std::unique_ptr<Trace::Lighter::Base>> mLighters;
 };
 
 }

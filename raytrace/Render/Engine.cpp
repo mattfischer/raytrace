@@ -4,6 +4,11 @@
 #include "Render/ThreadRender.hpp"
 #include "Render/ThreadPrerender.hpp"
 
+#include "Trace/Lighter/Direct.hpp"
+#include "Trace/Lighter/Indirect.hpp"
+#include "Trace/Lighter/Radiant.hpp"
+#include "Trace/Lighter/Specular.hpp"
+
 #include <algorithm>
 #include <memory>
 
@@ -64,6 +69,23 @@ void Engine::startRender(Listener *listener)
 	mStartTime = GetTickCount();
 	mRenderData.irradianceCache.clear();
 	mRenderData.irradianceCache.setThreshold(mSettings.irradianceCacheThreshold);
+
+	mLighters.clear();
+	if (mSettings.directLighting) {
+		mLighters.push_back(std::make_unique<Trace::Lighter::Direct>(mSettings.directSamples));
+	}
+
+	if (mSettings.indirectLighting) {
+		mLighters.push_back(std::make_unique<Trace::Lighter::Indirect>(mSettings.indirectSamples, mSettings.indirectDirectSamples));
+	}
+
+	if (mSettings.radiantLighting) {
+		mLighters.push_back(std::make_unique<Trace::Lighter::Radiant>());
+	}
+
+	if (mSettings.specularLighting) {
+		mLighters.push_back(std::make_unique<Trace::Lighter::Specular>());
+	}
 
 	beginPhase();
 }
@@ -182,7 +204,7 @@ int Engine::heightInBlocks()
 
 std::unique_ptr<Trace::Tracer> Engine::createTracer()
 {
-	return std::make_unique<Trace::Tracer>(mScene, mSettings, mRenderData);
+	return std::make_unique<Trace::Tracer>(mScene, mSettings, mRenderData, mLighters);
 }
 
 Trace::Tracer::Settings &Engine::settings()
