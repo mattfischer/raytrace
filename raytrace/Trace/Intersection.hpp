@@ -58,7 +58,5 @@ protected:
 	void doTransform() const;
 };
 
-typedef std::vector<Intersection> IntersectionVector;
-
 }
 #endif

@@ -24,7 +24,7 @@ public:
 	const Surface &surface() const;
 	void setSurface(std::unique_ptr<Surface> &&surface);
 
-	void intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
+	Trace::Intersection intersect(const Trace::Ray &ray) const;
 	bool inside(const Math::Point &point) const;
 	void sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
@@ -40,7 +40,7 @@ protected:
 	std::unique_ptr<Surface> mSurface;
 	BoundingVolume mBoundingVolume;
 
-	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const = 0;
+	virtual Trace::Intersection doIntersect(const Trace::Ray &ray) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;
 	virtual BoundingVolume doBoundingVolume(const std::vector<Math::Vector> &vectors) const = 0;
 	virtual void doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;

@@ -14,11 +14,11 @@ public:
 	static std::unique_ptr<Box> fromAst(AST *ast);
 
 protected:
-	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
+	virtual Trace::Intersection doIntersect(const Trace::Ray &ray) const;
 	virtual bool doInside(const Math::Point &point) const;
 	virtual BoundingVolume doBoundingVolume(const std::vector<Math::Vector> &vectors) const;
 
-	void testIntersect(const Trace::Ray &ray, const Math::Normal &normal, std::vector<Trace::Intersection> &intersections) const;
+	void testIntersect(const Trace::Ray &ray, const Math::Normal &normal, Trace::Intersection &intersection) const;
 };
 
 }

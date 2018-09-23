@@ -60,11 +60,11 @@ void Base::setSurface(std::unique_ptr<Surface> &&surface)
 	mSurface = std::move(surface);
 }
 
-void Base::intersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const
+Trace::Intersection Base::intersect(const Trace::Ray &ray) const
 {
 	Trace::Ray transformedRay = mTransformation.inverse() * ray;
 
-	doIntersect(transformedRay, intersections);
+	return doIntersect(transformedRay);
 }
 
 bool Base::inside(const Math::Point &point) const

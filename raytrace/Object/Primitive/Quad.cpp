@@ -29,13 +29,8 @@ namespace Object {
 			return true;
 		}
 
-		void Quad::doIntersect(const Trace::Ray &ray, std::vector<Trace::Intersection> &intersections) const
+		Trace::Intersection Quad::doIntersect(const Trace::Ray &ray) const
 		{
-			float t = -Math::Vector(ray.origin()) * ray.direction() / ray.direction().magnitude2();
-			Math::Point v = ray.origin() + ray.direction() * t;
-			if (Math::Vector(v).magnitude2()>2) return;
-
-			Trace::Intersection intersection;
 			Math::Normal normal(0, 1, 0);
 			float scale = (Math::Vector(ray.origin()) * normal) / (ray.direction() * -normal);
 			if (scale > 0)
@@ -43,20 +38,13 @@ namespace Object {
 				Math::Point point = ray.origin() + ray.direction() * scale;
 				point = point - Math::Vector(normal) * (Math::Vector(point) * normal);
 
-				intersection = Trace::Intersection(this, ray, scale, normal, point);
-			}
-
-			Math::Point point;
-
-			if (intersection.valid())
-			{
-				point = intersection.objectPoint();
-
 				if (abs(point.x()) <= 1 && abs(point.z()) <= 1)
 				{
-					intersections.push_back(intersection);
+					return Trace::Intersection(this, ray, scale, normal, point);
 				}
 			}
+
+			return Trace::Intersection();
 		}
 
 		bool Quad::doInside(const Math::Point &point) const

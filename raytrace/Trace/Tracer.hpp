@@ -46,7 +46,7 @@ public:
 	Settings &settings();
 	RenderData &renderData();
 
-	void intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end);
+	Trace::Intersection intersect(const Trace::Ray &ray);
 
 	Trace::Ray createCameraRay(float x, float y);
 	Object::Color tracePixel(float x, float y);
@@ -63,7 +63,6 @@ protected:
 	RenderData &mRenderData;
 
 	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
-	IntersectionVector mIntersections;
 };
 
 }

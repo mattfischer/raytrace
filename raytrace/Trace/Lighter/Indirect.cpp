@@ -76,14 +76,13 @@ Object::Radiance Indirect::sampleHemisphere(const Trace::Intersection &intersect
 			float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
 			Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(intersection.normal()) * std::sin(theta);
 
-			Trace::Ray ray(intersection.point(), direction, intersection.ray().generation() + 1);
-			Trace::IntersectionVector::iterator begin, end;
-			tracer.intersect(ray, begin, end);
+			Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;
+			Trace::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
+			Trace::Intersection intersection2 = tracer.intersect(ray);
 
 			ProbeEntry probeEntry;
 			probeEntry.direction = Math::Vector(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
-			if (begin != end) {
-				Trace::Intersection intersection2 = *begin;
+			if (intersection2.valid()) {
 				Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer);
 				radiance += irradiance *  albedo * brdf.lambert() / (M * N);
 				probeEntry.radiance = irradiance;
@@ -132,13 +131,11 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 			float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
 			Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(normal) * std::sin(theta);
 
-			Trace::Ray ray(intersection.point(), direction, intersection.ray().generation() + 1);
-			Trace::IntersectionVector::iterator begin, end;
-			tracer.intersect(ray, begin, end);
+			Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
+			Trace::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
+			Trace::Intersection intersection2 = tracer.intersect(ray);
 
-			if (begin != end) {
-				Trace::Intersection intersection2 = *begin;
-
+			if (intersection2.valid()) {
 				mean += 1 / intersection2.distance();
 				Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer);
 

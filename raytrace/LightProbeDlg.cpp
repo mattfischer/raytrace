@@ -81,12 +81,9 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 {
 	std::unique_ptr<Trace::Tracer> tracer = engine.createTracer();
 	Trace::Ray ray = tracer->createCameraRay(x, y);
-	Trace::IntersectionVector::iterator begin, end;
 
-	tracer->intersect(ray, begin, end);
-	if (begin != end) {
-		Trace::Intersection intersection = *begin;
-
+	Trace::Intersection intersection = tracer->intersect(ray);
+	if (intersection.valid()) {
 		Trace::Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples);
 		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
 		std::vector<Trace::Lighter::Base::ProbeEntry> probe;

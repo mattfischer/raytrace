@@ -60,19 +60,21 @@ Object::Radiance Direct::sampleHemisphere(const Trace::Intersection &intersectio
 				Math::Vector incidentDirection = samplePoint - point;
 				float distance = incidentDirection.magnitude();
 				incidentDirection = incidentDirection / distance;
-				Trace::Ray ray(intersection.point(), incidentDirection, intersection.ray().generation() + 1);
-				Trace::IntersectionVector::iterator begin, end;
-				tracer.intersect(ray, begin, end);
+				Math::Point offsetPoint = point + Math::Vector(intersection.normal()) * 0.01;
+				Trace::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
+				Trace::Intersection intersection2 = tracer.intersect(ray);
 
 				Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
 				ProbeEntry probeEntry;
 				probeEntry.direction = viewVector;
-				if (begin != end && begin->primitive() == primitive.get()) {
+				if (intersection2.valid() && intersection2.primitive() == primitive.get()) {
 					float dot = incidentDirection * normal;
 					float sampleDot = abs(incidentDirection * sampleNormal);
 
-					outgoingRadiance += objectRadiance * dot * sampleDot * area / (distance * distance);
-					probeEntry.radiance = objectRadiance;
+					if (dot > 0) {
+						outgoingRadiance += objectRadiance * dot * sampleDot * area / (distance * distance);
+						probeEntry.radiance = objectRadiance;
+					}
 				}
 
 				if(probe) {

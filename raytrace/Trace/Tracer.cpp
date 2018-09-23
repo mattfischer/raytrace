@@ -55,37 +55,30 @@ Tracer::RenderData &Tracer::renderData()
 	return mRenderData;
 }
 
-void Tracer::intersect(const Trace::Ray &ray, IntersectionVector::iterator &begin, IntersectionVector::iterator &end)
+Trace::Intersection Tracer::intersect(const Trace::Ray &ray)
 {
-	mIntersections.clear();
+	Trace::Intersection intersection;
 
 	for (const std::unique_ptr<Object::Primitive::Base> &primitive : mScene.primitives())
 	{
 		if (primitive->boundingVolume().intersectRay(ray)) {
-			primitive->intersect(ray, mIntersections);
+			Trace::Intersection newIntersection = primitive->intersect(ray);
+			if (!intersection.valid() || newIntersection.distance() < intersection.distance()) {
+				intersection = newIntersection;
+			}
 		}
 	}
 
-	begin = mIntersections.begin();
-	end = mIntersections.end();
-	std::sort(begin, end);
-	if (begin != end) {
-		if (begin->distance() < 0.01) {
-			begin++;
-		}
-	}
+	return intersection;
 }
 
 Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
 {
-	IntersectionVector::iterator begin, end;
-
-	intersect(ray, begin, end);
+	Intersection intersection = intersect(ray);
 
 	Object::Radiance radiance;
-	if(begin != end)
+	if(intersection.valid())
 	{
-		Intersection intersection = *begin;
 		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
 			radiance += lighter->light(intersection, *this);
 		}
@@ -124,13 +117,9 @@ Object::Color Tracer::tracePixel(float x, float y)
 	}
 	else
 	{
-		IntersectionVector::iterator begin, end;
-
-		intersect(ray, begin, end);
-
-		if (begin != end)
+		Intersection intersection =	intersect(ray);
+		if (intersection.valid())
 		{
-			const Intersection &intersection = *begin;
 			color = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
 		}
 	}
@@ -143,12 +132,10 @@ bool Tracer::prerenderPixel(float x, float y)
 	bool ret = false;
 	Trace::Ray ray = createCameraRay(x, y);
 
-	IntersectionVector::iterator begin, end;
-	intersect(ray, begin, end);
+	Intersection intersection = intersect(ray);
 
-	if (begin != end)
+	if (intersection.valid())
 	{
-		Intersection intersection = *begin;
 		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
 			ret |= lighter->prerender(intersection, *this);
 		}

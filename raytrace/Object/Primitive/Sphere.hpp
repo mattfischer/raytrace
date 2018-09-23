@@ -14,7 +14,7 @@ public:
 	static std::unique_ptr<Sphere> fromAst(AST *ast);
 
 protected:
-	virtual void doIntersect(const Trace::Ray &ray, Trace::IntersectionVector &intersections) const;
+	virtual Trace::Intersection doIntersect(const Trace::Ray &ray) const;
 	virtual bool doInside(const Math::Point &point) const;
 	virtual BoundingVolume doBoundingVolume(const std::vector<Math::Vector> &vectors) const;
 };
