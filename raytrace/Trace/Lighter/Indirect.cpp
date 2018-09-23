@@ -16,11 +16,10 @@ namespace Lighter {
 
 Indirect::Indirect(int indirectSamples, int indirectDirectSamples, bool irradianceCaching, float irradianceCacheThreshold)
 	: mDirectLighter(indirectDirectSamples)
-	, mIrradianceCache()
+	, mIrradianceCache(irradianceCacheThreshold)
 {
 	mIndirectSamples = indirectSamples;
 	mIrradianceCaching = irradianceCaching;
-	mIrradianceCache.setThreshold(irradianceCacheThreshold);
 }
 
 Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const

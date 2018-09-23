@@ -25,8 +25,7 @@ namespace Lighter {
 			RadianceGradient transGrad;
 		};
 
-		IrradianceCache();
-		void setThreshold(float threshold);
+		IrradianceCache(float threshold);
 		float threshold() const;
 
 		float weight(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;

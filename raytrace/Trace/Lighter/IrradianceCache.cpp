@@ -8,13 +8,9 @@
 namespace Trace {
 namespace Lighter {
 
-IrradianceCache::IrradianceCache()
+IrradianceCache::IrradianceCache(float threshold)
 {
 	mOctreeSize = 0;
-}
-
-void IrradianceCache::setThreshold(float threshold)
-{
 	mThreshold = threshold;
 }
 
