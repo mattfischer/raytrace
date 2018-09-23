@@ -116,6 +116,7 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 	Utils::orthonormalBasis(Math::Vector(normal), x, y);
 
 	float mean = 0;
+	int den = 0;
 	Object::Radiance radiance;
 	const int M = std::sqrt(mIndirectSamples);
 	const int N = mIndirectSamples / M;
@@ -137,6 +138,7 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 
 			if (intersection2.valid()) {
 				mean += 1 / intersection2.distance();
+				den++;
 				Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer);
 
 				samples[k * M + j] = incidentRadiance;
@@ -151,7 +153,7 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 	}
 
 	if (mean > 0) {
-		mean = M * N / mean;
+		mean = den / mean;
 
 		IrradianceCache::Entry newEntry;
 		newEntry.point = point;
