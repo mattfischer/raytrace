@@ -42,8 +42,13 @@ bool BoundingVolume::intersectRay(const Trace::Ray &ray) const
 		float offset = Math::Vector(ray.origin()) * vector;
 		float dot = ray.direction() * vector;
 
-		if (dot < 0.001 && dot > -0.001) {
-			continue;
+		if (dot == 0) {
+			if (offset > mMaxes[i] || offset < mMins[i]) {
+				return false;
+			}
+			else {
+				continue;
+			}
 		}
 
 		float min = (mMins[i] - offset) / dot;
