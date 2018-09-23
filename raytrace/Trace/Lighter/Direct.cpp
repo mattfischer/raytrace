@@ -14,12 +14,7 @@ Direct::Direct(int numSamples)
 	mNumSamples = numSamples;
 }
 
-Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
-{
-	return sampleHemisphere(intersection, tracer, 0);
-}
-
-Object::Radiance Direct::sampleHemisphere(const Trace::Intersection &intersection, Trace::Tracer &tracer, std::vector<ProbeEntry> *probe) const
+Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Vector normal(intersection.normal());
@@ -65,7 +60,7 @@ Object::Radiance Direct::sampleHemisphere(const Trace::Intersection &intersectio
 				Trace::Intersection intersection2 = tracer.intersect(ray);
 
 				Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
-				ProbeEntry probeEntry;
+				Probe::Entry probeEntry;
 				probeEntry.direction = viewVector;
 				if (intersection2.valid() && intersection2.primitive() == primitive.get()) {
 					float dot = incidentDirection * normal;
@@ -78,7 +73,7 @@ Object::Radiance Direct::sampleHemisphere(const Trace::Intersection &intersectio
 				}
 
 				if(probe) {
-					probe->push_back(probeEntry);
+					probe->entries.push_back(probeEntry);
 				}
 			}
 

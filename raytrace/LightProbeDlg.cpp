@@ -86,11 +86,11 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 	if (intersection.valid()) {
 		Trace::Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples, false, 0);
 		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
-		std::vector<Trace::Lighter::Base::ProbeEntry> probe;
-		lighter.sampleHemisphere(intersection, *tracer, &probe);
+		Trace::Lighter::Base::Probe probe;
+		lighter.light(intersection, *tracer, &probe);
 
 		mSamples.clear();
-		for (Trace::Lighter::Base::ProbeEntry &entry : probe) {
+		for (Trace::Lighter::Base::Probe::Entry &entry : probe.entries) {
 			Object::Color color = tracer->toneMap(entry.radiance);
 			float azimuth = std::atan2(entry.direction.y(), entry.direction.x());
 			float elevation = std::asin(entry.direction.z());

@@ -12,9 +12,7 @@ class Direct : public Base
 {
 public:
 	Direct(int numSamples);
-	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
-
-	Object::Radiance sampleHemisphere(const Trace::Intersection &intersection, Trace::Tracer &tracer, std::vector<ProbeEntry> *probe) const;
+	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const;
 
 private:
 	int mNumSamples;

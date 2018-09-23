@@ -6,7 +6,7 @@
 namespace Trace {
 namespace Lighter {
 
-Object::Radiance Specular::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
+Object::Radiance Specular::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
 {
 	const Object::Surface &surface = intersection.primitive()->surface();
 	const Trace::Ray &ray = intersection.ray();

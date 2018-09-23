@@ -20,13 +20,17 @@ class Base {
 public:
 	Base();
 
-	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const = 0;
-	virtual bool prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer);
+	struct Probe {
+		struct Entry {
+			Math::Vector direction;
+			Object::Radiance radiance;
+		};
 
-	struct ProbeEntry {
-		Math::Vector direction;
-		Object::Radiance radiance;
+		std::vector<Entry> entries;
 	};
+
+	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const = 0;
+	virtual bool prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer);
 };
 
 }

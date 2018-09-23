@@ -9,7 +9,7 @@ namespace Trace {
 		class Specular : public Base
 		{
 		public:
-			virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const;
+			virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const;
 		};
 
 	}

@@ -23,7 +23,7 @@ Indirect::Indirect(int indirectSamples, int indirectDirectSamples, bool irradian
 	mIrradianceCache.setThreshold(irradianceCacheThreshold);
 }
 
-Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace::Tracer &tracer) const
+Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
@@ -53,44 +53,36 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 		radiance = irradiance * albedo * brdf.lambert() / M_PI;
 	}
 	else {
-		radiance = sampleHemisphere(intersection, tracer, 0);
-	}
+		Math::Vector x, y;
+		Utils::orthonormalBasis(Math::Vector(intersection.normal()), x, y);
+		const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+		const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
 
-	return radiance;
-}
+		const int M = std::sqrt(mIndirectSamples);
+		const int N = mIndirectSamples / M;
+		for (int k = 0; k < N; k++) {
+			for (int j = 0; j < M; j++) {
+				std::uniform_real_distribution<float> dist(0, 1);
 
-Object::Radiance Indirect::sampleHemisphere(const Trace::Intersection &intersection, Trace::Tracer &tracer, std::vector<ProbeEntry> *probe) const
-{
-	Math::Vector x, y;
-	Utils::orthonormalBasis(Math::Vector(intersection.normal()), x, y);
-	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
-	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
+				float phi = 2 * M_PI * (k + dist(mRandomEngine)) / N;
+				float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
+				Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(intersection.normal()) * std::sin(theta);
 
-	const int M = std::sqrt(mIndirectSamples);
-	const int N = mIndirectSamples / M;
-	Object::Radiance radiance;
-	for (int k = 0; k < N; k++) {
-		for (int j = 0; j < M; j++) {
-			std::uniform_real_distribution<float> dist(0, 1);
+				Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;
+				Trace::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
+				Trace::Intersection intersection2 = tracer.intersect(ray);
 
-			float phi = 2 * M_PI * (k + dist(mRandomEngine)) / N;
-			float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
-			Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(intersection.normal()) * std::sin(theta);
+				Probe::Entry probeEntry;
+				probeEntry.direction = Math::Vector(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
+				if (intersection2.valid()) {
+					Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer);
+					radiance += irradiance *  albedo * brdf.lambert() / (M * N);
+					probeEntry.radiance = irradiance;
+				}
 
-			Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;
-			Trace::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
-			Trace::Intersection intersection2 = tracer.intersect(ray);
-
-			ProbeEntry probeEntry;
-			probeEntry.direction = Math::Vector(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
-			if (intersection2.valid()) {
-				Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer);
-				radiance += irradiance *  albedo * brdf.lambert() / (M * N);
-				probeEntry.radiance = irradiance;
-			}
-
-			if (probe) {
-				probe->push_back(probeEntry);
+				if (probe) {
+					probe->entries.push_back(probeEntry);
+				}
 			}
 		}
 	}
