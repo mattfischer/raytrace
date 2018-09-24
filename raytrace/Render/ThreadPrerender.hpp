@@ -2,8 +2,7 @@
 #define RENDER_THREADPRERENDER_HPP
 
 #include "Render/Engine.hpp"
-
-#include "Trace/Tracer.hpp"
+#include "Render/Tracer.hpp"
 
 namespace Render
 {
@@ -17,7 +16,7 @@ protected:
 	virtual Object::Color renderPixel(int x, int y);
 
 private:
-	Trace::Tracer mTracer;
+	Render::Tracer mTracer;
 };
 
 }

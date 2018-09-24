@@ -5,7 +5,7 @@
 #include "Object/Intersection.hpp"
 #include "Object/Primitive/Base.hpp"
 #include "Math/Ray.hpp"
-#include "Trace/Tracer.hpp"
+#include "Render/Tracer.hpp"
 #include "Trace/Lighter/Utils.hpp"
 
 #include <cmath>
@@ -22,7 +22,7 @@ Indirect::Indirect(int indirectSamples, int indirectDirectSamples, bool irradian
 	mIrradianceCaching = irradianceCaching;
 }
 
-Object::Radiance Indirect::light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
+Object::Radiance Indirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
@@ -89,7 +89,7 @@ Object::Radiance Indirect::light(const Object::Intersection &intersection, Trace
 	return radiance;
 }
 
-bool Indirect::prerender(const Object::Intersection &intersection, Trace::Tracer &tracer)
+bool Indirect::prerender(const Object::Intersection &intersection, Render::Tracer &tracer)
 {
 	if (!mIrradianceCaching) {
 		return false;

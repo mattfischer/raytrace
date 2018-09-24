@@ -1,6 +1,6 @@
 #include "Trace/Lighter/Specular.hpp"
 
-#include "Trace/Tracer.hpp"
+#include "Render/Tracer.hpp"
 #include "Object/Scene.hpp"
 
 #include "Render/Engine.hpp"
@@ -14,7 +14,7 @@ Specular::Specular(const Render::Engine &engine, int maxRayGeneration)
 	mMaxRayGeneration = maxRayGeneration;
 }
 
-Object::Radiance Specular::light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
+Object::Radiance Specular::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
 {
 	const Object::Surface &surface = intersection.primitive()->surface();
 	const Math::Ray &ray = intersection.ray();

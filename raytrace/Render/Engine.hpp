@@ -5,7 +5,7 @@
 #include "Trace/Forwards.hpp"
 
 #include "Render/Framebuffer.hpp"
-#include "Trace/Tracer.hpp"
+#include "Render/Tracer.hpp"
 #include "Trace/Lighter/Base.hpp"
 
 #include <set>
@@ -82,7 +82,7 @@ public:
 	const std::vector<std::unique_ptr<Trace::Lighter::Base>> &lighters() const;
 
 	Object::Color toneMap(const Object::Radiance &radiance) const;
-	Object::Radiance traceRay(const Math::Ray &ray, Trace::Tracer &tracer) const;
+	Object::Radiance traceRay(const Math::Ray &ray, Render::Tracer &tracer) const;
 
 private:
 	void getBlock(int block, int &x, int &y, int &w, int &h);

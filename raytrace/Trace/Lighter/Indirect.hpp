@@ -15,8 +15,8 @@ namespace Trace {
 		public:
 			Indirect(int indirectSamples, int indirectDirectSamples, bool irradianceCaching, float irradianceCacheThreshold);
 
-			virtual Object::Radiance light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const;
-			virtual bool prerender(const Object::Intersection &intersection, Trace::Tracer &tracer);
+			virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe = 0) const;
+			virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer);
 
 		private:
 			mutable std::default_random_engine mRandomEngine;

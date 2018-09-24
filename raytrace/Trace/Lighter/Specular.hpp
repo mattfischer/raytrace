@@ -2,10 +2,7 @@
 #define TRACE_LIGHTER_SPECULAR_HPP
 
 #include "Trace/Lighter/Base.hpp"
-
-namespace Render {
-	class Engine;
-}
+#include "Render/Engine.hpp"
 
 namespace Trace {
 	namespace Lighter {
@@ -15,7 +12,7 @@ namespace Trace {
 		public:
 			Specular(const Render::Engine &engine, int maxRayGeneration);
 
-			virtual Object::Radiance light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const;
+			virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe = 0) const;
 
 		private:
 			const Render::Engine &mEngine;

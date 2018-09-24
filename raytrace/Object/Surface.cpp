@@ -1,9 +1,5 @@
 #include "Object/Surface.hpp"
 
-#include "Object/Scene.hpp"
-#include "Object/Camera.hpp"
-#include "Trace/Tracer.hpp"
-
 #include "Object/Albedo/Base.hpp"
 #include "Object/Brdf/Base.hpp"
 

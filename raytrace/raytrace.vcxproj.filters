@@ -89,9 +89,6 @@
     <ClCompile Include="Object\Primitive\Sphere.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\Tracer.cpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClCompile>
     <ClCompile Include="lex.Scene.c">
       <Filter>Source Files\Parse</Filter>
     </ClCompile>
@@ -181,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="Object\Intersection.cpp">
       <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Tracer.cpp">
+      <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -305,9 +305,6 @@
     <ClInclude Include="Trace\Forwards.hpp">
       <Filter>Source Files\Trace</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\Tracer.hpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClInclude>
     <ClInclude Include="App.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -361,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="Object\Intersection.hpp">
       <Filter>Source Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Tracer.hpp">
+      <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

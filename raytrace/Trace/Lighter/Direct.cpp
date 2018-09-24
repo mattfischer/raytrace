@@ -3,7 +3,7 @@
 
 #include "Trace/Lighter/Utils.hpp"
 
-#include "Trace/Tracer.hpp"
+#include "Render/Tracer.hpp"
 #include "Object/Scene.hpp"
 
 namespace Trace {
@@ -14,7 +14,7 @@ Direct::Direct(int numSamples)
 	mNumSamples = numSamples;
 }
 
-Object::Radiance Direct::light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
+Object::Radiance Direct::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Vector normal(intersection.normal());

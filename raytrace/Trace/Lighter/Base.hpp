@@ -5,6 +5,8 @@
 #include "Object/Forwards.hpp"
 #include "Math/Forwards.hpp"
 
+#include "Render/Tracer.hpp"
+
 #include <vector>
 #include <memory>
 
@@ -29,8 +31,8 @@ public:
 		std::vector<Entry> entries;
 	};
 
-	virtual Object::Radiance light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const = 0;
-	virtual bool prerender(const Object::Intersection &intersection, Trace::Tracer &tracer);
+	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe = 0) const = 0;
+	virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer);
 };
 
 }

@@ -134,6 +134,7 @@
     <ClCompile Include="Render\Framebuffer.cpp" />
     <ClCompile Include="Render\ThreadPrerender.cpp" />
     <ClCompile Include="Render\ThreadRender.cpp" />
+    <ClCompile Include="Render\Tracer.cpp" />
     <ClCompile Include="Scene.tab.c" />
     <ClCompile Include="Trace\Lighter\Direct.cpp" />
     <ClCompile Include="Trace\Lighter\Indirect.cpp" />
@@ -143,7 +144,6 @@
     <ClCompile Include="Trace\Lighter\Base.cpp" />
     <ClCompile Include="Trace\Lighter\Specular.cpp" />
     <ClCompile Include="Trace\Lighter\Utils.cpp" />
-    <ClCompile Include="Trace\Tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l" />
@@ -196,6 +196,7 @@
     <ClInclude Include="Render\Framebuffer.hpp" />
     <ClInclude Include="Render\ThreadPrerender.hpp" />
     <ClInclude Include="Render\ThreadRender.hpp" />
+    <ClInclude Include="Render\Tracer.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Trace\Forwards.hpp" />
     <ClInclude Include="Trace\Lighter\Base.hpp" />
@@ -207,7 +208,6 @@
     <ClInclude Include="Trace\Lighter\Radiant.hpp" />
     <ClInclude Include="Trace\Lighter\Specular.hpp" />
     <ClInclude Include="Trace\Lighter\Utils.hpp" />
-    <ClInclude Include="Trace\Tracer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources.rc" />

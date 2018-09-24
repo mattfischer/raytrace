@@ -1,4 +1,4 @@
-#include "Trace/Tracer.hpp"
+#include "Render/Tracer.hpp"
 #include "Object/Base.hpp"
 #include "Object/Scene.hpp"
 #include "Object/Camera.hpp"
@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-namespace Trace {
+namespace Render {
 
 Tracer::Tracer(const Object::Scene &scene, int width, int height)
 	: mScene(scene)

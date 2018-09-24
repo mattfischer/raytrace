@@ -1,12 +1,12 @@
-#ifndef TRACE_TRACER_HPP
-#define TRACE_TRACER_HPP
+#ifndef RENDER_TRACER_HPP
+#define RENDER_TRACER_HPP
 
 #include "Trace/Forwards.hpp"
 #include "Object/Forwards.hpp"
 
 #include "Object/Intersection.hpp"
 
-namespace Trace {
+namespace Render {
 
 class Tracer
 {
