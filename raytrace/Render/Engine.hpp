@@ -1,7 +1,9 @@
 #ifndef RENDER_ENGINE_HPP
 #define RENDER_ENGINE_HPP
 
-#include "Object/Forwards.hpp"
+#include "Object/Color.hpp"
+#include "Object/Scene.hpp"
+#include "Object/Radiance.hpp"
 
 #include "Render/Framebuffer.hpp"
 #include "Render/Tracer.hpp"

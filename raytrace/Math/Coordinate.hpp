@@ -1,8 +1,6 @@
 #ifndef MATH_COORDINATE_HPP
 #define MATH_COORDINATE_HPP
 
-#include "Math/Forwards.hpp"
-
 #include "Parse/AST.h"
 
 namespace Math {

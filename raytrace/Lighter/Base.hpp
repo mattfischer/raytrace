@@ -1,9 +1,6 @@
 #ifndef LIGHTER_BASE_HPP
 #define LIGHTER_BASE_HPP
 
-#include "Object/Forwards.hpp"
-#include "Math/Forwards.hpp"
-
 #include "Render/Tracer.hpp"
 
 #include <vector>

@@ -1,7 +1,6 @@
 #ifndef MATH_POINT_HPP
 #define MATH_POINT_HPP
 
-#include "Math/Forwards.hpp"
 #include "Math/Coordinate.hpp"
 
 #include "Parse/AST.h"

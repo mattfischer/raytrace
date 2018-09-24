@@ -1,7 +1,5 @@
-#ifndef TRACE_INTERSECTION_H
-#define TRACE_INTERSECTION_H
-
-#include "Object/Forwards.hpp"
+#ifndef OBJECT_INTERSECTION_HPP
+#define OBJECT_INTERSECTION_HPP
 
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"
@@ -12,6 +10,10 @@
 #include <vector>
 
 namespace Object {
+
+namespace Primitive {
+	class Base;
+}
 
 class Intersection
 {

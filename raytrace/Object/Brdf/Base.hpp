@@ -1,10 +1,11 @@
 #ifndef OBJECT_BRDF_BASE_HPP
 #define OBJECT_BRDF_BASE_HPP
 
-#include "Math/Forwards.hpp"
-
 #include "Object/Radiance.hpp"
 #include "Object/Color.hpp"
+
+#include "Math/Vector.hpp"
+#include "Math/Normal.hpp"
 
 #include <memory>
 

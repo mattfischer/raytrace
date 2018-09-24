@@ -1,8 +1,8 @@
 #ifndef MATH_TRANSFORMATION_HPP
 #define MATH_TRANSFORMATION_HPP
 
-#include "Math/Forwards.hpp"
 #include "Math/Matrix.hpp"
+#include "Math/Point.hpp"
 
 #include "Parse/AST.h"
 

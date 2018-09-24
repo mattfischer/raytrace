@@ -1,9 +1,11 @@
 #ifndef OBJECT_ALBEDO_BASE_HPP
 #define OBJECT_ALBEDO_BASE_HPP
 
-#include "Math/Forwards.hpp"
 #include "Object/Color.hpp"
-#include "Parse/Forwards.hpp"
+
+#include "Math/Point.hpp"
+
+#include "Parse/AST.h"
 
 #include <memory>
 

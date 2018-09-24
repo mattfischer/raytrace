@@ -1,9 +1,10 @@
 #ifndef RENDER_TRACER_HPP
 #define RENDER_TRACER_HPP
 
-#include "Object/Forwards.hpp"
-
+#include "Object/Scene.hpp"
 #include "Object/Intersection.hpp"
+
+#include "Math/Ray.hpp"
 
 namespace Render {
 

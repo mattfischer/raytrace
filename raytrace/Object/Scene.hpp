@@ -1,7 +1,6 @@
 #ifndef OBJECT_SCENE_HPP
 #define OBJECT_SCENE_HPP
 
-#include "Object/Forwards.hpp"
 #include "Object/Camera.hpp"
 #include "Object/Primitive/Base.hpp"
 

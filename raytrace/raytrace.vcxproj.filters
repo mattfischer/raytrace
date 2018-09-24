@@ -194,9 +194,6 @@
     <ClInclude Include="Math\Coordinate.hpp">
       <Filter>Source Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Math\Forwards.hpp">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Matrix.hpp">
       <Filter>Source Files\Math</Filter>
     </ClInclude>
@@ -221,9 +218,6 @@
     <ClInclude Include="Object\Albedo\Checker.hpp">
       <Filter>Source Files\Object\Albedo</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Albedo\Forwards.hpp">
-      <Filter>Source Files\Object\Albedo</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Albedo\Solid.hpp">
       <Filter>Source Files\Object\Albedo</Filter>
     </ClInclude>
@@ -231,9 +225,6 @@
       <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
     <ClInclude Include="Object\Brdf\Composite.hpp">
-      <Filter>Source Files\Object\Brdf</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Brdf\Forwards.hpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
     <ClInclude Include="Object\Brdf\Lambert.hpp">
@@ -251,9 +242,6 @@
     <ClInclude Include="Object\Primitive\Box.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Primitive\Forwards.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Primitive\Sphere.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
@@ -266,9 +254,6 @@
     <ClInclude Include="Object\Color.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Forwards.hpp">
-      <Filter>Source Files\Object</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Scene.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
@@ -278,16 +263,10 @@
     <ClInclude Include="Parse\AST.h">
       <Filter>Source Files\Parse</Filter>
     </ClInclude>
-    <ClInclude Include="Parse\Forwards.hpp">
-      <Filter>Source Files\Parse</Filter>
-    </ClInclude>
     <ClInclude Include="Parse\Parser.hpp">
       <Filter>Source Files\Parse</Filter>
     </ClInclude>
     <ClInclude Include="Render\Engine.hpp">
-      <Filter>Source Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Forwards.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="App.hpp">
@@ -333,9 +312,6 @@
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="Lighter\Direct.hpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Lighter\Forwards.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="Lighter\Indirect.hpp">

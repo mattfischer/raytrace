@@ -1,9 +1,9 @@
 #ifndef MATH_MATRIX_HPP
 #define MATH_MATRIX_HPP
 
-#include "Math/Forwards.hpp"
-
 namespace Math {
+
+class Coordinate;
 
 class Matrix
 {

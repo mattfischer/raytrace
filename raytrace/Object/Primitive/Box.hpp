@@ -1,7 +1,7 @@
 #ifndef OBJECT_PRIMITIVE_BOX_HPP
 #define OBJECT_PRIMITIVE_BOX_HPP
 
-#include "Parse/Forwards.hpp"
+#include "Parse/AST.h"
 
 #include "Object/Primitive/Base.hpp"
 

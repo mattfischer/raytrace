@@ -1,9 +1,6 @@
 #ifndef OBJECT_PRIMITIVE_BASE_HPP
 #define OBJECT_PRIMITIVE_BASE_HPP
 
-#include "Object/Forwards.hpp"
-#include "Math/Forwards.hpp"
-
 #include "Object/Base.hpp"
 #include "Object/Surface.hpp"
 #include "Object/Intersection.hpp"

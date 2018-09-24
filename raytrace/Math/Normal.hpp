@@ -1,7 +1,6 @@
 #ifndef MATH_NORMAL_HPP
 #define MATH_NORMAL_HPP
 
-#include "Math/Forwards.hpp"
 #include "Math/Coordinate.hpp"
 
 #include "Parse/AST.h"
