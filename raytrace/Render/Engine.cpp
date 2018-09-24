@@ -65,6 +65,11 @@ Engine::Engine(const Object::Scene &scene)
 	mFramebuffer = std::make_unique<Framebuffer>(0, 0);
 }
 
+const Object::Scene &Engine::scene() const
+{
+	return mScene;
+}
+
 void Engine::startRender(Listener *listener)
 {
 	mListener = listener;
@@ -87,7 +92,7 @@ void Engine::startRender(Listener *listener)
 	}
 
 	if (mSettings.specularLighting) {
-		mLighters.push_back(std::make_unique<Trace::Lighter::Specular>(*this));
+		mLighters.push_back(std::make_unique<Trace::Lighter::Specular>(*this, mSettings.maxRayGeneration));
 	}
 
 	beginPhase();
@@ -205,17 +210,12 @@ int Engine::heightInBlocks()
 	return (mSettings.height + BLOCK_SIZE - 1) / BLOCK_SIZE;
 }
 
-std::unique_ptr<Trace::Tracer> Engine::createTracer()
-{
-	return std::make_unique<Trace::Tracer>(mScene, mSettings);
-}
-
-Trace::Tracer::Settings &Engine::settings()
+const Engine::Settings &Engine::settings() const
 {
 	return mSettings;
 }
 
-void Engine::setSettings(const Trace::Tracer::Settings &settings)
+void Engine::setSettings(const Settings &settings)
 {
 	if (settings.width != mSettings.width || settings.height != mSettings.height) {
 		mFramebuffer = std::make_unique<Framebuffer>(settings.width, settings.height);

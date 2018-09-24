@@ -13,12 +13,13 @@ namespace Trace {
 		class Specular : public Base
 		{
 		public:
-			Specular(const Render::Engine &engine);
+			Specular(const Render::Engine &engine, int maxRayGeneration);
 
 			virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const;
 
 		private:
 			const Render::Engine &mEngine;
+			int mMaxRayGeneration;
 		};
 
 	}

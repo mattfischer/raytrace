@@ -12,20 +12,16 @@
 
 namespace Trace {
 
-Tracer::Tracer(const Object::Scene &scene, const Settings &settings)
+Tracer::Tracer(const Object::Scene &scene, int width, int height)
 	: mScene(scene)
 {
-	mSettings = settings;
+	mWidth = width;
+	mHeight = height;
 }
 
 const Object::Scene &Tracer::scene() const
 {
 	return mScene;
-}
-
-Tracer::Settings &Tracer::settings()
-{
-	return mSettings;
 }
 
 Trace::Intersection Tracer::intersect(const Trace::Ray &ray)
@@ -47,8 +43,8 @@ Trace::Intersection Tracer::intersect(const Trace::Ray &ray)
 
 Trace::Ray Tracer::createCameraRay(float x, float y)
 {
-	float cx = (2 * x - mSettings.width) / mSettings.width;
-	float cy = (2 * y - mSettings.height) / mSettings.width;
+	float cx = (2 * x - mWidth) / mWidth;
+	float cy = (2 * y - mHeight) / mWidth;
 	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
 
 	return ray;
@@ -56,7 +52,7 @@ Trace::Ray Tracer::createCameraRay(float x, float y)
 
 float Tracer::projectedPixelSize(float distance)
 {
-	return mScene.camera().projectSize(2.0f / mSettings.width, distance);
+	return mScene.camera().projectSize(2.0f / mWidth, distance);
 }
 
 }

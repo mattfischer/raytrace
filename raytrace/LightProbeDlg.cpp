@@ -79,15 +79,15 @@ INT_PTR CALLBACK LightProbeDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
 
 void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 {
-	std::unique_ptr<Trace::Tracer> tracer = engine.createTracer();
-	Trace::Ray ray = tracer->createCameraRay(x, y);
+	Trace::Tracer tracer(engine.scene(), engine.settings().width, engine.settings().height);
+	Trace::Ray ray = tracer.createCameraRay(x, y);
 
-	Trace::Intersection intersection = tracer->intersect(ray);
+	Trace::Intersection intersection = tracer.intersect(ray);
 	if (intersection.valid()) {
 		Trace::Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples, false, 0);
 		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
 		Trace::Lighter::Base::Probe probe;
-		lighter.light(intersection, *tracer, &probe);
+		lighter.light(intersection, tracer, &probe);
 
 		mSamples.clear();
 		for (Trace::Lighter::Base::Probe::Entry &entry : probe.entries) {

@@ -4,40 +4,16 @@
 #include "Trace/Forwards.hpp"
 #include "Object/Forwards.hpp"
 
-#include "Object/Color.hpp"
 #include "Trace/Intersection.hpp"
-#include "Trace/Lighter/Base.hpp"
-
-#include <vector>
-#include <memory>
 
 namespace Trace {
 
 class Tracer
 {
 public:
-	struct Settings
-	{
-		int width;
-		int height;
-		bool lighting;
-		int maxRayGeneration;
-		int antialiasSamples;
-		bool radiantLighting;
-		bool specularLighting;
-		bool directLighting;
-		int directSamples;
-		bool indirectLighting;
-		int indirectSamples;
-		int indirectDirectSamples;
-		bool irradianceCaching;
-		float irradianceCacheThreshold;
-	};
-
-	Tracer(const Object::Scene &scene, const Settings &settings);
+	Tracer(const Object::Scene &scene, int width, int height);
 
 	const Object::Scene &scene() const;
-	Settings &settings();
 
 	Trace::Intersection intersect(const Trace::Ray &ray);
 
@@ -47,7 +23,8 @@ public:
 
 protected:
 	const Object::Scene &mScene;
-	Settings mSettings;
+	int mWidth;
+	int mHeight;
 };
 
 }

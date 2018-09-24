@@ -8,9 +8,10 @@
 namespace Trace {
 namespace Lighter {
 
-Specular::Specular(const Render::Engine &engine)
+Specular::Specular(const Render::Engine &engine, int maxRayGeneration)
 	: mEngine(engine)
 {
+	mMaxRayGeneration = maxRayGeneration;
 }
 
 Object::Radiance Specular::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
@@ -19,7 +20,7 @@ Object::Radiance Specular::light(const Trace::Intersection &intersection, Trace:
 	const Trace::Ray &ray = intersection.ray();
 	Object::Radiance radiance;
 
-	if (surface.brdf().specular() && ray.generation() < tracer.settings().maxRayGeneration) {
+	if (surface.brdf().specular() && ray.generation() < mMaxRayGeneration) {
 		Object::Color albedo = surface.albedo().color(intersection.objectPoint());
 		Math::Vector incident = ray.direction();
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));

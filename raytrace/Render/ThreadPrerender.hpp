@@ -17,7 +17,7 @@ protected:
 	virtual Object::Color renderPixel(int x, int y);
 
 private:
-	std::unique_ptr<Trace::Tracer> mTracer;
+	Trace::Tracer mTracer;
 };
 
 }

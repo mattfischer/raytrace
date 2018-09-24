@@ -18,8 +18,10 @@ protected:
 	virtual Object::Color renderPixel(int x, int y);
 
 private:
-	std::unique_ptr<Trace::Tracer> mTracer;
+	Trace::Tracer mTracer;
 	std::default_random_engine mRandomEngine;
+	bool mLighting;
+	int mAntialiasSamples;
 };
 
 }

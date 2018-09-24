@@ -6,6 +6,7 @@
 
 #include "Render/Framebuffer.hpp"
 #include "Trace/Tracer.hpp"
+#include "Trace/Lighter/Base.hpp"
 
 #include <set>
 #include <thread>
@@ -47,16 +48,35 @@ public:
 		std::thread mThread;
 	};
 
+	struct Settings
+	{
+		int width;
+		int height;
+		bool lighting;
+		int maxRayGeneration;
+		int antialiasSamples;
+		bool radiantLighting;
+		bool specularLighting;
+		bool directLighting;
+		int directSamples;
+		bool indirectLighting;
+		int indirectSamples;
+		int indirectDirectSamples;
+		bool irradianceCaching;
+		float irradianceCacheThreshold;
+	};
+
 	Engine(const Object::Scene &scene);
+
+	const Object::Scene &scene() const;
 
 	bool rendering() const;
 
 	void startRender(Listener *listener);
 	bool threadDone(Thread *thread);
-	void setSettings(const Trace::Tracer::Settings &settings);
+	void setSettings(const Settings &settings);
 
-	std::unique_ptr<Trace::Tracer> createTracer();
-	Trace::Tracer::Settings &settings();
+	const Settings &settings() const;
 	Framebuffer &framebuffer();
 
 	const std::vector<std::unique_ptr<Trace::Lighter::Base>> &lighters() const;
@@ -73,7 +93,7 @@ private:
 	void endPhase();
 
 	const Object::Scene &mScene;
-	Trace::Tracer::Settings mSettings;
+	Settings mSettings;
 	Listener *mListener;
 	std::unique_ptr<Framebuffer> mFramebuffer;
 	enum class State {

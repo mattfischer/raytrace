@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-#include "Trace/Tracer.hpp"
+#include "Render/Engine.hpp"
 
 class RenderControlDlg
 {
@@ -19,7 +19,7 @@ public:
 	void createWindow(HINSTANCE hInst, Listener *listener);
 	bool isDialogMessage(MSG *msg);
 
-	Trace::Tracer::Settings &settings();
+	Render::Engine::Settings &settings();
 
 	void setStatusMessage(const char *message);
 	void enableRenderButton(bool enabled);
@@ -34,7 +34,7 @@ private:
 	INT_PTR CALLBACK dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	HWND mHDlg;
-	Trace::Tracer::Settings mSettings;
+	Render::Engine::Settings mSettings;
 	Listener *mListener;
 };
 
