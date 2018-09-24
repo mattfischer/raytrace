@@ -12,6 +12,7 @@
 #include <set>
 #include <thread>
 #include <mutex>
+#include <random>
 
 #include <windows.h>
 
@@ -33,9 +34,8 @@ public:
 
 		void start(int startX, int startY, int width, int height);
 
-	protected:
-		virtual Object::Color renderPixel(int x, int y) = 0;
-		const Engine &engine() const;
+		Tracer &tracer();
+		std::default_random_engine &randomEngine();
 
 	private:
 		void run();
@@ -47,6 +47,8 @@ public:
 		bool mStarted;
 		Engine &mEngine;
 		std::thread mThread;
+		Tracer mTracer;
+		std::default_random_engine mRandomEngine;
 	};
 
 	struct Settings
@@ -80,8 +82,6 @@ public:
 	const Settings &settings() const;
 	Framebuffer &framebuffer();
 
-	const std::vector<std::unique_ptr<Lighter::Base>> &lighters() const;
-
 	Object::Color toneMap(const Object::Radiance &radiance) const;
 	Object::Radiance traceRay(const Math::Ray &ray, Render::Tracer &tracer) const;
 
@@ -92,6 +92,8 @@ private:
 
 	void beginPhase();
 	void endPhase();
+
+	Object::Color renderPixel(Thread &thread, int x, int y);
 
 	const Object::Scene &mScene;
 	Settings mSettings;

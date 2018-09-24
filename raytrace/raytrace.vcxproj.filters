@@ -137,12 +137,6 @@
     <ClCompile Include="Render\Framebuffer.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Render\ThreadPrerender.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\ThreadRender.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Primitive\BoundingVolume.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
@@ -288,12 +282,6 @@
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Render\Framebuffer.hpp">
-      <Filter>Source Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\ThreadPrerender.hpp">
-      <Filter>Source Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\ThreadRender.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Object\Primitive\BoundingVolume.hpp">

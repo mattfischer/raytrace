@@ -1,13 +1,11 @@
 #define NOMINMAX
 #include "Render/Engine.hpp"
 
-#include "Render/ThreadRender.hpp"
-#include "Render/ThreadPrerender.hpp"
-
 #include "Lighter/Direct.hpp"
 #include "Lighter/Indirect.hpp"
 #include "Lighter/Radiant.hpp"
 #include "Lighter/Specular.hpp"
+#include "Lighter/Utils.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -18,13 +16,9 @@ static const int BLOCK_SIZE = 64;
 
 Engine::Thread::Thread(Engine &engine)
 	: mEngine(engine)
+	, mTracer(engine.scene(), engine.settings().width, engine.settings().height)
 {
 	mStarted = false;
-}
-
-const Engine &Engine::Thread::engine() const
-{
-	return mEngine;
 }
 
 void Engine::Thread::start(int startX, int startY, int width, int height)
@@ -46,7 +40,7 @@ void Engine::Thread::run()
 	while (true) {
 		for (int y = mStartY; y < mStartY + mHeight; y++) {
 			for (int x = mStartX; x < mStartX + mWidth; x++) {
-				Object::Color color = renderPixel(x, y);
+				Object::Color color = mEngine.renderPixel(*this, x, y);
 				mEngine.framebuffer().setPixel(x, y, color);
 			}
 		}
@@ -56,6 +50,16 @@ void Engine::Thread::run()
 			break;
 		}
 	}
+}
+
+Tracer &Engine::Thread::tracer()
+{
+	return mTracer;
+}
+
+std::default_random_engine &Engine::Thread::randomEngine()
+{
+	return mRandomEngine;
 }
 
 Engine::Engine(const Object::Scene &scene)
@@ -156,22 +160,11 @@ void Engine::beginPhase()
 		int w, h;
 		getBlock(mBlocksStarted, x, y, w, h);
 
-		std::unique_ptr<Thread> thread;
-		switch (mState) {
-		case State::Prerender:
-			thread = std::make_unique<ThreadPrerender>(*this);
-			break;
-		case State::Render:
-			thread = std::make_unique<ThreadRender>(*this);
-			break;
-		default:
-			break;
-		}
+		std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this);
 		thread->start(x, y, w, h);
 		mThreads.insert(std::move(thread));
 		mBlocksStarted++;
 	}
-
 }
 
 void Engine::endPhase()
@@ -228,11 +221,6 @@ Framebuffer &Engine::framebuffer()
 	return *mFramebuffer;
 }
 
-const std::vector<std::unique_ptr<Lighter::Base>> &Engine::lighters() const
-{
-	return mLighters;
-}
-
 Object::Color Engine::toneMap(const Object::Radiance &radiance) const
 {
 	float red = radiance.red() / (radiance.red() + 1);
@@ -257,5 +245,51 @@ Object::Radiance Engine::traceRay(const Math::Ray &ray, Render::Tracer &tracer) 
 	return radiance;
 }
 
+Object::Color Engine::renderPixel(Thread &thread, int x, int y)
+{
+	Object::Color color;
+
+	switch (mState) {
+		case State::Prerender:
+		{
+			Math::Ray ray = thread.tracer().createCameraRay(x, y);
+			Object::Intersection intersection = thread.tracer().intersect(ray);
+			if (intersection.valid())
+			{
+				for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
+					if (lighter->prerender(intersection, thread.tracer())) {
+						color = Object::Color(1, 1, 1);
+					}
+				}
+			}
+			break;
+		}
+
+		case State::Render:
+			for (int i = 0; i < mSettings.antialiasSamples; i++) {
+				float u;
+				float v;
+
+				Lighter::Utils::stratifiedSamples(i, mSettings.antialiasSamples, u, v, thread.randomEngine());
+				Math::Ray ray = thread.tracer().createCameraRay(x + u, y + v);
+
+				if (mSettings.lighting) {
+					Object::Radiance radiance = traceRay(ray, thread.tracer());
+					color += toneMap(radiance);
+				}
+				else {
+					Object::Intersection intersection = thread.tracer().intersect(ray);
+					if (intersection.valid())
+					{
+						color += intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+					}
+				}
+			}
+			color = color / mSettings.antialiasSamples;
+			break;
+	}
+
+	return color;
+}
 
 }

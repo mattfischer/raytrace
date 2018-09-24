@@ -140,8 +140,6 @@
     <ClCompile Include="RenderControlDlg.cpp" />
     <ClCompile Include="Render\Engine.cpp" />
     <ClCompile Include="Render\Framebuffer.cpp" />
-    <ClCompile Include="Render\ThreadPrerender.cpp" />
-    <ClCompile Include="Render\ThreadRender.cpp" />
     <ClCompile Include="Render\Tracer.cpp" />
     <ClCompile Include="Scene.tab.c" />
   </ItemGroup>
@@ -195,8 +193,6 @@
     <ClInclude Include="RenderControlDlg.hpp" />
     <ClInclude Include="Render\Engine.hpp" />
     <ClInclude Include="Render\Framebuffer.hpp" />
-    <ClInclude Include="Render\ThreadPrerender.hpp" />
-    <ClInclude Include="Render\ThreadRender.hpp" />
     <ClInclude Include="Render\Tracer.hpp" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
