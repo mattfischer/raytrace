@@ -17,7 +17,7 @@ Object::Color ThreadPrerender::renderPixel(int x, int y)
 	Object::Color color;
 	if (intersection.valid())
 	{
-		for (const std::unique_ptr<Trace::Lighter::Base> &lighter : engine().lighters()) {
+		for (const std::unique_ptr<Lighter::Base> &lighter : engine().lighters()) {
 			if (lighter->prerender(intersection, mTracer)) {
 				color = Object::Color(1, 1, 1);
 			}

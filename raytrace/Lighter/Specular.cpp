@@ -1,11 +1,10 @@
-#include "Trace/Lighter/Specular.hpp"
+#include "Lighter/Specular.hpp"
 
 #include "Render/Tracer.hpp"
 #include "Object/Scene.hpp"
 
 #include "Render/Engine.hpp"
 
-namespace Trace {
 namespace Lighter {
 
 Specular::Specular(const Render::Engine &engine, int maxRayGeneration)
@@ -34,5 +33,4 @@ Object::Radiance Specular::light(const Object::Intersection &intersection, Rende
 	return radiance;
 }
 
-}
 }

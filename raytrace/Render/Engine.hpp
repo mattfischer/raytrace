@@ -2,11 +2,10 @@
 #define RENDER_ENGINE_HPP
 
 #include "Object/Forwards.hpp"
-#include "Trace/Forwards.hpp"
 
 #include "Render/Framebuffer.hpp"
 #include "Render/Tracer.hpp"
-#include "Trace/Lighter/Base.hpp"
+#include "Lighter/Base.hpp"
 
 #include <set>
 #include <thread>
@@ -79,7 +78,7 @@ public:
 	const Settings &settings() const;
 	Framebuffer &framebuffer();
 
-	const std::vector<std::unique_ptr<Trace::Lighter::Base>> &lighters() const;
+	const std::vector<std::unique_ptr<Lighter::Base>> &lighters() const;
 
 	Object::Color toneMap(const Object::Radiance &radiance) const;
 	Object::Radiance traceRay(const Math::Ray &ray, Render::Tracer &tracer) const;
@@ -106,7 +105,7 @@ private:
 	std::mutex mMutex;
 	std::set<std::unique_ptr<Thread>> mThreads;
 	int mBlocksStarted;
-	std::vector<std::unique_ptr<Trace::Lighter::Base>> mLighters;
+	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
 };
 
 }

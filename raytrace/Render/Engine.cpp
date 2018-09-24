@@ -4,10 +4,10 @@
 #include "Render/ThreadRender.hpp"
 #include "Render/ThreadPrerender.hpp"
 
-#include "Trace/Lighter/Direct.hpp"
-#include "Trace/Lighter/Indirect.hpp"
-#include "Trace/Lighter/Radiant.hpp"
-#include "Trace/Lighter/Specular.hpp"
+#include "Lighter/Direct.hpp"
+#include "Lighter/Indirect.hpp"
+#include "Lighter/Radiant.hpp"
+#include "Lighter/Specular.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -80,19 +80,19 @@ void Engine::startRender(Listener *listener)
 
 	mLighters.clear();
 	if (mSettings.directLighting) {
-		mLighters.push_back(std::make_unique<Trace::Lighter::Direct>(mSettings.directSamples));
+		mLighters.push_back(std::make_unique<Lighter::Direct>(mSettings.directSamples));
 	}
 
 	if (mSettings.indirectLighting) {
-		mLighters.push_back(std::make_unique<Trace::Lighter::Indirect>(mSettings.indirectSamples, mSettings.indirectDirectSamples, mSettings.irradianceCaching, mSettings.irradianceCacheThreshold));
+		mLighters.push_back(std::make_unique<Lighter::Indirect>(mSettings.indirectSamples, mSettings.indirectDirectSamples, mSettings.irradianceCaching, mSettings.irradianceCacheThreshold));
 	}
 
 	if (mSettings.radiantLighting) {
-		mLighters.push_back(std::make_unique<Trace::Lighter::Radiant>());
+		mLighters.push_back(std::make_unique<Lighter::Radiant>());
 	}
 
 	if (mSettings.specularLighting) {
-		mLighters.push_back(std::make_unique<Trace::Lighter::Specular>(*this, mSettings.maxRayGeneration));
+		mLighters.push_back(std::make_unique<Lighter::Specular>(*this, mSettings.maxRayGeneration));
 	}
 
 	beginPhase();
@@ -228,7 +228,7 @@ Framebuffer &Engine::framebuffer()
 	return *mFramebuffer;
 }
 
-const std::vector<std::unique_ptr<Trace::Lighter::Base>> &Engine::lighters() const
+const std::vector<std::unique_ptr<Lighter::Base>> &Engine::lighters() const
 {
 	return mLighters;
 }
@@ -249,7 +249,7 @@ Object::Radiance Engine::traceRay(const Math::Ray &ray, Render::Tracer &tracer) 
 	Object::Radiance radiance;
 	if (intersection.valid())
 	{
-		for (const std::unique_ptr<Trace::Lighter::Base> &lighter : mLighters) {
+		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
 			radiance += lighter->light(intersection, tracer);
 		}
 	}

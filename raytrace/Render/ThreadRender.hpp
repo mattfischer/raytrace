@@ -20,8 +20,6 @@ protected:
 private:
 	Render::Tracer mTracer;
 	std::default_random_engine mRandomEngine;
-	bool mLighting;
-	int mAntialiasSamples;
 };
 
 }

@@ -1,7 +1,6 @@
-#ifndef TRACE_LIGHTER_FORWARDS_HPP
-#define TRACE_LIGHTER_FORWARDS_HPP
+#ifndef LIGHTER_FORWARDS_HPP
+#define LIGHTER_FORWARDS_HPP
 
-namespace Trace {
 namespace Lighter {
 
 class Base;
@@ -10,7 +9,6 @@ class Indirect;
 class Radiant;
 class Specular;
 
-}
 }
 
 #endif

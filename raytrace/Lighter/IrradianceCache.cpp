@@ -1,11 +1,10 @@
 #define _USE_MATH_DEFINES
-#include "Trace/Lighter/IrradianceCache.hpp"
+#include "Lighter/IrradianceCache.hpp"
 
 #include "Math/Vector.hpp"
 
 #include <algorithm>
 
-namespace Trace {
 namespace Lighter {
 
 IrradianceCache::IrradianceCache(float threshold)
@@ -141,5 +140,4 @@ void IrradianceCache::clear()
 	mOctreeRoot.release();
 }
 
-}
 }

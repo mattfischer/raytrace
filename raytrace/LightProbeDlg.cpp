@@ -1,7 +1,7 @@
 #include "LightProbeDlg.hpp"
 
-#include "Trace/Lighter/Direct.hpp"
-#include "Trace/Lighter/Indirect.hpp"
+#include "Lighter/Direct.hpp"
+#include "Lighter/Indirect.hpp"
 
 #include <commctrl.h>
 
@@ -84,13 +84,13 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 
 	Object::Intersection intersection = tracer.intersect(ray);
 	if (intersection.valid()) {
-		Trace::Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples, false, 0);
+		Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples, false, 0);
 		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
-		Trace::Lighter::Base::Probe probe;
+		Lighter::Base::Probe probe;
 		lighter.light(intersection, tracer, &probe);
 
 		mSamples.clear();
-		for (Trace::Lighter::Base::Probe::Entry &entry : probe.entries) {
+		for (Lighter::Base::Probe::Entry &entry : probe.entries) {
 			Object::Color color = engine.toneMap(entry.radiance);
 			float azimuth = std::atan2(entry.direction.y(), entry.direction.x());
 			float elevation = std::asin(entry.direction.z());

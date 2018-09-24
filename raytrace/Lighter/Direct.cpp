@@ -1,12 +1,11 @@
 #define _USE_MATH_DEFINES
-#include "Trace/Lighter/Direct.hpp"
+#include "Lighter/Direct.hpp"
 
-#include "Trace/Lighter/Utils.hpp"
+#include "Lighter/Utils.hpp"
 
 #include "Render/Tracer.hpp"
 #include "Object/Scene.hpp"
 
-namespace Trace {
 namespace Lighter {
 
 Direct::Direct(int numSamples)
@@ -84,5 +83,4 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 	return radiance;
 }
 
-}
 }

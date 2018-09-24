@@ -1,7 +1,6 @@
 #ifndef RENDER_TRACER_HPP
 #define RENDER_TRACER_HPP
 
-#include "Trace/Forwards.hpp"
 #include "Object/Forwards.hpp"
 
 #include "Object/Intersection.hpp"

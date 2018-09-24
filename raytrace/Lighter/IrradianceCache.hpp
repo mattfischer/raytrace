@@ -1,16 +1,15 @@
-#ifndef TRACE_LIGHTER_IRRADIANCE_CACHE_HPP
-#define TRACE_LIGHTER_IRRADIANCE_CACHE_HPP
+#ifndef LIGHTER_IRRADIANCE_CACHE_HPP
+#define LIGHTER_IRRADIANCE_CACHE_HPP
 
 #include "Math/Point.hpp"
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
 #include "Object/Radiance.hpp"
-#include "Trace/Lighter/RadianceGradient.hpp"
+#include "Lighter/RadianceGradient.hpp"
 
 #include <vector>
 #include <mutex>
 
-namespace Trace {
 namespace Lighter {
 
 	class IrradianceCache
@@ -52,5 +51,5 @@ namespace Lighter {
 	};
 
 }
-}
+
 #endif

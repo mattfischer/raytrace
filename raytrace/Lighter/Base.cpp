@@ -1,6 +1,5 @@
-#include "Trace/Lighter/Base.hpp"
+#include "Lighter/Base.hpp"
 
-namespace Trace {
 namespace Lighter {
 
 Base::Base()
@@ -12,5 +11,4 @@ bool Base::prerender(const Object::Intersection &intersection, Render::Tracer &t
 	return false;
 }
 
-}
 }

@@ -1,6 +1,5 @@
 #include "RadianceGradient.hpp"
 
-namespace Trace {
 namespace Lighter {
 
 RadianceGradient::RadianceGradient(const Object::Radiance &radiance, const Math::Vector &vector)
@@ -46,5 +45,4 @@ RadianceGradient RadianceGradient::operator/(float other) const
 	return RadianceGradient(mRed / other, mGreen / other, mBlue / other);
 }
 
-}
 }

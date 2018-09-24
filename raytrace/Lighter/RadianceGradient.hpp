@@ -1,10 +1,9 @@
-#ifndef TRACE_LIGHTER_RADIANCE_GRADIENT_HPP
-#define TRACE_LIGHTER_RADIANCE_GRADIENT_HPP
+#ifndef LIGHTER_RADIANCE_GRADIENT_HPP
+#define LIGHTER_RADIANCE_GRADIENT_HPP
 
 #include "Object/Radiance.hpp"
 #include "Math/Vector.hpp"
 
-namespace Trace {
 namespace Lighter {
 
 class RadianceGradient
@@ -27,5 +26,5 @@ private:
 };
 
 }
-}
+
 #endif

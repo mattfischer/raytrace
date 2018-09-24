@@ -2,7 +2,6 @@
 #define OBJECT_PRIMITIVE_BASE_HPP
 
 #include "Object/Forwards.hpp"
-#include "Trace/Forwards.hpp"
 #include "Math/Forwards.hpp"
 
 #include "Object/Base.hpp"

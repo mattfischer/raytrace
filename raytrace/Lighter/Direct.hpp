@@ -1,11 +1,10 @@
-#ifndef TRACE_LIGHTER_DIRECT_HPP
-#define TRACE_LIGHTER_DIRECT_HPP
+#ifndef LIGHTER_DIRECT_HPP
+#define LIGHTER_DIRECT_HPP
 
-#include "Trace/Lighter/Base.hpp"
+#include "Lighter/Base.hpp"
 
 #include <random>
 
-namespace Trace {
 namespace Lighter {
 
 class Direct : public Base
@@ -19,7 +18,6 @@ private:
 	mutable std::default_random_engine mRandomEngine;
 };
 
-}
 }
 
 #endif

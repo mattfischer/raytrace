@@ -1,11 +1,10 @@
-#ifndef TRACE_LIGHTER_UTILS_HPP
-#define TRACE_LIGHTER_UTILS_HPP
+#ifndef LIGHTER_UTILS_HPP
+#define LIGHTER_UTILS_HPP
 
 #include "Math/Vector.hpp"
 
 #include <random>
 
-namespace Trace {
 namespace Lighter {
 
 class Utils {
@@ -17,5 +16,5 @@ public:
 };
 
 }
-}
+
 #endif

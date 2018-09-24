@@ -1,17 +1,16 @@
 #define _USE_MATH_DEFINES
-#include "Trace/Lighter/Indirect.hpp"
+#include "Lighter/Indirect.hpp"
 
 #include "Object/Radiance.hpp"
 #include "Object/Intersection.hpp"
 #include "Object/Primitive/Base.hpp"
 #include "Math/Ray.hpp"
 #include "Render/Tracer.hpp"
-#include "Trace/Lighter/Utils.hpp"
+#include "Lighter/Utils.hpp"
 
 #include <cmath>
 #include <algorithm>
 
-namespace Trace {
 namespace Lighter {
 
 Indirect::Indirect(int indirectSamples, int indirectDirectSamples, bool irradianceCaching, float irradianceCacheThreshold)
@@ -195,5 +194,4 @@ bool Indirect::prerender(const Object::Intersection &intersection, Render::Trace
 	return true;
 }
 
-}
 }

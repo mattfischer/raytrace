@@ -14,9 +14,6 @@
     <Filter Include="Source Files\Object\Primitive">
       <UniqueIdentifier>{730d451d-de0c-47dc-a08f-a24f4c95d5c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Trace">
-      <UniqueIdentifier>{9c32f763-3fa0-47b6-866c-14105d8da332}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Parse">
       <UniqueIdentifier>{4b6943eb-f1aa-432e-b1a4-0ebcf3e52a52}</UniqueIdentifier>
     </Filter>
@@ -33,8 +30,8 @@
     <Filter Include="Source Files\Object\Brdf">
       <UniqueIdentifier>{28011f10-5c1a-4cfc-ba60-1b30b73c1461}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Trace\Lighter">
-      <UniqueIdentifier>{07d66504-7865-44d7-be15-e4bda3c2a158}</UniqueIdentifier>
+    <Filter Include="Source Files\Lighter">
+      <UniqueIdentifier>{eee06c54-4c76-4c68-b988-0e34a43fa518}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -128,23 +125,8 @@
     <ClCompile Include="Object\Surface.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\Lighter\Direct.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Radiance.cpp">
       <Filter>Source Files\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Lighter\Specular.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Lighter\Radiant.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Lighter\Utils.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Lighter\Base.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
     <ClCompile Include="LightProbeDlg.cpp">
       <Filter>Source Files</Filter>
@@ -161,17 +143,8 @@
     <ClCompile Include="Render\ThreadRender.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\Lighter\Indirect.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Primitive\BoundingVolume.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Lighter\IrradianceCache.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Lighter\RadianceGradient.cpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
     </ClCompile>
     <ClCompile Include="Math\Ray.cpp">
       <Filter>Source Files\Math</Filter>
@@ -181,6 +154,30 @@
     </ClCompile>
     <ClCompile Include="Render\Tracer.cpp">
       <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Base.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Direct.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Indirect.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\IrradianceCache.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\RadianceGradient.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Radiant.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Specular.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Utils.cpp">
+      <Filter>Source Files\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -293,18 +290,6 @@
     <ClInclude Include="Render\Forwards.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\Lighter\Base.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\Direct.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\Forwards.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Forwards.hpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClInclude>
     <ClInclude Include="App.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -316,15 +301,6 @@
     </ClInclude>
     <ClInclude Include="Object\Radiance.hpp">
       <Filter>Source Files\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\Specular.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\Radiant.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\Utils.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="LightProbeDlg.hpp">
       <Filter>Source Files</Filter>
@@ -341,17 +317,8 @@
     <ClInclude Include="Render\ThreadRender.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\Lighter\Indirect.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Primitive\BoundingVolume.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\IrradianceCache.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Lighter\RadianceGradient.hpp">
-      <Filter>Source Files\Trace\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="Math\Ray.hpp">
       <Filter>Source Files\Math</Filter>
@@ -361,6 +328,33 @@
     </ClInclude>
     <ClInclude Include="Render\Tracer.hpp">
       <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Base.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Direct.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Forwards.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Indirect.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\IrradianceCache.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\RadianceGradient.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Radiant.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Specular.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Utils.hpp">
+      <Filter>Source Files\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,9 @@
 #define _USE_MATH_DEFINES
-#include "Trace/Lighter/Utils.hpp"
+#include "Lighter/Utils.hpp"
 
 #include <random>
 #include <cmath>
 
-namespace Trace {
 namespace Lighter {
 
 void Utils::orthonormalBasis(const Math::Vector &n, Math::Vector &x, Math::Vector &y)
@@ -72,5 +71,4 @@ void Utils::stratifiedSamples(int i, int N, float &u, float &v, std::default_ran
 	}
 }
 
-}
 }

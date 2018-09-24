@@ -1,7 +1,6 @@
-#ifndef TRACE_LIGHTER_BASE_HPP
-#define TRACE_LIGHTER_BASE_HPP
+#ifndef LIGHTER_BASE_HPP
+#define LIGHTER_BASE_HPP
 
-#include "Trace/Forwards.hpp"
 #include "Object/Forwards.hpp"
 #include "Math/Forwards.hpp"
 
@@ -13,7 +12,6 @@
 #include "Math/Vector.hpp"
 #include "Object/Radiance.hpp"
 
-namespace Trace {
 namespace Lighter {
 
 class Base;
@@ -35,7 +33,6 @@ public:
 	virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer);
 };
 
-}
 }
 
 #endif

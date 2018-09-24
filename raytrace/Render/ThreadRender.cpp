@@ -1,6 +1,6 @@
 #include "ThreadRender.hpp"
 
-#include "Trace/Lighter/Utils.hpp"
+#include "Lighter/Utils.hpp"
 #include "Object/Intersection.hpp"
 #include "Object/Primitive/Base.hpp"
 
@@ -19,10 +19,10 @@ Object::Color ThreadRender::renderPixel(int x, int y)
 		float u;
 		float v;
 
-		Trace::Lighter::Utils::stratifiedSamples(i, engine().settings().antialiasSamples, u, v, mRandomEngine);
+		Lighter::Utils::stratifiedSamples(i, engine().settings().antialiasSamples, u, v, mRandomEngine);
 		Math::Ray ray = mTracer.createCameraRay(x + u, y + v);
 
-		if (mLighting)
+		if (engine().settings().lighting)
 		{
 			Object::Radiance radiance = engine().traceRay(ray, mTracer);
 			color += engine().toneMap(radiance);

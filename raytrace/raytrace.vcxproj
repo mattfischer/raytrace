@@ -88,6 +88,14 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="lex.Scene.c" />
+    <ClCompile Include="Lighter\Base.cpp" />
+    <ClCompile Include="Lighter\Direct.cpp" />
+    <ClCompile Include="Lighter\Indirect.cpp" />
+    <ClCompile Include="Lighter\IrradianceCache.cpp" />
+    <ClCompile Include="Lighter\RadianceGradient.cpp" />
+    <ClCompile Include="Lighter\Radiant.cpp" />
+    <ClCompile Include="Lighter\Specular.cpp" />
+    <ClCompile Include="Lighter\Utils.cpp" />
     <ClCompile Include="LightProbeDlg.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Math\Coordinate.cpp" />
@@ -136,14 +144,6 @@
     <ClCompile Include="Render\ThreadRender.cpp" />
     <ClCompile Include="Render\Tracer.cpp" />
     <ClCompile Include="Scene.tab.c" />
-    <ClCompile Include="Trace\Lighter\Direct.cpp" />
-    <ClCompile Include="Trace\Lighter\Indirect.cpp" />
-    <ClCompile Include="Trace\Lighter\IrradianceCache.cpp" />
-    <ClCompile Include="Trace\Lighter\RadianceGradient.cpp" />
-    <ClCompile Include="Trace\Lighter\Radiant.cpp" />
-    <ClCompile Include="Trace\Lighter\Base.cpp" />
-    <ClCompile Include="Trace\Lighter\Specular.cpp" />
-    <ClCompile Include="Trace\Lighter\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l" />
@@ -153,6 +153,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.hpp" />
+    <ClInclude Include="Lighter\Base.hpp" />
+    <ClInclude Include="Lighter\Direct.hpp" />
+    <ClInclude Include="Lighter\Forwards.hpp" />
+    <ClInclude Include="Lighter\Indirect.hpp" />
+    <ClInclude Include="Lighter\IrradianceCache.hpp" />
+    <ClInclude Include="Lighter\RadianceGradient.hpp" />
+    <ClInclude Include="Lighter\Radiant.hpp" />
+    <ClInclude Include="Lighter\Specular.hpp" />
+    <ClInclude Include="Lighter\Utils.hpp" />
     <ClInclude Include="LightProbeDlg.hpp" />
     <ClInclude Include="Math\Coordinate.hpp" />
     <ClInclude Include="Math\Forwards.hpp" />
@@ -198,16 +207,6 @@
     <ClInclude Include="Render\ThreadRender.hpp" />
     <ClInclude Include="Render\Tracer.hpp" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Trace\Forwards.hpp" />
-    <ClInclude Include="Trace\Lighter\Base.hpp" />
-    <ClInclude Include="Trace\Lighter\Direct.hpp" />
-    <ClInclude Include="Trace\Lighter\Forwards.hpp" />
-    <ClInclude Include="Trace\Lighter\Indirect.hpp" />
-    <ClInclude Include="Trace\Lighter\IrradianceCache.hpp" />
-    <ClInclude Include="Trace\Lighter\RadianceGradient.hpp" />
-    <ClInclude Include="Trace\Lighter\Radiant.hpp" />
-    <ClInclude Include="Trace\Lighter\Specular.hpp" />
-    <ClInclude Include="Trace\Lighter\Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources.rc" />
