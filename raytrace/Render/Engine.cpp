@@ -22,6 +22,11 @@ Engine::Thread::Thread(Engine &engine)
 	mStarted = false;
 }
 
+const Engine &Engine::Thread::engine() const
+{
+	return mEngine;
+}
+
 void Engine::Thread::start(int startX, int startY, int width, int height)
 {
 	mStartX = startX;
@@ -82,7 +87,7 @@ void Engine::startRender(Listener *listener)
 	}
 
 	if (mSettings.specularLighting) {
-		mLighters.push_back(std::make_unique<Trace::Lighter::Specular>());
+		mLighters.push_back(std::make_unique<Trace::Lighter::Specular>(*this));
 	}
 
 	beginPhase();
@@ -202,7 +207,7 @@ int Engine::heightInBlocks()
 
 std::unique_ptr<Trace::Tracer> Engine::createTracer()
 {
-	return std::make_unique<Trace::Tracer>(mScene, mSettings, mLighters);
+	return std::make_unique<Trace::Tracer>(mScene, mSettings);
 }
 
 Trace::Tracer::Settings &Engine::settings()
@@ -222,5 +227,35 @@ Framebuffer &Engine::framebuffer()
 {
 	return *mFramebuffer;
 }
+
+const std::vector<std::unique_ptr<Trace::Lighter::Base>> &Engine::lighters() const
+{
+	return mLighters;
+}
+
+Object::Color Engine::toneMap(const Object::Radiance &radiance) const
+{
+	float red = radiance.red() / (radiance.red() + 1);
+	float green = radiance.green() / (radiance.green() + 1);
+	float blue = radiance.blue() / (radiance.blue() + 1);
+
+	return Object::Color(red, green, blue);
+}
+
+Object::Radiance Engine::traceRay(const Trace::Ray &ray, Trace::Tracer &tracer)  const
+{
+	Trace::Intersection intersection = tracer.intersect(ray);
+
+	Object::Radiance radiance;
+	if (intersection.valid())
+	{
+		for (const std::unique_ptr<Trace::Lighter::Base> &lighter : mLighters) {
+			radiance += lighter->light(intersection, tracer);
+		}
+	}
+
+	return radiance;
+}
+
 
 }

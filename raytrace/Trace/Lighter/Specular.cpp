@@ -3,8 +3,15 @@
 #include "Trace/Tracer.hpp"
 #include "Object/Scene.hpp"
 
+#include "Render/Engine.hpp"
+
 namespace Trace {
 namespace Lighter {
+
+Specular::Specular(const Render::Engine &engine)
+	: mEngine(engine)
+{
+}
 
 Object::Radiance Specular::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
 {
@@ -18,7 +25,7 @@ Object::Radiance Specular::light(const Trace::Intersection &intersection, Trace:
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
 		Trace::Ray reflectRay(intersection.point(), reflect, ray.generation() + 1);
-		Object::Radiance reflectRadiance = tracer.traceRay(reflectRay);
+		Object::Radiance reflectRadiance = mEngine.traceRay(reflectRay, tracer);
 
 		radiance += surface.brdf().specularRadiance(reflectRadiance, albedo);
 	}

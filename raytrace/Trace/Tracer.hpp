@@ -34,7 +34,7 @@ public:
 		float irradianceCacheThreshold;
 	};
 
-	Tracer(const Object::Scene &scene, const Settings &settings, const std::vector<std::unique_ptr<Lighter::Base>> &lighters);
+	Tracer(const Object::Scene &scene, const Settings &settings);
 
 	const Object::Scene &scene() const;
 	Settings &settings();
@@ -42,19 +42,12 @@ public:
 	Trace::Intersection intersect(const Trace::Ray &ray);
 
 	Trace::Ray createCameraRay(float x, float y);
-	Object::Color tracePixel(float x, float y);
-	Object::Radiance traceRay(const Trace::Ray &ray);
 
-	bool prerenderPixel(float x, float y);
-
-	Object::Color toneMap(const Object::Radiance &radiance);
 	float projectedPixelSize(float distance);
 
 protected:
 	const Object::Scene &mScene;
 	Settings mSettings;
-
-	const std::vector<std::unique_ptr<Lighter::Base>> &mLighters;
 };
 
 }

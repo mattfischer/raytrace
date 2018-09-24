@@ -1,6 +1,8 @@
 #include "ThreadRender.hpp"
 
 #include "Trace/Lighter/Utils.hpp"
+#include "Trace/Intersection.hpp"
+#include "Object/Primitive/Base.hpp"
 
 namespace Render {
 
@@ -18,7 +20,21 @@ Object::Color ThreadRender::renderPixel(int x, int y)
 		float v;
 
 		Trace::Lighter::Utils::stratifiedSamples(i, mTracer->settings().antialiasSamples, u, v, mRandomEngine);
-		color += mTracer->tracePixel(x + u, y + v);
+		Trace::Ray ray = mTracer->createCameraRay(x + u, y + v);
+
+		if (mTracer->settings().lighting)
+		{
+			Object::Radiance radiance = engine().traceRay(ray, *mTracer);
+			color += engine().toneMap(radiance);
+		}
+		else
+		{
+			Trace::Intersection intersection = mTracer->intersect(ray);
+			if (intersection.valid())
+			{
+				color += intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+			}
+		}
 	}
 	color = color / mTracer->settings().antialiasSamples;
 	return color;

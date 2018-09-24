@@ -12,9 +12,8 @@
 
 namespace Trace {
 
-Tracer::Tracer(const Object::Scene &scene, const Settings &settings, const std::vector<std::unique_ptr<Lighter::Base>> &lighters)
+Tracer::Tracer(const Object::Scene &scene, const Settings &settings)
 	: mScene(scene)
-	, mLighters(lighters)
 {
 	mSettings = settings;
 }
@@ -46,30 +45,6 @@ Trace::Intersection Tracer::intersect(const Trace::Ray &ray)
 	return intersection;
 }
 
-Object::Radiance Tracer::traceRay(const Trace::Ray &ray)
-{
-	Intersection intersection = intersect(ray);
-
-	Object::Radiance radiance;
-	if(intersection.valid())
-	{
-		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
-			radiance += lighter->light(intersection, *this);
-		}
-	}
-
-	return radiance;
-}
-
-Object::Color Tracer::toneMap(const Object::Radiance &radiance)
-{
-	float red = radiance.red() / (radiance.red() + 1);
-	float green = radiance.green() / (radiance.green() + 1);
-	float blue = radiance.blue() / (radiance.blue() + 1);
-
-	return Object::Color(red, green, blue);
-}
-
 Trace::Ray Tracer::createCameraRay(float x, float y)
 {
 	float cx = (2 * x - mSettings.width) / mSettings.width;
@@ -77,45 +52,6 @@ Trace::Ray Tracer::createCameraRay(float x, float y)
 	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
 
 	return ray;
-}
-
-Object::Color Tracer::tracePixel(float x, float y)
-{
-	Trace::Ray ray = createCameraRay(x, y);
-
-	Object::Color color;
-	if (mSettings.lighting)
-	{
-		Object::Radiance radiance = traceRay(ray);
-		color = toneMap(radiance);
-	}
-	else
-	{
-		Intersection intersection =	intersect(ray);
-		if (intersection.valid())
-		{
-			color = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
-		}
-	}
-	
-	return color;
-}
-
-bool Tracer::prerenderPixel(float x, float y)
-{
-	bool ret = false;
-	Trace::Ray ray = createCameraRay(x, y);
-
-	Intersection intersection = intersect(ray);
-
-	if (intersection.valid())
-	{
-		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
-			ret |= lighter->prerender(intersection, *this);
-		}
-	}
-
-	return ret;
 }
 
 float Tracer::projectedPixelSize(float distance)

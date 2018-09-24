@@ -33,6 +33,7 @@ public:
 
 	protected:
 		virtual Object::Color renderPixel(int x, int y) = 0;
+		const Engine &engine() const;
 
 	private:
 		void run();
@@ -57,6 +58,11 @@ public:
 	std::unique_ptr<Trace::Tracer> createTracer();
 	Trace::Tracer::Settings &settings();
 	Framebuffer &framebuffer();
+
+	const std::vector<std::unique_ptr<Trace::Lighter::Base>> &lighters() const;
+
+	Object::Color toneMap(const Object::Radiance &radiance) const;
+	Object::Radiance traceRay(const Trace::Ray &ray, Trace::Tracer &tracer) const;
 
 private:
 	void getBlock(int block, int &x, int &y, int &w, int &h);

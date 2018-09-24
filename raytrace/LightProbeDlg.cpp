@@ -91,7 +91,7 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 
 		mSamples.clear();
 		for (Trace::Lighter::Base::Probe::Entry &entry : probe.entries) {
-			Object::Color color = tracer->toneMap(entry.radiance);
+			Object::Color color = engine.toneMap(entry.radiance);
 			float azimuth = std::atan2(entry.direction.y(), entry.direction.x());
 			float elevation = std::asin(entry.direction.z());
 			mSamples.push_back(Sample{ color, azimuth, elevation });
