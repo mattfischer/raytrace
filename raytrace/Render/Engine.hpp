@@ -82,7 +82,7 @@ public:
 	const std::vector<std::unique_ptr<Trace::Lighter::Base>> &lighters() const;
 
 	Object::Color toneMap(const Object::Radiance &radiance) const;
-	Object::Radiance traceRay(const Trace::Ray &ray, Trace::Tracer &tracer) const;
+	Object::Radiance traceRay(const Math::Ray &ray, Trace::Tracer &tracer) const;
 
 private:
 	void getBlock(int block, int &x, int &y, int &w, int &h);

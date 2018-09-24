@@ -19,7 +19,7 @@ std::unique_ptr<Sphere> Sphere::fromAst(AST *ast)
 	return sphere;
 }
 
-Trace::Intersection Sphere::doIntersect(const Trace::Ray &ray) const
+Intersection Sphere::doIntersect(const Math::Ray &ray) const
 {
 	float a, b, c;
 	float disc;
@@ -36,7 +36,7 @@ Trace::Intersection Sphere::doIntersect(const Trace::Ray &ray) const
 		if(distance > 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			return Trace::Intersection(this, ray, distance, Math::Normal(point), point);
+			return Intersection(this, ray, distance, Math::Normal(point), point);
 		}
 
 		distance = (-b + sqrt(disc)) / (2 * a);
@@ -44,11 +44,11 @@ Trace::Intersection Sphere::doIntersect(const Trace::Ray &ray) const
 		if(distance > 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			return Trace::Intersection(this, ray, distance, Math::Normal(point), point);
+			return Intersection(this, ray, distance, Math::Normal(point), point);
 		}
 	}
 
-	return Trace::Intersection();
+	return Intersection();
 }
 
 bool Sphere::doInside(const Math::Point &point) const

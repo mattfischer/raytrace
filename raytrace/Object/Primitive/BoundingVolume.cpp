@@ -32,7 +32,7 @@ BoundingVolume BoundingVolume::translate(const Math::Vector &translate)
 	return BoundingVolume(mins, maxes);
 }
 
-bool BoundingVolume::intersectRay(const Trace::Ray &ray) const
+bool BoundingVolume::intersectRay(const Math::Ray &ray) const
 {
 	float minDist = -FLT_MAX;
 	float maxDist = FLT_MAX;

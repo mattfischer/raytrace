@@ -29,7 +29,7 @@ namespace Object {
 			return true;
 		}
 
-		Trace::Intersection Quad::doIntersect(const Trace::Ray &ray) const
+		Intersection Quad::doIntersect(const Math::Ray &ray) const
 		{
 			Math::Normal normal(0, 1, 0);
 			float scale = (Math::Vector(ray.origin()) * normal) / (ray.direction() * -normal);
@@ -40,11 +40,11 @@ namespace Object {
 
 				if (abs(point.x()) <= 1 && abs(point.z()) <= 1)
 				{
-					return Trace::Intersection(this, ray, scale, normal, point);
+					return Intersection(this, ray, scale, normal, point);
 				}
 			}
 
-			return Trace::Intersection();
+			return Intersection();
 		}
 
 		bool Quad::doInside(const Math::Point &point) const

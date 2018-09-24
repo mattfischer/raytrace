@@ -14,7 +14,7 @@ Direct::Direct(int numSamples)
 	mNumSamples = numSamples;
 }
 
-Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
+Object::Radiance Direct::light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Vector normal(intersection.normal());
@@ -56,8 +56,8 @@ Object::Radiance Direct::light(const Trace::Intersection &intersection, Trace::T
 				float distance = incidentDirection.magnitude();
 				incidentDirection = incidentDirection / distance;
 				Math::Point offsetPoint = point + Math::Vector(intersection.normal()) * 0.01;
-				Trace::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
-				Trace::Intersection intersection2 = tracer.intersect(ray);
+				Math::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
+				Object::Intersection intersection2 = tracer.intersect(ray);
 
 				Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
 				Probe::Entry probeEntry;

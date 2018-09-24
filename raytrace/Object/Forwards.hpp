@@ -11,7 +11,7 @@ class Color;
 class Radiance;
 class Scene;
 class Surface;
-
+class Intersection;
 }
 
 #endif

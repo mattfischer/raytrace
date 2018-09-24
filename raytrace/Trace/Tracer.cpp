@@ -24,14 +24,14 @@ const Object::Scene &Tracer::scene() const
 	return mScene;
 }
 
-Trace::Intersection Tracer::intersect(const Trace::Ray &ray)
+Object::Intersection Tracer::intersect(const Math::Ray &ray)
 {
-	Trace::Intersection intersection;
+	Object::Intersection intersection;
 
 	for (const std::unique_ptr<Object::Primitive::Base> &primitive : mScene.primitives())
 	{
 		if (primitive->boundingVolume().intersectRay(ray)) {
-			Trace::Intersection newIntersection = primitive->intersect(ray);
+			Object::Intersection newIntersection = primitive->intersect(ray);
 			if (!intersection.valid() || newIntersection.distance() < intersection.distance()) {
 				intersection = newIntersection;
 			}
@@ -41,11 +41,11 @@ Trace::Intersection Tracer::intersect(const Trace::Ray &ray)
 	return intersection;
 }
 
-Trace::Ray Tracer::createCameraRay(float x, float y)
+Math::Ray Tracer::createCameraRay(float x, float y)
 {
 	float cx = (2 * x - mWidth) / mWidth;
 	float cy = (2 * y - mHeight) / mWidth;
-	Trace::Ray ray = mScene.camera().createRay(cx, cy, 1);
+	Math::Ray ray = mScene.camera().createRay(cx, cy, 1);
 
 	return ray;
 }

@@ -4,7 +4,7 @@
 #include "Trace/Forwards.hpp"
 #include "Object/Forwards.hpp"
 
-#include "Trace/Intersection.hpp"
+#include "Object/Intersection.hpp"
 
 namespace Trace {
 
@@ -15,9 +15,9 @@ public:
 
 	const Object::Scene &scene() const;
 
-	Trace::Intersection intersect(const Trace::Ray &ray);
+	Object::Intersection intersect(const Math::Ray &ray);
 
-	Trace::Ray createCameraRay(float x, float y);
+	Math::Ray createCameraRay(float x, float y);
 
 	float projectedPixelSize(float distance);
 

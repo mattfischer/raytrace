@@ -12,7 +12,7 @@ class Direct : public Base
 {
 public:
 	Direct(int numSamples);
-	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const;
+	virtual Object::Radiance light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const;
 
 private:
 	int mNumSamples;

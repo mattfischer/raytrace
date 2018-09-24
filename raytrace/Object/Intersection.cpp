@@ -1,15 +1,15 @@
-#include "Trace/Intersection.hpp"
+#include "Object/Intersection.hpp"
 
 #include "Object/Primitive/Base.hpp"
 
-namespace Trace {
+namespace Object {
 
 Intersection::Intersection()
 {
 	mValid = false;
 }
 
-Intersection::Intersection(const Object::Primitive::Base *primitive, const Trace::Ray &ray, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint)
+Intersection::Intersection(const Object::Primitive::Base *primitive, const Math::Ray &ray, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint)
 {
 	mValid = true;
 	mPrimitive = primitive;
@@ -87,7 +87,7 @@ const Object::Primitive::Base *Intersection::primitive() const
 	return mPrimitive;
 }
 
-const Trace::Ray &Intersection::ray() const
+const Math::Ray &Intersection::ray() const
 {
 	return mRay;
 }

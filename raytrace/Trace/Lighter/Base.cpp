@@ -7,7 +7,7 @@ Base::Base()
 {
 }
 
-bool Base::prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer)
+bool Base::prerender(const Object::Intersection &intersection, Trace::Tracer &tracer)
 {
 	return false;
 }

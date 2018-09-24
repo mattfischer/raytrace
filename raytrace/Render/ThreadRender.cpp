@@ -1,7 +1,7 @@
 #include "ThreadRender.hpp"
 
 #include "Trace/Lighter/Utils.hpp"
-#include "Trace/Intersection.hpp"
+#include "Object/Intersection.hpp"
 #include "Object/Primitive/Base.hpp"
 
 namespace Render {
@@ -20,7 +20,7 @@ Object::Color ThreadRender::renderPixel(int x, int y)
 		float v;
 
 		Trace::Lighter::Utils::stratifiedSamples(i, engine().settings().antialiasSamples, u, v, mRandomEngine);
-		Trace::Ray ray = mTracer.createCameraRay(x + u, y + v);
+		Math::Ray ray = mTracer.createCameraRay(x + u, y + v);
 
 		if (mLighting)
 		{
@@ -29,7 +29,7 @@ Object::Color ThreadRender::renderPixel(int x, int y)
 		}
 		else
 		{
-			Trace::Intersection intersection = mTracer.intersect(ray);
+			Object::Intersection intersection = mTracer.intersect(ray);
 			if (intersection.valid())
 			{
 				color += intersection.primitive()->surface().albedo().color(intersection.objectPoint());

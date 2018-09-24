@@ -2,9 +2,9 @@
 #include "Trace/Lighter/Indirect.hpp"
 
 #include "Object/Radiance.hpp"
-#include "Trace/Intersection.hpp"
+#include "Object/Intersection.hpp"
 #include "Object/Primitive/Base.hpp"
-#include "Trace/Ray.hpp"
+#include "Math/Ray.hpp"
 #include "Trace/Tracer.hpp"
 #include "Trace/Lighter/Utils.hpp"
 
@@ -22,7 +22,7 @@ Indirect::Indirect(int indirectSamples, int indirectDirectSamples, bool irradian
 	mIrradianceCaching = irradianceCaching;
 }
 
-Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
+Object::Radiance Indirect::light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
@@ -68,8 +68,8 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 				Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(intersection.normal()) * std::sin(theta);
 
 				Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;
-				Trace::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
-				Trace::Intersection intersection2 = tracer.intersect(ray);
+				Math::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
+				Object::Intersection intersection2 = tracer.intersect(ray);
 
 				Probe::Entry probeEntry;
 				probeEntry.direction = Math::Vector(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
@@ -89,7 +89,7 @@ Object::Radiance Indirect::light(const Trace::Intersection &intersection, Trace:
 	return radiance;
 }
 
-bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer)
+bool Indirect::prerender(const Object::Intersection &intersection, Trace::Tracer &tracer)
 {
 	if (!mIrradianceCaching) {
 		return false;
@@ -124,8 +124,8 @@ bool Indirect::prerender(const Trace::Intersection &intersection, Trace::Tracer 
 			Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(normal) * std::sin(theta);
 
 			Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
-			Trace::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
-			Trace::Intersection intersection2 = tracer.intersect(ray);
+			Math::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
+			Object::Intersection intersection2 = tracer.intersect(ray);
 
 			if (intersection2.valid()) {
 				mean += 1 / intersection2.distance();

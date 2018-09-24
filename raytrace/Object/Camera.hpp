@@ -2,7 +2,7 @@
 #define OBJECT_CAMERA_HPP
 
 #include "Object/Base.hpp"
-#include "Trace/Ray.hpp"
+#include "Math/Ray.hpp"
 
 #include <memory>
 
@@ -15,7 +15,7 @@ public:
 
 	static std::unique_ptr<Camera> fromAst(AST *ast);
 
-	Trace::Ray createRay(float x, float y, int generation) const;
+	Math::Ray createRay(float x, float y, int generation) const;
 	float projectSize(float size, float distance) const;
 
 private:

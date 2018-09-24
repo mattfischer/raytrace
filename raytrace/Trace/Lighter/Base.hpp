@@ -29,8 +29,8 @@ public:
 		std::vector<Entry> entries;
 	};
 
-	virtual Object::Radiance light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const = 0;
-	virtual bool prerender(const Trace::Intersection &intersection, Trace::Tracer &tracer);
+	virtual Object::Radiance light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe = 0) const = 0;
+	virtual bool prerender(const Object::Intersection &intersection, Trace::Tracer &tracer);
 };
 
 }

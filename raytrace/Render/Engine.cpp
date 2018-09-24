@@ -242,9 +242,9 @@ Object::Color Engine::toneMap(const Object::Radiance &radiance) const
 	return Object::Color(red, green, blue);
 }
 
-Object::Radiance Engine::traceRay(const Trace::Ray &ray, Trace::Tracer &tracer)  const
+Object::Radiance Engine::traceRay(const Math::Ray &ray, Trace::Tracer &tracer)  const
 {
-	Trace::Intersection intersection = tracer.intersect(ray);
+	Object::Intersection intersection = tracer.intersect(ray);
 
 	Object::Radiance radiance;
 	if (intersection.valid())

@@ -60,9 +60,9 @@ void Base::setSurface(std::unique_ptr<Surface> &&surface)
 	mSurface = std::move(surface);
 }
 
-Trace::Intersection Base::intersect(const Trace::Ray &ray) const
+Intersection Base::intersect(const Math::Ray &ray) const
 {
-	Trace::Ray transformedRay = mTransformation.inverse() * ray;
+	Math::Ray transformedRay = mTransformation.inverse() * ray;
 
 	return doIntersect(transformedRay);
 }

@@ -89,12 +89,6 @@
     <ClCompile Include="Object\Primitive\Sphere.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
-    <ClCompile Include="Trace\Intersection.cpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClCompile>
-    <ClCompile Include="Trace\Ray.cpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClCompile>
     <ClCompile Include="Trace\Tracer.cpp">
       <Filter>Source Files\Trace</Filter>
     </ClCompile>
@@ -181,6 +175,12 @@
     </ClCompile>
     <ClCompile Include="Trace\Lighter\RadianceGradient.cpp">
       <Filter>Source Files\Trace\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Ray.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Intersection.cpp">
+      <Filter>Source Files\Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -305,12 +305,6 @@
     <ClInclude Include="Trace\Forwards.hpp">
       <Filter>Source Files\Trace</Filter>
     </ClInclude>
-    <ClInclude Include="Trace\Intersection.hpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClInclude>
-    <ClInclude Include="Trace\Ray.hpp">
-      <Filter>Source Files\Trace</Filter>
-    </ClInclude>
     <ClInclude Include="Trace\Tracer.hpp">
       <Filter>Source Files\Trace</Filter>
     </ClInclude>
@@ -361,6 +355,12 @@
     </ClInclude>
     <ClInclude Include="Trace\Lighter\RadianceGradient.hpp">
       <Filter>Source Files\Trace\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Ray.hpp">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Intersection.hpp">
+      <Filter>Source Files\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,10 +14,10 @@ Specular::Specular(const Render::Engine &engine, int maxRayGeneration)
 	mMaxRayGeneration = maxRayGeneration;
 }
 
-Object::Radiance Specular::light(const Trace::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
+Object::Radiance Specular::light(const Object::Intersection &intersection, Trace::Tracer &tracer, Probe *probe) const
 {
 	const Object::Surface &surface = intersection.primitive()->surface();
-	const Trace::Ray &ray = intersection.ray();
+	const Math::Ray &ray = intersection.ray();
 	Object::Radiance radiance;
 
 	if (surface.brdf().specular() && ray.generation() < mMaxRayGeneration) {
@@ -25,7 +25,7 @@ Object::Radiance Specular::light(const Trace::Intersection &intersection, Trace:
 		Math::Vector incident = ray.direction();
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
-		Trace::Ray reflectRay(intersection.point(), reflect, ray.generation() + 1);
+		Math::Ray reflectRay(intersection.point(), reflect, ray.generation() + 1);
 		Object::Radiance reflectRadiance = mEngine.traceRay(reflectRay, tracer);
 
 		radiance += surface.brdf().specularRadiance(reflectRadiance, albedo);

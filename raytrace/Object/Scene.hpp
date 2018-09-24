@@ -5,8 +5,6 @@
 #include "Object/Camera.hpp"
 #include "Object/Primitive/Base.hpp"
 
-#include "Trace/Intersection.hpp"
-
 #include <vector>
 #include <memory>
 
