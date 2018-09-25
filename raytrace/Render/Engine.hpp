@@ -93,7 +93,9 @@ private:
 	void beginPhase();
 	void endPhase();
 
+	Object::Color doPixel(Thread &thread, int x, int y);
 	Object::Color renderPixel(Thread &thread, int x, int y);
+	Object::Color prerenderPixel(Thread &thread, int x, int y);
 
 	const Object::Scene &mScene;
 	Settings mSettings;

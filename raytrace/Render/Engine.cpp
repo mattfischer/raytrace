@@ -40,7 +40,7 @@ void Engine::Thread::run()
 	while (true) {
 		for (int y = mStartY; y < mStartY + mHeight; y++) {
 			for (int x = mStartX; x < mStartX + mWidth; x++) {
-				Object::Color color = mEngine.renderPixel(*this, x, y);
+				Object::Color color = mEngine.doPixel(*this, x, y);
 				mEngine.framebuffer().setPixel(x, y, color);
 			}
 		}
@@ -245,47 +245,63 @@ Object::Radiance Engine::traceRay(const Math::Ray &ray, Render::Tracer &tracer) 
 	return radiance;
 }
 
+Object::Color Engine::prerenderPixel(Thread &thread, int x, int y)
+{
+	Object::Color color;
+
+	Math::Ray ray = thread.tracer().createCameraRay(x, y);
+	Object::Intersection intersection = thread.tracer().intersect(ray);
+	if (intersection.valid())
+	{
+		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
+			if (lighter->prerender(intersection, thread.tracer())) {
+				color = Object::Color(1, 1, 1);
+			}
+		}
+	}
+
+	return color;
+}
+
 Object::Color Engine::renderPixel(Thread &thread, int x, int y)
+{
+	Object::Color color;
+
+	for (int i = 0; i < mSettings.antialiasSamples; i++) {
+		float u;
+		float v;
+
+		Lighter::Utils::stratifiedSamples(i, mSettings.antialiasSamples, u, v, thread.randomEngine());
+		Math::Ray ray = thread.tracer().createCameraRay(x + u, y + v);
+
+		if (mSettings.lighting) {
+			Object::Radiance radiance = traceRay(ray, thread.tracer());
+			color += toneMap(radiance);
+		}
+		else {
+			Object::Intersection intersection = thread.tracer().intersect(ray);
+			if (intersection.valid())
+			{
+				color += intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+			}
+		}
+	}
+	color = color / mSettings.antialiasSamples;
+
+	return color;
+}
+
+Object::Color Engine::doPixel(Thread &thread, int x, int y)
 {
 	Object::Color color;
 
 	switch (mState) {
 		case State::Prerender:
-		{
-			Math::Ray ray = thread.tracer().createCameraRay(x, y);
-			Object::Intersection intersection = thread.tracer().intersect(ray);
-			if (intersection.valid())
-			{
-				for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
-					if (lighter->prerender(intersection, thread.tracer())) {
-						color = Object::Color(1, 1, 1);
-					}
-				}
-			}
+			color = prerenderPixel(thread, x, y);
 			break;
-		}
 
 		case State::Render:
-			for (int i = 0; i < mSettings.antialiasSamples; i++) {
-				float u;
-				float v;
-
-				Lighter::Utils::stratifiedSamples(i, mSettings.antialiasSamples, u, v, thread.randomEngine());
-				Math::Ray ray = thread.tracer().createCameraRay(x + u, y + v);
-
-				if (mSettings.lighting) {
-					Object::Radiance radiance = traceRay(ray, thread.tracer());
-					color += toneMap(radiance);
-				}
-				else {
-					Object::Intersection intersection = thread.tracer().intersect(ray);
-					if (intersection.valid())
-					{
-						color += intersection.primitive()->surface().albedo().color(intersection.objectPoint());
-					}
-				}
-			}
-			color = color / mSettings.antialiasSamples;
+			color = renderPixel(thread, x, y);
 			break;
 	}
 
