@@ -32,17 +32,23 @@ BoundingVolume BoundingVolume::translate(const Math::Vector &translate)
 	return BoundingVolume(mins, maxes);
 }
 
-bool BoundingVolume::intersectRay(const Math::Ray &ray) const
+bool BoundingVolume::intersectRay(const RayData &rayData) const
 {
 	float minDist = -FLT_MAX;
 	float maxDist = FLT_MAX;
 
 	for (int i = 0; i < vectors().size(); i++) {
-		const Math::Vector &vector = vectors()[i];
-		float offset = Math::Vector(ray.origin()) * vector;
-		float dot = ray.direction() * vector;
+		float offset = rayData.offsets[i];
+		float dot = rayData.dots[i];
 
-		if (dot == 0) {
+		float min;
+		float max;
+
+		if (dot < 0) {
+			max = (mMins[i] - offset) / dot;
+			min = (mMaxes[i] - offset) / dot;
+		}
+		else if (dot == 0) {
 			if (offset > mMaxes[i] || offset < mMins[i]) {
 				return false;
 			}
@@ -50,19 +56,33 @@ bool BoundingVolume::intersectRay(const Math::Ray &ray) const
 				continue;
 			}
 		}
-
-		float min = (mMins[i] - offset) / dot;
-		float max = (mMaxes[i] - offset) / dot;
-
-		if (dot < 0) {
-			std::swap(min, max);
+		else {
+			min = (mMins[i] - offset) / dot;
+			max = (mMaxes[i] - offset) / dot;
 		}
 
 		minDist = std::max(minDist, min);
 		maxDist = std::min(maxDist, max);
+
+		if (minDist > maxDist || maxDist <= 0) {
+			return false;
+		}
 	}
 
 	return (minDist <= maxDist && maxDist > 0);
+}
+
+BoundingVolume::RayData BoundingVolume::getRayData(const Math::Ray &ray)
+{
+	RayData rayData;
+
+	for (int i = 0; i < vectors().size(); i++) {
+		const Math::Vector &vector = vectors()[i];
+		rayData.offsets[i] = Math::Vector(ray.origin()) * vector;
+		rayData.dots[i] = ray.direction() * vector;
+	}
+
+	return rayData;
 }
 
 }

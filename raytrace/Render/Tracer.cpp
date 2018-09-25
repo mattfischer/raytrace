@@ -28,9 +28,11 @@ Object::Intersection Tracer::intersect(const Math::Ray &ray)
 {
 	Object::Intersection intersection;
 
+	Object::Primitive::BoundingVolume::RayData rayData = Object::Primitive::BoundingVolume::getRayData(ray);
+
 	for (const std::unique_ptr<Object::Primitive::Base> &primitive : mScene.primitives())
 	{
-		if (primitive->boundingVolume().intersectRay(ray)) {
+		if (primitive->boundingVolume().intersectRay(rayData)) {
 			Object::Intersection newIntersection = primitive->intersect(ray);
 			if (!intersection.valid() || newIntersection.distance() < intersection.distance()) {
 				intersection = newIntersection;
