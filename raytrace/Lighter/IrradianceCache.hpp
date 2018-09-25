@@ -46,7 +46,7 @@ namespace Lighter {
 		bool testOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal) const;
 		void interpolateOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal, Object::Radiance &radiance, float &totalWeight) const;
 
-		float distanceToNode(const Math::Point &point, int idx, const Math::Point &origin, float size) const;
+		float distance2ToNode(const Math::Point &point, int idx, const Math::Point &origin, float size) const;
 		void getChildNode(const Math::Point &origin, float size, int idx, Math::Point &childOrigin, float &childSize) const;
 		bool isEntryValid(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 

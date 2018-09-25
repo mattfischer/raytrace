@@ -29,20 +29,19 @@ float IrradianceCache::error(const Entry &entry, const Math::Point &point, const
 	return ((4.0f / M_PI) * (point - entry.point).magnitude() / entry.radius + std::sqrt(1 - normal * entry.normal));
 }
 
-float IrradianceCache::distanceToNode(const Math::Point &point, int idx, const Math::Point &origin, float size) const
+float IrradianceCache::distance2ToNode(const Math::Point &point, int idx, const Math::Point &origin, float size) const
 {
-	float distance = 0;
+	float distance2 = 0;
 	float d;
 
-	if (point.x() < origin.x() - size) { d = ((origin.x() - size) - point.x()); distance += d * d; }
-	if (point.y() < origin.y() - size) { d = ((origin.y() - size) - point.y()); distance += d * d; }
-	if (point.z() < origin.z() - size) { d = ((origin.z() - size) - point.z()); distance += d * d; }
-	if (point.x() > origin.x() + size) { d = (point.x() - (origin.x() + size)); distance += d * d; }
-	if (point.y() > origin.y() + size) { d = (point.y() - (origin.y() + size)); distance += d * d; }
-	if (point.z() > origin.z() + size) { d = (point.z() - (origin.z() + size)); distance += d * d; }
-	distance = std::sqrt(distance);
+	if (point.x() < origin.x() - size) { d = ((origin.x() - size) - point.x()); distance2 += d * d; }
+	if (point.y() < origin.y() - size) { d = ((origin.y() - size) - point.y()); distance2 += d * d; }
+	if (point.z() < origin.z() - size) { d = ((origin.z() - size) - point.z()); distance2 += d * d; }
+	if (point.x() > origin.x() + size) { d = (point.x() - (origin.x() + size)); distance2 += d * d; }
+	if (point.y() > origin.y() + size) { d = (point.y() - (origin.y() + size)); distance2 += d * d; }
+	if (point.z() > origin.z() + size) { d = (point.z() - (origin.z() + size)); distance2 += d * d; }
 
-	return distance;
+	return distance2;
 }
 
 void IrradianceCache::getChildNode(const Math::Point &origin, float size, int idx, Math::Point &childOrigin, float &childSize) const
@@ -80,8 +79,8 @@ bool IrradianceCache::testOctreeNode(OctreeNode *node, const Math::Point &origin
 
 		getChildNode(origin, size, i, childOrigin, childSize);
 
-		float distance = distanceToNode(point, i, childOrigin, childSize);
-		if (distance < childSize) {
+		float distance2 = distance2ToNode(point, i, childOrigin, childSize);
+		if (distance2 < childSize * childSize) {
 			if (testOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal)) {
 				return true;
 			}
@@ -114,8 +113,8 @@ void IrradianceCache::interpolateOctreeNode(OctreeNode *node, const Math::Point 
 
 		getChildNode(origin, size, i, childOrigin, childSize);
 
-		float distance = distanceToNode(point, i, childOrigin, childSize);
-		if (distance < childSize) {
+		float distance2 = distance2ToNode(point, i, childOrigin, childSize);
+		if (distance2 < childSize * childSize) {
 			interpolateOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal, irradiance, totalWeight);
 		}
 	}
