@@ -56,18 +56,19 @@ bool Box::doInside(const Math::Point &point) const
 	return abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1;
 }
 
-BoundingVolume Box::doBoundingVolume(const std::vector<Math::Vector> &vectors) const
+BoundingVolume Box::doBoundingVolume() const
 {
 	std::vector<float> mins;
 	std::vector<float> maxes;
-	Math::Point points[] = { Math::Point(1, 1, 1), Math::Point(1, 1, -1), Math::Point(-1, 1, -1), Math::Point(-1, 1, 1),
-							 Math::Point(1, -1, 1), Math::Point(1, -1, -1), Math::Point(-1, -1, -1), Math::Point(-1, -1, 1) };
+	Math::Point points[] = { transformation() * Math::Point(1, 1, 1), transformation() * Math::Point(1, 1, -1), transformation() * Math::Point(-1, 1, -1), Math::Point(-1, 1, 1),
+							 transformation() * Math::Point(1, -1, 1), transformation() * Math::Point(1, -1, -1),
+		                     transformation() * Math::Point(-1, -1, -1), transformation() * Math::Point(-1, -1, 1) };
 
-	for (const Math::Vector &vector : vectors) {
+	for (const Math::Vector &vector : BoundingVolume::vectors()) {
 		float min = FLT_MAX;
 		float max = -FLT_MAX;
 		for (const Math::Point &point : points) {
-			float dist = vector * Math::Vector(point) / (vector.magnitude2());
+			float dist = vector * Math::Vector(point) / vector.magnitude2();
 			min = std::min(min, dist);
 			max = std::max(max, dist);
 		}

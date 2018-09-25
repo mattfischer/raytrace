@@ -142,4 +142,12 @@ Coordinate operator*(const Coordinate &coordinate, const Matrix &matrix)
 	return Coordinate(a, b, c, d);
 }
 
+Matrix Matrix::partialTranspose() const
+{
+	return Matrix(at(0, 0), at(1, 0), at(2, 0), at(0, 3),
+	              at(0, 1), at(1, 1), at(2, 1), at(1, 3),
+	              at(0, 2), at(1, 2), at(2, 2), at(2, 3),
+	              at(3, 0), at(3, 1), at(3, 2), at(3, 3));
+}
+
 }

@@ -60,17 +60,18 @@ namespace Object {
 			normal = Math::Normal(0, -1, 0);
 		}
 
-		BoundingVolume Quad::doBoundingVolume(const std::vector<Math::Vector> &vectors) const
+		BoundingVolume Quad::doBoundingVolume() const
 		{
 			std::vector<float> mins;
 			std::vector<float> maxes;
-			Math::Point points[] = { Math::Point(1, 0, 1), Math::Point(1, 0, -1), Math::Point(-1, 0, -1), Math::Point(-1, 0, 1) };
+			Math::Point points[] = { transformation() * Math::Point(1, 0, 1), transformation() * Math::Point(1, 0, -1),
+				                     transformation() * Math::Point(-1, 0, -1), transformation() * Math::Point(-1, 0, 1) };
 
-			for (const Math::Vector &vector : vectors) {
+			for (const Math::Vector &vector : BoundingVolume::vectors()) {
 				float min = FLT_MAX;
 				float max = -FLT_MAX;
 				for (const Math::Point &point : points) {
-					float dist = vector * Math::Vector(point) / (vector.magnitude2());
+					float dist = vector * Math::Vector(point) / vector.magnitude2();
 					min = std::min(min, dist);
 					max = std::max(max, dist);
 				}

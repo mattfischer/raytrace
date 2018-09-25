@@ -56,14 +56,17 @@ bool Sphere::doInside(const Math::Point &point) const
 	return Math::Vector(point).magnitude2() <= 1;
 }
 
-BoundingVolume Sphere::doBoundingVolume(const std::vector<Math::Vector> &vectors) const
+BoundingVolume Sphere::doBoundingVolume() const
 {
 	std::vector<float> mins;
 	std::vector<float> maxes;
 
-	for (const Math::Vector &vector : vectors) {
-		mins.push_back(-1 / vector.magnitude());
-		maxes.push_back(1 / vector.magnitude());
+	for (const Math::Vector &vector : BoundingVolume::vectors()) {
+		float x = Math::Vector(transformation().origin()) * vector;
+		float y = Math::Vector(transformation().matrix().partialTranspose() * vector).magnitude();
+
+		mins.push_back(x - y);
+		maxes.push_back(x + y);
 	}
 
 	return BoundingVolume(mins, maxes);

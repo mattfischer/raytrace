@@ -18,7 +18,7 @@ public:
 protected:
 	virtual Intersection doIntersect(const Math::Ray &ray) const;
 	virtual bool doInside(const Math::Point &point) const;
-	virtual BoundingVolume doBoundingVolume(const std::vector<Math::Vector> &vectors) const;
+	virtual BoundingVolume doBoundingVolume() const;
 	virtual void doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
 };

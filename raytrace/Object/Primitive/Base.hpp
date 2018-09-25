@@ -38,7 +38,7 @@ protected:
 
 	virtual Intersection doIntersect(const Math::Ray &ray) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;
-	virtual BoundingVolume doBoundingVolume(const std::vector<Math::Vector> &vectors) const = 0;
+	virtual BoundingVolume doBoundingVolume() const = 0;
 	virtual void doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 };
 

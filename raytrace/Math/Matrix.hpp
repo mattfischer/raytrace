@@ -22,6 +22,7 @@ public:
 	const float &operator()(int x, int y) const;
 	bool identity() const;
 
+	Matrix partialTranspose() const;
 	Matrix operator*(const Matrix &b) const;
 
 protected:
