@@ -31,23 +31,7 @@ Object::Radiance Indirect::light(const Object::Intersection &intersection, Rende
 
 	Object::Radiance radiance;
 	if (mIrradianceCaching) {
-		std::vector<IrradianceCache::Entry> entries = mIrradianceCache.lookupUnlocked(point, normal);
-		Object::Radiance irradiance;
-		if (entries.size() > 0) {
-			float den = 0;
-			for (const IrradianceCache::Entry &entry : entries) {
-				float weight = mIrradianceCache.weight(entry, point, normal);
-				if (std::isinf(weight)) {
-					irradiance = entry.radiance;
-					break;
-				}
-				Math::Vector cross = Math::Vector(normal % entry.normal);
-				Math::Vector dist = point - entry.point;
-				irradiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * weight;
-				den += weight;
-			}
-			irradiance = irradiance / den;
-		}
+		Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, normal);
 		radiance = irradiance * albedo * brdf.lambert() / M_PI;
 	}
 	else {
@@ -97,8 +81,7 @@ bool Indirect::prerender(const Object::Intersection &intersection, Render::Trace
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
 
-	std::vector<IrradianceCache::Entry> entries = mIrradianceCache.lookup(point, normal);
-	if (entries.size() > 0) {
+	if (mIrradianceCache.test(point, normal)) {
 		return false;
 	}
 

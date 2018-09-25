@@ -29,58 +29,125 @@ float IrradianceCache::error(const Entry &entry, const Math::Point &point, const
 	return ((4.0f / M_PI) * (point - entry.point).magnitude() / entry.radius + std::sqrt(1 - normal * entry.normal));
 }
 
-void IrradianceCache::lookupOctreeNode(OctreeNode *node, Math::Point origin, float size, const Math::Point &point, const Math::Normal &normal, std::vector<Entry> &entries) const
+float IrradianceCache::distanceToNode(const Math::Point &point, int idx, const Math::Point &origin, float size) const
+{
+	float distance = 0;
+	float d;
+
+	if (point.x() < origin.x() - size) { d = ((origin.x() - size) - point.x()); distance += d * d; }
+	if (point.y() < origin.y() - size) { d = ((origin.y() - size) - point.y()); distance += d * d; }
+	if (point.z() < origin.z() - size) { d = ((origin.z() - size) - point.z()); distance += d * d; }
+	if (point.x() > origin.x() + size) { d = (point.x() - (origin.x() + size)); distance += d * d; }
+	if (point.y() > origin.y() + size) { d = (point.y() - (origin.y() + size)); distance += d * d; }
+	if (point.z() > origin.z() + size) { d = (point.z() - (origin.z() + size)); distance += d * d; }
+	distance = std::sqrt(distance);
+
+	return distance;
+}
+
+void IrradianceCache::getChildNode(const Math::Point &origin, float size, int idx, Math::Point &childOrigin, float &childSize) const
+{
+	float x = (idx & 1) ? 1 : -1;
+	float y = (idx & 2) ? 1 : -1;
+	float z = (idx & 4) ? 1 : -1;
+
+	childSize = size / 2;
+	childOrigin = origin + Math::Vector(x, y, z) * childSize;
+}
+
+bool IrradianceCache::isEntryValid(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const
+{
+	float d = (point - entry.point) * ((normal + entry.normal) / 2);
+	return (d >= -0.01 && weight(entry, point, normal) > 1 / mThreshold);
+}
+
+bool IrradianceCache::testOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal) const
+{
+	if (!node) {
+		return false;
+	}
+
+	for (const Entry &e : node->entries)
+	{
+		if (isEntryValid(e, point, normal)) {
+			return true;
+		}
+	}
+
+	for (int i = 0; i < 8; i++) {
+		Math::Point childOrigin;
+		float childSize;
+
+		getChildNode(origin, size, i, childOrigin, childSize);
+
+		float distance = distanceToNode(point, i, childOrigin, childSize);
+		if (distance < childSize) {
+			if (testOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void IrradianceCache::interpolateOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal, Object::Radiance &irradiance, float &totalWeight) const
 {
 	if (!node) {
 		return;
 	}
 
-	for (const Entry &e : node->entries)
+	for (const Entry &entry : node->entries)
 	{
-		float d = (point - e.point) * ((normal + e.normal) / 2);
-		if (d >= -0.01 && weight(e, point, normal) > 1 / mThreshold)
-		{
-			entries.push_back(e);
+		if (isEntryValid(entry, point, normal)) {
+			float w = weight(entry, point, normal);
+			Math::Vector cross = Math::Vector(normal % entry.normal);
+			Math::Vector dist = point - entry.point;
+			irradiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * w;
+			totalWeight += w;
 		}
 	}
 
 	for (int i = 0; i < 8; i++) {
-		float x = (i & 1) ? 1 : -1;
-		float y = (i & 2) ? 1 : -1;
-		float z = (i & 4) ? 1 : -1;
+		Math::Point childOrigin;
+		float childSize;
 
-		float childSize = size / 2;
-		Math::Point childOrigin = origin + Math::Vector(x, y, z) * childSize;
+		getChildNode(origin, size, i, childOrigin, childSize);
 
-		float distance = 0;
-		float d;
-		if (point.x() < childOrigin.x() - childSize) { d = ((childOrigin.x() - childSize) - point.x()); distance += d * d; }
-		if (point.y() < childOrigin.y() - childSize) { d = ((childOrigin.y() - childSize) - point.y()); distance += d * d; }
-		if (point.z() < childOrigin.z() - childSize) { d = ((childOrigin.z() - childSize) - point.z()); distance += d * d; }
-		if (point.x() > childOrigin.x() + childSize) { d = (point.x() - (childOrigin.x() + childSize)); distance += d * d; }
-		if (point.y() > childOrigin.y() + childSize) { d = (point.y() - (childOrigin.y() + childSize)); distance += d * d; }
-		if (point.z() > childOrigin.z() + childSize) { d = (point.z() - (childOrigin.z() + childSize)); distance += d * d; }
-		distance = std::sqrt(distance);
-
+		float distance = distanceToNode(point, i, childOrigin, childSize);
 		if (distance < childSize) {
-			lookupOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal, entries);
+			interpolateOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal, irradiance, totalWeight);
 		}
 	}
 }
 
-std::vector<IrradianceCache::Entry> IrradianceCache::lookup(const Math::Point &point, const Math::Normal &normal) const
+bool IrradianceCache::test(const Math::Point &point, const Math::Normal &normal) const
 {
 	std::lock_guard<std::mutex> guard(mMutex);
-	return lookupUnlocked(point, normal);
+	return testUnlocked(point, normal);
 }
 
-std::vector<IrradianceCache::Entry> IrradianceCache::lookupUnlocked(const Math::Point &point, const Math::Normal &normal) const
+bool IrradianceCache::testUnlocked(const Math::Point &point, const Math::Normal &normal) const
 {
-	std::vector<Entry> entries;
+	return testOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, normal);
+}
 
-	lookupOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, normal, entries);
+Object::Radiance IrradianceCache::interpolate(const Math::Point &point, const Math::Normal &normal) const
+{
+	std::lock_guard<std::mutex> guard(mMutex);
+	return interpolateUnlocked(point, normal);
+}
 
-	return entries;
+Object::Radiance IrradianceCache::interpolateUnlocked(const Math::Point &point, const Math::Normal &normal) const
+{
+	float totalWeight = 0;
+	Object::Radiance irradiance;
+	interpolateOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, normal, irradiance, totalWeight);
+
+	if (totalWeight > 0) {
+		irradiance = irradiance / totalWeight;
+	}
+	return irradiance;
 }
 
 void IrradianceCache::add(const Entry &entry)

@@ -29,8 +29,10 @@ namespace Lighter {
 
 		float weight(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 		float error(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
-		std::vector<Entry> lookup(const Math::Point &point, const Math::Normal &normal) const;
-		std::vector<Entry> lookupUnlocked(const Math::Point &point, const Math::Normal &normal) const;
+		bool test(const Math::Point &point, const Math::Normal &normal) const;
+		bool testUnlocked(const Math::Point &point, const Math::Normal &normal) const;
+		Object::Radiance interpolate(const Math::Point &point, const Math::Normal &normal) const;
+		Object::Radiance interpolateUnlocked(const Math::Point &point, const Math::Normal &normal) const;
 		void add(const Entry &entry);
 		void clear();
 
@@ -41,7 +43,12 @@ namespace Lighter {
 			std::unique_ptr<OctreeNode> children[8];
 		};
 
-		void lookupOctreeNode(OctreeNode *node, Math::Point origin, float size, const Math::Point &point, const Math::Normal &normal, std::vector<Entry> &entries) const;
+		bool testOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal) const;
+		void interpolateOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal, Object::Radiance &radiance, float &totalWeight) const;
+
+		float distanceToNode(const Math::Point &point, int idx, const Math::Point &origin, float size) const;
+		void getChildNode(const Math::Point &origin, float size, int idx, Math::Point &childOrigin, float &childSize) const;
+		bool isEntryValid(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
 
 		std::unique_ptr<OctreeNode> mOctreeRoot;
 		Math::Point mOctreeOrigin;
