@@ -22,8 +22,8 @@ BoundingVolume BoundingVolume::translate(const Math::Vector &translate)
 	std::vector<float> mins;
 	std::vector<float> maxes;
 
-	for(int i=0; i<vectors().size(); i++) {
-		const Math::Vector &vector = vectors()[i];
+	for(int i=0; i<NUM_VECTORS; i++) {
+		const Math::Vector &vector = sVectors[i];
 		float offset = vector * translate;
 		mins.push_back(mMins[i] + offset);
 		maxes.push_back(mMaxes[i] + offset);
@@ -37,7 +37,7 @@ bool BoundingVolume::intersectRay(const RayData &rayData) const
 	float minDist = -FLT_MAX;
 	float maxDist = FLT_MAX;
 
-	for (int i = 0; i < vectors().size(); i++) {
+	for (int i = 0; i < NUM_VECTORS; i++) {
 		float offset = rayData.offsets[i];
 		float dot = rayData.dots[i];
 
@@ -76,8 +76,8 @@ BoundingVolume::RayData BoundingVolume::getRayData(const Math::Ray &ray)
 {
 	RayData rayData;
 
-	for (int i = 0; i < vectors().size(); i++) {
-		const Math::Vector &vector = vectors()[i];
+	for (int i = 0; i < NUM_VECTORS; i++) {
+		const Math::Vector &vector = sVectors[i];
 		rayData.offsets[i] = Math::Vector(ray.origin()) * vector;
 		rayData.dots[i] = ray.direction() * vector;
 	}
