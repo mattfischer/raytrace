@@ -29,7 +29,7 @@ public:
 	virtual bool canSample() const;
 
 protected:
-	virtual void doTransform();
+	void computeBoundingVolume();
 
 	static void parseAstCommon(Base &base, AST *ast);
 

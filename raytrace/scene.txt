@@ -1,6 +1,5 @@
 quad {
-	<-15,0,-15> 30 30
-	transform { translate <0,-10,0> }
+	<-15,-10,-15> <0,0,30> <30,0,0>
 	surface {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
@@ -8,8 +7,7 @@ quad {
 }
 
 quad {
-	<-10,0,-10> 20 6
-	transform { translate <0,10,0> rotate <180,0,0> }
+	<-15,10,-15> <30,0,0> <0,0,11>
 	surface {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
@@ -17,8 +15,7 @@ quad {
 }
 
 quad {
-	<-10,0,4> 20 6
-	transform { translate <0,10,0> rotate <180,0,0> }
+	<-15,10,4> <30,0,0> <0,0,11>
 	surface {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
@@ -26,8 +23,7 @@ quad {
 }
 
 quad {
-	<-10,0,-10> 6 20
-	transform { translate <0,10,0> rotate <180,0,0> }
+	<-15,10,-15> <11,0,0> <0,0,30>
 	surface {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
@@ -35,8 +31,7 @@ quad {
 }
 
 quad {
-	<4,0,-10> 6 20
-	transform { translate <0,10,0> rotate <180,0,0> }
+	<4,10,-15> <11,0,0> <0,0,30>
 	surface {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
@@ -44,8 +39,7 @@ quad {
 }
 
 quad {
-    <-15,0,-15> 30 30
-	transform {	translate <-10,0,0> rotate <0,0,90> }
+    <-10,-15,-15> <0,30,0> <0,0,30>
 	surface {
 		albedo { color <1,0,0> }
 		brdf { lambert 1 }
@@ -53,8 +47,7 @@ quad {
 }
 
 quad {
-    <-15,0,-15> 30 30
-	transform {	translate <10,0,0> rotate <0,0,-90> }
+    <10,-15,-15> <0,0,30> <0,30,0>
 	surface {
 		albedo { color <0,0,1> }
 		brdf { lambert 1 }
@@ -62,8 +55,7 @@ quad {
 }
 
 quad {
-	<-15,0,-15> 30 30
-	transform {	translate <0,0,10> rotate <-90,0,0> }
+	<-15,-15,10> <0,30,0> <30,0,0>
 	surface {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
@@ -79,7 +71,7 @@ sphere {
 }
 
 quad {
-	<-4,10,-4> 8 8
+	<-4,10,-4> <0,0,8> <8,0,0>
 	surface {
 		brdf { lambert 0 }
 		albedo { color <1,1,1> }

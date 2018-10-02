@@ -13,6 +13,8 @@ class Quad : public Base
 public:
 	static std::unique_ptr<Quad> fromAst(AST *ast);
 
+	Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
+
 	virtual bool canSample() const;
 
 protected:
@@ -21,6 +23,11 @@ protected:
 	virtual BoundingVolume doBoundingVolume() const;
 	virtual void doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
+private:
+	Math::Point mPosition;
+	Math::Vector mSide1;
+	Math::Vector mSide2;
+	Math::Normal mNormal;
 };
 
 }

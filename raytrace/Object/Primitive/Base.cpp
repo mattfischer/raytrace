@@ -30,6 +30,7 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 	}
 
 	parseAstCommon(*primitive, sub);
+	primitive->computeBoundingVolume();
 
 	return primitive;
 }
@@ -103,7 +104,7 @@ void Base::doSample(float u, float v, Math::Point &point, Math::Vector &du, Math
 {
 }
 
-void Base::doTransform()
+void Base::computeBoundingVolume()
 {
 	mBoundingVolume = doBoundingVolume();
 }

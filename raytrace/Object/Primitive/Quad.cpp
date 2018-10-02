@@ -8,20 +8,21 @@ namespace Object {
 
 		std::unique_ptr<Quad> Quad::fromAst(AST *ast)
 		{
-			std::unique_ptr<Quad> quad = std::make_unique<Quad>();
+			Math::Point position(ast->children[0]->children[0]->data._vector);
+			Math::Vector side1(ast->children[0]->children[1]->data._vector);
+			Math::Vector side2(ast->children[0]->children[2]->data._vector);
+
+			std::unique_ptr<Quad> quad = std::make_unique<Quad>(position, side1, side2);
 
 			parseAstCommon(*quad, ast->children[1]);
 
-			Math::Vector position(ast->children[0]->children[0]->data._vector);
-			float width = ast->children[0]->children[1]->data._float;
-			float height = ast->children[0]->children[2]->data._float;
-			Math::Vector size(width, 0, height);
-
-			quad->transform(Math::Transformation::translate(position + size / 2));
-			size.setY(2);
-			quad->transform(Math::Transformation::scale(size / 2));
-
 			return quad;
+		}
+
+		Quad::Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2)
+			: mPosition(position), mSide1(side1), mSide2(side2)
+		{
+			mNormal = Math::Normal(mSide1 % mSide2).normalize();
 		}
 
 		bool Quad::canSample() const
@@ -31,16 +32,14 @@ namespace Object {
 
 		Intersection Quad::doIntersect(const Math::Ray &ray) const
 		{
-			Math::Normal normal(0, 1, 0);
-			float scale = (Math::Vector(ray.origin()) * normal) / (ray.direction() * -normal);
-			if (scale > 0)
-			{
+			float scale = ((ray.origin() - mPosition) * mNormal) / (ray.direction() * -mNormal);
+			if (scale >= 0) {
 				Math::Point point = ray.origin() + ray.direction() * scale;
-				point = point - Math::Vector(normal) * (Math::Vector(point) * normal);
-
-				if (abs(point.x()) <= 1 && abs(point.z()) <= 1)
+				float u = (point - mPosition) * mSide1 / mSide1.magnitude2();
+				float v = (point - mPosition) * mSide2 / mSide2.magnitude2();
+				if (u >= 0 && u <= 1 && v >= 0 && v <= 1)
 				{
-					return Intersection(this, ray, scale, normal, point);
+					return Intersection(this, ray, scale, mNormal, point);
 				}
 			}
 
@@ -54,18 +53,18 @@ namespace Object {
 
 		void Quad::doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
 		{
-			point = Math::Point(u * 2 - 1, 0, v * 2 - 1);
-			du = Math::Vector(2, 0, 0);
-			dv = Math::Vector(0, 0, 2);
-			normal = Math::Normal(0, -1, 0);
+			point = mPosition + mSide1 * u + mSide2 * v;
+			du = mSide1;
+			dv = mSide2;
+			normal = mNormal;
 		}
 
 		BoundingVolume Quad::doBoundingVolume() const
 		{
 			std::vector<float> mins;
 			std::vector<float> maxes;
-			Math::Point points[] = { transformation() * Math::Point(1, 0, 1), transformation() * Math::Point(1, 0, -1),
-				                     transformation() * Math::Point(-1, 0, -1), transformation() * Math::Point(-1, 0, 1) };
+			Math::Point points[] = { transformation() * mPosition, transformation() * (mPosition + mSide1),
+				                     transformation() * (mPosition + mSide2), transformation() * (mPosition + mSide1 + mSide2) };
 
 			for (const Math::Vector &vector : BoundingVolume::vectors()) {
 				float min = FLT_MAX;

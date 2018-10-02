@@ -77,11 +77,11 @@ boxdef: BOX '{' VECTOR VECTOR primitive_modifiers '}'
 	  $$->children[0]->children[0]->data._vector = $3;
 	  $$->children[0]->children[1]->data._vector = $4; }
 
-quaddef: QUAD '{' VECTOR FLOAT FLOAT primitive_modifiers '}'
+quaddef: QUAD '{' VECTOR VECTOR VECTOR primitive_modifiers '}'
     { $$ = newAst(AstQuad, 2, newAst(AstList, 3, newAst(AstConstant, 0), newAst(AstConstant, 0), newAst(AstConstant, 0)), $6);
 	  $$->children[0]->children[0]->data._vector = $3;
-	  $$->children[0]->children[1]->data._float = $4;
-	  $$->children[0]->children[2]->data._float = $5; 
+	  $$->children[0]->children[1]->data._vector = $4;
+	  $$->children[0]->children[2]->data._vector = $5;
 	}
 
 primitive_modifiers: primitive_modifier

@@ -64,12 +64,12 @@ bool BoundingVolume::intersectRay(const RayData &rayData) const
 		minDist = std::max(minDist, min);
 		maxDist = std::min(maxDist, max);
 
-		if (minDist > maxDist || maxDist <= 0) {
+		if (minDist > maxDist || maxDist < 0) {
 			return false;
 		}
 	}
 
-	return (minDist <= maxDist && maxDist > 0);
+	return (minDist <= maxDist && maxDist >= 0);
 }
 
 BoundingVolume::RayData BoundingVolume::getRayData(const Math::Ray &ray)
