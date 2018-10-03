@@ -7,6 +7,38 @@ quad {
 }
 
 quad {
+	<-15,10,-15> <30,0,0> <0,0,11>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { lambert 1 }
+	}
+}
+
+quad {
+	<-15,10,4> <30,0,0> <0,0,11>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { lambert 1 }
+	}
+}
+
+quad {
+	<-15,10,-15> <11,0,0> <0,0,30>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { lambert 1 }
+	}
+}
+
+quad {
+	<4,10,-15> <11,0,0> <0,0,30>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { lambert 1 }
+	}
+}
+
+quad {
     <-10,-15,-15> <0,30,0> <0,0,30>
 	surface {
 		albedo { color <1,0,0> }
@@ -39,15 +71,12 @@ sphere {
 }
 
 quad {
-	<-15,10,-15> <30,0,0> <0,0,30>
+	<-4,10,-4> <0,0,8> <8,0,0>
 	surface {
-		brdf { lambert 1 }
+		brdf { lambert 0 }
 		albedo { color <1,1,1> }
+		radiance <30,30,30>
 	}
-}
-
-light {
-    <0,7,0> <200,200,200>
 }
 
 camera {
