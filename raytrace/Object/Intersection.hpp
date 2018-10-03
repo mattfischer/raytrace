@@ -24,10 +24,8 @@ public:
 	Intersection &operator=(const Intersection &c);
 
 	bool valid() const;
-	void setValid(bool valid);
 
 	const Object::Primitive::Base *primitive() const;
-	void setPrimitive(const Object::Primitive::Base *primitive);
 
 	float distance() const;
 	const Math::Ray &ray() const;
@@ -38,9 +36,6 @@ public:
 
 	const Intersection &nearest(const Intersection &b) const;
 	
-	void transform(const Math::Transformation &transformation);
-	const Math::Transformation &transformation() const;
-
 	bool operator<(const Intersection &b) const;
 
 protected:
@@ -53,8 +48,6 @@ protected:
 	mutable Math::Point mPoint;
 	mutable Math::Normal mNormal;
 	mutable bool mTransformed;
-	Math::Transformation mTransformation;
-	bool mCompositeTransformed;
 
 	void doTransform() const;
 };

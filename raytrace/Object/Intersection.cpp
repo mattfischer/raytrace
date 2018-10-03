@@ -18,7 +18,6 @@ Intersection::Intersection(const Object::Primitive::Base *primitive, const Math:
 	mObjectNormal = objectNormal;
 	mObjectPoint = objectPoint;
 	mTransformed = false;
-	mCompositeTransformed = false;
 };
 
 Intersection::Intersection(const Intersection &c)
@@ -32,12 +31,6 @@ Intersection::Intersection(const Intersection &c)
 	mObjectPoint = c.mObjectPoint;
 	mPoint = c.mPoint;
 	mTransformed = c.mTransformed;
-	mCompositeTransformed = c.mCompositeTransformed;
-
-	if(mCompositeTransformed)
-	{
-		mTransformation = c.mTransformation;
-	}
 }
 
 Intersection &Intersection::operator=(const Intersection &c)
@@ -51,12 +44,6 @@ Intersection &Intersection::operator=(const Intersection &c)
 	mObjectPoint = c.mObjectPoint;
 	mPoint = c.mPoint;
 	mTransformed = c.mTransformed;
-	mCompositeTransformed = c.mCompositeTransformed;
-
-	if(mCompositeTransformed)
-	{
-		mTransformation = c.mTransformation;
-	}
 
 	return *this;
 }
@@ -107,37 +94,6 @@ const Math::Point &Intersection::objectPoint() const
 	return mObjectPoint;
 }
 
-void Intersection::transform(const Math::Transformation &transformation)
-{
-	if(mCompositeTransformed)
-	{
-		mTransformation = transformation * mTransformation;
-	}
-	else
-	{
-		mTransformation = transformation * mPrimitive->transformation();
-		mCompositeTransformed = true;
-	}
-
-	if(mTransformed)
-	{
-		mNormal = transformation * mNormal;
-		mPoint = transformation * mPoint;
-	}
-}
-
-const Math::Transformation &Intersection::transformation() const
-{
-	if(mCompositeTransformed)
-	{
-		return mTransformation;
-	}
-	else
-	{
-		return mPrimitive->transformation();
-	}
-}
-
 const Intersection &Intersection::nearest(const Intersection &b) const
 {
 	return (*this < b) ? *this : b;
@@ -153,16 +109,8 @@ bool Intersection::operator<(const Intersection &b) const
 
 void Intersection::doTransform() const
 {
-	if(mCompositeTransformed)
-	{
-		mNormal = mTransformation * mObjectNormal;
-		mPoint = mTransformation * mObjectPoint;
-	}
-	else
-	{
-		mNormal = mPrimitive->transformation() * mObjectNormal;
-		mPoint = mPrimitive->transformation() * mObjectPoint;
-	}
+	mNormal = mPrimitive->transformation() * mObjectNormal;
+	mPoint = mPrimitive->transformation() * mObjectPoint;
 
 	mNormal = mNormal.normalize();
 
