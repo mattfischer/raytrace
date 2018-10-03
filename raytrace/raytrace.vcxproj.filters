@@ -173,6 +173,9 @@
     <ClCompile Include="Lighter\Utils.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Light.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -319,6 +322,9 @@
     </ClInclude>
     <ClInclude Include="Lighter\Utils.hpp">
       <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Light.hpp">
+      <Filter>Source Files\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

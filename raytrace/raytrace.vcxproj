@@ -123,6 +123,7 @@
     <ClCompile Include="Object\Camera.cpp" />
     <ClCompile Include="Object\Color.cpp" />
     <ClCompile Include="Object\Intersection.cpp" />
+    <ClCompile Include="Object\Light.cpp" />
     <ClCompile Include="Object\Primitive\Base.cpp" />
     <ClCompile Include="Object\Primitive\BoundingVolume.cpp" />
     <ClCompile Include="Object\Primitive\Box.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Object\Camera.hpp" />
     <ClInclude Include="Object\Color.hpp" />
     <ClInclude Include="Object\Intersection.hpp" />
+    <ClInclude Include="Object\Light.hpp" />
     <ClInclude Include="Object\Primitive\Base.hpp" />
     <ClInclude Include="Object\Primitive\BoundingVolume.hpp" />
     <ClInclude Include="Object\Primitive\Box.hpp" />

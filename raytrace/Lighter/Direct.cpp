@@ -26,7 +26,7 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 		return radiance;
 	}
 
-	for (const Object::Primitive::Base &primitive : tracer.scene().lights()) {
+	for (const Object::Primitive::Base &primitive : tracer.scene().areaLights()) {
 		const Object::Radiance &objectRadiance = primitive.surface().radiance();
 		if (objectRadiance.red() == 0 && objectRadiance.green() == 0 && objectRadiance.blue() == 0) {
 			continue;
@@ -77,6 +77,23 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 			}
 
 			radiance += outgoingRadiance * albedo * brdf.lambert() / (M_PI * mNumSamples);
+		}
+	}
+
+	for (const std::unique_ptr<Object::Light> &light : tracer.scene().lights()) {
+		Math::Point offsetPoint = point + Math::Vector(intersection.normal()) * 0.01;
+		Math::Vector incidentDirection = light->transformation().origin() - offsetPoint;
+		float distance = incidentDirection.magnitude();
+		incidentDirection = incidentDirection / distance;
+
+		Math::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
+		Object::Intersection intersection2 = tracer.intersect(ray);
+
+		if (!intersection2.valid() || intersection2.distance() >= distance) {
+			float dot = incidentDirection * normal;
+			if (dot > 0) {
+				radiance += light->radiance() * albedo * brdf.lambert() * dot / (distance * distance);
+			}
 		}
 	}
 

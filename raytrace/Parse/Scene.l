@@ -40,6 +40,8 @@ specular return SPECULAR;
 
 camera return CAMERA;
 
+light return LIGHT;
+
 \{|\}		return *yytext;
 <<EOF>>	return END;
 %%

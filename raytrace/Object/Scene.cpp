@@ -2,16 +2,18 @@
 
 #include "Object/Camera.hpp"
 #include "Object/Primitive/Base.hpp"
+#include "Object/Light.hpp"
 
 namespace Object {
 
-Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive::Base>> &&primitives)
+Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive::Base>> &&primitives, std::vector<std::unique_ptr<Light>> &&lights)
 	: mCamera(std::move(camera))
 	, mPrimitives(std::move(primitives))
+	, mLights(std::move(lights))
 {
 	for (std::unique_ptr<Primitive::Base> &primitive : mPrimitives) {
 		if (primitive->surface().radiance().magnitude() > 0) {
-			mLights.push_back(*primitive);
+			mAreaLights.push_back(*primitive);
 		}
 	}
 }
@@ -20,6 +22,7 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 {
 	std::unique_ptr<Camera> camera;
 	std::vector<std::unique_ptr<Primitive::Base>> primitives;
+	std::vector<std::unique_ptr<Light>> lights;
 
 	for(int i=0; i<ast->numChildren; i++)
 	{
@@ -33,10 +36,13 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 		case AstCamera:
 			camera = Camera::fromAst(child);
 			break;
+		case AstLight:
+			lights.push_back(Light::fromAst(child));
+			break;
 		}
 	}
 
-	std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::move(camera), std::move(primitives));
+	std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::move(camera), std::move(primitives), std::move(lights));
 
 	return scene;
 }
@@ -51,7 +57,12 @@ const std::vector<std::unique_ptr<Primitive::Base>> &Scene::primitives() const
 	return mPrimitives;
 }
 
-const std::vector<std::reference_wrapper<Primitive::Base>> &Scene::lights() const
+const std::vector<std::reference_wrapper<Primitive::Base>> &Scene::areaLights() const
+{
+	return mAreaLights;
+}
+
+const std::vector<std::unique_ptr<Light>> &Scene::lights() const
 {
 	return mLights;
 }

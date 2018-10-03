@@ -31,6 +31,8 @@ typedef enum
 
 	AstCamera,
 
+	AstLight,
+
 	AstConstant
 } ASTType;
 
