@@ -9,6 +9,11 @@ Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primi
 	: mCamera(std::move(camera))
 	, mPrimitives(std::move(primitives))
 {
+	for (std::unique_ptr<Primitive::Base> &primitive : mPrimitives) {
+		if (primitive->surface().radiance().magnitude() > 0) {
+			mLights.push_back(*primitive);
+		}
+	}
 }
 
 std::unique_ptr<Scene> Scene::fromAST(AST *ast)
@@ -44,6 +49,11 @@ const Camera &Scene::camera() const
 const std::vector<std::unique_ptr<Primitive::Base>> &Scene::primitives() const
 {
 	return mPrimitives;
+}
+
+const std::vector<std::reference_wrapper<Primitive::Base>> &Scene::lights() const
+{
+	return mLights;
 }
 
 }

@@ -26,13 +26,13 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 		return radiance;
 	}
 
-	for (const std::unique_ptr<Object::Primitive::Base> &primitive : tracer.scene().primitives()) {
-		const Object::Radiance &objectRadiance = primitive->surface().radiance();
+	for (const Object::Primitive::Base &primitive : tracer.scene().lights()) {
+		const Object::Radiance &objectRadiance = primitive.surface().radiance();
 		if (objectRadiance.red() == 0 && objectRadiance.green() == 0 && objectRadiance.blue() == 0) {
 			continue;
 		}
 
-		if(primitive->canSample()) {
+		if(primitive.canSample()) {
 			Object::Radiance outgoingRadiance;
 			Math::Vector x, y;
 			Utils::orthonormalBasis(normal, x, y);
@@ -48,7 +48,7 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 				Math::Vector dv;
 				Math::Normal sampleNormal;
 
-				primitive->sample(u, v, samplePoint, du, dv, sampleNormal);
+				primitive.sample(u, v, samplePoint, du, dv, sampleNormal);
 				float area = (du % dv).magnitude();
 
 				Math::Vector incidentDirection = samplePoint - point;
@@ -61,7 +61,7 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 				Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
 				Probe::Entry probeEntry;
 				probeEntry.direction = viewVector;
-				if (intersection2.valid() && intersection2.primitive() == primitive.get()) {
+				if (intersection2.valid() && intersection2.primitive() == &primitive) {
 					float dot = incidentDirection * normal;
 					float sampleDot = abs(incidentDirection * sampleNormal);
 

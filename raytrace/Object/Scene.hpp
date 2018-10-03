@@ -18,10 +18,12 @@ public:
 
 	const Camera &camera() const;
 	const std::vector<std::unique_ptr<Primitive::Base>> &primitives() const;
+	const std::vector<std::reference_wrapper<Primitive::Base>> &lights() const;
 
 protected:
 	std::unique_ptr<Camera> mCamera;
 	std::vector<std::unique_ptr<Primitive::Base>> mPrimitives;
+	std::vector<std::reference_wrapper<Primitive::Base>> mLights;
 };
 
 }
