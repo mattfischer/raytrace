@@ -266,27 +266,24 @@ Object::Color Engine::prerenderPixel(Thread &thread, int x, int y)
 Object::Color Engine::renderPixel(Thread &thread, int x, int y)
 {
 	Object::Color color;
+	for (int u = 0; u < mSettings.antialiasSamples; u++) {
+		for (int v = 0; v < mSettings.antialiasSamples; v++) {
+			Math::Ray ray = thread.tracer().createCameraRay(x + (float)u / mSettings.antialiasSamples, y + (float)v / mSettings.antialiasSamples);
 
-	for (int i = 0; i < mSettings.antialiasSamples; i++) {
-		float u;
-		float v;
-
-		Lighter::Utils::stratifiedSamples(i, mSettings.antialiasSamples, u, v, thread.randomEngine());
-		Math::Ray ray = thread.tracer().createCameraRay(x + u, y + v);
-
-		if (mSettings.lighting) {
-			Object::Radiance radiance = traceRay(ray, thread.tracer());
-			color += toneMap(radiance);
-		}
-		else {
-			Object::Intersection intersection = thread.tracer().intersect(ray);
-			if (intersection.valid())
-			{
-				color += intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+			if (mSettings.lighting) {
+				Object::Radiance radiance = traceRay(ray, thread.tracer());
+				color += toneMap(radiance);
+			}
+			else {
+				Object::Intersection intersection = thread.tracer().intersect(ray);
+				if (intersection.valid())
+				{
+					color += intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+				}
 			}
 		}
 	}
-	color = color / mSettings.antialiasSamples;
+	color = color / (mSettings.antialiasSamples * mSettings.antialiasSamples);
 
 	return color;
 }

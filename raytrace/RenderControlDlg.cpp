@@ -14,7 +14,7 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.height = 600;
 	mSettings.lighting = true;
 	mSettings.maxRayGeneration = 2;
-	mSettings.antialiasSamples = 9;
+	mSettings.antialiasSamples = 3;
 	mSettings.radiantLighting = true;
 	mSettings.specularLighting = true;
 	mSettings.directLighting = true;

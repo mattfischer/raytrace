@@ -100,6 +100,11 @@ void IrradianceCache::interpolateOctreeNode(OctreeNode *node, const Math::Point 
 	{
 		if (isEntryValid(entry, point, normal, threshold)) {
 			float w = weight(entry, point, normal);
+			if (std::isinf(w)) {
+				irradiance = entry.radiance;
+				totalWeight = -1;
+				break;
+			}
 			Math::Vector cross = Math::Vector(normal % entry.normal);
 			Math::Vector dist = point - entry.point;
 			irradiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * w;
@@ -110,6 +115,10 @@ void IrradianceCache::interpolateOctreeNode(OctreeNode *node, const Math::Point 
 	for (int i = 0; i < 8; i++) {
 		Math::Point childOrigin;
 		float childSize;
+
+		if (totalWeight < 0) {
+			break;
+		}
 
 		getChildNode(origin, size, i, childOrigin, childSize);
 
