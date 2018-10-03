@@ -3,6 +3,7 @@
 
 #include "Object/Camera.hpp"
 #include "Object/Primitive/Base.hpp"
+#include "Object/Primitive/Sampleable.hpp"
 #include "Object/Light.hpp"
 
 #include <vector>
@@ -19,13 +20,13 @@ public:
 
 	const Camera &camera() const;
 	const std::vector<std::unique_ptr<Primitive::Base>> &primitives() const;
-	const std::vector<std::reference_wrapper<Primitive::Base>> &areaLights() const;
+	const std::vector<std::reference_wrapper<Primitive::Sampleable>> &areaLights() const;
 	const std::vector<std::unique_ptr<Light>> &lights() const;
 
 protected:
 	std::unique_ptr<Camera> mCamera;
 	std::vector<std::unique_ptr<Primitive::Base>> mPrimitives;
-	std::vector<std::reference_wrapper<Primitive::Base>> mAreaLights;
+	std::vector<std::reference_wrapper<Primitive::Sampleable>> mAreaLights;
 	std::vector<std::unique_ptr<Light>> mLights;
 };
 

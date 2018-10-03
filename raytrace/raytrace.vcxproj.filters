@@ -176,6 +176,9 @@
     <ClCompile Include="Object\Light.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Primitive\Sampleable.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -325,6 +328,9 @@
     </ClInclude>
     <ClInclude Include="Object\Light.hpp">
       <Filter>Source Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\Sampleable.hpp">
+      <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

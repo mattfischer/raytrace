@@ -25,11 +25,6 @@ namespace Object {
 			mNormal = Math::Normal(mSide1 % mSide2).normalize();
 		}
 
-		bool Quad::canSample() const
-		{
-			return true;
-		}
-
 		Intersection Quad::doIntersect(const Math::Ray &ray) const
 		{
 			float scale = ((ray.origin() - mPosition) * mNormal) / (ray.direction() * -mNormal);

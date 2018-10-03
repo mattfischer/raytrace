@@ -26,58 +26,56 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 		return radiance;
 	}
 
-	for (const Object::Primitive::Base &primitive : tracer.scene().areaLights()) {
-		const Object::Radiance &objectRadiance = primitive.surface().radiance();
+	for (const Object::Primitive::Sampleable &sampleable : tracer.scene().areaLights()) {
+		const Object::Radiance &objectRadiance = sampleable.surface().radiance();
 		if (objectRadiance.red() == 0 && objectRadiance.green() == 0 && objectRadiance.blue() == 0) {
 			continue;
 		}
 
-		if(primitive.canSample()) {
-			Object::Radiance outgoingRadiance;
-			Math::Vector x, y;
-			Utils::orthonormalBasis(normal, x, y);
+		Object::Radiance outgoingRadiance;
+		Math::Vector x, y;
+		Utils::orthonormalBasis(normal, x, y);
 
-			for (int i = 0; i < mNumSamples; i++) {
-				float u;
-				float v;
+		for (int i = 0; i < mNumSamples; i++) {
+			float u;
+			float v;
 
-				Utils::stratifiedSamples(i, mNumSamples, u, v, mRandomEngine);
+			Utils::stratifiedSamples(i, mNumSamples, u, v, mRandomEngine);
 
-				Math::Point samplePoint;
-				Math::Vector du;
-				Math::Vector dv;
-				Math::Normal sampleNormal;
+			Math::Point samplePoint;
+			Math::Vector du;
+			Math::Vector dv;
+			Math::Normal sampleNormal;
 
-				primitive.sample(u, v, samplePoint, du, dv, sampleNormal);
-				float area = (du % dv).magnitude();
+			sampleable.sample(u, v, samplePoint, du, dv, sampleNormal);
+			float area = (du % dv).magnitude();
 
-				Math::Vector incidentDirection = samplePoint - point;
-				float distance = incidentDirection.magnitude();
-				incidentDirection = incidentDirection / distance;
-				Math::Point offsetPoint = point + Math::Vector(intersection.normal()) * 0.01;
-				Math::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
-				Object::Intersection intersection2 = tracer.intersect(ray);
+			Math::Vector incidentDirection = samplePoint - point;
+			float distance = incidentDirection.magnitude();
+			incidentDirection = incidentDirection / distance;
+			Math::Point offsetPoint = point + Math::Vector(intersection.normal()) * 0.01;
+			Math::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
+			Object::Intersection intersection2 = tracer.intersect(ray);
 
-				Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
-				Probe::Entry probeEntry;
-				probeEntry.direction = viewVector;
-				if (intersection2.valid() && intersection2.primitive() == &primitive) {
-					float dot = incidentDirection * normal;
-					float sampleDot = abs(incidentDirection * sampleNormal);
+			Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
+			Probe::Entry probeEntry;
+			probeEntry.direction = viewVector;
+			if (intersection2.valid() && intersection2.primitive() == &sampleable) {
+				float dot = incidentDirection * normal;
+				float sampleDot = abs(incidentDirection * sampleNormal);
 
-					if (dot > 0) {
-						outgoingRadiance += objectRadiance * dot * sampleDot * area / (distance * distance);
-						probeEntry.radiance = objectRadiance;
-					}
-				}
-
-				if(probe) {
-					probe->entries.push_back(probeEntry);
+				if (dot > 0) {
+					outgoingRadiance += objectRadiance * dot * sampleDot * area / (distance * distance);
+					probeEntry.radiance = objectRadiance;
 				}
 			}
 
-			radiance += outgoingRadiance * albedo * brdf.lambert() / (M_PI * mNumSamples);
+			if(probe) {
+				probe->entries.push_back(probeEntry);
+			}
 		}
+
+		radiance += outgoingRadiance * albedo * brdf.lambert() / (M_PI * mNumSamples);
 	}
 
 	for (const std::unique_ptr<Object::Light> &light : tracer.scene().lights()) {

@@ -3,19 +3,17 @@
 
 #include "Parse/AST.h"
 
-#include "Object/Primitive/Base.hpp"
+#include "Object/Primitive/Sampleable.hpp"
 
 namespace Object {
 namespace Primitive {
 
-class Quad : public Base
+class Quad : public Sampleable
 {
 public:
 	static std::unique_ptr<Quad> fromAst(AST *ast);
 
 	Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
-
-	virtual bool canSample() const;
 
 protected:
 	virtual Intersection doIntersect(const Math::Ray &ray) const;

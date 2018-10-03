@@ -13,7 +13,7 @@ Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primi
 {
 	for (std::unique_ptr<Primitive::Base> &primitive : mPrimitives) {
 		if (primitive->surface().radiance().magnitude() > 0) {
-			mAreaLights.push_back(*primitive);
+			mAreaLights.push_back(static_cast<Object::Primitive::Sampleable&>(*primitive));
 		}
 	}
 }
@@ -57,7 +57,7 @@ const std::vector<std::unique_ptr<Primitive::Base>> &Scene::primitives() const
 	return mPrimitives;
 }
 
-const std::vector<std::reference_wrapper<Primitive::Base>> &Scene::areaLights() const
+const std::vector<std::reference_wrapper<Primitive::Sampleable>> &Scene::areaLights() const
 {
 	return mAreaLights;
 }
