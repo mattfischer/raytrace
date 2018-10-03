@@ -18,12 +18,11 @@ public:
 		float dots[NUM_VECTORS];
 	};
 
-	BoundingVolume() = default;
+	BoundingVolume();
 	BoundingVolume(const float mins[NUM_VECTORS], const float maxes[NUM_VECTORS]);
 
-	BoundingVolume translate(const Math::Vector &translate);
-
 	bool intersectRay(const RayData &rayData) const;
+	void expand(const Math::Point &point);
 
 	static const std::array<Math::Vector, NUM_VECTORS> &vectors();
 	static RayData getRayData(const Math::Ray &ray);

@@ -7,6 +7,14 @@ namespace Primitive {
 
 std::array<Math::Vector, BoundingVolume::NUM_VECTORS> sVectors{ Math::Vector(1, 0, 0), Math::Vector(0, 1, 0), Math::Vector(0, 0, 1) };
 
+BoundingVolume::BoundingVolume()
+{
+	for (int i = 0; i < NUM_VECTORS; i++) {
+		mMins[i] = FLT_MAX;
+		mMaxes[i] = -FLT_MAX;
+	}
+}
+
 BoundingVolume::BoundingVolume(const float mins[NUM_VECTORS], const float maxes[NUM_VECTORS])
 {
 	for (int i = 0; i < NUM_VECTORS; i++) {
@@ -15,24 +23,22 @@ BoundingVolume::BoundingVolume(const float mins[NUM_VECTORS], const float maxes[
 	}
 }
 
+void BoundingVolume::expand(const Math::Point &point)
+{
+	for (int i = 0; i < NUM_VECTORS; i++) {
+		float dist = Math::Vector(point) * vectors()[i];
+		if (dist < mMins[i]) {
+			mMins[i] = dist;
+		}
+		if (dist > mMaxes[i]) {
+			mMaxes[i] = dist;
+		}
+	}
+}
+
 const std::array<Math::Vector, BoundingVolume::NUM_VECTORS> &BoundingVolume::vectors()
 {
 	return sVectors;
-}
-
-BoundingVolume BoundingVolume::translate(const Math::Vector &translate)
-{
-	float mins[NUM_VECTORS];
-	float maxes[NUM_VECTORS];
-
-	for(int i=0; i<NUM_VECTORS; i++) {
-		const Math::Vector &vector = sVectors[i];
-		float offset = vector * translate;
-		mins[i] = mMins[i] + offset;
-		maxes[i] = mMaxes[i] + offset;
-	}
-
-	return BoundingVolume(mins, maxes);
 }
 
 bool BoundingVolume::intersectRay(const RayData &rayData) const
