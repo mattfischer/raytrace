@@ -58,13 +58,15 @@ bool Box::doInside(const Math::Point &point) const
 
 BoundingVolume Box::doBoundingVolume() const
 {
-	std::vector<float> mins;
-	std::vector<float> maxes;
+	float mins[BoundingVolume::NUM_VECTORS];
+	float maxes[BoundingVolume::NUM_VECTORS];
+
 	Math::Point points[] = { transformation() * Math::Point(1, 1, 1), transformation() * Math::Point(1, 1, -1), transformation() * Math::Point(-1, 1, -1), Math::Point(-1, 1, 1),
 							 transformation() * Math::Point(1, -1, 1), transformation() * Math::Point(1, -1, -1),
 		                     transformation() * Math::Point(-1, -1, -1), transformation() * Math::Point(-1, -1, 1) };
 
-	for (const Math::Vector &vector : BoundingVolume::vectors()) {
+	for(int i=0; i<BoundingVolume::NUM_VECTORS; i++) {
+		const Math::Vector &vector = BoundingVolume::vectors()[i];
 		float min = FLT_MAX;
 		float max = -FLT_MAX;
 		for (const Math::Point &point : points) {
@@ -72,8 +74,8 @@ BoundingVolume Box::doBoundingVolume() const
 			min = std::min(min, dist);
 			max = std::max(max, dist);
 		}
-		mins.push_back(min);
-		maxes.push_back(max);
+		mins[i] = min;
+		maxes[i] = max;
 	}
 
 	return BoundingVolume(mins, maxes);

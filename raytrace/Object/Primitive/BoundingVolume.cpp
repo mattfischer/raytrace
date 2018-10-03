@@ -5,28 +5,31 @@
 namespace Object {
 namespace Primitive {
 
-std::vector<Math::Vector> sVectors{ Math::Vector(1, 0, 0), Math::Vector(0, 1, 0), Math::Vector(0, 0, 1) };
+std::array<Math::Vector, BoundingVolume::NUM_VECTORS> sVectors{ Math::Vector(1, 0, 0), Math::Vector(0, 1, 0), Math::Vector(0, 0, 1) };
 
-BoundingVolume::BoundingVolume(const std::vector<float> &mins, const std::vector<float> &maxes)
-	: mMins(mins), mMaxes(maxes)
+BoundingVolume::BoundingVolume(const float mins[NUM_VECTORS], const float maxes[NUM_VECTORS])
 {
+	for (int i = 0; i < NUM_VECTORS; i++) {
+		mMins[i] = mins[i];
+		mMaxes[i] = maxes[i];
+	}
 }
 
-const std::vector<Math::Vector> &BoundingVolume::vectors()
+const std::array<Math::Vector, BoundingVolume::NUM_VECTORS> &BoundingVolume::vectors()
 {
 	return sVectors;
 }
 
 BoundingVolume BoundingVolume::translate(const Math::Vector &translate)
 {
-	std::vector<float> mins;
-	std::vector<float> maxes;
+	float mins[NUM_VECTORS];
+	float maxes[NUM_VECTORS];
 
 	for(int i=0; i<NUM_VECTORS; i++) {
 		const Math::Vector &vector = sVectors[i];
 		float offset = vector * translate;
-		mins.push_back(mMins[i] + offset);
-		maxes.push_back(mMaxes[i] + offset);
+		mins[i] = mMins[i] + offset;
+		maxes[i] = mMaxes[i] + offset;
 	}
 
 	return BoundingVolume(mins, maxes);

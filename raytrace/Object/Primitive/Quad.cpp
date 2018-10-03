@@ -56,12 +56,13 @@ namespace Object {
 
 		BoundingVolume Quad::doBoundingVolume() const
 		{
-			std::vector<float> mins;
-			std::vector<float> maxes;
+			float mins[BoundingVolume::NUM_VECTORS];
+			float maxes[BoundingVolume::NUM_VECTORS];
 			Math::Point points[] = { transformation() * mPosition, transformation() * (mPosition + mSide1),
 				                     transformation() * (mPosition + mSide2), transformation() * (mPosition + mSide1 + mSide2) };
 
-			for (const Math::Vector &vector : BoundingVolume::vectors()) {
+			for(int i=0; i<BoundingVolume::NUM_VECTORS; i++) {
+				const Math::Vector &vector = BoundingVolume::vectors()[i];
 				float min = FLT_MAX;
 				float max = -FLT_MAX;
 				for (const Math::Point &point : points) {
@@ -69,8 +70,8 @@ namespace Object {
 					min = std::min(min, dist);
 					max = std::max(max, dist);
 				}
-				mins.push_back(min);
-				maxes.push_back(max);
+				mins[i] = min;
+				maxes[i] = max;
 			}
 
 			return BoundingVolume(mins, maxes);
