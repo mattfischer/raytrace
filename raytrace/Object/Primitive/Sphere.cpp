@@ -8,15 +8,18 @@ namespace Primitive {
 
 std::unique_ptr<Sphere> Sphere::fromAst(AST *ast)
 {
-	std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>();
-	Math::Vector position(ast->children[0]->children[0]->data._vector);
+	Math::Point position(ast->children[0]->children[0]->data._vector);
 	float radius = ast->children[0]->children[1]->data._float;
-	sphere->transform(Math::Transformation::translate(position));
-	sphere->transform(Math::Transformation::scale(radius, radius, radius));
+	std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(position, radius);
 
 	parseAstCommon(*sphere, ast->children[1]);
 
 	return sphere;
+}
+
+Sphere::Sphere(const Math::Point &position, float radius)
+	: mPosition(position), mRadius(radius)
+{
 }
 
 Intersection Sphere::doIntersect(const Math::Ray &ray) const
@@ -25,8 +28,8 @@ Intersection Sphere::doIntersect(const Math::Ray &ray) const
 	float disc;
 
 	a = ray.direction().magnitude2();
-	b = 2 * (Math::Vector(ray.origin()) * ray.direction());
-	c = Math::Vector(ray.origin()).magnitude2() - 1;
+	b = 2 * ((ray.origin() - mPosition) * ray.direction());
+	c = (ray.origin() - mPosition).magnitude2() - mRadius * mRadius;
 
 	disc = b * b - 4 * a * c;
 	if(disc >= 0)
@@ -36,7 +39,7 @@ Intersection Sphere::doIntersect(const Math::Ray &ray) const
 		if(distance > 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			return Intersection(this, ray, distance, Math::Normal(point), point);
+			return Intersection(this, ray, distance, Math::Normal(point - mPosition) / mRadius, point);
 		}
 
 		distance = (-b + sqrt(disc)) / (2 * a);
@@ -44,7 +47,7 @@ Intersection Sphere::doIntersect(const Math::Ray &ray) const
 		if(distance > 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			return Intersection(this, ray, distance, Math::Normal(point), point);
+			return Intersection(this, ray, distance, Math::Normal(point - mPosition) / mRadius, point);
 		}
 	}
 
@@ -63,8 +66,8 @@ BoundingVolume Sphere::doBoundingVolume() const
 
 	for(int i=0; i<BoundingVolume::NUM_VECTORS; i++) {
 		const Math::Vector &vector = BoundingVolume::vectors()[i];
-		float x = Math::Vector(transformation().origin()) * vector;
-		float y = Math::Vector(transformation().matrix().partialTranspose() * vector).magnitude();
+		float x = Math::Vector(mPosition) * vector;
+		float y = mRadius * vector.magnitude();
 
 		mins[i] = x - y;
 		maxes[i] = x + y;
