@@ -16,25 +16,17 @@ Direct::Direct(int numSamples)
 Object::Radiance Direct::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
-	const Math::Vector normal(intersection.normal());
+	const Math::Normal &normal = intersection.normal();
 	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
 	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
-	Object::Radiance radiance;
-	if (brdf.lambert() == 0) {
-		return radiance;
-	}
+	Math::Vector x, y;
+	Utils::orthonormalBasis(Math::Vector(normal), x, y);
 
+	Object::Radiance radiance;
 	for (const Object::Primitive::Sampleable &sampleable : tracer.scene().areaLights()) {
 		const Object::Radiance &objectRadiance = sampleable.surface().radiance();
-		if (objectRadiance.red() == 0 && objectRadiance.green() == 0 && objectRadiance.blue() == 0) {
-			continue;
-		}
-
-		Object::Radiance outgoingRadiance;
-		Math::Vector x, y;
-		Utils::orthonormalBasis(normal, x, y);
 
 		for (int i = 0; i < mNumSamples; i++) {
 			float u;
@@ -65,7 +57,8 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 				float sampleDot = abs(incidentDirection * sampleNormal);
 
 				if (dot > 0) {
-					outgoingRadiance += objectRadiance * dot * sampleDot * area / (distance * distance);
+					Object::Radiance incidentRadiance = objectRadiance * sampleDot * dot * area / (distance * distance);
+					radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / mNumSamples;
 					probeEntry.radiance = objectRadiance;
 				}
 			}
@@ -74,8 +67,6 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 				probe->entries.push_back(probeEntry);
 			}
 		}
-
-		radiance += outgoingRadiance * albedo * brdf.lambert() / (M_PI * mNumSamples);
 	}
 
 	for (const std::unique_ptr<Object::Light> &light : tracer.scene().lights()) {
@@ -87,11 +78,21 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 		Math::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
 		Object::Intersection intersection2 = tracer.intersect(ray);
 
+		Probe::Entry probeEntry;
+		Math::Vector viewVector(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
+		probeEntry.direction = viewVector;
 		if (!intersection2.valid() || intersection2.distance() >= distance) {
 			float dot = incidentDirection * normal;
 			if (dot > 0) {
-				radiance += light->radiance() * albedo * brdf.lambert() * dot / (distance * distance);
+				Object::Radiance incidentRadiance = light->radiance() * dot / (distance * distance);
+				radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
+
+				probeEntry.radiance = light->radiance();
 			}
+		}
+
+		if (probe) {
+			probe->entries.push_back(probeEntry);
 		}
 	}
 

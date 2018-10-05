@@ -21,7 +21,7 @@ float Lambert::lambert() const
 
 Object::Radiance Lambert::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
-	return incidentRadiance * albedo * mStrength / (2 * M_PI);
+	return incidentRadiance * albedo * mStrength / M_PI;
 }
 
 std::unique_ptr<Lambert> Lambert::fromAst(AST *ast)
