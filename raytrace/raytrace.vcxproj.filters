@@ -152,12 +152,6 @@
     <ClCompile Include="Lighter\Base.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
-    <ClCompile Include="Lighter\Direct.cpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Lighter\Indirect.cpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Lighter\IrradianceCache.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
@@ -178,6 +172,12 @@
     </ClCompile>
     <ClCompile Include="Object\Primitive\Sampleable.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\DiffuseDirect.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\DiffuseIndirect.cpp">
+      <Filter>Source Files\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -305,12 +305,6 @@
     <ClInclude Include="Lighter\Base.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
-    <ClInclude Include="Lighter\Direct.hpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClInclude>
-    <ClInclude Include="Lighter\Indirect.hpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Lighter\IrradianceCache.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
@@ -331,6 +325,12 @@
     </ClInclude>
     <ClInclude Include="Object\Primitive\Sampleable.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\DiffuseDirect.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\DiffuseIndirect.hpp">
+      <Filter>Source Files\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

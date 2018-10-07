@@ -1,5 +1,5 @@
-#ifndef LIGHTER_DIRECT_HPP
-#define LIGHTER_DIRECT_HPP
+#ifndef LIGHTER_DIFFUSE_DIRECT_HPP
+#define LIGHTER_DIFFUSE_DIRECT_HPP
 
 #include "Lighter/Base.hpp"
 
@@ -7,10 +7,10 @@
 
 namespace Lighter {
 
-class Direct : public Base
+class DiffuseDirect : public Base
 {
 public:
-	Direct(int numSamples);
+	DiffuseDirect(int numSamples);
 	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe = 0) const;
 
 private:

@@ -13,12 +13,12 @@ Composite::Composite(std::vector<std::unique_ptr<Base>> &&brdfs)
 {
 }
 
-Object::Radiance Composite::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Radiance Composite::diffuseRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	Object::Radiance totalRadiance;
 
 	for(const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
-		totalRadiance = totalRadiance + brdf->radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
+		totalRadiance = totalRadiance + brdf->diffuseRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
 	}
 
 	return totalRadiance;

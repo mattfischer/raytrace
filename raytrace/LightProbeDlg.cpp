@@ -1,7 +1,7 @@
 #include "LightProbeDlg.hpp"
 
-#include "Lighter/Direct.hpp"
-#include "Lighter/Indirect.hpp"
+#include "Lighter/DiffuseDirect.hpp"
+#include "Lighter/DiffuseIndirect.hpp"
 
 #include <commctrl.h>
 
@@ -84,8 +84,8 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 
 	Object::Intersection intersection = tracer.intersect(ray);
 	if (intersection.valid()) {
-		Lighter::Indirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples, false, 0);
-		//Trace::Lighter::Direct lighter(engine.settings().directSamples);
+		Lighter::DiffuseIndirect lighter(engine.settings().indirectSamples, engine.settings().indirectDirectSamples, false, 0);
+		//Trace::Lighter::DiffuseDirect lighter(engine.settings().directSamples);
 		Lighter::Base::Probe probe;
 		lighter.light(intersection, tracer, &probe);
 

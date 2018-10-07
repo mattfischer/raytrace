@@ -89,8 +89,8 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="lex.Scene.c" />
     <ClCompile Include="Lighter\Base.cpp" />
-    <ClCompile Include="Lighter\Direct.cpp" />
-    <ClCompile Include="Lighter\Indirect.cpp" />
+    <ClCompile Include="Lighter\DiffuseDirect.cpp" />
+    <ClCompile Include="Lighter\DiffuseIndirect.cpp" />
     <ClCompile Include="Lighter\IrradianceCache.cpp" />
     <ClCompile Include="Lighter\RadianceGradient.cpp" />
     <ClCompile Include="Lighter\Radiant.cpp" />
@@ -154,8 +154,8 @@
   <ItemGroup>
     <ClInclude Include="App.hpp" />
     <ClInclude Include="Lighter\Base.hpp" />
-    <ClInclude Include="Lighter\Direct.hpp" />
-    <ClInclude Include="Lighter\Indirect.hpp" />
+    <ClInclude Include="Lighter\DiffuseDirect.hpp" />
+    <ClInclude Include="Lighter\DiffuseIndirect.hpp" />
     <ClInclude Include="Lighter\IrradianceCache.hpp" />
     <ClInclude Include="Lighter\RadianceGradient.hpp" />
     <ClInclude Include="Lighter\Radiant.hpp" />

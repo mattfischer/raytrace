@@ -1,8 +1,8 @@
 #define NOMINMAX
 #include "Render/Engine.hpp"
 
-#include "Lighter/Direct.hpp"
-#include "Lighter/Indirect.hpp"
+#include "Lighter/DiffuseDirect.hpp"
+#include "Lighter/DiffuseIndirect.hpp"
 #include "Lighter/Radiant.hpp"
 #include "Lighter/Specular.hpp"
 #include "Lighter/Utils.hpp"
@@ -84,11 +84,11 @@ void Engine::startRender(Listener *listener)
 
 	mLighters.clear();
 	if (mSettings.directLighting) {
-		mLighters.push_back(std::make_unique<Lighter::Direct>(mSettings.directSamples));
+		mLighters.push_back(std::make_unique<Lighter::DiffuseDirect>(mSettings.directSamples));
 	}
 
 	if (mSettings.indirectLighting) {
-		mLighters.push_back(std::make_unique<Lighter::Indirect>(mSettings.indirectSamples, mSettings.indirectDirectSamples, mSettings.irradianceCaching, mSettings.irradianceCacheThreshold));
+		mLighters.push_back(std::make_unique<Lighter::DiffuseIndirect>(mSettings.indirectSamples, mSettings.indirectDirectSamples, mSettings.irradianceCaching, mSettings.irradianceCacheThreshold));
 	}
 
 	if (mSettings.radiantLighting) {

@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "Lighter/Direct.hpp"
+#include "Lighter/DiffuseDirect.hpp"
 
 #include "Lighter/Utils.hpp"
 
@@ -8,12 +8,12 @@
 
 namespace Lighter {
 
-Direct::Direct(int numSamples)
+DiffuseDirect::DiffuseDirect(int numSamples)
 {
 	mNumSamples = numSamples;
 }
 
-Object::Radiance Direct::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
+Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
@@ -58,7 +58,7 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 
 				if (dot > 0) {
 					Object::Radiance incidentRadiance = objectRadiance * sampleDot * dot * area / (distance * distance);
-					radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / mNumSamples;
+					radiance += brdf.diffuseRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / mNumSamples;
 					probeEntry.radiance = objectRadiance;
 				}
 			}
@@ -85,7 +85,7 @@ Object::Radiance Direct::light(const Object::Intersection &intersection, Render:
 			float dot = incidentDirection * normal;
 			if (dot > 0) {
 				Object::Radiance incidentRadiance = light->radiance() * dot / (distance * distance);
-				radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
+				radiance += brdf.diffuseRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
 
 				probeEntry.radiance = light->radiance();
 			}

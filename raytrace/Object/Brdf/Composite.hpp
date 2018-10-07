@@ -13,7 +13,7 @@ class Composite : public Base
 public:
 	Composite(std::vector<std::unique_ptr<Base>> &&brdfs);
 
-	virtual Object::Radiance radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
+	virtual Object::Radiance diffuseRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
 	virtual float lambert() const;
 
 	virtual bool specular() const;

@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "Lighter/Indirect.hpp"
+#include "Lighter/DiffuseIndirect.hpp"
 
 #include "Object/Radiance.hpp"
 #include "Object/Intersection.hpp"
@@ -13,7 +13,7 @@
 
 namespace Lighter {
 
-Indirect::Indirect(int indirectSamples, int indirectDirectSamples, bool irradianceCaching, float irradianceCacheThreshold)
+DiffuseIndirect::DiffuseIndirect(int indirectSamples, int indirectDirectSamples, bool irradianceCaching, float irradianceCacheThreshold)
 	: mDirectLighter(indirectDirectSamples)
 	, mIrradianceCache(irradianceCacheThreshold)
 {
@@ -21,7 +21,7 @@ Indirect::Indirect(int indirectSamples, int indirectDirectSamples, bool irradian
 	mIrradianceCaching = irradianceCaching;
 }
 
-Object::Radiance Indirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
+Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
@@ -72,7 +72,7 @@ Object::Radiance Indirect::light(const Object::Intersection &intersection, Rende
 	return radiance;
 }
 
-bool Indirect::prerender(const Object::Intersection &intersection, Render::Tracer &tracer)
+bool DiffuseIndirect::prerender(const Object::Intersection &intersection, Render::Tracer &tracer)
 {
 	if (!mIrradianceCaching) {
 		return false;
