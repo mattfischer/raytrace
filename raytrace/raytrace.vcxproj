@@ -92,6 +92,7 @@
     <ClCompile Include="Lighter\DiffuseDirect.cpp" />
     <ClCompile Include="Lighter\DiffuseIndirect.cpp" />
     <ClCompile Include="Lighter\IrradianceCache.cpp" />
+    <ClCompile Include="Lighter\Master.cpp" />
     <ClCompile Include="Lighter\RadianceGradient.cpp" />
     <ClCompile Include="Lighter\Radiant.cpp" />
     <ClCompile Include="Lighter\Specular.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Lighter\DiffuseDirect.hpp" />
     <ClInclude Include="Lighter\DiffuseIndirect.hpp" />
     <ClInclude Include="Lighter\IrradianceCache.hpp" />
+    <ClInclude Include="Lighter\Master.hpp" />
     <ClInclude Include="Lighter\RadianceGradient.hpp" />
     <ClInclude Include="Lighter\Radiant.hpp" />
     <ClInclude Include="Lighter\Specular.hpp" />

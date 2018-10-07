@@ -7,7 +7,7 @@
 
 #include "Render/Framebuffer.hpp"
 #include "Render/Tracer.hpp"
-#include "Lighter/Base.hpp"
+#include "Lighter/Master.hpp"
 
 #include <set>
 #include <thread>
@@ -56,17 +56,8 @@ public:
 		int width;
 		int height;
 		bool lighting;
-		int maxRayGeneration;
 		int antialiasSamples;
-		bool radiantLighting;
-		bool specularLighting;
-		bool directLighting;
-		int directSamples;
-		bool indirectLighting;
-		int indirectSamples;
-		int indirectDirectSamples;
-		bool irradianceCaching;
-		float irradianceCacheThreshold;
+		Lighter::Master::Settings lighterSettings;
 	};
 
 	Engine(const Object::Scene &scene);
@@ -83,7 +74,6 @@ public:
 	Framebuffer &framebuffer();
 
 	Object::Color toneMap(const Object::Radiance &radiance) const;
-	Object::Radiance traceRay(const Math::Ray &ray, Render::Tracer &tracer) const;
 
 private:
 	void getBlock(int block, int &x, int &y, int &w, int &h);
@@ -111,7 +101,7 @@ private:
 	std::mutex mMutex;
 	std::set<std::unique_ptr<Thread>> mThreads;
 	int mBlocksStarted;
-	std::vector<std::unique_ptr<Lighter::Base>> mLighters;
+	std::unique_ptr<Lighter::Master> mLighter;
 };
 
 }

@@ -7,8 +7,8 @@
 
 namespace Lighter {
 
-Specular::Specular(const Render::Engine &engine, int maxRayGeneration)
-	: mEngine(engine)
+Specular::Specular(const Lighter::Base &lighter, int maxRayGeneration)
+	: mLighter(lighter)
 {
 	mMaxRayGeneration = maxRayGeneration;
 }
@@ -25,9 +25,13 @@ Object::Radiance Specular::light(const Object::Intersection &intersection, Rende
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
 		Math::Ray reflectRay(intersection.point(), reflect, ray.generation() + 1);
-		Object::Radiance reflectRadiance = mEngine.traceRay(reflectRay, tracer);
+		Object::Intersection intersection2 = tracer.intersect(reflectRay);
 
-		radiance += surface.brdf().specularRadiance(reflectRadiance, albedo);
+		if (intersection2.valid())
+		{
+			Object::Radiance reflectRadiance = mLighter.light(intersection2, tracer);
+			radiance += surface.brdf().specularRadiance(reflectRadiance, albedo);
+		}
 	}
 
 	return radiance;

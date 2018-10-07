@@ -13,17 +13,17 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.width = 800;
 	mSettings.height = 600;
 	mSettings.lighting = true;
-	mSettings.maxRayGeneration = 2;
 	mSettings.antialiasSamples = 3;
-	mSettings.radiantLighting = true;
-	mSettings.specularLighting = true;
-	mSettings.directLighting = true;
-	mSettings.directSamples = 10;
-	mSettings.indirectLighting = true;
-	mSettings.indirectSamples = 1000;
-	mSettings.indirectDirectSamples = 10;
-	mSettings.irradianceCaching = true;
-	mSettings.irradianceCacheThreshold = 0.15;
+	mSettings.lighterSettings.maxRayGeneration = 2;
+	mSettings.lighterSettings.radiantLighting = true;
+	mSettings.lighterSettings.specularLighting = true;
+	mSettings.lighterSettings.directLighting = true;
+	mSettings.lighterSettings.directSamples = 10;
+	mSettings.lighterSettings.indirectLighting = true;
+	mSettings.lighterSettings.indirectSamples = 1000;
+	mSettings.lighterSettings.indirectDirectSamples = 10;
+	mSettings.lighterSettings.irradianceCaching = true;
+	mSettings.lighterSettings.irradianceCacheThreshold = 0.15;
 }
 
 void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
@@ -76,15 +76,15 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		CheckDlgButton(hwndDlg, IDC_LIGHTING, mSettings.lighting ? BST_CHECKED : BST_UNCHECKED);
 		SetDlgItemInt(hwndDlg, IDC_AA_SAMPLES, mSettings.antialiasSamples, TRUE);
 		SendDlgItemMessage(hwndDlg, IDC_MAX_GEN_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
-		CheckDlgButton(hwndDlg, IDC_RADIANT, mSettings.radiantLighting ? BST_CHECKED : BST_UNCHECKED);
-		CheckDlgButton(hwndDlg, IDC_SPECULAR, mSettings.specularLighting ? BST_CHECKED : BST_UNCHECKED);
-		CheckDlgButton(hwndDlg, IDC_DIRECT, mSettings.directLighting ? BST_CHECKED : BST_UNCHECKED);
-		SetDlgItemInt(hwndDlg, IDC_DIRECT_SAMPLES, mSettings.directSamples, TRUE);
-		CheckDlgButton(hwndDlg, IDC_INDIRECT, mSettings.indirectLighting ? BST_CHECKED : BST_UNCHECKED);
-		SetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, mSettings.indirectSamples, TRUE);
-		SetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, mSettings.indirectDirectSamples, TRUE);
-		CheckDlgButton(hwndDlg, IDC_IRRADIANCE_CACHING, mSettings.irradianceCaching ? BST_CHECKED : BST_UNCHECKED);
-		sprintf_s(buf, sizeof(buf), "%f", mSettings.irradianceCacheThreshold);
+		CheckDlgButton(hwndDlg, IDC_RADIANT, mSettings.lighterSettings.radiantLighting ? BST_CHECKED : BST_UNCHECKED);
+		CheckDlgButton(hwndDlg, IDC_SPECULAR, mSettings.lighterSettings.specularLighting ? BST_CHECKED : BST_UNCHECKED);
+		CheckDlgButton(hwndDlg, IDC_DIRECT, mSettings.lighterSettings.directLighting ? BST_CHECKED : BST_UNCHECKED);
+		SetDlgItemInt(hwndDlg, IDC_DIRECT_SAMPLES, mSettings.lighterSettings.directSamples, TRUE);
+		CheckDlgButton(hwndDlg, IDC_INDIRECT, mSettings.lighterSettings.indirectLighting ? BST_CHECKED : BST_UNCHECKED);
+		SetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, mSettings.lighterSettings.indirectSamples, TRUE);
+		SetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, mSettings.lighterSettings.indirectDirectSamples, TRUE);
+		CheckDlgButton(hwndDlg, IDC_IRRADIANCE_CACHING, mSettings.lighterSettings.irradianceCaching ? BST_CHECKED : BST_UNCHECKED);
+		sprintf_s(buf, sizeof(buf), "%f", mSettings.lighterSettings.irradianceCacheThreshold);
 		SetDlgItemText(hwndDlg, IDC_IRRADIANCE_CACHE_THRESHOLD, buf);
 		return FALSE;
 
@@ -113,14 +113,14 @@ void RenderControlDlg::refreshSettings()
 	mSettings.height = GetDlgItemInt(mHDlg, IDC_HEIGHT, NULL, TRUE);
 	mSettings.lighting = IsDlgButtonChecked(mHDlg, IDC_LIGHTING);
 	mSettings.antialiasSamples = GetDlgItemInt(mHDlg, IDC_AA_SAMPLES, NULL, TRUE);
-	mSettings.radiantLighting = IsDlgButtonChecked(mHDlg, IDC_RADIANT);
-	mSettings.specularLighting = IsDlgButtonChecked(mHDlg, IDC_SPECULAR);
-	mSettings.directLighting = IsDlgButtonChecked(mHDlg, IDC_DIRECT);
-	mSettings.directSamples = GetDlgItemInt(mHDlg, IDC_DIRECT_SAMPLES, NULL, TRUE);
-	mSettings.indirectLighting = IsDlgButtonChecked(mHDlg, IDC_INDIRECT);
-	mSettings.indirectSamples = GetDlgItemInt(mHDlg, IDC_INDIRECT_SAMPLES, NULL, TRUE);
-	mSettings.indirectDirectSamples = GetDlgItemInt(mHDlg, IDC_INDIRECT_DIRECT_SAMPLES, NULL, TRUE);
-	mSettings.irradianceCaching = IsDlgButtonChecked(mHDlg, IDC_IRRADIANCE_CACHING);
+	mSettings.lighterSettings.radiantLighting = IsDlgButtonChecked(mHDlg, IDC_RADIANT);
+	mSettings.lighterSettings.specularLighting = IsDlgButtonChecked(mHDlg, IDC_SPECULAR);
+	mSettings.lighterSettings.directLighting = IsDlgButtonChecked(mHDlg, IDC_DIRECT);
+	mSettings.lighterSettings.directSamples = GetDlgItemInt(mHDlg, IDC_DIRECT_SAMPLES, NULL, TRUE);
+	mSettings.lighterSettings.indirectLighting = IsDlgButtonChecked(mHDlg, IDC_INDIRECT);
+	mSettings.lighterSettings.indirectSamples = GetDlgItemInt(mHDlg, IDC_INDIRECT_SAMPLES, NULL, TRUE);
+	mSettings.lighterSettings.indirectDirectSamples = GetDlgItemInt(mHDlg, IDC_INDIRECT_DIRECT_SAMPLES, NULL, TRUE);
+	mSettings.lighterSettings.irradianceCaching = IsDlgButtonChecked(mHDlg, IDC_IRRADIANCE_CACHING);
 	GetDlgItemText(mHDlg, IDC_IRRADIANCE_CACHE_THRESHOLD, buf, sizeof(buf));
-	mSettings.irradianceCacheThreshold = atof(buf);
+	mSettings.lighterSettings.irradianceCacheThreshold = atof(buf);
 }
