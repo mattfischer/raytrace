@@ -26,11 +26,11 @@ Master::Master(const Settings &settings)
 	}
 }
 
-Object::Radiance Master::light(const Object::Intersection &intersection, Render::Tracer &tracer) const
+Object::Radiance Master::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 {
 	Object::Radiance radiance;
 	for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
-		radiance += lighter->light(intersection, tracer);
+		radiance += lighter->light(intersection, tracer, generation);
 	}
 
 	return radiance;

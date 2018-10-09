@@ -47,7 +47,7 @@ Math::Ray Tracer::createCameraRay(float x, float y)
 {
 	float cx = (2 * x - mWidth) / mWidth;
 	float cy = (2 * y - mHeight) / mWidth;
-	Math::Ray ray = mScene.camera().createRay(cx, cy, 1);
+	Math::Ray ray = mScene.camera().createRay(cx, cy);
 
 	return ray;
 }

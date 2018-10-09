@@ -26,7 +26,7 @@ public:
 		std::vector<Entry> entries;
 	};
 
-	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer) const = 0;
+	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const = 0;
 	virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer);
 
 	void enableProbe(bool enabled);

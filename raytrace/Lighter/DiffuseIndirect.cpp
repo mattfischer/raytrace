@@ -21,7 +21,7 @@ DiffuseIndirect::DiffuseIndirect(int indirectSamples, int indirectDirectSamples,
 	mIrradianceCaching = irradianceCaching;
 }
 
-Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer) const
+Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
@@ -53,13 +53,13 @@ Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection
 				Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(intersection.normal()) * std::sin(theta);
 
 				Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;
-				Math::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
+				Math::Ray ray(offsetPoint, direction);
 				Object::Intersection intersection2 = tracer.intersect(ray);
 
 				Math::Vector probeDirection(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
 				Object::Radiance probeRadiance;
 				if (intersection2.valid()) {
-					Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer);
+					Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer, generation + 1);
 					radiance += irradiance *  albedo * brdf.lambert() / (M * N);
 					probeRadiance = irradiance;
 				}
@@ -106,13 +106,13 @@ bool DiffuseIndirect::prerender(const Object::Intersection &intersection, Render
 			Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(normal) * std::sin(theta);
 
 			Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
-			Math::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
+			Math::Ray ray(offsetPoint, direction);
 			Object::Intersection intersection2 = tracer.intersect(ray);
 
 			if (intersection2.valid()) {
 				mean += 1 / intersection2.distance();
 				den++;
-				Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer);
+				Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer, 1);
 
 				samples[k * M + j] = incidentRadiance;
 				sampleDistances[k * M + j] = intersection2.distance();

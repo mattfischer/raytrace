@@ -87,7 +87,7 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 		Lighter::DiffuseIndirect lighter(engine.settings().lighterSettings.indirectSamples, engine.settings().lighterSettings.indirectDirectSamples, false, 0);
 		//Trace::Lighter::DiffuseDirect lighter(engine.settings().lighterSettings.directSamples);
 		lighter.enableProbe(true);
-		lighter.light(intersection, tracer);
+		lighter.light(intersection, tracer, 0);
 
 		mSamples.clear();
 		for (const Lighter::Base::Probe::Entry &entry : lighter.probe().entries) {

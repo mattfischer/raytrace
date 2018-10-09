@@ -242,7 +242,7 @@ Object::Color Engine::renderPixel(Thread &thread, int x, int y)
 			if (intersection.valid())
 			{
 				if (mSettings.lighting) {
-					Object::Radiance radiance = mLighter->light(intersection, thread.tracer());
+					Object::Radiance radiance = mLighter->light(intersection, thread.tracer(), 0);
 					color += toneMap(radiance);
 				}
 				else {

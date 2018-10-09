@@ -26,7 +26,7 @@ public:
 
 	Master(const Settings &settings);
 
-	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer) const;
+	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
 	virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer) const;
 
 private:

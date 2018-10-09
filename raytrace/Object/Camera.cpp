@@ -27,14 +27,14 @@ std::unique_ptr<Camera> Camera::fromAst(AST *ast)
 	return camera;
 }
 
-Math::Ray Camera::createRay(float x, float y, int generation) const
+Math::Ray Camera::createRay(float x, float y) const
 {
 	float rayX, rayY;
 
 	rayX = mSize * x;
 	rayY = -mSize * y;
 
-	return Math::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize(), generation);
+	return Math::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize());
 }
 
 float Camera::projectSize(float size, float distance) const

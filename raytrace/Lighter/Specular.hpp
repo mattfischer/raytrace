@@ -11,7 +11,7 @@ namespace Lighter {
 	public:
 		Specular(const Lighter::Base &lighter, int maxRayGeneration);
 
-		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer) const;
+		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
 
 	private:
 		const Lighter::Base &mLighter;

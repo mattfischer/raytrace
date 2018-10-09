@@ -13,7 +13,7 @@ DiffuseDirect::DiffuseDirect(int numSamples)
 	mNumSamples = numSamples;
 }
 
-Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, Render::Tracer &tracer) const
+Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
@@ -48,7 +48,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 			float distance = incidentDirection.magnitude();
 			incidentDirection = incidentDirection / distance;
 			Math::Point offsetPoint = point + Math::Vector(intersection.normal()) * 0.01;
-			Math::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
+			Math::Ray ray(offsetPoint, incidentDirection);
 			Object::Intersection intersection2 = tracer.intersect(ray);
 
 			Math::Vector probeDirection(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
@@ -74,7 +74,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 		float distance = incidentDirection.magnitude();
 		incidentDirection = incidentDirection / distance;
 
-		Math::Ray ray(offsetPoint, incidentDirection, intersection.ray().generation() + 1);
+		Math::Ray ray(offsetPoint, incidentDirection);
 		Object::Intersection intersection2 = tracer.intersect(ray);
 
 		Math::Vector probeDirection(incidentDirection * x, incidentDirection * y, incidentDirection * normal);

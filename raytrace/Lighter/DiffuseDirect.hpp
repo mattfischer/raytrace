@@ -11,7 +11,7 @@ class DiffuseDirect : public Base
 {
 public:
 	DiffuseDirect(int numSamples);
-	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer) const;
+	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
 
 private:
 	int mNumSamples;
