@@ -4,7 +4,6 @@
 
 #include "Object/Brdf/Lambert.hpp"
 #include "Object/Brdf/Phong.hpp"
-#include "Object/Brdf/Specular.hpp"
 #include "Object/Brdf/Composite.hpp"
 
 #include <vector>
@@ -27,7 +26,7 @@ bool Base::specular() const
 	return false;
 }
 
-Object::Radiance Base::specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const
+Object::Radiance Base::specularRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	return Object::Radiance(0, 0, 0);
 }
@@ -44,10 +43,6 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 
 			case AstPhong:
 				brdfs.push_back(Phong::fromAst(ast->children[i]));
-				break;
-
-			case AstSpecular:
-				brdfs.push_back(Specular::fromAst(ast->children[i]));
 				break;
 		}
 	}

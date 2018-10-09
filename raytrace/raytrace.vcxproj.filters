@@ -119,9 +119,6 @@
     <ClCompile Include="Object\Brdf\Phong.cpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Brdf\Specular.cpp">
-      <Filter>Source Files\Object\Brdf</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Surface.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
@@ -234,9 +231,6 @@
       <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
     <ClInclude Include="Object\Brdf\Phong.hpp">
-      <Filter>Source Files\Object\Brdf</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Brdf\Specular.hpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
     <ClInclude Include="Object\Primitive\Base.hpp">

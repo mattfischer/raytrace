@@ -36,7 +36,6 @@ checker return CHECKER;
 
 lambert return LAMBERT;
 phong return PHONG;
-specular return SPECULAR;
 
 camera return CAMERA;
 

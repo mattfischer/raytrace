@@ -46,12 +46,12 @@ float Composite::lambert() const
 	return lambert;
 }
 
-Object::Radiance Composite::specularRadiance(const Object::Radiance &incidentRadiance, const Object::Color &albedo) const
+Object::Radiance Composite::specularRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	Object::Radiance totalRadiance;
 
 	for (const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
-		totalRadiance = totalRadiance + brdf->specularRadiance(incidentRadiance, albedo);
+		totalRadiance = totalRadiance + brdf->specularRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
 	}
 
 	return totalRadiance;

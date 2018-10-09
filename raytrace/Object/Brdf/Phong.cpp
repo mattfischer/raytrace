@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "Object/Brdf/Phong.hpp"
 
 #include "Math/Normal.hpp"
@@ -14,18 +15,22 @@ Phong::Phong(float strength, float power)
 	mPower = power;
 }
 
-Object::Radiance Phong::diffuseRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Radiance Phong::specularRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
-	Math::Vector incident = -incidentDirection;
-	Math::Vector reflect = incident + Math::Vector(normal) * (2 * (-normal * incident));
+	Math::Vector reflectDirection = -(incidentDirection - Math::Vector(normal) * (2 * (normal * incidentDirection)));
 
-	float dot = reflect * outgoingDirection;
+	float dot = reflectDirection * outgoingDirection;
 	float coeff = 0;
 	if(dot > 0) {
 		coeff = std::pow(dot, mPower);
 	}
 
-	return incidentRadiance * mStrength * coeff;
+	return incidentRadiance * mStrength * coeff * (mPower + 1) / (2 * M_PI);
+}
+
+bool Phong::specular() const
+{
+	return true;
 }
 
 std::unique_ptr<Phong> Phong::fromAst(AST *ast)

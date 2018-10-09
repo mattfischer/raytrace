@@ -120,7 +120,6 @@
     <ClCompile Include="Object\Brdf\Composite.cpp" />
     <ClCompile Include="Object\Brdf\Lambert.cpp" />
     <ClCompile Include="Object\Brdf\Phong.cpp" />
-    <ClCompile Include="Object\Brdf\Specular.cpp" />
     <ClCompile Include="Object\Camera.cpp" />
     <ClCompile Include="Object\Color.cpp" />
     <ClCompile Include="Object\Intersection.cpp" />
@@ -180,7 +179,6 @@
     <ClInclude Include="Object\Brdf\Composite.hpp" />
     <ClInclude Include="Object\Brdf\Lambert.hpp" />
     <ClInclude Include="Object\Brdf\Phong.hpp" />
-    <ClInclude Include="Object\Brdf\Specular.hpp" />
     <ClInclude Include="Object\Camera.hpp" />
     <ClInclude Include="Object\Color.hpp" />
     <ClInclude Include="Object\Intersection.hpp" />
