@@ -223,7 +223,7 @@ Object::Color Engine::prerenderPixel(Thread &thread, int x, int y)
 	Object::Intersection intersection = thread.tracer().intersect(ray);
 	if (intersection.valid())
 	{
-		if (mLighter->prerender(intersection, thread.tracer())) {
+		if (mSettings.lighting && mLighter->prerender(intersection, thread.tracer())) {
 			color = Object::Color(1, 1, 1);
 		}
 	}
