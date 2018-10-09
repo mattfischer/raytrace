@@ -9,13 +9,14 @@ namespace Lighter {
 	class Specular : public Base
 	{
 	public:
-		Specular(const Lighter::Base &lighter, int maxRayGeneration);
+		Specular(const Lighter::Base &lighter, int numSamples, int maxGeneration);
 
 		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
 
 	private:
 		const Lighter::Base &mLighter;
-		int mMaxRayGeneration;
+		int mNumSamples;
+		int mMaxGeneration;
 	};
 
 }

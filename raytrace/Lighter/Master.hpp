@@ -14,6 +14,8 @@ public:
 	struct Settings {
 		bool radiantLighting;
 		bool specularLighting;
+		int specularSamples;
+		int specularMaxGeneration;
 		bool directLighting;
 		int directSamples;
 		bool indirectLighting;
@@ -21,7 +23,6 @@ public:
 		int indirectDirectSamples;
 		bool irradianceCaching;
 		float irradianceCacheThreshold;
-		int maxRayGeneration;
 	};
 
 	Master(const Settings &settings);

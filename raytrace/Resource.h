@@ -28,6 +28,9 @@
 #define IDC_IRRADIANCE_CACHE_THRESHOLD  1021
 #define IDC_SPECULAR                    1022
 #define IDC_IRRADIANCE_CACHING          1023
+#define IDC_SPECULAR_SAMPLES            1024
+#define IDC_DIRECT_SAMPLES3             1025
+#define IDC_SPECULAR_MAX_GENERATION     1025
 
 // Next default values for new objects
 // 

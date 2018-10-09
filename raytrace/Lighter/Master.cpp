@@ -22,7 +22,7 @@ Master::Master(const Settings &settings)
 	}
 
 	if (settings.specularLighting) {
-		mLighters.push_back(std::make_unique<Lighter::Specular>(*this, settings.maxRayGeneration));
+		mLighters.push_back(std::make_unique<Lighter::Specular>(*this, settings.specularSamples, settings.specularMaxGeneration));
 	}
 }
 
