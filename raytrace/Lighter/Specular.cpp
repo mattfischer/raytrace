@@ -24,7 +24,8 @@ Object::Radiance Specular::light(const Object::Intersection &intersection, Rende
 		Math::Vector incident = ray.direction();
 		Math::Vector reflect = incident + Math::Vector(intersection.normal()) * (2 * (-intersection.normal() * incident));
 
-		Math::Ray reflectRay(intersection.point(), reflect);
+		Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;
+		Math::Ray reflectRay(offsetPoint, reflect);
 		Object::Intersection intersection2 = tracer.intersect(reflectRay);
 
 		if (intersection2.valid())
