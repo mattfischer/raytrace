@@ -26,8 +26,18 @@ public:
 		std::vector<Entry> entries;
 	};
 
-	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe = 0) const = 0;
+	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer) const = 0;
 	virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer);
+
+	void enableProbe(bool enabled);
+	const Probe &probe() const;
+
+protected:
+	void clearProbe() const;
+	void addProbeEntry(const Math::Vector &direction, const Object::Radiance &radiance) const;
+
+private:
+	std::unique_ptr<Probe> mProbe;
 };
 
 }

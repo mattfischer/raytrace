@@ -6,7 +6,7 @@
 
 namespace Lighter {
 
-Object::Radiance Radiant::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
+Object::Radiance Radiant::light(const Object::Intersection &intersection, Render::Tracer &tracer) const
 {
 	return intersection.primitive()->surface().radiance();
 }

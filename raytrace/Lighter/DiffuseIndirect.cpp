@@ -21,13 +21,15 @@ DiffuseIndirect::DiffuseIndirect(int indirectSamples, int indirectDirectSamples,
 	mIrradianceCaching = irradianceCaching;
 }
 
-Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, Probe *probe) const
+Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer) const
 {
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
 	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
 	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
+
+	clearProbe();
 
 	Object::Radiance radiance;
 	if (mIrradianceCaching) {
@@ -54,17 +56,15 @@ Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection
 				Math::Ray ray(offsetPoint, direction, intersection.ray().generation() + 1);
 				Object::Intersection intersection2 = tracer.intersect(ray);
 
-				Probe::Entry probeEntry;
-				probeEntry.direction = Math::Vector(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
+				Math::Vector probeDirection(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
+				Object::Radiance probeRadiance;
 				if (intersection2.valid()) {
 					Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer);
 					radiance += irradiance *  albedo * brdf.lambert() / (M * N);
-					probeEntry.radiance = irradiance;
+					probeRadiance = irradiance;
 				}
 
-				if (probe) {
-					probe->entries.push_back(probeEntry);
-				}
+				addProbeEntry(probeDirection, probeRadiance);
 			}
 		}
 	}
