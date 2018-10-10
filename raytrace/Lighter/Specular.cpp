@@ -26,25 +26,33 @@ Object::Radiance Specular::light(const Object::Intersection &intersection, Rende
 	const Math::Normal &normal = intersection.normal();
 	Object::Radiance radiance;
 
-	Math::Vector x, y;
-	Utils::orthonormalBasis(Math::Vector(normal), x, y);
-
 	if (surface.brdf().specular() && generation < mMaxGeneration) {
 		Object::Color albedo = surface.albedo().color(intersection.objectPoint());
 		Math::Vector outgoingDirection = -ray.direction();
 		Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;
 
+		Math::Vector x, y;
+		Utils::orthonormalBasis(outgoingDirection, x, y);
+
 		for (int i = 0; i < mNumSamples; i++) {
-			Math::Vector vector = Utils::sampleHemisphere(i, mNumSamples, M_PI / 2, mRandomEngine);
+			float u;
+			float v;
 
-			Math::Vector incidentDirection = x * vector.x() + y * vector.y() + Math::Vector(normal) * vector.z();
-			Math::Ray reflectRay(offsetPoint, incidentDirection);
-			Object::Intersection intersection2 = tracer.intersect(reflectRay);
+			Utils::stratifiedSamples(i, mNumSamples, u, v, mRandomEngine);
 
-			if (intersection2.valid())
-			{
-				Object::Radiance reflectRadiance = mLighter.light(intersection2, tracer, generation + 1);
-				radiance += surface.brdf().specularRadiance(reflectRadiance, incidentDirection, intersection.normal(), outgoingDirection, albedo) * 2 * M_PI / mNumSamples;
+			float phi = 2 * M_PI * u;
+			float theta = std::acos(std::pow(v, 1.0f / (101))); /****/
+
+			Math::Vector direction = x * std::cos(phi) * std::sin(theta) + y * std::sin(phi) * std::sin(theta) + outgoingDirection * std::cos(theta);
+			Math::Vector incidentDirection = -(direction - Math::Vector(normal) * (direction * normal * 2));
+			if(incidentDirection * normal > 0) {
+				Math::Ray reflectRay(offsetPoint, incidentDirection);
+				Object::Intersection intersection2 = tracer.intersect(reflectRay);
+
+				if (intersection2.valid()) {
+					Object::Radiance reflectRadiance = mLighter.light(intersection2, tracer, generation + 1);
+					radiance += reflectRadiance / mNumSamples;
+				}
 			}
 		}
 	}
