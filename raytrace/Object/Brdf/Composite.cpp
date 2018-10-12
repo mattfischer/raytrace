@@ -3,58 +3,57 @@
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
 
+#include "Object/Brdf/Lambert.hpp"
+#include "Object/Brdf/Phong.hpp"
+
 #include <vector>
 
 namespace Object {
 namespace Brdf {
 
-Composite::Composite(std::vector<std::unique_ptr<Base>> &&brdfs)
-: mBrdfs(std::move(brdfs))
+std::unique_ptr<Composite> Composite::fromAst(AST *ast)
 {
-}
+	std::unique_ptr<Base> diffuse;
+	std::unique_ptr<Base> specular;
 
-Object::Radiance Composite::diffuseRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
-{
-	Object::Radiance totalRadiance;
+	for (int i = 0; i<ast->numChildren; i++) {
+		switch (ast->children[i]->type) {
+		case AstLambert:
+			diffuse = Lambert::fromAst(ast->children[i]);
+			break;
 
-	for(const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
-		totalRadiance = totalRadiance + brdf->diffuseRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
-	}
-
-	return totalRadiance;
-}
-
-bool Composite::specular() const
-{
-	for (const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
-		if(brdf->specular()) {
-			return true;
+		case AstPhong:
+			specular = Phong::fromAst(ast->children[i]);
+			break;
 		}
 	}
 
-	return false;
+	return std::make_unique<Composite>(std::move(diffuse), std::move(specular));
 }
 
-float Composite::lambert() const
+Composite::Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular)
+: mDiffuse(std::move(diffuse)), mSpecular(std::move(specular))
 {
-	float lambert = 0;
-
-	for (const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
-		lambert += brdf->lambert();
-	}
-
-	return lambert;
 }
 
-Object::Radiance Composite::specularRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+bool Composite::hasDiffuse() const
 {
-	Object::Radiance totalRadiance;
+	return mDiffuse.get();
+}
 
-	for (const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
-		totalRadiance = totalRadiance + brdf->specularRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
-	}
+const Base &Composite::diffuse() const
+{
+	return *mDiffuse;
+}
 
-	return totalRadiance;
+bool Composite::hasSpecular() const
+{
+	return mSpecular.get();
+}
+
+const Base &Composite::specular() const
+{
+	return *mSpecular;
 }
 
 }

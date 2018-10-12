@@ -8,19 +8,22 @@
 namespace Object {
 namespace Brdf {
 
-class Composite : public Base
+class Composite
 {
 public:
-	Composite(std::vector<std::unique_ptr<Base>> &&brdfs);
+	static std::unique_ptr<Composite> fromAst(AST *ast);
 
-	virtual Object::Radiance diffuseRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
-	virtual float lambert() const;
+	Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular);
 
-	virtual bool specular() const;
-	virtual Object::Radiance specularRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
+	bool hasDiffuse() const;
+	const Base &diffuse() const;
+
+	bool hasSpecular() const;
+	const Base &specular() const;
 
 private:
-	std::vector<std::unique_ptr<Base>> mBrdfs;
+	std::unique_ptr<Base> mDiffuse;
+	std::unique_ptr<Base> mSpecular;
 };
 
 }

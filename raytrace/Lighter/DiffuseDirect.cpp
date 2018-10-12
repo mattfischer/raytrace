@@ -18,7 +18,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
 	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
-	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
+	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf().diffuse();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
 	clearProbe();
@@ -59,7 +59,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 
 				if (dot > 0) {
 					Object::Radiance incidentRadiance = objectRadiance * sampleDot * dot * area / (distance * distance);
-					radiance += brdf.diffuseRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / mNumSamples;
+					radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / mNumSamples;
 					probeRadiance = objectRadiance;
 				}
 			}
@@ -83,7 +83,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 			float dot = incidentDirection * normal;
 			if (dot > 0) {
 				Object::Radiance incidentRadiance = light->radiance() * dot / (distance * distance);
-				radiance += brdf.diffuseRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
+				radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo);
 
 				probeRadiance = light->radiance();
 			}

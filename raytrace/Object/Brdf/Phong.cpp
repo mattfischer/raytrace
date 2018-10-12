@@ -15,7 +15,7 @@ Phong::Phong(float strength, float power)
 	mPower = power;
 }
 
-Object::Radiance Phong::specularRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+Object::Radiance Phong::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 {
 	Math::Vector reflectDirection = -(incidentDirection - Math::Vector(normal) * (2 * (normal * incidentDirection)));
 
@@ -26,11 +26,6 @@ Object::Radiance Phong::specularRadiance(const Object::Radiance &incidentRadianc
 	}
 
 	return incidentRadiance * mStrength * coeff * (mPower + 1) / (2 * M_PI);
-}
-
-bool Phong::specular() const
-{
-	return true;
 }
 
 std::unique_ptr<Phong> Phong::fromAst(AST *ast)

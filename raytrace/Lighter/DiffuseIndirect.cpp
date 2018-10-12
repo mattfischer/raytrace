@@ -26,7 +26,7 @@ Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection
 	const Math::Point &point = intersection.point();
 	const Math::Normal &normal = intersection.normal();
 	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
-	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
+	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf().diffuse();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
 	clearProbe();
@@ -40,7 +40,6 @@ Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection
 		Math::Vector x, y;
 		Utils::orthonormalBasis(Math::Vector(intersection.normal()), x, y);
 		const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
-		const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf();
 
 		const int M = std::sqrt(mIndirectSamples);
 		const int N = mIndirectSamples / M;
@@ -60,7 +59,7 @@ Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection
 				Object::Radiance probeRadiance;
 				if (intersection2.valid()) {
 					Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer, generation + 1);
-					radiance += irradiance *  albedo * brdf.lambert() / (M * N);
+					radiance += irradiance * albedo * brdf.lambert() / (M * N);
 					probeRadiance = irradiance;
 				}
 
