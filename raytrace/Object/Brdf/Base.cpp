@@ -19,5 +19,15 @@ float Base::lambert() const
 	return 0;
 }
 
+Math::Vector Base::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+{
+	return Math::Vector(0, 0, 0);
+}
+
+Object::Radiance Base::sampledRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+{
+	return Object::Radiance(0, 0, 0);
+}
+
 }
 }

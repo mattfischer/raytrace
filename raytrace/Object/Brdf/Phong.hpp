@@ -13,6 +13,9 @@ public:
 
 	virtual Object::Radiance radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
 
+	virtual Math::Vector sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
+	virtual Object::Radiance sampledRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
+
 	static std::unique_ptr<Phong> fromAst(AST *ast);
 
 private:

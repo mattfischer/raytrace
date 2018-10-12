@@ -4,6 +4,8 @@
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
 
+#include "Lighter/Utils.hpp"
+
 #include <cmath>
 
 namespace Object {
@@ -26,6 +28,25 @@ Object::Radiance Phong::radiance(const Object::Radiance &incidentRadiance, const
 	}
 
 	return incidentRadiance * mStrength * coeff * (mPower + 1) / (2 * M_PI);
+}
+
+Math::Vector Phong::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+{
+	float phi = 2 * M_PI * u;
+	float theta = std::acos(std::pow(v, 1.0f / (mPower + 1)));
+
+	Math::Vector x, y;
+	Lighter::Utils::orthonormalBasis(outgoingDirection, x, y);
+
+	Math::Vector direction = x * std::cos(phi) * std::sin(theta) + y * std::sin(phi) * std::sin(theta) + outgoingDirection * std::cos(theta);
+	Math::Vector incidentDirection = -(direction - Math::Vector(normal) * (direction * normal * 2));
+
+	return incidentDirection;
+}
+
+Object::Radiance Phong::sampledRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+{
+	return incidentRadiance * mStrength;
 }
 
 std::unique_ptr<Phong> Phong::fromAst(AST *ast)
