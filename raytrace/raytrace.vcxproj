@@ -127,6 +127,7 @@
     <ClCompile Include="Object\Primitive\Base.cpp" />
     <ClCompile Include="Object\Primitive\BoundingVolume.cpp" />
     <ClCompile Include="Object\Primitive\Box.cpp" />
+    <ClCompile Include="Object\Primitive\Grid.cpp" />
     <ClCompile Include="Object\Primitive\Quad.cpp" />
     <ClCompile Include="Object\Primitive\Sampleable.cpp" />
     <ClCompile Include="Object\Primitive\Sphere.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Object\Primitive\Base.hpp" />
     <ClInclude Include="Object\Primitive\BoundingVolume.hpp" />
     <ClInclude Include="Object\Primitive\Box.hpp" />
+    <ClInclude Include="Object\Primitive\Grid.hpp" />
     <ClInclude Include="Object\Primitive\Quad.hpp" />
     <ClInclude Include="Object\Primitive\Sampleable.hpp" />
     <ClInclude Include="Object\Primitive\Sphere.hpp" />

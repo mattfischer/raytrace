@@ -21,7 +21,7 @@ float IrradianceCache::threshold() const
 float IrradianceCache::weight(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const 
 {
 	//return std::pow(std::max(double(0), 1.0f - (point - entry.point).magnitude2() / (1.0 * entry.radius * std::pow(normal * entry.normal, 4.0f))), 2);
-	return 1.0f / ((point - entry.point).magnitude() / entry.radius + std::sqrt(1 - normal * entry.normal));
+	return 1.0f / ((point - entry.point).magnitude() / entry.radius + std::sqrt(1 - std::min(1.0f, normal * entry.normal)));
 }
 
 float IrradianceCache::error(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const

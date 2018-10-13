@@ -24,10 +24,14 @@ DiffuseIndirect::DiffuseIndirect(int indirectSamples, int indirectDirectSamples,
 Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 {
 	const Math::Point &point = intersection.point();
-	const Math::Normal &normal = intersection.normal();
+	Math::Normal normal = intersection.normal();
 	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
 	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf().diffuse();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
+
+	if (outgoingDirection * normal < 0) {
+		normal = -normal;
+	}
 
 	clearProbe();
 
@@ -78,7 +82,11 @@ bool DiffuseIndirect::prerender(const Object::Intersection &intersection, Render
 	}
 
 	const Math::Point &point = intersection.point();
-	const Math::Normal &normal = intersection.normal();
+	Math::Normal normal = intersection.normal();
+	const Math::Vector outgoingDirection = -intersection.ray().direction();
+	if (outgoingDirection * normal < 0) {
+		normal = -normal;
+	}
 
 	if (mIrradianceCache.test(point, normal)) {
 		return false;
@@ -171,9 +179,10 @@ bool DiffuseIndirect::prerender(const Object::Intersection &intersection, Render
 		newEntry.rotGrad = rotGrad;
 
 		mIrradianceCache.add(newEntry);
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 }

@@ -34,7 +34,7 @@ Object::Intersection Tracer::intersect(const Math::Ray &ray)
 	{
 		if (primitive->boundingVolume().intersectRay(rayData)) {
 			Object::Intersection newIntersection = primitive->intersect(ray);
-			if (!intersection.valid() || newIntersection.distance() < intersection.distance()) {
+			if (newIntersection.valid() && (!intersection.valid() || newIntersection.distance() < intersection.distance())) {
 				intersection = newIntersection;
 			}
 		}
