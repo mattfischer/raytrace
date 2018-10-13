@@ -23,6 +23,7 @@ public:
 
 	bool intersectRay(const RayData &rayData) const;
 	void expand(const Math::Point &point);
+	void expand(const BoundingVolume &volume);
 
 	static const std::array<Math::Vector, NUM_VECTORS> &vectors();
 	static RayData getRayData(const Math::Ray &ray);

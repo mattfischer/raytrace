@@ -36,6 +36,14 @@ void BoundingVolume::expand(const Math::Point &point)
 	}
 }
 
+void BoundingVolume::expand(const BoundingVolume &volume)
+{
+	for (int i = 0; i < NUM_VECTORS; i++) {
+		mMins[i] = std::min(volume.mMins[i], mMins[i]);
+		mMaxes[i] = std::max(volume.mMaxes[i], mMaxes[i]);
+	}
+}
+
 const std::array<Math::Vector, BoundingVolume::NUM_VECTORS> &BoundingVolume::vectors()
 {
 	return sVectors;

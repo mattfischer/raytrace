@@ -20,9 +20,20 @@ protected:
 	virtual BoundingVolume doBoundingVolume() const;
 
 private:
+	struct BvhNode {
+		int u;
+		int v;
+		BoundingVolume volume;
+
+		std::vector<std::unique_ptr<BvhNode>> children;
+	};
+
+	Intersection intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &raydata, const BvhNode &node) const;
+
 	int mWidth;
 	int mHeight;
 	std::vector<Math::Point> mPoints;
+	mutable std::unique_ptr<BvhNode> mBvhRoot;
 };
 
 }
