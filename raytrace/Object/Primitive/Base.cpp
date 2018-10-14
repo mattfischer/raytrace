@@ -61,19 +61,17 @@ void Base::setSurface(std::unique_ptr<Surface> &&surface)
 	mSurface = std::move(surface);
 }
 
-Intersection Base::intersect(const Math::Ray &ray) const
+float Base::intersect(const Math::Ray &ray, Math::Normal &normal) const
 {
 	Math::Ray transformedRay = mTransformation.inverse() * ray;
+	Math::Normal transformedNormal;
+	float distance = doIntersect(transformedRay, transformedNormal);
 
-	Math::Normal normal;
-	float distance = doIntersect(transformedRay, normal);
+	if (distance != FLT_MAX) {
+		normal = (transformation() * transformedNormal).normalize();
+	}
 
-	if (distance == FLT_MAX) {
-		return Intersection();
-	}
-	else {
-		return Intersection(this, transformedRay, distance, normal, transformedRay.origin() + transformedRay.direction() * distance);
-	}
+	return distance;
 }
 
 bool Base::inside(const Math::Point &point) const

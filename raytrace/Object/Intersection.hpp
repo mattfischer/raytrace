@@ -19,37 +19,22 @@ class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Object::Primitive::Base *primitive, const Math::Ray &ray, float distance, const Math::Normal &objectNormal, const Math::Point &objectPoint);
-	Intersection(const Intersection &c);
-	Intersection &operator=(const Intersection &c);
+	Intersection(const Object::Primitive::Base &primitive, const Math::Ray &ray, float distance, const Math::Normal &normal);
 
 	bool valid() const;
 
-	const Object::Primitive::Base *primitive() const;
+	const Object::Primitive::Base &primitive() const;
 
 	float distance() const;
 	const Math::Ray &ray() const;
 	const Math::Normal &normal() const;
-	const Math::Normal &objectNormal() const;
-	const Math::Point &point() const;
-	const Math::Point &objectPoint() const;
-
-	const Intersection &nearest(const Intersection &b) const;
-	
-	bool operator<(const Intersection &b) const;
+	Math::Point point() const;
 
 protected:
-	bool mValid;
-	const Object::Primitive::Base *mPrimitive;
-	Math::Ray mRay;
+	const Object::Primitive::Base &mPrimitive;
+	const Math::Ray &mRay;
 	float mDistance;
-	Math::Normal mObjectNormal;
-	Math::Point mObjectPoint;
-	mutable Math::Point mPoint;
-	mutable Math::Normal mNormal;
-	mutable bool mTransformed;
-
-	void doTransform() const;
+	Math::Normal mNormal;
 };
 
 }

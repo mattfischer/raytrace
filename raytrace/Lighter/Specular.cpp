@@ -21,7 +21,7 @@ Specular::Specular(const Lighter::Base &lighter, int numSamples, int maxGenerati
 
 Object::Radiance Specular::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 {
-	const Object::Surface &surface = intersection.primitive()->surface();
+	const Object::Surface &surface = intersection.primitive().surface();
 	const Math::Ray &ray = intersection.ray();
 	const Math::Normal &normal = intersection.normal();
 
@@ -29,7 +29,7 @@ Object::Radiance Specular::light(const Object::Intersection &intersection, Rende
 
 	if (surface.brdf().hasSpecular() && generation < mMaxGeneration) {
 		const Object::Brdf::Base &brdf = surface.brdf().specular();
-		Object::Color albedo = surface.albedo().color(intersection.objectPoint());
+		Object::Color albedo = surface.albedo().color(intersection.primitive().transformation().inverse() * intersection.point());
 
 		Math::Vector outgoingDirection = -ray.direction();
 		Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;

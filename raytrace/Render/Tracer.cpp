@@ -27,20 +27,33 @@ const Object::Scene &Tracer::scene() const
 Object::Intersection Tracer::intersect(const Math::Ray &ray)
 {
 	Object::Intersection intersection;
+	Object::Primitive::Base *primitive = 0;
+	float distance = FLT_MAX;
+	Math::Normal normal;
+
+	float newDistance;
+	Math::Normal newNormal;
 
 	Object::Primitive::BoundingVolume::RayData rayData = Object::Primitive::BoundingVolume::getRayData(ray);
 
-	for (const std::unique_ptr<Object::Primitive::Base> &primitive : mScene.primitives())
+	for (const std::unique_ptr<Object::Primitive::Base> &testPrimitive : mScene.primitives())
 	{
-		if (primitive->boundingVolume().intersectRay(rayData)) {
-			Object::Intersection newIntersection = primitive->intersect(ray);
-			if (newIntersection.valid() && (!intersection.valid() || newIntersection.distance() < intersection.distance())) {
-				intersection = newIntersection;
+		if (testPrimitive->boundingVolume().intersectRay(rayData)) {
+			newDistance = testPrimitive->intersect(ray, newNormal);
+			if (newDistance < distance) {
+				primitive = testPrimitive.get();
+				distance = newDistance;
+				normal = newNormal;
 			}
 		}
 	}
 
-	return intersection;
+	if (distance < FLT_MAX) {
+		return Object::Intersection(*primitive, ray, distance, normal);
+	}
+	else {
+		return Object::Intersection();
+	}
 }
 
 Math::Ray Tracer::createCameraRay(float x, float y)

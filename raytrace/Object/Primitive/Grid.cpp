@@ -16,7 +16,7 @@ bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Ma
 	Math::Vector P = ray.direction() % E2;
 
 	float den = P * E1;
-	if (std::abs(den) < 0.001) {
+	if (den > -0.001 && den < 0.001) {
 		return false;
 	}
 
@@ -116,14 +116,14 @@ float Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData
 {
 	float distance = FLT_MAX;
 
+	float newDistance;
+	Math::Normal newNormal;
 	if (node.u != -1 && node.v != -1) {
 		const Math::Point point0 = mPoints[node.v * mWidth + node.u];
 		const Math::Point point1 = mPoints[node.v * mWidth + node.u + 1];
 		const Math::Point point2 = mPoints[(node.v + 1) * mWidth + node.u];
 		const Math::Point point3 = mPoints[(node.v + 1) * mWidth + node.u + 1];
 
-		float newDistance;
-		Math::Normal newNormal;
 		if (intersectTriangle(ray, point0, point1, point2, newDistance, newNormal)) {
 			distance = newDistance;
 			normal = newNormal;
@@ -135,8 +135,7 @@ float Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData
 	else {
 		for (const std::unique_ptr<BvhNode> &child : node.children) {
 			if (child->volume.intersectRay(rayData)) {
-				Math::Normal newNormal;
-				float newDistance = intersectBvhNode(ray, rayData, *child, newNormal);
+				newDistance = intersectBvhNode(ray, rayData, *child, newNormal);
 				if (newDistance < distance) {
 					distance = newDistance;
 					normal = newNormal;

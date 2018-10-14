@@ -17,8 +17,8 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 {
 	const Math::Point &point = intersection.point();
 	Math::Normal normal = intersection.normal();
-	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
-	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf().diffuse();
+	const Object::Color &albedo = intersection.primitive().surface().albedo().color(intersection.primitive().transformation().inverse() * intersection.point());
+	const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf().diffuse();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 	if (outgoingDirection * normal < 0) {
 		normal = -normal;
@@ -56,7 +56,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 
 			Math::Vector probeDirection(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
 			Object::Radiance probeRadiance;
-			if (intersection2.valid() && intersection2.primitive() == &sampleable) {
+			if (intersection2.valid() && &(intersection2.primitive()) == &sampleable) {
 				float dot = incidentDirection * normal;
 				float sampleDot = abs(incidentDirection * sampleNormal);
 

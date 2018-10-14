@@ -20,7 +20,7 @@ public:
 	const Surface &surface() const;
 	void setSurface(std::unique_ptr<Surface> &&surface);
 
-	Intersection intersect(const Math::Ray &ray) const;
+	float intersect(const Math::Ray &ray, Math::Normal &normal) const;
 	bool inside(const Math::Point &point) const;
 
 	const BoundingVolume &boundingVolume() const;

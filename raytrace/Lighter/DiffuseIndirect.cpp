@@ -25,8 +25,8 @@ Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection
 {
 	const Math::Point &point = intersection.point();
 	Math::Normal normal = intersection.normal();
-	const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
-	const Object::Brdf::Base &brdf = intersection.primitive()->surface().brdf().diffuse();
+	const Object::Color &albedo = intersection.primitive().surface().albedo().color(intersection.primitive().transformation().inverse() * intersection.point());
+	const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf().diffuse();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
 	if (outgoingDirection * normal < 0) {
@@ -43,7 +43,7 @@ Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection
 	else {
 		Math::Vector x, y;
 		Utils::orthonormalBasis(Math::Vector(intersection.normal()), x, y);
-		const Object::Color &albedo = intersection.primitive()->surface().albedo().color(intersection.objectPoint());
+		const Object::Color &albedo = intersection.primitive().surface().albedo().color(intersection.primitive().transformation().inverse() * intersection.point());
 
 		const int M = std::sqrt(mIndirectSamples);
 		const int N = mIndirectSamples / M;
