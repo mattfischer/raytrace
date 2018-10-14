@@ -20,35 +20,36 @@ std::unique_ptr<Box> Box::fromAst(AST *ast)
 	return box;
 }
 
-void Box::testIntersect(const Math::Ray &ray, const Math::Normal &normal, Intersection &intersection) const
+void Box::testIntersect(const Math::Ray &ray, const Math::Normal &normal, float &outDistance, Math::Normal &outNormal) const
 {
-	float scale = (Math::Vector(ray.origin()) * normal - 1) / (ray.direction() * -normal);
-	if (scale > 0)
+	float distance = (Math::Vector(ray.origin()) * normal - 1) / (ray.direction() * -normal);
+	if (distance > 0)
 	{
-		Math::Point point = ray.origin() + ray.direction() * scale;
+		Math::Point point = ray.origin() + ray.direction() * distance;
 		point = point - Math::Vector(normal) * (Math::Vector(point) * normal - 1);
 
 		if(abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1)
     	{
-			if (!intersection.valid() || intersection.distance() > scale) {
-				intersection = Intersection(this, ray, scale, normal, point);
+			if (distance < outDistance) {
+				outDistance = distance;
+				outNormal = normal;
 			}
 		}
 	}
 }
 
-Intersection Box::doIntersect(const Math::Ray &ray) const
+float Box::doIntersect(const Math::Ray &ray, Math::Normal &normal) const
 {
-	Intersection intersection;
+	float distance = FLT_MAX;
 
-	testIntersect(ray, Math::Normal(1,0,0), intersection);
-	testIntersect(ray, Math::Normal(-1,0,0), intersection);
-	testIntersect(ray, Math::Normal(0,1,0), intersection);
-	testIntersect(ray, Math::Normal(0,-1,0), intersection);
-	testIntersect(ray, Math::Normal(0,0,1), intersection);
-	testIntersect(ray, Math::Normal(0,0,-1), intersection);
+	testIntersect(ray, Math::Normal(1,0,0), distance, normal);
+	testIntersect(ray, Math::Normal(-1,0,0), distance, normal);
+	testIntersect(ray, Math::Normal(0,1,0), distance, normal);
+	testIntersect(ray, Math::Normal(0,-1,0), distance, normal);
+	testIntersect(ray, Math::Normal(0,0,1), distance, normal);
+	testIntersect(ray, Math::Normal(0,0,-1), distance, normal);
 
-	return intersection;
+	return distance;
 }
 
 bool Box::doInside(const Math::Point &point) const

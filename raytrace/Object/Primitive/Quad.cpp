@@ -25,20 +25,21 @@ namespace Object {
 			mNormal = Math::Normal(mSide1 % mSide2).normalize();
 		}
 
-		Intersection Quad::doIntersect(const Math::Ray &ray) const
+		float Quad::doIntersect(const Math::Ray &ray, Math::Normal &normal) const
 		{
-			float scale = ((ray.origin() - mPosition) * mNormal) / (ray.direction() * -mNormal);
-			if (scale >= 0) {
-				Math::Point point = ray.origin() + ray.direction() * scale;
+			float distance = ((ray.origin() - mPosition) * mNormal) / (ray.direction() * -mNormal);
+			if (distance >= 0) {
+				Math::Point point = ray.origin() + ray.direction() * distance;
 				float u = (point - mPosition) * mSide1 / mSide1.magnitude2();
 				float v = (point - mPosition) * mSide2 / mSide2.magnitude2();
 				if (u >= 0 && u <= 1 && v >= 0 && v <= 1)
 				{
-					return Intersection(this, ray, scale, mNormal, point);
+					normal = mNormal;
+					return distance;
 				}
 			}
 
-			return Intersection();
+			return FLT_MAX;
 		}
 
 		bool Quad::doInside(const Math::Point &point) const

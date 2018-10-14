@@ -16,7 +16,7 @@ public:
 	Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
 
 protected:
-	virtual Intersection doIntersect(const Math::Ray &ray) const;
+	virtual float doIntersect(const Math::Ray &ray, Math::Normal &normal) const;
 	virtual bool doInside(const Math::Point &point) const;
 	virtual BoundingVolume doBoundingVolume() const;
 	virtual void doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;

@@ -33,7 +33,7 @@ protected:
 	std::unique_ptr<Surface> mSurface;
 	BoundingVolume mBoundingVolume;
 
-	virtual Intersection doIntersect(const Math::Ray &ray) const = 0;
+	virtual float doIntersect(const Math::Ray &ray, Math::Normal &normal) const = 0;
 	virtual bool doInside(const Math::Point &point) const = 0;
 	virtual BoundingVolume doBoundingVolume() const = 0;
 };

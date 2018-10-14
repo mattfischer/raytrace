@@ -14,11 +14,11 @@ public:
 	static std::unique_ptr<Box> fromAst(AST *ast);
 
 protected:
-	virtual Intersection doIntersect(const Math::Ray &ray) const;
+	virtual float doIntersect(const Math::Ray &ray, Math::Normal &normal) const;
 	virtual bool doInside(const Math::Point &point) const;
 	virtual BoundingVolume doBoundingVolume() const;
 
-	void testIntersect(const Math::Ray &ray, const Math::Normal &normal, Intersection &intersection) const;
+	void testIntersect(const Math::Ray &ray, const Math::Normal &normal, float &outDistance, Math::Normal &outNormal) const;
 };
 
 }

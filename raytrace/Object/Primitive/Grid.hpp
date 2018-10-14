@@ -15,7 +15,7 @@ public:
 	Grid(int width, int height, std::vector<Math::Point> &&points);
 
 protected:
-	virtual Intersection doIntersect(const Math::Ray &ray) const;
+	virtual float doIntersect(const Math::Ray &ray, Math::Normal &normal) const;
 	virtual bool doInside(const Math::Point &point) const;
 	virtual BoundingVolume doBoundingVolume() const;
 
@@ -28,7 +28,7 @@ private:
 		std::vector<std::unique_ptr<BvhNode>> children;
 	};
 
-	Intersection intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &raydata, const BvhNode &node) const;
+	float intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &raydata, const BvhNode &node, Math::Normal &normal) const;
 
 	int mWidth;
 	int mHeight;

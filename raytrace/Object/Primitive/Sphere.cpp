@@ -22,7 +22,7 @@ Sphere::Sphere(const Math::Point &position, float radius)
 {
 }
 
-Intersection Sphere::doIntersect(const Math::Ray &ray) const
+float Sphere::doIntersect(const Math::Ray &ray, Math::Normal &normal) const
 {
 	float a, b, c;
 	float disc;
@@ -36,22 +36,24 @@ Intersection Sphere::doIntersect(const Math::Ray &ray) const
 	{
 		float distance = (-b - sqrt(disc)) / (2 * a);
 
-		if(distance > 0)
+		if(distance >= 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			return Intersection(this, ray, distance, Math::Normal(point - mPosition) / mRadius, point);
+			normal = Math::Normal(point - mPosition) / mRadius;
+			return distance;
 		}
 
 		distance = (-b + sqrt(disc)) / (2 * a);
 
-		if(distance > 0)
+		if(distance >= 0)
 		{
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			return Intersection(this, ray, distance, Math::Normal(point - mPosition) / mRadius, point);
+			normal = Math::Normal(point - mPosition) / mRadius;
+			return distance;
 		}
 	}
 
-	return Intersection();
+	return FLT_MAX;
 }
 
 bool Sphere::doInside(const Math::Point &point) const

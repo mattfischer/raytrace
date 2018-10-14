@@ -65,7 +65,15 @@ Intersection Base::intersect(const Math::Ray &ray) const
 {
 	Math::Ray transformedRay = mTransformation.inverse() * ray;
 
-	return doIntersect(transformedRay);
+	Math::Normal normal;
+	float distance = doIntersect(transformedRay, normal);
+
+	if (distance == FLT_MAX) {
+		return Intersection();
+	}
+	else {
+		return Intersection(this, transformedRay, distance, normal, transformedRay.origin() + transformedRay.direction() * distance);
+	}
 }
 
 bool Base::inside(const Math::Point &point) const
