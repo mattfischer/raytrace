@@ -125,6 +125,7 @@
     <ClCompile Include="Object\Intersection.cpp" />
     <ClCompile Include="Object\Light.cpp" />
     <ClCompile Include="Object\Primitive\Base.cpp" />
+    <ClCompile Include="Object\Primitive\BezierPatch.cpp" />
     <ClCompile Include="Object\Primitive\BoundingVolume.cpp" />
     <ClCompile Include="Object\Primitive\Box.cpp" />
     <ClCompile Include="Object\Primitive\Grid.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Object\Intersection.hpp" />
     <ClInclude Include="Object\Light.hpp" />
     <ClInclude Include="Object\Primitive\Base.hpp" />
+    <ClInclude Include="Object\Primitive\BezierPatch.hpp" />
     <ClInclude Include="Object\Primitive\BoundingVolume.hpp" />
     <ClInclude Include="Object\Primitive\Box.hpp" />
     <ClInclude Include="Object\Primitive\Grid.hpp" />

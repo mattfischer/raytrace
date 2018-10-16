@@ -182,6 +182,9 @@
     <ClCompile Include="Object\Primitive\Grid.cpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Primitive\BezierPatch.cpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -336,6 +339,9 @@
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="Object\Primitive\Grid.hpp">
+      <Filter>Source Files\Object\Primitive</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive\BezierPatch.hpp">
       <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
   </ItemGroup>
