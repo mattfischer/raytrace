@@ -6,7 +6,6 @@ namespace Primitive {
 Grid::Grid(int width, int height, std::vector<Math::Point> &&points)
 	: mWidth(width), mHeight(height), mPoints(std::move(points))
 {
-	computeBoundingVolume();
 }
 
 bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Math::Point &point1, const Math::Point &point2, float &distance, Math::Normal &normal)
@@ -64,10 +63,10 @@ BoundingVolume Grid::doBoundingVolume() const
 
 			node->u = u;
 			node->v = v;
-			node->volume.expand(transformation() * mPoints[v * mWidth + u]);
-			node->volume.expand(transformation() * mPoints[v * mWidth + u + 1]);
-			node->volume.expand(transformation() * mPoints[(v + 1) * mWidth + u]);
-			node->volume.expand(transformation() * mPoints[(v + 1) * mWidth + u + 1]);
+			node->volume.expand(mPoints[v * mWidth + u]);
+			node->volume.expand(mPoints[v * mWidth + u + 1]);
+			node->volume.expand(mPoints[(v + 1) * mWidth + u]);
+			node->volume.expand(mPoints[(v + 1) * mWidth + u + 1]);
 
 			nodes.push_back(std::move(node));
 		}
@@ -109,7 +108,13 @@ BoundingVolume Grid::doBoundingVolume() const
 	}
 
 	mBvhRoot = std::move(nodes[0]);
-	return mBvhRoot->volume;
+
+	BoundingVolume volume;
+	for (const Math::Point &point : mPoints) {
+		volume.expand(transformation() * point);
+	}
+
+	return volume;
 }
 
 float Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &rayData, const BvhNode &node, Math::Normal &normal) const

@@ -32,7 +32,7 @@ Vector::Vector(const Coordinate &c)
 }
 
 Vector::Vector(const Point &point)
-: Coordinate(point)
+: Coordinate(point.x(), point.y(), point.z(), 0)
 {
 }
 

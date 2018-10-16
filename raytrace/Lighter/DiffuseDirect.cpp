@@ -50,7 +50,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 			Math::Vector incidentDirection = samplePoint - point;
 			float distance = incidentDirection.magnitude();
 			incidentDirection = incidentDirection / distance;
-			Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
+			Math::Point offsetPoint = point + Math::Vector(normal) * 0.0001;
 			Math::Ray ray(offsetPoint, incidentDirection);
 			Object::Intersection intersection2 = tracer.intersect(ray);
 

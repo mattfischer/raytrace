@@ -24,10 +24,9 @@ public:
 	bool inside(const Math::Point &point) const;
 
 	const BoundingVolume &boundingVolume() const;
-
-protected:
 	void computeBoundingVolume();
 
+protected:
 	static void parseAstCommon(Base &base, AST *ast);
 
 	std::unique_ptr<Surface> mSurface;

@@ -23,6 +23,11 @@ Point::Point(const Point &c)
 {
 }
 
+Point::Point(const Vector &c)
+: Coordinate(c.x(), c.y(), c.z(), 1)
+{
+}
+
 Point::Point(const Coordinate &c)
 : Coordinate(c)
 {
