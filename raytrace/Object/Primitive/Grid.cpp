@@ -134,7 +134,8 @@ float Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData
 	}
 	else {
 		for (const std::unique_ptr<BvhNode> &child : node.children) {
-			if (child->volume.intersectRay(rayData)) {
+			float volumeDistance;
+			if (child->volume.intersectRay(rayData, volumeDistance) && volumeDistance < distance) {
 				newDistance = intersectBvhNode(ray, rayData, *child, newNormal);
 				if (newDistance < distance) {
 					distance = newDistance;

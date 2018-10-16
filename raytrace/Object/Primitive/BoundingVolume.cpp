@@ -49,7 +49,7 @@ const std::array<Math::Vector, BoundingVolume::NUM_VECTORS> &BoundingVolume::vec
 	return sVectors;
 }
 
-bool BoundingVolume::intersectRay(const RayData &rayData) const
+bool BoundingVolume::intersectRay(const RayData &rayData, float &distance) const
 {
 	float minDist = -FLT_MAX;
 	float maxDist = FLT_MAX;
@@ -86,7 +86,12 @@ bool BoundingVolume::intersectRay(const RayData &rayData) const
 		}
 	}
 
-	return (minDist <= maxDist && maxDist >= 0);
+	if (minDist > maxDist || maxDist < 0) {
+		return false;
+	}
+
+	distance = minDist;
+	return true;
 }
 
 BoundingVolume::RayData BoundingVolume::getRayData(const Math::Ray &ray)

@@ -21,7 +21,7 @@ public:
 	BoundingVolume();
 	BoundingVolume(const float mins[NUM_VECTORS], const float maxes[NUM_VECTORS]);
 
-	bool intersectRay(const RayData &rayData) const;
+	bool intersectRay(const RayData &rayData, float &distance) const;
 	void expand(const Math::Point &point);
 	void expand(const BoundingVolume &volume);
 

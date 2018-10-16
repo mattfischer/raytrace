@@ -38,7 +38,8 @@ Object::Intersection Tracer::intersect(const Math::Ray &ray)
 
 	for (const std::unique_ptr<Object::Primitive::Base> &testPrimitive : mScene.primitives())
 	{
-		if (testPrimitive->boundingVolume().intersectRay(rayData)) {
+		float volumeDistance;
+		if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < distance) {
 			newDistance = testPrimitive->intersect(ray, newNormal);
 			if (newDistance < distance) {
 				primitive = testPrimitive.get();
