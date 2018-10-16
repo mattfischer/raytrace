@@ -53,9 +53,9 @@ Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection
 
 				float phi = 2 * M_PI * (k + dist(mRandomEngine)) / N;
 				float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
-				Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(intersection.normal()) * std::sin(theta);
+				Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(normal) * std::sin(theta);
 
-				Math::Point offsetPoint = intersection.point() + Math::Vector(intersection.normal()) * 0.01;
+				Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 				Math::Ray ray(offsetPoint, direction);
 				Object::Intersection intersection2 = tracer.intersect(ray);
 

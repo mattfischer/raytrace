@@ -77,8 +77,8 @@ BoundingVolume Grid::doBoundingVolume() const
 
 	while (width > 1 || height > 1) {
 		std::vector<std::unique_ptr<BvhNode>> newNodes;
-		for (int v = height - 2; v >= 0; v -= 2) {
-			for (int u = width - 2; u >= 0; u -= 2) {
+		for (int v = height - 2; v >= -1; v -= 2) {
+			for (int u = width - 2; u >= -1; u -= 2) {
 				std::unique_ptr<BvhNode> newNode;
 				if (u == -1 && v == -1) {
 					newNode = std::move(nodes[0]);
