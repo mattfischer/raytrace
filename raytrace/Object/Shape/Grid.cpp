@@ -77,19 +77,21 @@ bool Grid::intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2,
 		return false;
 	}
 
+	float iden = 1.0f / den;
+
 	Math::Vector T = ray.origin() - point0;
-	float u = (P * T) / den;
+	float u = (P * T) * iden;
 	if (u < 0 || u > 1) {
 		return false;
 	}
 
 	Math::Vector Q = T % E1;
-	float v = (Q * ray.direction()) / den;
+	float v = (Q * ray.direction()) * iden;
 	if (v < 0 || u + v > 1) {
 		return false;
 	}
 
-	float distance = (Q * E2) / den;
+	float distance = (Q * E2) * iden;
 	if (distance < 0 || distance >= intersection.distance) {
 		return false;
 	}
