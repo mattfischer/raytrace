@@ -73,7 +73,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 
 	for (const std::unique_ptr<Object::Light> &light : tracer.scene().lights()) {
 		Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
-		Math::Vector incidentDirection = light->transformation().origin() - offsetPoint;
+		Math::Vector incidentDirection = light->position() - offsetPoint;
 		float distance = incidentDirection.magnitude();
 		incidentDirection = incidentDirection / distance;
 

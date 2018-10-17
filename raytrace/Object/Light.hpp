@@ -8,16 +8,18 @@
 
 namespace Object {
 
-class Light : public Object::Base
+class Light
 {
 public:
-	Light(const Object::Radiance &radiance);
+	Light(const Math::Point &position, const Object::Radiance &radiance);
 
 	static std::unique_ptr<Light> fromAst(AST *ast);
 
+	const Math::Point &position() const;
 	const Object::Radiance &radiance() const;
 
 private:
+	Math::Point mPosition;
 	Object::Radiance mRadiance;
 };
 }
