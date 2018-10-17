@@ -29,6 +29,8 @@ public:
 	Radiance operator*(const Color &b) const;
 	Radiance operator-(const Radiance &b) const;
 
+	Radiance clamp() const;
+
 protected:
 	float mRed;
 	float mGreen;

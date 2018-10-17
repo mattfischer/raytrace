@@ -4,6 +4,7 @@
 #include "Parse/AST.h"
 
 #include <cmath>
+#include <algorithm>
 
 namespace Object {
 
@@ -101,5 +102,10 @@ namespace Object {
 	Radiance Radiance::operator-(const Radiance &b) const
 	{
 		return Radiance(mRed - b.mRed, mGreen - b.mGreen, mBlue - b.mBlue);
+	}
+
+	Radiance Radiance::clamp() const
+	{
+		return Radiance(std::max(mRed, 0.0f), std::max(mGreen, 0.0f), std::max(mBlue, 0.0f));
 	}
 }

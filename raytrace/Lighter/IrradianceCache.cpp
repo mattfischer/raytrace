@@ -164,7 +164,7 @@ Object::Radiance IrradianceCache::interpolateUnlocked(const Math::Point &point, 
 		}
 	}
 
-	return irradiance;
+	return irradiance.clamp();
 }
 
 void IrradianceCache::add(const Entry &entry)
