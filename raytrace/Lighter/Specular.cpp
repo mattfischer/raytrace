@@ -44,14 +44,15 @@ Object::Radiance Specular::light(const Object::Intersection &intersection, Rende
 
 			Utils::stratifiedSamples(i, mNumSamples, u, v, mRandomEngine);
 
-			Math::Vector incidentDirection = brdf.sample(u, v, normal, outgoingDirection);
+			float pdf;
+			Math::Vector incidentDirection = brdf.sample(u, v, normal, outgoingDirection, pdf);
 			if(incidentDirection * normal > 0) {
 				Math::Ray reflectRay(offsetPoint, incidentDirection);
 				Object::Intersection intersection2 = tracer.intersect(reflectRay);
 
 				if (intersection2.valid()) {
 					Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1);
-					radiance += brdf.sampledRadiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / mNumSamples;
+					radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
 				}
 			}
 		}

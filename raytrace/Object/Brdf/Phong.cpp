@@ -30,7 +30,7 @@ Object::Radiance Phong::radiance(const Object::Radiance &incidentRadiance, const
 	return incidentRadiance * mStrength * coeff * (mPower + 1) / (2 * M_PI);
 }
 
-Math::Vector Phong::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+Math::Vector Phong::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection, float &pdf) const
 {
 	float phi = 2 * M_PI * u;
 	float theta = std::acos(std::pow(v, 1.0f / (mPower + 1)));
@@ -41,12 +41,15 @@ Math::Vector Phong::sample(float u, float v, const Math::Normal &normal, const M
 	Math::Vector direction = x * std::cos(phi) * std::sin(theta) + y * std::sin(phi) * std::sin(theta) + outgoingDirection * std::cos(theta);
 	Math::Vector incidentDirection = -(direction - Math::Vector(normal) * (direction * normal * 2));
 
-	return incidentDirection;
-}
+	float coeff = 0;
+	float dot = direction * outgoingDirection;
+	if (dot > 0) {
+		coeff = std::pow(dot, mPower);
+	}
 
-Object::Radiance Phong::sampledRadiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
-{
-	return incidentRadiance * mStrength;
+	pdf = coeff * (mPower + 1) / (2 * M_PI);
+
+	return incidentDirection;
 }
 
 std::unique_ptr<Phong> Phong::fromAst(AST *ast)
