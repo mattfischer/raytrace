@@ -4,6 +4,7 @@
 #include "Object/Primitive.hpp"
 #include "Object/Light.hpp"
 
+#include "Object/Shape/Transformed.hpp"
 #include "Object/Shape/Model.hpp"
 #include "Object/Shape/BezierPatch.hpp"
 #include "Object/Shape/Grid.hpp"
@@ -65,7 +66,8 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 		transformation = transformation * Math::Transformation::translate(Math::Vector(4, -9, -5));
 		//transformation = transformation * Math::Transformation::rotate(Math::Vector(0, 90, 0));
 
-		std::unique_ptr<Primitive> primitive = std::make_unique<Primitive>(std::move(grid), std::move(surface), transformation);
+		std::unique_ptr<Shape::Base> shape = std::make_unique<Shape::Transformed>(std::move(grid), transformation);
+		std::unique_ptr<Primitive> primitive = std::make_unique<Primitive>(std::move(shape), std::move(surface));
 		primitives.push_back(std::move(primitive));
 	}
 

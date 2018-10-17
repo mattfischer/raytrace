@@ -39,7 +39,7 @@ Object::Intersection Tracer::intersect(const Math::Ray &ray)
 	{
 		float volumeDistance;
 		if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < distance) {
-			newDistance = testPrimitive->intersect(ray, newNormal);
+			newDistance = testPrimitive->shape().intersect(ray, newNormal);
 			if (newDistance < distance) {
 				primitive = testPrimitive.get();
 				distance = newDistance;
