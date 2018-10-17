@@ -1,3 +1,7 @@
+camera {
+    <0,0,-30> <0,0,0>
+}
+
 model {
     "teapot.bpt"
 	surface {
@@ -9,6 +13,23 @@ model {
 		rotate <-90,0,0>
 		rotate <0,0,-30>
 		uniform_scale 1.75
+	}
+}
+
+sphere {
+	<-5,-6,0>,4
+	surface {
+		albedo { color <1,0.5,0.25> }
+		brdf { lambert 0.9 phong 0.1 1000 }
+	}
+}
+
+quad {
+	<-4,10,-4> <0,0,8> <8,0,0>
+	surface {
+		brdf { lambert 0 }
+		albedo { color <1,1,1> }
+		radiance <30,30,30>
 	}
 }
 
@@ -74,25 +95,4 @@ quad {
 		albedo { color <1,1,1> }
 		brdf { lambert 1 }
 	}
-}
-
-sphere {
-	<-5,-6,0>,4
-	surface {
-		albedo { color <1,0.5,0.25> }
-		brdf { lambert 0.9 phong 0.1 1000 }
-	}
-}
-
-quad {
-	<-4,10,-4> <0,0,8> <8,0,0>
-	surface {
-		brdf { lambert 0 }
-		albedo { color <1,1,1> }
-		radiance <30,30,30>
-	}
-}
-
-camera {
-    <0,0,-30> <0,0,0>
 }
