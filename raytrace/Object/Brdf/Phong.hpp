@@ -14,8 +14,6 @@ namespace Object {
 
 			virtual Math::Vector sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection, float &pdf) const;
 
-			static std::unique_ptr<Phong> fromAst(AST *ast);
-
 		private:
 			float mStrength;
 			float mPower;

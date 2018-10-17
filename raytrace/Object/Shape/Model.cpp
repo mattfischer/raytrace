@@ -6,14 +6,6 @@
 
 namespace Object {
 	namespace Shape {
-		std::unique_ptr<Model> Model::fromAst(AST *ast)
-		{
-			std::string filename(ast->children[0]->data._string);
-			std::unique_ptr<Model> model = std::make_unique<Model>(filename);
-
-			return model;
-		}
-
 		Model::Model(const std::string &filename)
 		{
 			std::vector<std::unique_ptr<Base>> patches;

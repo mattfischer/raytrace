@@ -1,8 +1,6 @@
 #ifndef OBJECT_SHAPE_QUAD_HPP
 #define OBJECT_SHAPE_QUAD_HPP
 
-#include "Parse/AST.h"
-
 #include "Object/Shape/Base.hpp"
 
 namespace Object {
@@ -10,8 +8,6 @@ namespace Object {
 		class Quad : public Base
 		{
 		public:
-			static std::unique_ptr<Quad> fromAst(AST *ast);
-
 			Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;

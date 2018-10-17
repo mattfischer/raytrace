@@ -1,13 +1,15 @@
 #ifndef PARSE_PARSER_HPP
 #define PARSE_PARSER_HPP
 
-#include "Parse/AST.h"
+#include "Object/Scene.hpp"
+
+#include <memory>
 
 namespace Parse {
 	class Parser
 	{
 	public:
-		static AST *parse(const char *filename);
+		static std::unique_ptr<Object::Scene> parse(const std::string &filename);
 	};
 }
 

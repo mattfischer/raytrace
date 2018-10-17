@@ -25,35 +25,6 @@ namespace Object {
 		}
 	}
 
-	std::unique_ptr<Scene> Scene::fromAST(AST *ast)
-	{
-		std::unique_ptr<Camera> camera;
-		std::vector<std::unique_ptr<Primitive>> primitives;
-		std::vector<std::unique_ptr<Light>> lights;
-
-		for(int i=0; i<ast->numChildren; i++)
-		{
-			AST *child = ast->children[i];
-
-			switch(child->type)
-			{
-			case AstPrimitive:
-				primitives.push_back(Primitive::fromAst(child));
-				break;
-			case AstCamera:
-				camera = Camera::fromAst(child);
-				break;
-			case AstLight:
-				lights.push_back(Light::fromAst(child));
-				break;
-			}
-		}
-
-		std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::move(camera), std::move(primitives), std::move(lights));
-
-		return scene;
-	}
-
 	const Camera &Scene::camera() const
 	{
 		return *mCamera;

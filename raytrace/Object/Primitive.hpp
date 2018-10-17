@@ -9,8 +9,6 @@ namespace Object {
 	class Primitive
 	{
 	public:
-		static std::unique_ptr<Primitive> fromAst(AST *ast);
-
 		Primitive(std::unique_ptr<Shape::Base> shape, std::unique_ptr<Surface> surface);
 
 		const Shape::Base &shape() const;

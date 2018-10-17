@@ -3,8 +3,6 @@
 
 #include "Math/Coordinate.hpp"
 
-#include "Parse/AST.h"
-
 namespace Math {
 	class Point;
 	class Normal;
@@ -15,7 +13,6 @@ namespace Math {
 		Vector();
 		Vector(const Vector &c);
 		Vector(float x, float y, float z);
-		explicit Vector(const ASTVector &astVector);
 		explicit Vector(const Point &point);
 		explicit Vector(const Normal &normal);
 		explicit Vector(const Coordinate &c);

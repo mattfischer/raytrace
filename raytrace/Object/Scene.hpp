@@ -14,8 +14,6 @@ namespace Object {
 	public:
 		Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<Light>> &&lights);
 
-		static std::unique_ptr<Scene> fromAST(AST *ast);
-
 		const Camera &camera() const;
 		const std::vector<std::unique_ptr<Primitive>> &primitives() const;
 		const std::vector<std::reference_wrapper<Primitive>> &areaLights() const;

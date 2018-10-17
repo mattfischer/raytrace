@@ -4,8 +4,6 @@
 #include "Math/Matrix.hpp"
 #include "Math/Point.hpp"
 
-#include "Parse/AST.h"
-
 namespace Math {
 	class BaseTransformation {
 	public:
@@ -44,8 +42,6 @@ namespace Math {
 
 		static Transformation rotate(float x, float y, float z);
 		static Transformation rotate(const Vector &vector);
-
-		static Transformation fromAst(AST *ast);
 
 		Transformation();
 		Transformation(const Matrix &matrix, const Matrix &inverseMatrix);

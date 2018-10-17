@@ -86,9 +86,6 @@
     <ClCompile Include="Render\Engine.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Albedo\Base.cpp">
-      <Filter>Source Files\Object\Albedo</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Albedo\Checker.cpp">
       <Filter>Source Files\Object\Albedo</Filter>
     </ClCompile>
@@ -157,9 +154,6 @@
     </ClCompile>
     <ClCompile Include="Lighter\Master.cpp">
       <Filter>Source Files\Lighter</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Shape\Base.cpp">
-      <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
     <ClCompile Include="Object\Shape\BezierPatch.cpp">
       <Filter>Source Files\Object\Shape</Filter>

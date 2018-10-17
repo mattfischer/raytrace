@@ -22,10 +22,5 @@ namespace Object {
 		{
 			return incidentRadiance * albedo * mStrength / M_PI;
 		}
-
-		std::unique_ptr<Lambert> Lambert::fromAst(AST *ast)
-		{
-			return std::make_unique<Lambert>(ast->data._float);
-		}
 	}
 }

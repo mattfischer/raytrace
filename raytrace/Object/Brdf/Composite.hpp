@@ -10,8 +10,6 @@ namespace Object {
 		class Composite
 		{
 		public:
-			static std::unique_ptr<Composite> fromAst(AST *ast);
-
 			Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular);
 
 			bool hasDiffuse() const;

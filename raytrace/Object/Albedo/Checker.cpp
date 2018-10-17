@@ -31,10 +31,5 @@ namespace Object {
 				return mColor2;
 			}
 		}
-
-		std::unique_ptr<Checker> Checker::fromAst(AST *ast)
-		{
-			return std::make_unique<Checker>(ast->children[0]->data._vector, ast->children[1]->data._vector);
-		}
 	}
 }

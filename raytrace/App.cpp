@@ -17,8 +17,7 @@ int App::run(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
 {
 	InitCommonControls();
 
-	AST *ast = Parse::Parser::parse("scene.txt");
-	mScene = Object::Scene::fromAST(ast);
+	mScene = Parse::Parser::parse("scene.txt");
 	mEngine = std::make_unique<Render::Engine>(*mScene);
 
 	WNDCLASSEX wc;

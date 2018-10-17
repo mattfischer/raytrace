@@ -107,7 +107,6 @@
     <ClCompile Include="Math\Ray.cpp" />
     <ClCompile Include="Math\Transformation.cpp" />
     <ClCompile Include="Math\Vector.cpp" />
-    <ClCompile Include="Object\Albedo\Base.cpp" />
     <ClCompile Include="Object\Albedo\Checker.cpp" />
     <ClCompile Include="Object\Albedo\Solid.cpp" />
     <ClCompile Include="Object\BoundingVolume.cpp" />
@@ -132,7 +131,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
     </ClCompile>
-    <ClCompile Include="Object\Shape\Base.cpp" />
     <ClCompile Include="Object\Shape\BezierPatch.cpp" />
     <ClCompile Include="Object\Shape\Grid.cpp" />
     <ClCompile Include="Object\Shape\Group.cpp" />

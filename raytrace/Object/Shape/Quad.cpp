@@ -5,17 +5,6 @@
 
 namespace Object {
 	namespace Shape {
-		std::unique_ptr<Quad> Quad::fromAst(AST *ast)
-		{
-			Math::Point position(ast->children[0]->children[0]->data._vector);
-			Math::Vector side1(ast->children[0]->children[1]->data._vector);
-			Math::Vector side2(ast->children[0]->children[2]->data._vector);
-
-			std::unique_ptr<Quad> quad = std::make_unique<Quad>(position, side1, side2);
-
-			return quad;
-		}
-
 		Quad::Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2)
 			: mPosition(position), mSide1(side1), mSide2(side2)
 		{

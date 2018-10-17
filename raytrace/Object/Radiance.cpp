@@ -1,8 +1,6 @@
 #include "Object/Radiance.hpp"
 #include "Object/Color.hpp"
 
-#include "Parse/AST.h"
-
 #include <cmath>
 #include <algorithm>
 
@@ -19,13 +17,6 @@ namespace Object {
 		mRed = red;
 		mGreen = green;
 		mBlue = blue;
-	}
-
-	Radiance::Radiance(const ASTVector &vector)
-	{
-		mRed = vector.x;
-		mGreen = vector.y;
-		mBlue = vector.z;
 	}
 
 	Radiance::Radiance(const Radiance &c)

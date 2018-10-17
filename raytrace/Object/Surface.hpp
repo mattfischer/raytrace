@@ -19,8 +19,6 @@ namespace Object {
 		const Brdf::Composite &brdf() const;
 		const Object::Radiance &radiance() const;
 
-		static std::unique_ptr<Surface> fromAst(AST *ast);
-
 	private:
 		std::unique_ptr<Albedo::Base> mAlbedo;
 		std::unique_ptr<Brdf::Composite> mBrdf;

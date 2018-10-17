@@ -1,9 +1,5 @@
 #include "Object/Brdf/Base.hpp"
 
-#include "Parse/AST.h"
-
-#include "Object/Brdf/Composite.hpp"
-
 #include <vector>
 
 namespace Object {

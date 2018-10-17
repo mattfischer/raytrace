@@ -15,11 +15,6 @@ namespace Math {
 	{
 	}
 
-	Vector::Vector(const ASTVector &astVector)
-	: Coordinate(astVector, 0)
-	{
-	}
-
 	Vector::Vector(const Vector &c)
 	: Coordinate(c)
 	{

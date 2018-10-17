@@ -12,8 +12,6 @@ namespace Object {
 
 			virtual Object::Color color(const Math::Point &point) const;
 
-			static std::unique_ptr<Solid> fromAst(AST *ast);
-
 		protected:
 			Object::Color mColor;
 		};

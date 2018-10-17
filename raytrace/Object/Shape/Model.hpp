@@ -9,8 +9,6 @@ namespace Object {
 		class Model : public Base
 		{
 		public:
-			static std::unique_ptr<Model> fromAst(AST *ast);
-
 			Model(const std::string &filename);
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;

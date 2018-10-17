@@ -1,8 +1,6 @@
 #ifndef MATH_COORDINATE_HPP
 #define MATH_COORDINATE_HPP
 
-#include "Parse/AST.h"
-
 namespace Math {
 	class Coordinate
 	{
@@ -10,7 +8,6 @@ namespace Math {
 		Coordinate();
 		Coordinate(const Coordinate &c);
 		Coordinate(float x, float y, float z, float w);
-		explicit Coordinate(const ASTVector &astVector, float w);
 	
 		Coordinate &operator=(const Coordinate &c);
 

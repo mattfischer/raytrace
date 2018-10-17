@@ -11,8 +11,6 @@ namespace Object {
 	public:
 		Camera(const Math::Point &position, const Math::Vector &direction, const Math::Vector &vertical, float fov);
 
-		static std::unique_ptr<Camera> fromAst(AST *ast);
-
 		Math::Ray createRay(float x, float y) const;
 		float projectSize(float size, float distance) const;
 

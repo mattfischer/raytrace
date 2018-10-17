@@ -12,8 +12,6 @@ namespace Object {
 	public:
 		Light(const Math::Point &position, const Object::Radiance &radiance);
 
-		static std::unique_ptr<Light> fromAst(AST *ast);
-
 		const Math::Point &position() const;
 		const Object::Radiance &radiance() const;
 

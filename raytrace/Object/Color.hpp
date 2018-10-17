@@ -1,15 +1,12 @@
 #ifndef OBJECT_COLOR_HPP
 #define OBJECT_COLOR_HPP
 
-#include "Parse/AST.h"
-
 namespace Object {
 	class Color
 	{
 	public:
 		Color();
 		Color(float red, float green, float blue);
-		Color(const ASTVector &vector);
 		Color(const Color &c);
 		Color &operator=(const Color &c);
 

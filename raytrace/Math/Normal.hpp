@@ -3,8 +3,6 @@
 
 #include "Math/Coordinate.hpp"
 
-#include "Parse/AST.h"
-
 namespace Math {
 	class Point;
 	class BaseTransformation;
@@ -15,7 +13,6 @@ namespace Math {
 		Normal();
 		Normal(const Normal &c);
 		Normal(float x, float y, float z);
-		explicit Normal(const ASTVector &astVector);
 		explicit Normal(const Point &point);
 		explicit Normal(const Coordinate &c);
 

@@ -50,12 +50,5 @@ namespace Object {
 
 			return incidentDirection;
 		}
-
-		std::unique_ptr<Phong> Phong::fromAst(AST *ast)
-		{
-			float strength = ast->children[0]->data._float;
-			float power = ast->children[1]->data._float;
-			return std::make_unique<Phong>(strength, power);
-		}
 	}
 }

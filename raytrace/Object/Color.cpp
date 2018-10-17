@@ -1,7 +1,5 @@
 #include "Object/Color.hpp"
 
-#include "Parse/AST.h"
-
 namespace Object {
 	Color::Color()
 	{
@@ -15,13 +13,6 @@ namespace Object {
 		mRed = red;
 		mGreen = green;
 		mBlue = blue;
-	}
-
-	Color::Color(const ASTVector &vector)
-	{
-		mRed = vector.x;
-		mGreen = vector.y;
-		mBlue = vector.z;
 	}
 
 	Color::Color(const Color &c)

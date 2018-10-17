@@ -12,11 +12,6 @@ namespace Math {
 	{
 	}
 
-	Point::Point(const ASTVector &astVector)
-	: Coordinate(astVector, 1)
-	{
-	}
-
 	Point::Point(const Point &c)
 	: Coordinate(c)
 	{

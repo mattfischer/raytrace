@@ -16,11 +16,6 @@ namespace Math {
 	{
 	}
 
-	Normal::Normal(const ASTVector &astVector)
-	: Coordinate(astVector, 0)
-	{
-	}
-
 	Normal::Normal(const Normal &c)
 	: Coordinate(c)
 	{

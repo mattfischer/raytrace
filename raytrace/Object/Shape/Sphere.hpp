@@ -1,8 +1,6 @@
 #ifndef OBJECT_SHAPE_SPHERE_HPP
 #define OBJECT_SHAPE_SPHERE_HPP
 
-#include "Parse/AST.h"
-
 #include "Object/Shape/Base.hpp"
 
 namespace Object {
@@ -10,8 +8,6 @@ namespace Object {
 		class Sphere : public Base
 		{
 		public:
-			static std::unique_ptr<Sphere> fromAst(AST *ast);
-
 			Sphere(const Math::Point &position, float radius);
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;

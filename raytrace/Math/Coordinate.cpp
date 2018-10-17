@@ -20,14 +20,6 @@ namespace Math {
 			mValues[i] = c(i);
 	}
 
-	Coordinate::Coordinate(const ASTVector &astVector, float w)
-	{
-		mValues[0] = astVector.x;
-		mValues[1] = astVector.y;
-		mValues[2] = astVector.z;
-		mValues[3] = w;
-	}
-
 	Coordinate &Coordinate::operator=(const Coordinate &c)
 	{
 		for(int i=0; i<4; i++) 

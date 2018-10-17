@@ -160,32 +160,6 @@ namespace Math {
 	{
 	}
 
-	Transformation Transformation::fromAst(AST *ast)
-	{
-		Transformation t;
-
-		for(int i=0; i<ast->numChildren; i++)
-		{
-			switch(ast->children[i]->type)
-			{
-			case AstTranslate:
-				t = translate(Math::Vector(ast->children[i]->data._vector)) * t;
-				break;
-			case AstRotate:
-				t = rotate(Math::Vector(ast->children[i]->data._vector)) * t;
-				break;
-			case AstScale:
-				t = scale(Math::Vector(ast->children[i]->data._vector)) * t;
-				break;
-			case AstUniformScale:
-				t = uniformScale(ast->children[i]->data._float) * t;
-				break;
-			}
-		}
-
-		return t;
-	}
-
 	Transformation::Transformation(const Transformation &c)
 	: mMatrix(c.matrix()),
 	  mInverseMatrix(c.inverseMatrix()),

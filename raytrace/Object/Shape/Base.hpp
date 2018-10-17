@@ -15,8 +15,6 @@ namespace Object {
 		class Base
 		{
 		public:
-			static std::unique_ptr<Base> fromAst(AST *ast);
-
 			struct Intersection {
 				float distance;
 				Math::Normal normal;

@@ -1,7 +1,6 @@
 #ifndef OBJECT_RADIANCE_HPP
 #define OBJECT_RADIANCE_HPP
 
-#include "Parse/AST.h"
 #include "Object/Color.hpp"
 
 namespace Object {
@@ -10,7 +9,6 @@ namespace Object {
 	public:
 		Radiance();
 		Radiance(float red, float green, float blue);
-		Radiance(const ASTVector &vector);
 		Radiance(const Radiance &c);
 		Radiance &operator=(const Radiance &c);
 

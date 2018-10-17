@@ -5,15 +5,6 @@
 
 namespace Object {
 	namespace Shape {
-		std::unique_ptr<Sphere> Sphere::fromAst(AST *ast)
-		{
-			Math::Point position(ast->children[0]->children[0]->data._vector);
-			float radius = ast->children[0]->children[1]->data._float;
-			std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(position, radius);
-
-			return sphere;
-		}
-
 		Sphere::Sphere(const Math::Point &position, float radius)
 			: mPosition(position), mRadius(radius)
 		{

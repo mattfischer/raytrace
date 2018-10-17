@@ -15,16 +15,6 @@ namespace Object {
 		mHorizontal = horizontal * size;
 	}
 
-	std::unique_ptr<Camera> Camera::fromAst(AST *ast)
-	{
-		Math::Point position(ast->children[0]->data._vector);
-		Math::Point lookAt(ast->children[1]->data._vector);
-
-		std::unique_ptr<Camera> camera = std::make_unique<Camera>(position, (lookAt - position).normalize(), Math::Vector(0, 1, 0), 60.0f);
-
-		return camera;
-	}
-
 	Math::Ray Camera::createRay(float x, float y) const
 	{
 		Math::Vector direction = (mDirection + mHorizontal * x + mVertical * y).normalize();
