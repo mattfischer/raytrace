@@ -56,11 +56,6 @@ float Sphere::doIntersect(const Math::Ray &ray, Math::Normal &normal) const
 	return FLT_MAX;
 }
 
-bool Sphere::doInside(const Math::Point &point) const
-{
-	return Math::Vector(point).magnitude2() <= 1;
-}
-
 BoundingVolume Sphere::doBoundingVolume() const
 {
 	float mins[BoundingVolume::NUM_VECTORS];

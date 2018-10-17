@@ -17,7 +17,6 @@ public:
 
 protected:
 	virtual float doIntersect(const Math::Ray &ray, Math::Normal &normal) const;
-	virtual bool doInside(const Math::Point &point) const;
 	virtual BoundingVolume doBoundingVolume() const;
 
 private:

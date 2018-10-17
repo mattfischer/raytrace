@@ -21,7 +21,6 @@ public:
 	void setSurface(std::unique_ptr<Surface> &&surface);
 
 	float intersect(const Math::Ray &ray, Math::Normal &normal) const;
-	bool inside(const Math::Point &point) const;
 
 	const BoundingVolume &boundingVolume() const;
 	void computeBoundingVolume();
@@ -33,7 +32,6 @@ protected:
 	BoundingVolume mBoundingVolume;
 
 	virtual float doIntersect(const Math::Ray &ray, Math::Normal &normal) const = 0;
-	virtual bool doInside(const Math::Point &point) const = 0;
 	virtual BoundingVolume doBoundingVolume() const = 0;
 };
 

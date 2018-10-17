@@ -42,11 +42,6 @@ namespace Object {
 			return FLT_MAX;
 		}
 
-		bool Quad::doInside(const Math::Point &point) const
-		{
-			return false;
-		}
-
 		void Quad::doSample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
 		{
 			point = mPosition + mSide1 * u + mSide2 * v;

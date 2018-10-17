@@ -46,11 +46,6 @@ float Grid::doIntersect(const Math::Ray &ray, Math::Normal &normal) const
 	return intersectBvhNode(ray, rayData, *mBvhRoot, normal);
 }
 
-bool Grid::doInside(const Math::Point &point) const
-{
-	return false;
-}
-
 BoundingVolume Grid::doBoundingVolume() const
 {
 	std::vector<std::unique_ptr<BvhNode>> nodes;

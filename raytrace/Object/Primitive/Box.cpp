@@ -52,11 +52,6 @@ float Box::doIntersect(const Math::Ray &ray, Math::Normal &normal) const
 	return distance;
 }
 
-bool Box::doInside(const Math::Point &point) const
-{
-	return abs(point.x()) <= 1 && abs(point.y()) <= 1 && abs(point.z()) <= 1;
-}
-
 BoundingVolume Box::doBoundingVolume() const
 {
 	Math::Point points[] = { Math::Point(1, 1, 1), Math::Point(1, 1, -1), Math::Point(-1, 1, -1), Math::Point(-1, 1, 1),

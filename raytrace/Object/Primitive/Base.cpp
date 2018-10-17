@@ -74,13 +74,6 @@ float Base::intersect(const Math::Ray &ray, Math::Normal &normal) const
 	return distance;
 }
 
-bool Base::inside(const Math::Point &point) const
-{
-	Math::Point transformedPoint = mTransformation.inverse() * point;
-
-	return doInside(transformedPoint);
-}
-
 const BoundingVolume &Base::boundingVolume() const
 {
 	return mBoundingVolume;
