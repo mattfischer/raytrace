@@ -20,13 +20,42 @@ Model::Model(const std::string &filename)
 			file >> x >> y >> z;
 			controlPoints.push_back(Math::Point(x, y, z));
 		}
-		mPatches.push_back(std::make_unique<BezierPatch>(std::move(controlPoints)));
+		mPatches.push_back(std::make_unique<BezierPatch>(16, 16, std::move(controlPoints)));
 	}
 }
 
-const std::vector<std::unique_ptr<BezierPatch>> &Model::patches() const
+
+float Model::intersect(const Math::Ray &ray, Math::Normal &normal) const
 {
-	return mPatches;
+	float distance = FLT_MAX;
+
+	float newDistance;
+	Math::Normal newNormal;
+	for (const std::unique_ptr<BezierPatch> &patch : mPatches) {
+		newDistance = patch->intersect(ray, newNormal);
+		if (newDistance < distance) {
+			distance = newDistance;
+			normal = newNormal;
+		}
+	}
+
+	return distance;
+}
+
+BoundingVolume Model::boundingVolume(const Math::Transformation &transformation) const
+{
+	BoundingVolume volume;
+
+	for (const std::unique_ptr<BezierPatch> &patch : mPatches) {
+		volume.expand(patch->boundingVolume(transformation));
+	}
+
+	return volume;
+}
+
+bool Model::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
+{
+	return false;
 }
 
 }

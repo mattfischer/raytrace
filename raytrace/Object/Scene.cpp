@@ -50,26 +50,23 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 		}
 	}
 
-	Object::Shape::Model model("teapot.bpt");
-	for (const std::unique_ptr<Object::Shape::BezierPatch> &patch : model.patches()) {
-		std::unique_ptr<Object::Shape::Base> grid = patch->tesselate(16, 16);
-		std::unique_ptr<Object::Albedo::Base> albedo = std::make_unique<Object::Albedo::Solid>(Object::Color(0, 0.5, 1.0));
-		std::unique_ptr<Object::Brdf::Base> diffuse = std::make_unique<Object::Brdf::Lambert>(0.9f);
-		std::unique_ptr<Object::Brdf::Base> specular; //= std::make_unique<Object::Brdf::Phong>(0.1f, 1000.0f);
-		std::unique_ptr<Object::Brdf::Composite> brdf = std::make_unique<Object::Brdf::Composite>(std::move(diffuse), std::move(specular));
-		std::unique_ptr<Object::Surface> surface = std::make_unique<Object::Surface>(std::move(albedo), std::move(brdf), Object::Radiance(0, 0, 0));
+	std::unique_ptr<Object::Shape::Base> model = std::make_unique<Object::Shape::Model>("teapot.bpt");
 
-		Math::Transformation transformation;
-		transformation = transformation * Math::Transformation::uniformScale(1.5);
-		transformation = transformation * Math::Transformation::rotate(Math::Vector(0, 0, -45));
-		transformation = transformation * Math::Transformation::rotate(Math::Vector(-90, 0, 0));
-		transformation = transformation * Math::Transformation::translate(Math::Vector(4, -9, -5));
-		//transformation = transformation * Math::Transformation::rotate(Math::Vector(0, 90, 0));
+	std::unique_ptr<Object::Albedo::Base> albedo = std::make_unique<Object::Albedo::Solid>(Object::Color(0, 0.5, 1.0));
+	std::unique_ptr<Object::Brdf::Base> diffuse = std::make_unique<Object::Brdf::Lambert>(0.9f);
+	std::unique_ptr<Object::Brdf::Base> specular; //= std::make_unique<Object::Brdf::Phong>(0.1f, 1000.0f);
+	std::unique_ptr<Object::Brdf::Composite> brdf = std::make_unique<Object::Brdf::Composite>(std::move(diffuse), std::move(specular));
+	std::unique_ptr<Object::Surface> surface = std::make_unique<Object::Surface>(std::move(albedo), std::move(brdf), Object::Radiance(0, 0, 0));
 
-		std::unique_ptr<Shape::Base> shape = std::make_unique<Shape::Transformed>(std::move(grid), transformation);
-		std::unique_ptr<Primitive> primitive = std::make_unique<Primitive>(std::move(shape), std::move(surface));
-		primitives.push_back(std::move(primitive));
-	}
+	Math::Transformation transformation;
+	transformation = transformation * Math::Transformation::uniformScale(1.5);
+	transformation = transformation * Math::Transformation::rotate(Math::Vector(0, 0, -45));
+	transformation = transformation * Math::Transformation::rotate(Math::Vector(-90, 0, 0));
+	transformation = transformation * Math::Transformation::translate(Math::Vector(4, -9, -5));
+
+	std::unique_ptr<Shape::Base> shape = std::make_unique<Shape::Transformed>(std::move(model), transformation);
+	std::unique_ptr<Primitive> primitive = std::make_unique<Primitive>(std::move(shape), std::move(surface));
+	primitives.push_back(std::move(primitive));
 
 	std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::move(camera), std::move(primitives), std::move(lights));
 

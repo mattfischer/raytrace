@@ -3,12 +3,7 @@
 namespace Object {
 namespace Shape {
 
-BezierPatch::BezierPatch(std::vector<Math::Point> &&controlPoints)
-	: mControlPoints(std::move(controlPoints))
-{
-}
-
-std::unique_ptr<Grid> BezierPatch::tesselate(int width, int height) const
+BezierPatch::BezierPatch(int width, int height, std::vector<Math::Point> &&controlPoints)
 {
 	std::vector<Math::Point> points;
 
@@ -22,14 +17,29 @@ std::unique_ptr<Grid> BezierPatch::tesselate(int width, int height) const
 			Math::Vector p;
 			for (int k = 0; k < 4; k++) {
 				for (int l = 0; l < 4; l++) {
-					p = p + Math::Vector(mControlPoints[k * 4 + l]) * (Bs[l] * Bt[k]);
+					p = p + Math::Vector(controlPoints[k * 4 + l]) * (Bs[l] * Bt[k]);
 				}
 			}
 			points.push_back(Math::Point(p));
 		}
 	}
 
-	return std::make_unique<Grid>(width, height, std::move(points));
+	mGrid = std::make_unique<Grid>(width, height, std::move(points));
+}
+
+float BezierPatch::intersect(const Math::Ray &ray, Math::Normal &normal) const
+{
+	return mGrid->intersect(ray, normal);
+}
+
+BoundingVolume BezierPatch::boundingVolume(const Math::Transformation &transformation) const
+{
+	return mGrid->boundingVolume(transformation);
+}
+
+bool BezierPatch::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
+{
+	return mGrid->sample(u, v, point, du, dv, normal);
 }
 
 }

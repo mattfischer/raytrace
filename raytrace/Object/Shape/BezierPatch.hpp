@@ -9,15 +9,18 @@
 namespace Object {
 namespace Shape {
 
-class BezierPatch {
+class BezierPatch : public Base {
 public:
-	BezierPatch(std::vector<Math::Point> &&controlPoints);
+	BezierPatch(int width, int height, std::vector<Math::Point> &&controlPoints);
 
-	std::unique_ptr<Grid> tesselate(int width, int height) const;
+	virtual float intersect(const Math::Ray &ray, Math::Normal &normal) const;
+	virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+	virtual bool sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
 private:
-	std::vector<Math::Point> mControlPoints;
+	std::unique_ptr<Grid> mGrid;
 };
+
 }
 }
 #endif
