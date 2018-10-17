@@ -27,9 +27,9 @@ BezierPatch::BezierPatch(int width, int height, std::vector<Math::Point> &&contr
 	mGrid = std::make_unique<Grid>(width, height, std::move(points));
 }
 
-float BezierPatch::intersect(const Math::Ray &ray, Math::Normal &normal) const
+bool BezierPatch::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
 {
-	return mGrid->intersect(ray, normal);
+	return mGrid->intersect(ray, distance, normal);
 }
 
 BoundingVolume BezierPatch::boundingVolume(const Math::Transformation &transformation) const

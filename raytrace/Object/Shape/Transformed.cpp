@@ -8,17 +8,16 @@ Transformed::Transformed(std::unique_ptr<Base> shape, const Math::Transformation
 {
 }
 
-float Transformed::intersect(const Math::Ray &ray, Math::Normal &normal) const
+bool Transformed::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
 {
 	Math::Ray transformedRay = mTransformation.inverse() * ray;
 	Math::Normal transformedNormal;
-	float distance = mShape->intersect(transformedRay, transformedNormal);
-
-	if (distance != FLT_MAX) {
+	if (mShape->intersect(transformedRay, distance, transformedNormal)) {
 		normal = (mTransformation * transformedNormal).normalize();
+		return true;
 	}
 
-	return distance;
+	return false;
 }
 
 BoundingVolume Transformed::boundingVolume(const Math::Transformation &transformation) const

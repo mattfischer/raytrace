@@ -20,7 +20,7 @@ Sphere::Sphere(const Math::Point &position, float radius)
 {
 }
 
-float Sphere::intersect(const Math::Ray &ray, Math::Normal &normal) const
+bool Sphere::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
 {
 	float a, b, c;
 	float disc;
@@ -32,26 +32,28 @@ float Sphere::intersect(const Math::Ray &ray, Math::Normal &normal) const
 	disc = b * b - 4 * a * c;
 	if(disc >= 0)
 	{
-		float distance = (-b - sqrt(disc)) / (2 * a);
+		float newDistance = (-b - sqrt(disc)) / (2 * a);
 
-		if(distance >= 0)
+		if(newDistance >= 0 && newDistance < distance)
 		{
+			distance = newDistance;
 			Math::Point point = ray.origin() + ray.direction() * distance;
 			normal = Math::Normal(point - mPosition) / mRadius;
-			return distance;
+			return true;
 		}
 
-		distance = (-b + sqrt(disc)) / (2 * a);
+		newDistance = (-b + sqrt(disc)) / (2 * a);
 
-		if(distance >= 0)
+		if(newDistance >= 0 && newDistance < distance)
 		{
+			distance = newDistance;
 			Math::Point point = ray.origin() + ray.direction() * distance;
 			normal = Math::Normal(point - mPosition) / mRadius;
-			return distance;
+			return true;
 		}
 	}
 
-	return FLT_MAX;
+	return false;
 }
 
 BoundingVolume Sphere::boundingVolume(const Math::Transformation &transformation) const

@@ -25,21 +25,17 @@ Model::Model(const std::string &filename)
 }
 
 
-float Model::intersect(const Math::Ray &ray, Math::Normal &normal) const
+bool Model::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
 {
-	float distance = FLT_MAX;
+	bool ret = false;
 
-	float newDistance;
-	Math::Normal newNormal;
 	for (const std::unique_ptr<BezierPatch> &patch : mPatches) {
-		newDistance = patch->intersect(ray, newNormal);
-		if (newDistance < distance) {
-			distance = newDistance;
-			normal = newNormal;
+		if (patch->intersect(ray, distance, normal)) {
+			ret = true;
 		}
 	}
 
-	return distance;
+	return ret;
 }
 
 BoundingVolume Model::boundingVolume(const Math::Transformation &transformation) const

@@ -30,20 +30,14 @@ Object::Intersection Tracer::intersect(const Math::Ray &ray)
 	float distance = FLT_MAX;
 	Math::Normal normal;
 
-	float newDistance;
-	Math::Normal newNormal;
-
 	Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(ray);
 
 	for (const std::unique_ptr<Object::Primitive> &testPrimitive : mScene.primitives())
 	{
 		float volumeDistance;
 		if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < distance) {
-			newDistance = testPrimitive->shape().intersect(ray, newNormal);
-			if (newDistance < distance) {
+			if(testPrimitive->shape().intersect(ray, distance, normal)) {
 				primitive = testPrimitive.get();
-				distance = newDistance;
-				normal = newNormal;
 			}
 		}
 	}

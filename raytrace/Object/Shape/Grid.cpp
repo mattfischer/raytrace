@@ -85,19 +85,20 @@ bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Ma
 		return false;
 	}
 
-	distance = (Q * E2) / den;
-	if (distance < 0) {
+	float newDistance = (Q * E2) / den;
+	if (newDistance < 0 || newDistance >= distance) {
 		return false;
 	}
 
+	distance = newDistance;
 	normal = Math::Normal(E1 % E2).normalize();
 	return true;
 }
 
-float Grid::intersect(const Math::Ray &ray, Math::Normal &normal) const
+bool Grid::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
 {
 	BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
-	return intersectBvhNode(ray, rayData, *mBvhRoot, normal);
+	return intersectBvhNode(ray, rayData, *mBvhRoot, distance, normal);
 }
 
 BoundingVolume Grid::boundingVolume(const Math::Transformation &transformation) const
@@ -110,40 +111,33 @@ BoundingVolume Grid::boundingVolume(const Math::Transformation &transformation) 
 	return volume;
 }
 
-float Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &rayData, const BvhNode &node, Math::Normal &normal) const
+bool Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &rayData, const BvhNode &node, float &distance, Math::Normal &normal) const
 {
-	float distance = FLT_MAX;
-
-	float newDistance;
-	Math::Normal newNormal;
+	bool ret = false;
 	if (node.u != -1 && node.v != -1) {
 		const Math::Point point0 = mPoints[node.v * mWidth + node.u];
 		const Math::Point point1 = mPoints[node.v * mWidth + node.u + 1];
 		const Math::Point point2 = mPoints[(node.v + 1) * mWidth + node.u];
 		const Math::Point point3 = mPoints[(node.v + 1) * mWidth + node.u + 1];
 
-		if (intersectTriangle(ray, point0, point1, point2, newDistance, newNormal)) {
-			distance = newDistance;
-			normal = newNormal;
-		} else if (intersectTriangle(ray, point3, point2, point1, newDistance, newNormal)) {
-			distance = newDistance;
-			normal = newNormal;
+		if (intersectTriangle(ray, point0, point1, point2, distance, normal)) {
+			ret = true;
+		} else if (intersectTriangle(ray, point3, point2, point1, distance, normal)) {
+			ret = true;
 		}
 	}
 	else {
 		for (const std::unique_ptr<BvhNode> &child : node.children) {
 			float volumeDistance;
 			if (child->volume.intersectRay(rayData, volumeDistance) && volumeDistance < distance) {
-				newDistance = intersectBvhNode(ray, rayData, *child, newNormal);
-				if (newDistance < distance) {
-					distance = newDistance;
-					normal = newNormal;
+				if (intersectBvhNode(ray, rayData, *child, distance, normal)) {
+					ret = true;
 				}
 			}
 		}
 	}
 
-	return distance;
+	return ret;
 }
 
 bool Grid::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
