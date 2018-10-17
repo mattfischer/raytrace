@@ -4,7 +4,11 @@
 
 namespace Object {
 
-std::array<Math::Vector, BoundingVolume::NUM_VECTORS> sVectors{ Math::Vector(1, 0, 0), Math::Vector(0, 1, 0), Math::Vector(0, 0, 1) };
+const float root33 = std::sqrt(3) / 3.0f;
+
+std::array<Math::Vector, BoundingVolume::NUM_VECTORS> sVectors{ Math::Vector(1, 0, 0), Math::Vector(0, 1, 0), Math::Vector(0, 0, 1),
+																/*Math::Vector(root33, root33, root33), Math::Vector(-root33, root33, root33),
+																Math::Vector(root33, -root33, root33), Math::Vector(-root33, -root33, root33)*/ };
 
 BoundingVolume::BoundingVolume()
 {
