@@ -8,12 +8,11 @@ Transformed::Transformed(std::unique_ptr<Base> shape, const Math::Transformation
 {
 }
 
-bool Transformed::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
+bool Transformed::intersect(const Math::Ray &ray, Intersection &intersection) const
 {
 	Math::Ray transformedRay = mTransformation.inverse() * ray;
-	Math::Normal transformedNormal;
-	if (mShape->intersect(transformedRay, distance, transformedNormal)) {
-		normal = (mTransformation * transformedNormal).normalize();
+	if (mShape->intersect(transformedRay, intersection)) {
+		intersection.normal = (mTransformation * intersection.normal).normalize();
 		return true;
 	}
 

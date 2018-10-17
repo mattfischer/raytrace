@@ -62,7 +62,7 @@ Grid::Grid(int width, int height, std::vector<Math::Point> &&points)
 	mBvhRoot = std::move(nodes[0]);
 }
 
-bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Math::Point &point1, const Math::Point &point2, float &distance, Math::Normal &normal)
+bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Math::Point &point1, const Math::Point &point2, Shape::Base::Intersection &intersection)
 {
 	Math::Vector E1 = point1 - point0;
 	Math::Vector E2 = point2 - point0;
@@ -85,20 +85,20 @@ bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Ma
 		return false;
 	}
 
-	float newDistance = (Q * E2) / den;
-	if (newDistance < 0 || newDistance >= distance) {
+	float distance = (Q * E2) / den;
+	if (distance < 0 || distance >= intersection.distance) {
 		return false;
 	}
 
-	distance = newDistance;
-	normal = Math::Normal(E1 % E2).normalize();
+	intersection.distance = distance;
+	intersection.normal = Math::Normal(E1 % E2).normalize();
 	return true;
 }
 
-bool Grid::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
+bool Grid::intersect(const Math::Ray &ray, Intersection &intersection) const
 {
 	BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
-	return intersectBvhNode(ray, rayData, *mBvhRoot, distance, normal);
+	return intersectBvhNode(ray, rayData, *mBvhRoot, intersection);
 }
 
 BoundingVolume Grid::boundingVolume(const Math::Transformation &transformation) const
@@ -111,7 +111,7 @@ BoundingVolume Grid::boundingVolume(const Math::Transformation &transformation) 
 	return volume;
 }
 
-bool Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &rayData, const BvhNode &node, float &distance, Math::Normal &normal) const
+bool Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &rayData, const BvhNode &node, Intersection &intersection) const
 {
 	bool ret = false;
 	if (node.u != -1 && node.v != -1) {
@@ -120,17 +120,17 @@ bool Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData 
 		const Math::Point point2 = mPoints[(node.v + 1) * mWidth + node.u];
 		const Math::Point point3 = mPoints[(node.v + 1) * mWidth + node.u + 1];
 
-		if (intersectTriangle(ray, point0, point1, point2, distance, normal)) {
+		if (intersectTriangle(ray, point0, point1, point2, intersection)) {
 			ret = true;
-		} else if (intersectTriangle(ray, point3, point2, point1, distance, normal)) {
+		} else if (intersectTriangle(ray, point3, point2, point1, intersection)) {
 			ret = true;
 		}
 	}
 	else {
 		for (const std::unique_ptr<BvhNode> &child : node.children) {
 			float volumeDistance;
-			if (child->volume.intersectRay(rayData, volumeDistance) && volumeDistance < distance) {
-				if (intersectBvhNode(ray, rayData, *child, distance, normal)) {
+			if (child->volume.intersectRay(rayData, volumeDistance) && volumeDistance < intersection.distance) {
+				if (intersectBvhNode(ray, rayData, *child, intersection)) {
 					ret = true;
 				}
 			}

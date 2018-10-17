@@ -20,7 +20,7 @@ Sphere::Sphere(const Math::Point &position, float radius)
 {
 }
 
-bool Sphere::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
+bool Sphere::intersect(const Math::Ray &ray, Intersection &intersection) const
 {
 	float a, b, c;
 	float disc;
@@ -32,23 +32,23 @@ bool Sphere::intersect(const Math::Ray &ray, float &distance, Math::Normal &norm
 	disc = b * b - 4 * a * c;
 	if(disc >= 0)
 	{
-		float newDistance = (-b - sqrt(disc)) / (2 * a);
+		float distance = (-b - sqrt(disc)) / (2 * a);
 
-		if(newDistance >= 0 && newDistance < distance)
+		if(distance >= 0 && distance < intersection.distance)
 		{
-			distance = newDistance;
+			intersection.distance = distance;
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			normal = Math::Normal(point - mPosition) / mRadius;
+			intersection.normal = Math::Normal(point - mPosition) / mRadius;
 			return true;
 		}
 
-		newDistance = (-b + sqrt(disc)) / (2 * a);
+		distance = (-b + sqrt(disc)) / (2 * a);
 
-		if(newDistance >= 0 && newDistance < distance)
+		if(distance >= 0 && distance < intersection.distance)
 		{
-			distance = newDistance;
+			intersection.distance = distance;
 			Math::Point point = ray.origin() + ray.direction() * distance;
-			normal = Math::Normal(point - mPosition) / mRadius;
+			intersection.normal = Math::Normal(point - mPosition) / mRadius;
 			return true;
 		}
 	}

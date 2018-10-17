@@ -15,7 +15,7 @@ public:
 
 	Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
 
-	virtual bool intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const;
+	virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
 	virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 	virtual bool sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 

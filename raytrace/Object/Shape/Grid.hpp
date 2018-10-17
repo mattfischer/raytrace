@@ -14,7 +14,7 @@ class Grid : public Base
 public:
 	Grid(int width, int height, std::vector<Math::Point> &&points);
 
-	virtual bool intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const;
+	virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
 	virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 	virtual bool sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
@@ -27,7 +27,7 @@ private:
 		std::vector<std::unique_ptr<BvhNode>> children;
 	};
 
-	bool intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &raydata, const BvhNode &node, float &distance, Math::Normal &normal) const;
+	bool intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &raydata, const BvhNode &node, Intersection &intersection) const;
 
 	int mWidth;
 	int mHeight;

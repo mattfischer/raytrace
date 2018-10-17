@@ -15,7 +15,7 @@ public:
 
 	Sphere(const Math::Point &position, float radius);
 
-	virtual bool intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const;
+	virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
 	virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 	virtual bool sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 

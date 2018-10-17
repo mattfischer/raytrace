@@ -27,23 +27,24 @@ Object::Intersection Tracer::intersect(const Math::Ray &ray)
 {
 	Object::Intersection intersection;
 	Object::Primitive *primitive = 0;
-	float distance = FLT_MAX;
-	Math::Normal normal;
+
+	Object::Shape::Base::Intersection shapeIntersection;
+	shapeIntersection.distance = FLT_MAX;
 
 	Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(ray);
 
 	for (const std::unique_ptr<Object::Primitive> &testPrimitive : mScene.primitives())
 	{
 		float volumeDistance;
-		if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < distance) {
-			if(testPrimitive->shape().intersect(ray, distance, normal)) {
+		if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < shapeIntersection.distance) {
+			if(testPrimitive->shape().intersect(ray, shapeIntersection)) {
 				primitive = testPrimitive.get();
 			}
 		}
 	}
 
-	if (distance < FLT_MAX) {
-		return Object::Intersection(*primitive, ray, distance, normal);
+	if (shapeIntersection.distance < FLT_MAX) {
+		return Object::Intersection(*primitive, ray, shapeIntersection.distance, shapeIntersection.normal);
 	}
 	else {
 		return Object::Intersection();

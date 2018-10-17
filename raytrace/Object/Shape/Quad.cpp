@@ -23,17 +23,17 @@ Quad::Quad(const Math::Point &position, const Math::Vector &side1, const Math::V
 	mNormal = Math::Normal(mSide1 % mSide2).normalize();
 }
 
-bool Quad::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
+bool Quad::intersect(const Math::Ray &ray, Intersection &intersection) const
 {
-	float newDistance = ((ray.origin() - mPosition) * mNormal) / (ray.direction() * -mNormal);
-	if (newDistance >= 0 && newDistance < distance) {
-		Math::Point point = ray.origin() + ray.direction() * newDistance;
+	float distance = ((ray.origin() - mPosition) * mNormal) / (ray.direction() * -mNormal);
+	if (distance >= 0 && distance < intersection.distance) {
+		Math::Point point = ray.origin() + ray.direction() * distance;
 		float u = (point - mPosition) * mSide1 / mSide1.magnitude2();
 		float v = (point - mPosition) * mSide2 / mSide2.magnitude2();
 		if (u >= 0 && u <= 1 && v >= 0 && v <= 1)
 		{
-			distance = newDistance;
-			normal = mNormal;
+			intersection.distance = distance;
+			intersection.normal = mNormal;
 			return true;
 		}
 	}

@@ -25,12 +25,12 @@ Model::Model(const std::string &filename)
 }
 
 
-bool Model::intersect(const Math::Ray &ray, float &distance, Math::Normal &normal) const
+bool Model::intersect(const Math::Ray &ray, Intersection &intersection) const
 {
 	bool ret = false;
 
 	for (const std::unique_ptr<BezierPatch> &patch : mPatches) {
-		if (patch->intersect(ray, distance, normal)) {
+		if (patch->intersect(ray, intersection)) {
 			ret = true;
 		}
 	}
