@@ -1,22 +1,22 @@
-#ifndef OBJECT_PRIMITIVE_GRID_HPP
-#define OBJECT_PRIMITIVE_GRID_HPP
+#ifndef OBJECT_SHAPE_GRID_HPP
+#define OBJECT_SHAPE_GRID_HPP
 
-#include "Object/Primitive/Base.hpp"
+#include "Object/Shape/Base.hpp"
 #include "Math/Point.hpp"
 
 #include <vector>
 
 namespace Object {
-namespace Primitive {
+namespace Shape {
 
 class Grid : public Base
 {
 public:
 	Grid(int width, int height, std::vector<Math::Point> &&points);
 
-protected:
-	virtual float doIntersect(const Math::Ray &ray, Math::Normal &normal) const;
-	virtual BoundingVolume doBoundingVolume() const;
+	virtual float intersect(const Math::Ray &ray, Math::Normal &normal) const;
+	virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+	virtual bool sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
 private:
 	struct BvhNode {

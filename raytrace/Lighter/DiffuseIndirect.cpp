@@ -1,11 +1,6 @@
 #define _USE_MATH_DEFINES
 #include "Lighter/DiffuseIndirect.hpp"
 
-#include "Object/Radiance.hpp"
-#include "Object/Intersection.hpp"
-#include "Object/Primitive/Base.hpp"
-#include "Math/Ray.hpp"
-#include "Render/Tracer.hpp"
 #include "Lighter/Utils.hpp"
 
 #include <cmath>

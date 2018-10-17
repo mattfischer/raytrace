@@ -7,7 +7,6 @@ typedef enum
 
 	AstPrimitive,
 	AstSphere,
-	AstBox,
 	AstQuad,
 
 	AstTransform,

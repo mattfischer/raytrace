@@ -11,9 +11,6 @@
     <Filter Include="Source Files\Object">
       <UniqueIdentifier>{7a0c845f-9293-42ca-a79e-e2cc34108806}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Object\Primitive">
-      <UniqueIdentifier>{730d451d-de0c-47dc-a08f-a24f4c95d5c4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Parse">
       <UniqueIdentifier>{4b6943eb-f1aa-432e-b1a4-0ebcf3e52a52}</UniqueIdentifier>
     </Filter>
@@ -32,6 +29,9 @@
     </Filter>
     <Filter Include="Source Files\Lighter">
       <UniqueIdentifier>{eee06c54-4c76-4c68-b988-0e34a43fa518}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Object\Shape">
+      <UniqueIdentifier>{730d451d-de0c-47dc-a08f-a24f4c95d5c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,9 +65,6 @@
     <ClCompile Include="Math\Vector.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Base.cpp">
-      <Filter>Source Files\Object</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Camera.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
@@ -76,15 +73,6 @@
     </ClCompile>
     <ClCompile Include="Object\Scene.cpp">
       <Filter>Source Files\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Primitive\Base.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Primitive\Box.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Primitive\Sphere.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="lex.Scene.c">
       <Filter>Source Files\Parse</Filter>
@@ -128,14 +116,8 @@
     <ClCompile Include="LightProbeDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Primitive\Quad.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
     <ClCompile Include="Render\Framebuffer.cpp">
       <Filter>Source Files\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Object\Primitive\BoundingVolume.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
     </ClCompile>
     <ClCompile Include="Math\Ray.cpp">
       <Filter>Source Files\Math</Filter>
@@ -167,9 +149,6 @@
     <ClCompile Include="Object\Light.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Primitive\Sampleable.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClCompile>
     <ClCompile Include="Lighter\DiffuseDirect.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
@@ -179,14 +158,29 @@
     <ClCompile Include="Lighter\Master.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Primitive\Grid.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
+    <ClCompile Include="Object\Shape\Base.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Primitive\BezierPatch.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
+    <ClCompile Include="Object\Shape\BezierPatch.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Primitive\Model.cpp">
-      <Filter>Source Files\Object\Primitive</Filter>
+    <ClCompile Include="Object\Shape\Grid.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Shape\Model.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Shape\Quad.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Shape\Sphere.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Primitive.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\BoundingVolume.cpp">
+      <Filter>Source Files\Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -242,18 +236,6 @@
     <ClInclude Include="Object\Brdf\Phong.hpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Primitive\Base.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Primitive\Box.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Primitive\Sphere.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Base.hpp">
-      <Filter>Source Files\Object</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Camera.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
@@ -290,14 +272,8 @@
     <ClInclude Include="LightProbeDlg.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Primitive\Quad.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
     <ClInclude Include="Render\Framebuffer.hpp">
       <Filter>Source Files\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Primitive\BoundingVolume.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
     </ClInclude>
     <ClInclude Include="Math\Ray.hpp">
       <Filter>Source Files\Math</Filter>
@@ -329,9 +305,6 @@
     <ClInclude Include="Object\Light.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Primitive\Sampleable.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
-    </ClInclude>
     <ClInclude Include="Lighter\DiffuseDirect.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
@@ -341,14 +314,29 @@
     <ClInclude Include="Lighter\Master.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Primitive\Grid.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
+    <ClInclude Include="Object\Shape\Base.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Primitive\BezierPatch.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
+    <ClInclude Include="Object\Shape\BezierPatch.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Primitive\Model.hpp">
-      <Filter>Source Files\Object\Primitive</Filter>
+    <ClInclude Include="Object\Shape\Grid.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Shape\Model.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Shape\Quad.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Shape\Sphere.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Primitive.hpp">
+      <Filter>Source Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\BoundingVolume.hpp">
+      <Filter>Source Files\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

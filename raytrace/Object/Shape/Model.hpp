@@ -1,10 +1,10 @@
-#ifndef OBJECT_PRIMITIVE_MODEL_HPP
-#define OBJECT_PRIMITIVE_MODEL_HPP
+#ifndef OBJECT_SHAPE_MODEL_HPP
+#define OBJECT_SHAPE_MODEL_HPP
 
-#include "Object/Primitive/BezierPatch.hpp"
+#include "Object/Shape/BezierPatch.hpp"
 
 namespace Object {
-namespace Primitive {
+namespace Shape {
 
 class Model
 {

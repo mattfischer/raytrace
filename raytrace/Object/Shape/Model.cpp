@@ -1,9 +1,9 @@
-#include "Object/Primitive/Model.hpp"
+#include "Object/Shape/Model.hpp"
 
 #include <fstream>
 
 namespace Object {
-namespace Primitive {
+namespace Shape {
 
 Model::Model(const std::string &filename)
 {

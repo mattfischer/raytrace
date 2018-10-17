@@ -1,7 +1,7 @@
-#include "Object/Primitive/BezierPatch.hpp"
+#include "Object/Shape/BezierPatch.hpp"
 
 namespace Object {
-namespace Primitive {
+namespace Shape {
 
 BezierPatch::BezierPatch(std::vector<Math::Point> &&controlPoints)
 	: mControlPoints(std::move(controlPoints))

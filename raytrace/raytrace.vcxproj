@@ -110,7 +110,8 @@
     <ClCompile Include="Object\Albedo\Base.cpp" />
     <ClCompile Include="Object\Albedo\Checker.cpp" />
     <ClCompile Include="Object\Albedo\Solid.cpp" />
-    <ClCompile Include="Object\Base.cpp">
+    <ClCompile Include="Object\BoundingVolume.cpp" />
+    <ClCompile Include="Object\Primitive.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -124,15 +125,6 @@
     <ClCompile Include="Object\Color.cpp" />
     <ClCompile Include="Object\Intersection.cpp" />
     <ClCompile Include="Object\Light.cpp" />
-    <ClCompile Include="Object\Primitive\Base.cpp" />
-    <ClCompile Include="Object\Primitive\BezierPatch.cpp" />
-    <ClCompile Include="Object\Primitive\BoundingVolume.cpp" />
-    <ClCompile Include="Object\Primitive\Box.cpp" />
-    <ClCompile Include="Object\Primitive\Grid.cpp" />
-    <ClCompile Include="Object\Primitive\Model.cpp" />
-    <ClCompile Include="Object\Primitive\Quad.cpp" />
-    <ClCompile Include="Object\Primitive\Sampleable.cpp" />
-    <ClCompile Include="Object\Primitive\Sphere.cpp" />
     <ClCompile Include="Object\Radiance.cpp" />
     <ClCompile Include="Object\Scene.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -140,6 +132,12 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="Object\Shape\Base.cpp" />
+    <ClCompile Include="Object\Shape\BezierPatch.cpp" />
+    <ClCompile Include="Object\Shape\Grid.cpp" />
+    <ClCompile Include="Object\Shape\Model.cpp" />
+    <ClCompile Include="Object\Shape\Quad.cpp" />
+    <ClCompile Include="Object\Shape\Sphere.cpp" />
     <ClCompile Include="Object\Surface.cpp" />
     <ClCompile Include="Parse\Parser.cpp" />
     <ClCompile Include="RenderControlDlg.cpp" />
@@ -177,7 +175,8 @@
     <ClInclude Include="Object\Albedo\Base.hpp" />
     <ClInclude Include="Object\Albedo\Checker.hpp" />
     <ClInclude Include="Object\Albedo\Solid.hpp" />
-    <ClInclude Include="Object\Base.hpp" />
+    <ClInclude Include="Object\BoundingVolume.hpp" />
+    <ClInclude Include="Object\Primitive.hpp" />
     <ClInclude Include="Object\Brdf\Base.hpp" />
     <ClInclude Include="Object\Brdf\Composite.hpp" />
     <ClInclude Include="Object\Brdf\Lambert.hpp" />
@@ -186,17 +185,14 @@
     <ClInclude Include="Object\Color.hpp" />
     <ClInclude Include="Object\Intersection.hpp" />
     <ClInclude Include="Object\Light.hpp" />
-    <ClInclude Include="Object\Primitive\Base.hpp" />
-    <ClInclude Include="Object\Primitive\BezierPatch.hpp" />
-    <ClInclude Include="Object\Primitive\BoundingVolume.hpp" />
-    <ClInclude Include="Object\Primitive\Box.hpp" />
-    <ClInclude Include="Object\Primitive\Grid.hpp" />
-    <ClInclude Include="Object\Primitive\Model.hpp" />
-    <ClInclude Include="Object\Primitive\Quad.hpp" />
-    <ClInclude Include="Object\Primitive\Sampleable.hpp" />
-    <ClInclude Include="Object\Primitive\Sphere.hpp" />
     <ClInclude Include="Object\Radiance.hpp" />
     <ClInclude Include="Object\Scene.hpp" />
+    <ClInclude Include="Object\Shape\Base.hpp" />
+    <ClInclude Include="Object\Shape\BezierPatch.hpp" />
+    <ClInclude Include="Object\Shape\Grid.hpp" />
+    <ClInclude Include="Object\Shape\Model.hpp" />
+    <ClInclude Include="Object\Shape\Quad.hpp" />
+    <ClInclude Include="Object\Shape\Sphere.hpp" />
     <ClInclude Include="Object\Surface.hpp" />
     <ClInclude Include="Parse\AST.h" />
     <ClInclude Include="Parse\Parser.hpp" />

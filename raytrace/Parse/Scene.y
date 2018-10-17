@@ -46,7 +46,7 @@
 %type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> surfacedef surface_list surface_item albedodef brdf_list brdf_item
-%type <_ast> spheredef boxdef quaddef lightdef
+%type <_ast> spheredef quaddef lightdef
 %type <_ast> cameradef
 %start scene
 
@@ -66,17 +66,12 @@ object: primitive
 primitive: primitive_wrap
 	{ $$ = newAst(AstPrimitive, 1, $1); }
 	
-primitive_wrap: spheredef | boxdef | quaddef
+primitive_wrap: spheredef | quaddef
 	
 spheredef: SPHERE '{' VECTOR FLOAT primitive_modifiers '}'
 	{ $$ = newAst(AstSphere, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5); 
 	  $$->children[0]->children[0]->data._vector = $3;
 	  $$->children[0]->children[1]->data._float = $4; }
-
-boxdef: BOX '{' VECTOR VECTOR primitive_modifiers '}'
-	{ $$ = newAst(AstBox, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5);
-	  $$->children[0]->children[0]->data._vector = $3;
-	  $$->children[0]->children[1]->data._vector = $4; }
 
 quaddef: QUAD '{' VECTOR VECTOR VECTOR primitive_modifiers '}'
     { $$ = newAst(AstQuad, 2, newAst(AstList, 3, newAst(AstConstant, 0), newAst(AstConstant, 0), newAst(AstConstant, 0)), $6);

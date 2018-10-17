@@ -7,23 +7,21 @@
 #include "Math/Transformation.hpp"
 #include "Math/Ray.hpp"
 
+#include "Object/Primitive.hpp"
+
 #include <vector>
 
 namespace Object {
-
-namespace Primitive {
-	class Base;
-}
 
 class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Object::Primitive::Base &primitive, const Math::Ray &ray, float distance, const Math::Normal &normal);
+	Intersection(const Object::Primitive &primitive, const Math::Ray &ray, float distance, const Math::Normal &normal);
 
 	bool valid() const;
 
-	const Object::Primitive::Base &primitive() const;
+	const Object::Primitive &primitive() const;
 
 	float distance() const;
 	const Math::Ray &ray() const;
@@ -31,7 +29,7 @@ public:
 	Math::Point point() const;
 
 protected:
-	const Object::Primitive::Base &mPrimitive;
+	const Object::Primitive &mPrimitive;
 	const Math::Ray &mRay;
 	float mDistance;
 	Math::Normal mNormal;

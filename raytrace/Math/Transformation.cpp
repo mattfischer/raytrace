@@ -184,7 +184,7 @@ Transformation Transformation::fromAst(AST *ast)
 	return t;
 }
 
-Transformation::Transformation(const BaseTransformation &c)
+Transformation::Transformation(const Transformation &c)
 : mMatrix(c.matrix()),
   mInverseMatrix(c.inverseMatrix()),
   mInverse(*this)

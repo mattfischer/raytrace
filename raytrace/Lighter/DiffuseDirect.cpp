@@ -3,9 +3,6 @@
 
 #include "Lighter/Utils.hpp"
 
-#include "Render/Tracer.hpp"
-#include "Object/Scene.hpp"
-
 namespace Lighter {
 
 DiffuseDirect::DiffuseDirect(int numSamples)
@@ -30,8 +27,8 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 	Utils::orthonormalBasis(Math::Vector(normal), x, y);
 
 	Object::Radiance radiance;
-	for (const Object::Primitive::Sampleable &sampleable : tracer.scene().areaLights()) {
-		const Object::Radiance &objectRadiance = sampleable.surface().radiance();
+	for (const Object::Primitive &primitive : tracer.scene().areaLights()) {
+		const Object::Radiance &objectRadiance = primitive.surface().radiance();
 
 		for (int i = 0; i < mNumSamples; i++) {
 			float u;
@@ -44,7 +41,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 			Math::Vector dv;
 			Math::Normal sampleNormal;
 
-			sampleable.sample(u, v, samplePoint, du, dv, sampleNormal);
+			primitive.sample(u, v, samplePoint, du, dv, sampleNormal);
 			float area = (du % dv).magnitude();
 
 			Math::Vector incidentDirection = samplePoint - point;
@@ -56,7 +53,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 
 			Math::Vector probeDirection(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
 			Object::Radiance probeRadiance;
-			if (intersection2.valid() && &(intersection2.primitive()) == &sampleable) {
+			if (intersection2.valid() && &(intersection2.primitive()) == &primitive) {
 				float dot = incidentDirection * normal;
 				float sampleDot = abs(incidentDirection * sampleNormal);
 

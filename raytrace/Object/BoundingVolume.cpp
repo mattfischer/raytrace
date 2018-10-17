@@ -3,7 +3,6 @@
 #include <algorithm>
 
 namespace Object {
-namespace Primitive {
 
 std::array<Math::Vector, BoundingVolume::NUM_VECTORS> sVectors{ Math::Vector(1, 0, 0), Math::Vector(0, 1, 0), Math::Vector(0, 0, 1) };
 
@@ -107,5 +106,4 @@ BoundingVolume::RayData BoundingVolume::getRayData(const Math::Ray &ray)
 	return rayData;
 }
 
-}
 }

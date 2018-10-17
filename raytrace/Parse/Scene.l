@@ -19,7 +19,6 @@ FLOAT -?[[:digit:]]+(\.[[:digit:]]+)?
 {FLOAT} Scenelval._float = atof(Scenetext); return FLOAT;
 
 sphere	return SPHERE;
-box return BOX;
 quad return QUAD;
 
 transform return TRANSFORM;

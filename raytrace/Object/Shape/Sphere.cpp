@@ -1,18 +1,16 @@
-#include "Object/Primitive/Sphere.hpp"
+#include "Object/Shape/Sphere.hpp"
 #include "Math/Transformation.hpp"
 
 #include <math.h>
 
 namespace Object {
-namespace Primitive {
+namespace Shape {
 
 std::unique_ptr<Sphere> Sphere::fromAst(AST *ast)
 {
 	Math::Point position(ast->children[0]->children[0]->data._vector);
 	float radius = ast->children[0]->children[1]->data._float;
 	std::unique_ptr<Sphere> sphere = std::make_unique<Sphere>(position, radius);
-
-	parseAstCommon(*sphere, ast->children[1]);
 
 	return sphere;
 }
@@ -22,7 +20,7 @@ Sphere::Sphere(const Math::Point &position, float radius)
 {
 }
 
-float Sphere::doIntersect(const Math::Ray &ray, Math::Normal &normal) const
+float Sphere::intersect(const Math::Ray &ray, Math::Normal &normal) const
 {
 	float a, b, c;
 	float disc;
@@ -56,7 +54,7 @@ float Sphere::doIntersect(const Math::Ray &ray, Math::Normal &normal) const
 	return FLT_MAX;
 }
 
-BoundingVolume Sphere::doBoundingVolume() const
+BoundingVolume Sphere::boundingVolume(const Math::Transformation &transformation) const
 {
 	float mins[BoundingVolume::NUM_VECTORS];
 	float maxes[BoundingVolume::NUM_VECTORS];
@@ -71,6 +69,11 @@ BoundingVolume Sphere::doBoundingVolume() const
 	}
 
 	return BoundingVolume(mins, maxes);
+}
+
+bool Sphere::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
+{
+	return false;
 }
 
 }

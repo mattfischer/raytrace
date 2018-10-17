@@ -50,7 +50,8 @@ public:
 
 	Transformation();
 	Transformation(const Matrix &matrix, const Matrix &inverseMatrix);
-	explicit Transformation(const BaseTransformation &c);
+	Transformation(const Transformation &c);
+
 	Transformation &operator=(const BaseTransformation &c);
 	Transformation &operator=(const Transformation &c);
 

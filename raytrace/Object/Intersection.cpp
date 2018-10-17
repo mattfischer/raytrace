@@ -1,15 +1,13 @@
 #include "Object/Intersection.hpp"
 
-#include "Object/Primitive/Base.hpp"
-
 namespace Object {
 
 Intersection::Intersection()
-	: mPrimitive(*(Object::Primitive::Base*)0), mRay(*(Math::Ray*)0), mDistance(FLT_MAX)
+	: mPrimitive(*(Object::Primitive*)0), mRay(*(Math::Ray*)0), mDistance(FLT_MAX)
 {
 }
 
-Intersection::Intersection(const Object::Primitive::Base &primitive, const Math::Ray &ray, float distance, const Math::Normal &normal)
+Intersection::Intersection(const Object::Primitive &primitive, const Math::Ray &ray, float distance, const Math::Normal &normal)
 	: mPrimitive(primitive), mRay(ray), mNormal(normal), mDistance(distance)
 {
 };
@@ -29,7 +27,7 @@ bool Intersection::valid() const
 	return mDistance != FLT_MAX;
 }
 
-const Object::Primitive::Base &Intersection::primitive() const
+const Object::Primitive &Intersection::primitive() const
 {
 	return mPrimitive;
 }

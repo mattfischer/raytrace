@@ -1,7 +1,7 @@
 #ifndef OBJECT_LIGHT_HPP
 #define OBJECT_LIGHT_HPP
 
-#include "Object/Base.hpp"
+#include "Math/Point.hpp"
 #include "Object/Radiance.hpp"
 
 #include <memory>

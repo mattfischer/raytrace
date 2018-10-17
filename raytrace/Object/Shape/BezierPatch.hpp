@@ -1,13 +1,13 @@
-#ifndef OBJECT_PRIMITIVE_BEZIER_PATCH_HPP
-#define OBJECT_PRIMITIVE_BEZIER_PATCH_HPP
+#ifndef OBJECT_SHAPE_BEZIER_PATCH_HPP
+#define OBJECT_SHAPE_BEZIER_PATCH_HPP
 
-#include "Object/Primitive/Base.hpp"
-#include "Object/Primitive/Grid.hpp"
+#include "Object/Shape/Base.hpp"
+#include "Object/Shape/Grid.hpp"
 
 #include <vector>
 
 namespace Object {
-namespace Primitive {
+namespace Shape {
 
 class BezierPatch {
 public:

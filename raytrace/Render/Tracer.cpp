@@ -1,12 +1,11 @@
 #include "Render/Tracer.hpp"
-#include "Object/Base.hpp"
 #include "Object/Scene.hpp"
 #include "Object/Camera.hpp"
 #include "Object/Surface.hpp"
 
 #include "Object/Brdf/Base.hpp"
 #include "Object/Albedo/Base.hpp"
-#include "Object/Primitive/Base.hpp"
+#include "Object/Primitive.hpp"
 
 #include <algorithm>
 
@@ -27,16 +26,16 @@ const Object::Scene &Tracer::scene() const
 Object::Intersection Tracer::intersect(const Math::Ray &ray)
 {
 	Object::Intersection intersection;
-	Object::Primitive::Base *primitive = 0;
+	Object::Primitive *primitive = 0;
 	float distance = FLT_MAX;
 	Math::Normal normal;
 
 	float newDistance;
 	Math::Normal newNormal;
 
-	Object::Primitive::BoundingVolume::RayData rayData = Object::Primitive::BoundingVolume::getRayData(ray);
+	Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(ray);
 
-	for (const std::unique_ptr<Object::Primitive::Base> &testPrimitive : mScene.primitives())
+	for (const std::unique_ptr<Object::Primitive> &testPrimitive : mScene.primitives())
 	{
 		float volumeDistance;
 		if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < distance) {

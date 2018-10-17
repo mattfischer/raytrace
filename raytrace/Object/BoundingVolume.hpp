@@ -1,5 +1,5 @@
-#ifndef OBJECT_PRIMITIVE_BOUNDING_VOLUME_HPP
-#define OBJECT_PRIMITIVE_BOUNDING_VOLUME_HPP
+#ifndef OBJECT_BOUNDING_VOLUME_HPP
+#define OBJECT_BOUNDING_VOLUME_HPP
 
 #include "Math/Vector.hpp"
 #include "Math/Ray.hpp"
@@ -7,7 +7,6 @@
 #include <array>
 
 namespace Object {
-namespace Primitive {
 
 class BoundingVolume
 {
@@ -34,5 +33,5 @@ private:
 };
 
 }
-}
+
 #endif
