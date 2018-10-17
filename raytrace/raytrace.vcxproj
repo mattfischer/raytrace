@@ -135,6 +135,7 @@
     <ClCompile Include="Object\Shape\Base.cpp" />
     <ClCompile Include="Object\Shape\BezierPatch.cpp" />
     <ClCompile Include="Object\Shape\Grid.cpp" />
+    <ClCompile Include="Object\Shape\Group.cpp" />
     <ClCompile Include="Object\Shape\Model.cpp" />
     <ClCompile Include="Object\Shape\Quad.cpp" />
     <ClCompile Include="Object\Shape\Sphere.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="Object\Shape\Base.hpp" />
     <ClInclude Include="Object\Shape\BezierPatch.hpp" />
     <ClInclude Include="Object\Shape\Grid.hpp" />
+    <ClInclude Include="Object\Shape\Group.hpp" />
     <ClInclude Include="Object\Shape\Model.hpp" />
     <ClInclude Include="Object\Shape\Quad.hpp" />
     <ClInclude Include="Object\Shape\Sphere.hpp" />

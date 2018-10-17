@@ -185,6 +185,9 @@
     <ClCompile Include="Object\Shape\Transformed.cpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Shape\Group.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -342,6 +345,9 @@
       <Filter>Source Files\Object</Filter>
     </ClInclude>
     <ClInclude Include="Object\Shape\Transformed.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Shape\Group.hpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClInclude>
   </ItemGroup>
