@@ -7,25 +7,24 @@
 #include "Math/Ray.hpp"
 
 namespace Render {
+	class Tracer
+	{
+	public:
+		Tracer(const Object::Scene &scene, int width, int height);
 
-class Tracer
-{
-public:
-	Tracer(const Object::Scene &scene, int width, int height);
+		const Object::Scene &scene() const;
 
-	const Object::Scene &scene() const;
+		Object::Intersection intersect(const Math::Ray &ray);
 
-	Object::Intersection intersect(const Math::Ray &ray);
+		Math::Ray createCameraRay(float x, float y);
 
-	Math::Ray createCameraRay(float x, float y);
+		float projectedPixelSize(float distance);
 
-	float projectedPixelSize(float distance);
-
-protected:
-	const Object::Scene &mScene;
-	int mWidth;
-	int mHeight;
-};
-
+	protected:
+		const Object::Scene &mScene;
+		int mWidth;
+		int mHeight;
+	};
 }
+
 #endif

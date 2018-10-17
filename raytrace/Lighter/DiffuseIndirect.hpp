@@ -8,7 +8,6 @@
 #include <random>
 
 namespace Lighter {
-
 	class DiffuseIndirect : public Base
 	{
 	public:
@@ -24,7 +23,6 @@ namespace Lighter {
 		DiffuseDirect mDirectLighter;
 		IrradianceCache mIrradianceCache;
 	};
-
 }
 
 #endif

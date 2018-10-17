@@ -4,39 +4,37 @@
 #include "Parse/AST.h"
 
 namespace Math {
-
-class Coordinate
-{
-public:
-	Coordinate();
-	Coordinate(const Coordinate &c);
-	Coordinate(float x, float y, float z, float w);
-	explicit Coordinate(const ASTVector &astVector, float w);
+	class Coordinate
+	{
+	public:
+		Coordinate();
+		Coordinate(const Coordinate &c);
+		Coordinate(float x, float y, float z, float w);
+		explicit Coordinate(const ASTVector &astVector, float w);
 	
-	Coordinate &operator=(const Coordinate &c);
+		Coordinate &operator=(const Coordinate &c);
 
-	float x() const;
-	void setX(float x);
+		float x() const;
+		void setX(float x);
 
-	float y() const;
-	void setY(float y);
+		float y() const;
+		void setY(float y);
 
-	float z() const;
-	void setZ(float z);
+		float z() const;
+		void setZ(float z);
 
-	float w() const;
-	void setW(float w);
+		float w() const;
+		void setW(float w);
 
-	float &at(int i);
-	const float &at(int i) const;
+		float &at(int i);
+		const float &at(int i) const;
 
-	float &operator()(int i);
-	const float &operator()(int i) const;
+		float &operator()(int i);
+		const float &operator()(int i) const;
 
-protected:
-	float mValues[4];
-};
-
+	protected:
+		float mValues[4];
+	};
 }
 
 #endif

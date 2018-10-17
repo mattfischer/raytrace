@@ -11,7 +11,6 @@
 #include <mutex>
 
 namespace Lighter {
-
 	class IrradianceCache
 	{
 	public:
@@ -56,7 +55,6 @@ namespace Lighter {
 		mutable std::mutex mMutex;
 		float mThreshold;
 	};
-
 }
 
 #endif

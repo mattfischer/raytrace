@@ -6,18 +6,16 @@
 #include <random>
 
 namespace Lighter {
+	class DiffuseDirect : public Base
+	{
+	public:
+		DiffuseDirect(int numSamples);
+		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
 
-class DiffuseDirect : public Base
-{
-public:
-	DiffuseDirect(int numSamples);
-	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
-
-private:
-	int mNumSamples;
-	mutable std::default_random_engine mRandomEngine;
-};
-
+	private:
+		int mNumSamples;
+		mutable std::default_random_engine mRandomEngine;
+	};
 }
 
 #endif

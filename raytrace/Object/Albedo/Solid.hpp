@@ -4,21 +4,19 @@
 #include "Object/Albedo/Base.hpp"
 
 namespace Object {
-namespace Albedo {
+	namespace Albedo {
+		class Solid : public Base
+		{
+		public:
+			Solid(const Object::Color &color);
 
-class Solid : public Base
-{
-public:
-	Solid(const Object::Color &color);
+			virtual Object::Color color(const Math::Point &point) const;
 
-	virtual Object::Color color(const Math::Point &point) const;
+			static std::unique_ptr<Solid> fromAst(AST *ast);
 
-	static std::unique_ptr<Solid> fromAst(AST *ast);
-
-protected:
-	Object::Color mColor;
-};
-
-}
+		protected:
+			Object::Color mColor;
+		};
+	}
 }
 #endif

@@ -5,38 +5,36 @@
 #include "Object/Color.hpp"
 
 namespace Object {
+	class Radiance
+	{
+	public:
+		Radiance();
+		Radiance(float red, float green, float blue);
+		Radiance(const ASTVector &vector);
+		Radiance(const Radiance &c);
+		Radiance &operator=(const Radiance &c);
 
-class Radiance
-{
-public:
-	Radiance();
-	Radiance(float red, float green, float blue);
-	Radiance(const ASTVector &vector);
-	Radiance(const Radiance &c);
-	Radiance &operator=(const Radiance &c);
+		float red() const;
+		float green() const;
+		float blue() const;
 
-	float red() const;
-	float green() const;
-	float blue() const;
+		float magnitude() const;
 
-	float magnitude() const;
+		Radiance operator+(const Radiance &b) const;
+		Radiance &operator+=(const Radiance &b);
+		Radiance operator/(float b) const;
+		Radiance operator*(const Radiance &b) const;
+		Radiance operator*(float b) const;
+		Radiance operator*(const Color &b) const;
+		Radiance operator-(const Radiance &b) const;
 
-	Radiance operator+(const Radiance &b) const;
-	Radiance &operator+=(const Radiance &b);
-	Radiance operator/(float b) const;
-	Radiance operator*(const Radiance &b) const;
-	Radiance operator*(float b) const;
-	Radiance operator*(const Color &b) const;
-	Radiance operator-(const Radiance &b) const;
+		Radiance clamp() const;
 
-	Radiance clamp() const;
-
-protected:
-	float mRed;
-	float mGreen;
-	float mBlue;
-};
-
+	protected:
+		float mRed;
+		float mGreen;
+		float mBlue;
+	};
 }
 
 #endif

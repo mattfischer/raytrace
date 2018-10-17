@@ -4,13 +4,11 @@
 #include "Lighter/Base.hpp"
 
 namespace Lighter {
-
-class Radiant : public Base
-{
-public:
-	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
-};
-
+	class Radiant : public Base
+	{
+	public:
+		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
+	};
 }
 
 #endif

@@ -17,93 +17,91 @@
 #include <windows.h>
 
 namespace Render {
-
-class Engine
-{
-public:
-	class Listener {
-	public:
-		virtual void onRenderDone() = 0;
-		virtual void onRenderStatus(const char *message) = 0;
-	};
-
-	class Thread
+	class Engine
 	{
 	public:
-		Thread(Engine &engine);
+		class Listener {
+		public:
+			virtual void onRenderDone() = 0;
+			virtual void onRenderStatus(const char *message) = 0;
+		};
 
-		void start(int startX, int startY, int width, int height);
+		class Thread
+		{
+		public:
+			Thread(Engine &engine);
 
-		Tracer &tracer();
-		std::default_random_engine &randomEngine();
+			void start(int startX, int startY, int width, int height);
+
+			Tracer &tracer();
+			std::default_random_engine &randomEngine();
+
+		private:
+			void run();
+
+			int mStartX;
+			int mStartY;
+			int mWidth;
+			int mHeight;
+			bool mStarted;
+			Engine &mEngine;
+			std::thread mThread;
+			Tracer mTracer;
+			std::default_random_engine mRandomEngine;
+		};
+
+		struct Settings
+		{
+			int width;
+			int height;
+			bool lighting;
+			int antialiasSamples;
+			Lighter::Master::Settings lighterSettings;
+		};
+
+		Engine(const Object::Scene &scene);
+
+		const Object::Scene &scene() const;
+
+		bool rendering() const;
+
+		void startRender(Listener *listener);
+		bool threadDone(Thread *thread);
+		void setSettings(const Settings &settings);
+
+		const Settings &settings() const;
+		Framebuffer &framebuffer();
+
+		Object::Color toneMap(const Object::Radiance &radiance) const;
 
 	private:
-		void run();
+		void getBlock(int block, int &x, int &y, int &w, int &h);
+		int widthInBlocks();
+		int heightInBlocks();
 
-		int mStartX;
-		int mStartY;
-		int mWidth;
-		int mHeight;
-		bool mStarted;
-		Engine &mEngine;
-		std::thread mThread;
-		Tracer mTracer;
-		std::default_random_engine mRandomEngine;
+		void beginPhase();
+		void endPhase();
+
+		Object::Color doPixel(Thread &thread, int x, int y);
+		Object::Color renderPixel(Thread &thread, int x, int y);
+		Object::Color prerenderPixel(Thread &thread, int x, int y);
+
+		const Object::Scene &mScene;
+		Settings mSettings;
+		Listener *mListener;
+		std::unique_ptr<Framebuffer> mFramebuffer;
+		enum class State {
+			Stopped,
+			Prerender,
+			Render
+		};
+		State mState;
+		DWORD mStartTime;
+		std::mutex mMutex;
+		std::set<std::unique_ptr<Thread>> mThreads;
+		int mBlocksStarted;
+		std::unique_ptr<Lighter::Master> mLighter;
 	};
-
-	struct Settings
-	{
-		int width;
-		int height;
-		bool lighting;
-		int antialiasSamples;
-		Lighter::Master::Settings lighterSettings;
-	};
-
-	Engine(const Object::Scene &scene);
-
-	const Object::Scene &scene() const;
-
-	bool rendering() const;
-
-	void startRender(Listener *listener);
-	bool threadDone(Thread *thread);
-	void setSettings(const Settings &settings);
-
-	const Settings &settings() const;
-	Framebuffer &framebuffer();
-
-	Object::Color toneMap(const Object::Radiance &radiance) const;
-
-private:
-	void getBlock(int block, int &x, int &y, int &w, int &h);
-	int widthInBlocks();
-	int heightInBlocks();
-
-	void beginPhase();
-	void endPhase();
-
-	Object::Color doPixel(Thread &thread, int x, int y);
-	Object::Color renderPixel(Thread &thread, int x, int y);
-	Object::Color prerenderPixel(Thread &thread, int x, int y);
-
-	const Object::Scene &mScene;
-	Settings mSettings;
-	Listener *mListener;
-	std::unique_ptr<Framebuffer> mFramebuffer;
-	enum class State {
-		Stopped,
-		Prerender,
-		Render
-	};
-	State mState;
-	DWORD mStartTime;
-	std::mutex mMutex;
-	std::set<std::unique_ptr<Thread>> mThreads;
-	int mBlocksStarted;
-	std::unique_ptr<Lighter::Master> mLighter;
-};
-
 }
 
 #endif

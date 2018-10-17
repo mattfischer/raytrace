@@ -3,56 +3,54 @@
 #include <math.h>
 
 namespace Math {
-
-float PolySolve::evaluate(const float coeffs[], int n, float x)
-{
-	float result = 0;
-	for(int i=n-1; i>=0; i--)
+	float PolySolve::evaluate(const float coeffs[], int n, float x)
 	{
-		result *= x;
-		result += coeffs[i];
+		float result = 0;
+		for(int i=n-1; i>=0; i--)
+		{
+			result *= x;
+			result += coeffs[i];
+		}
+
+		return result;
 	}
 
-	return result;
-}
-
-void PolySolve::derivative(const float coeffs[], int n, float result[])
-{
-	for(int i=1; i<n; i++)
+	void PolySolve::derivative(const float coeffs[], int n, float result[])
 	{
-		result[i - 1] = i * coeffs[i];
+		for(int i=1; i<n; i++)
+		{
+			result[i - 1] = i * coeffs[i];
+		}
 	}
-}
 
-float PolySolve::newtonRhapson(const float coeffs[], int n, float guess, float threshold)
-{
-	float *deriv = new float[n-1];
-	float oldVal, newVal;
-	int iter;
-
-	derivative(coeffs, n, deriv);
-
-	newVal = guess;
-	iter = 0;
-	do
+	float PolySolve::newtonRhapson(const float coeffs[], int n, float guess, float threshold)
 	{
-		oldVal = newVal;
-		newVal = oldVal - evaluate(coeffs, n, oldVal) / evaluate(deriv, n-1, oldVal);
-		iter++;
-	} while(fabs(oldVal - newVal) > threshold && iter < 50);
+		float *deriv = new float[n-1];
+		float oldVal, newVal;
+		int iter;
 
-	delete[] deriv;
+		derivative(coeffs, n, deriv);
 
-	if(iter == 50) return HUGE_VAL;
-	else return newVal;
-}
+		newVal = guess;
+		iter = 0;
+		do
+		{
+			oldVal = newVal;
+			newVal = oldVal - evaluate(coeffs, n, oldVal) / evaluate(deriv, n-1, oldVal);
+			iter++;
+		} while(fabs(oldVal - newVal) > threshold && iter < 50);
 
-void PolySolve::newtonRhapson(const float coeffs[], int n, const float guesses[], float threshold, float results[])
-{
-	for(int i=0; i<n-1; i++)
-	{
-		results[i] = newtonRhapson(coeffs, n, guesses[i], threshold);
+		delete[] deriv;
+
+		if(iter == 50) return HUGE_VAL;
+		else return newVal;
 	}
-}
 
+	void PolySolve::newtonRhapson(const float coeffs[], int n, const float guesses[], float threshold, float results[])
+	{
+		for(int i=0; i<n-1; i++)
+		{
+			results[i] = newtonRhapson(coeffs, n, guesses[i], threshold);
+		}
+	}
 }

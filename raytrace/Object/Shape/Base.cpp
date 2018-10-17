@@ -7,27 +7,25 @@
 #include <algorithm>
 
 namespace Object {
-namespace Shape {
+	namespace Shape {
+		std::unique_ptr<Base> Base::fromAst(AST *ast)
+		{
+			std::unique_ptr<Base> shape;
 
-std::unique_ptr<Base> Base::fromAst(AST *ast)
-{
-	std::unique_ptr<Base> shape;
+			switch(ast->type)
+			{
+			case AstSphere:
+				shape = Sphere::fromAst(ast);
+				break;
+			case AstQuad:
+				shape = Quad::fromAst(ast);
+				break;
+			case AstModel:
+				shape = Model::fromAst(ast);
+				break;
+			}
 
-	switch(ast->type)
-	{
-	case AstSphere:
-		shape = Sphere::fromAst(ast);
-		break;
-	case AstQuad:
-		shape = Quad::fromAst(ast);
-		break;
-	case AstModel:
-		shape = Model::fromAst(ast);
-		break;
+			return shape;
+		}
 	}
-
-	return shape;
-}
-
-}
 }

@@ -6,24 +6,22 @@
 #include <vector>
 
 namespace Render {
+	class Framebuffer
+	{
+	public:
+		Framebuffer(int width, int height);
 
-class Framebuffer
-{
-public:
-	Framebuffer(int width, int height);
+		int width() const;
+		int height() const;
+		const unsigned char *bits() const;
 
-	int width() const;
-	int height() const;
-	const unsigned char *bits() const;
+		void setPixel(int x, int y, const Object::Color &color);
 
-	void setPixel(int x, int y, const Object::Color &color);
-
-private:
-	int mWidth;
-	int mHeight;
-	std::vector<unsigned char> mBits;
-};
-
+	private:
+		int mWidth;
+		int mHeight;
+		std::vector<unsigned char> mBits;
+	};
 }
 
 #endif

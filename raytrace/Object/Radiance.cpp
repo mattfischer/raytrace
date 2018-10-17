@@ -7,7 +7,6 @@
 #include <algorithm>
 
 namespace Object {
-
 	Radiance::Radiance()
 	{
 		mRed = 0;

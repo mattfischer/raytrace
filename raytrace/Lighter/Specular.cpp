@@ -3,62 +3,55 @@
 
 #include "Lighter/Utils.hpp"
 
-#include "Render/Tracer.hpp"
-#include "Object/Scene.hpp"
-
-#include "Render/Engine.hpp"
-
 #include <cmath>
 
 namespace Lighter {
-
-Specular::Specular(const Lighter::Base &lighter, int numSamples, int maxGeneration)
-	: mLighter(lighter)
-{
-	mNumSamples = numSamples;
-	mMaxGeneration = maxGeneration;
-}
-
-Object::Radiance Specular::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
-{
-	const Object::Surface &surface = intersection.primitive().surface();
-	const Math::Ray &ray = intersection.ray();
-	Math::Normal normal = intersection.normal();
-	Math::Vector outgoingDirection = -ray.direction();
-
-	if (normal * outgoingDirection < 0) {
-		normal = -normal;
+	Specular::Specular(const Lighter::Base &lighter, int numSamples, int maxGeneration)
+		: mLighter(lighter)
+	{
+		mNumSamples = numSamples;
+		mMaxGeneration = maxGeneration;
 	}
 
-	Object::Radiance radiance;
+	Object::Radiance Specular::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	{
+		const Object::Surface &surface = intersection.primitive().surface();
+		const Math::Ray &ray = intersection.ray();
+		Math::Normal normal = intersection.normal();
+		Math::Vector outgoingDirection = -ray.direction();
 
-	if (surface.brdf().hasSpecular() && generation < mMaxGeneration) {
-		const Object::Brdf::Base &brdf = surface.brdf().specular();
-		const Object::Color &albedo = intersection.albedo();
+		if (normal * outgoingDirection < 0) {
+			normal = -normal;
+		}
 
-		Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
+		Object::Radiance radiance;
 
-		for (int i = 0; i < mNumSamples; i++) {
-			float u;
-			float v;
+		if (surface.brdf().hasSpecular() && generation < mMaxGeneration) {
+			const Object::Brdf::Base &brdf = surface.brdf().specular();
+			const Object::Color &albedo = intersection.albedo();
 
-			Utils::stratifiedSamples(i, mNumSamples, u, v, mRandomEngine);
+			Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 
-			float pdf;
-			Math::Vector incidentDirection = brdf.sample(u, v, normal, outgoingDirection, pdf);
-			if(incidentDirection * normal > 0) {
-				Math::Ray reflectRay(offsetPoint, incidentDirection);
-				Object::Intersection intersection2 = tracer.intersect(reflectRay);
+			for (int i = 0; i < mNumSamples; i++) {
+				float u;
+				float v;
 
-				if (intersection2.valid()) {
-					Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1);
-					radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
+				Utils::stratifiedSamples(i, mNumSamples, u, v, mRandomEngine);
+
+				float pdf;
+				Math::Vector incidentDirection = brdf.sample(u, v, normal, outgoingDirection, pdf);
+				if(incidentDirection * normal > 0) {
+					Math::Ray reflectRay(offsetPoint, incidentDirection);
+					Object::Intersection intersection2 = tracer.intersect(reflectRay);
+
+					if (intersection2.valid()) {
+						Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1);
+						radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
+					}
 				}
 			}
 		}
+
+		return radiance;
 	}
-
-	return radiance;
-}
-
 }

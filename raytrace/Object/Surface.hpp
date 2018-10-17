@@ -10,23 +10,22 @@
 #include <memory>
 
 namespace Object {
+	class Surface
+	{
+	public:
+		Surface(std::unique_ptr<Albedo::Base> albedo, std::unique_ptr<Brdf::Composite> brdf, const Object::Radiance &radiance);
 
-class Surface
-{
-public:
-	Surface(std::unique_ptr<Albedo::Base> albedo, std::unique_ptr<Brdf::Composite> brdf, const Object::Radiance &radiance);
+		const Albedo::Base &albedo() const;
+		const Brdf::Composite &brdf() const;
+		const Object::Radiance &radiance() const;
 
-	const Albedo::Base &albedo() const;
-	const Brdf::Composite &brdf() const;
-	const Object::Radiance &radiance() const;
+		static std::unique_ptr<Surface> fromAst(AST *ast);
 
-	static std::unique_ptr<Surface> fromAst(AST *ast);
-
-private:
-	std::unique_ptr<Albedo::Base> mAlbedo;
-	std::unique_ptr<Brdf::Composite> mBrdf;
-	Object::Radiance mRadiance;
-};
-
+	private:
+		std::unique_ptr<Albedo::Base> mAlbedo;
+		std::unique_ptr<Brdf::Composite> mBrdf;
+		Object::Radiance mRadiance;
+	};
 }
+
 #endif

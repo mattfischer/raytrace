@@ -7,7 +7,6 @@
 #include <random>
 
 namespace Lighter {
-
 	class Specular : public Base
 	{
 	public:
@@ -21,7 +20,6 @@ namespace Lighter {
 		int mMaxGeneration;
 		mutable std::default_random_engine mRandomEngine;
 	};
-
 }
 
 #endif

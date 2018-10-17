@@ -6,21 +6,19 @@
 #include "Parse/AST.h"
 
 namespace Object {
-namespace Albedo {
+	namespace Albedo {
+		std::unique_ptr<Base> Base::fromAst(AST *ast)
+		{
+			AST *albedoAst = ast->children[0];
+			switch(albedoAst->type)
+			{
+			case AstAlbedoSolid:
+				return Solid::fromAst(albedoAst);
+			case AstAlbedoChecker:
+				return Checker::fromAst(albedoAst);
+			}
 
-std::unique_ptr<Base> Base::fromAst(AST *ast)
-{
-	AST *albedoAst = ast->children[0];
-	switch(albedoAst->type)
-	{
-	case AstAlbedoSolid:
-		return Solid::fromAst(albedoAst);
-	case AstAlbedoChecker:
-		return Checker::fromAst(albedoAst);
+			return 0;
+		}
 	}
-
-	return 0;
-}
-
-}
 }

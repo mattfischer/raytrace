@@ -7,20 +7,20 @@
 #include <memory>
 
 namespace Object {
+	class Light
+	{
+	public:
+		Light(const Math::Point &position, const Object::Radiance &radiance);
 
-class Light
-{
-public:
-	Light(const Math::Point &position, const Object::Radiance &radiance);
+		static std::unique_ptr<Light> fromAst(AST *ast);
 
-	static std::unique_ptr<Light> fromAst(AST *ast);
+		const Math::Point &position() const;
+		const Object::Radiance &radiance() const;
 
-	const Math::Point &position() const;
-	const Object::Radiance &radiance() const;
-
-private:
-	Math::Point mPosition;
-	Object::Radiance mRadiance;
-};
+	private:
+		Math::Point mPosition;
+		Object::Radiance mRadiance;
+	};
 }
+
 #endif

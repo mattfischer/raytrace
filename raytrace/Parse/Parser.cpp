@@ -6,10 +6,8 @@ extern "C"
 }
 
 namespace Parse {
-
-AST *Parser::parse(const char *filename)
-{
-	return parseScene(filename);
-}
-
+	AST *Parser::parse(const char *filename)
+	{
+		return parseScene(filename);
+	}
 }

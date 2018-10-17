@@ -4,11 +4,11 @@
 #include "Parse/AST.h"
 
 namespace Parse {
-
-class Parser
-{
-public:
-	static AST *parse(const char *filename);
-};
+	class Parser
+	{
+	public:
+		static AST *parse(const char *filename);
+	};
 }
+
 #endif

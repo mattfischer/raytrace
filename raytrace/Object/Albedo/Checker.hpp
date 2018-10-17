@@ -4,22 +4,20 @@
 #include "Object/Albedo/Base.hpp"
 
 namespace Object {
-namespace Albedo {
+	namespace Albedo {
+		class Checker : public Base
+		{
+		public:
+			Checker(const Object::Color &color1, const Object::Color &color2);
 
-class Checker : public Base
-{
-public:
-	Checker(const Object::Color &color1, const Object::Color &color2);
+			virtual Object::Color color(const Math::Point &point) const;
 
-	virtual Object::Color color(const Math::Point &point) const;
+			static std::unique_ptr<Checker> fromAst(AST *ast);
 
-	static std::unique_ptr<Checker> fromAst(AST *ast);
-
-protected:
-	Object::Color mColor1;
-	Object::Color mColor2;
-};
-
-}
+		protected:
+			Object::Color mColor1;
+			Object::Color mColor2;
+		};
+	}
 }
 #endif

@@ -3,43 +3,39 @@
 
 #include "Render/Tracer.hpp"
 
-#include <vector>
-#include <memory>
-
 #include "Math/Vector.hpp"
 #include "Object/Radiance.hpp"
 
+#include <vector>
+#include <memory>
+
 namespace Lighter {
+	class Base {
+	public:
+		Base();
 
-class Base;
+		struct Probe {
+			struct Entry {
+				Math::Vector direction;
+				Object::Radiance radiance;
+			};
 
-class Base {
-public:
-	Base();
-
-	struct Probe {
-		struct Entry {
-			Math::Vector direction;
-			Object::Radiance radiance;
+			std::vector<Entry> entries;
 		};
 
-		std::vector<Entry> entries;
+		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const = 0;
+		virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer);
+
+		void enableProbe(bool enabled);
+		const Probe &probe() const;
+
+	protected:
+		void clearProbe() const;
+		void addProbeEntry(const Math::Vector &direction, const Object::Radiance &radiance) const;
+
+	private:
+		std::unique_ptr<Probe> mProbe;
 	};
-
-	virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const = 0;
-	virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer);
-
-	void enableProbe(bool enabled);
-	const Probe &probe() const;
-
-protected:
-	void clearProbe() const;
-	void addProbeEntry(const Math::Vector &direction, const Object::Radiance &radiance) const;
-
-private:
-	std::unique_ptr<Probe> mProbe;
-};
-
 }
 
 #endif
