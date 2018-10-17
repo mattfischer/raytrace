@@ -5,41 +5,37 @@
 
 namespace Object {
 
-Camera::Camera(int fov)
+Camera::Camera(const Math::Point &position, const Math::Vector &direction, const Math::Vector &vertical, float fov)
+: mPosition(position), mDirection(direction)
 {
-	mSize = tan(fov * 3.14 / (2 * 180));
+	float size = tan(fov * 3.14 / (2 * 180));
+	Math::Vector perpVertical = (vertical - mDirection * (vertical * mDirection)).normalize();
+	Math::Vector horizontal = (perpVertical % mDirection);
+
+	mVertical = perpVertical * size;
+	mHorizontal = horizontal * size;
 }
 
 std::unique_ptr<Camera> Camera::fromAst(AST *ast)
 {
-	std::unique_ptr<Camera> camera = std::make_unique<Camera>(60);
+	Math::Point position(ast->children[0]->data._vector);
+	Math::Point lookAt(ast->children[1]->data._vector);
 
-	for(int i=0; i<ast->numChildren; i++)
-	{
-		switch(ast->children[i]->type)
-		{
-		case AstTransform:
-			camera->transform(Math::Transformation::fromAst(ast->children[i]));
-			break;
-		}
-	}
+	std::unique_ptr<Camera> camera = std::make_unique<Camera>(position, (lookAt - position).normalize(), Math::Vector(0, 1, 0), 60.0f);
 
 	return camera;
 }
 
 Math::Ray Camera::createRay(float x, float y) const
 {
-	float rayX, rayY;
+	Math::Vector direction = (mDirection + mHorizontal * x + mVertical * y).normalize();
 
-	rayX = mSize * x;
-	rayY = -mSize * y;
-
-	return Math::Ray(transformation().origin(), transformation() * Math::Vector(rayX, rayY, 1).normalize());
+	return Math::Ray(mPosition, direction);
 }
 
 float Camera::projectSize(float size, float distance) const
 {
-	return size * mSize * distance;
+	return size * mHorizontal.magnitude() * distance;
 }
 
 }

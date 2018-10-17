@@ -47,7 +47,7 @@
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> surfacedef surface_list surface_item albedodef brdf_list brdf_item
 %type <_ast> spheredef boxdef quaddef lightdef
-%type <_ast> cameradef camera_modifiers camera_modifier
+%type <_ast> cameradef
 %start scene
 
 %%
@@ -142,16 +142,12 @@ albedodef: colordef
 colordef: COLOR VECTOR
 	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }	
 
-cameradef: CAMERA '{' camera_modifiers '}'
-	{ $$ = addChildren(newAst(AstCamera, 0), $3->numChildren, $3->children); }
+cameradef: CAMERA '{' VECTOR VECTOR '}'
+	{ $$ = newAst(AstCamera, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)); 
+	  $$->children[0]->data._vector = $3;
+	  $$->children[1]->data._vector = $4;
+	}
 	
-camera_modifiers: camera_modifier
-	{ $$ = newAst(AstList, 1, $1); }
-				| camera_modifiers camera_modifier
-	{ $$ = addChild($1, $2); }
-	
-camera_modifier: transformdef
-
 lightdef: LIGHT '{' VECTOR VECTOR '}'
 	{ $$ = newAst(AstLight, 1, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0))); 
 	  $$->children[0]->children[0]->data._vector = $3;
