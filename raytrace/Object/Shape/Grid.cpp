@@ -69,7 +69,7 @@ bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Ma
 	Math::Vector P = ray.direction() % E2;
 
 	float den = P * E1;
-	if (den > -0.001 && den < 0.001) {
+	if (den > -0.000001 && den < 0.000001) {
 		return false;
 	}
 
