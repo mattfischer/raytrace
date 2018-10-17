@@ -7,8 +7,6 @@ namespace Object {
 	public:
 		Color();
 		Color(float red, float green, float blue);
-		Color(const Color &c);
-		Color &operator=(const Color &c);
 
 		float red() const;
 		float green() const;

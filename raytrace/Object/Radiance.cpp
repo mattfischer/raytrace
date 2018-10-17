@@ -19,22 +19,6 @@ namespace Object {
 		mBlue = blue;
 	}
 
-	Radiance::Radiance(const Radiance &c)
-	{
-		mRed = c.mRed;
-		mGreen = c.mGreen;
-		mBlue = c.mBlue;
-	}
-
-	Radiance &Radiance::operator=(const Radiance &c)
-	{
-		mRed = c.mRed;
-		mGreen = c.mGreen;
-		mBlue = c.mBlue;
-
-		return *this;
-	}
-
 	float Radiance::red() const
 	{
 		return mRed;

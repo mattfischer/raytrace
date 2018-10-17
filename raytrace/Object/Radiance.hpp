@@ -9,8 +9,6 @@ namespace Object {
 	public:
 		Radiance();
 		Radiance(float red, float green, float blue);
-		Radiance(const Radiance &c);
-		Radiance &operator=(const Radiance &c);
 
 		float red() const;
 		float green() const;

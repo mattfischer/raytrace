@@ -12,11 +12,6 @@ namespace Math {
 	{
 	}
 
-	Point::Point(const Point &c)
-	: Coordinate(c)
-	{
-	}
-
 	Point::Point(const Vector &c)
 	: Coordinate(c.x(), c.y(), c.z(), 1)
 	{

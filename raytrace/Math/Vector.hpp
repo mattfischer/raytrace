@@ -11,10 +11,8 @@ namespace Math {
 	{
 	public:
 		Vector();
-		Vector(const Vector &c);
 		Vector(float x, float y, float z);
 		explicit Vector(const Point &point);
-		explicit Vector(const Normal &normal);
 		explicit Vector(const Coordinate &c);
 
 		Vector normalize() const;

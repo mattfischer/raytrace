@@ -15,11 +15,6 @@ namespace Math {
 	{
 	}
 
-	Vector::Vector(const Vector &c)
-	: Coordinate(c)
-	{
-	}
-
 	Vector::Vector(const Coordinate &c)
 	: Coordinate(c)
 	{
@@ -27,11 +22,6 @@ namespace Math {
 
 	Vector::Vector(const Point &point)
 	: Coordinate(point.x(), point.y(), point.z(), 0)
-	{
-	}
-
-	Vector::Vector(const Normal &normal)
-	: Coordinate(normal)
 	{
 	}
 

@@ -6,11 +6,8 @@ namespace Math {
 	{
 	public:
 		Coordinate();
-		Coordinate(const Coordinate &c);
 		Coordinate(float x, float y, float z, float w);
 	
-		Coordinate &operator=(const Coordinate &c);
-
 		float x() const;
 		void setX(float x);
 

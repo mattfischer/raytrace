@@ -15,22 +15,6 @@ namespace Object {
 		mBlue = blue;
 	}
 
-	Color::Color(const Color &c)
-	{
-		mRed = c.mRed;
-		mGreen = c.mGreen;
-		mBlue = c.mBlue;
-	}
-
-	Color &Color::operator=(const Color &c)
-	{
-		mRed = c.mRed;
-		mGreen = c.mGreen;
-		mBlue = c.mBlue;
-
-		return *this;
-	}
-
 	float Color::red() const
 	{
 		return mRed;

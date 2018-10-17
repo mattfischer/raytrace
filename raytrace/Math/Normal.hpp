@@ -11,7 +11,6 @@ namespace Math {
 	{
 	public:
 		Normal();
-		Normal(const Normal &c);
 		Normal(float x, float y, float z);
 		explicit Normal(const Point &point);
 		explicit Normal(const Coordinate &c);

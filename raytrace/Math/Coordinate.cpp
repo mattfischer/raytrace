@@ -14,20 +14,6 @@ namespace Math {
 		mValues[3] = w;
 	}
 
-	Coordinate::Coordinate(const Coordinate &c)
-	{
-		for(int i=0; i<4; i++)
-			mValues[i] = c(i);
-	}
-
-	Coordinate &Coordinate::operator=(const Coordinate &c)
-	{
-		for(int i=0; i<4; i++) 
-			mValues[i] = c(i);
-
-		return *this;
-	}
-
 	float Coordinate::x() const
 	{
 		return mValues[0];

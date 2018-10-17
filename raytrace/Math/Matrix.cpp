@@ -23,12 +23,14 @@ namespace Math {
 
 	Matrix::Matrix(const Matrix &c)
 	{
-		for(int i=0; i<16; i++)
-		{
-			mValues[i] = c.mValues[i];
-		}
-
 		mIdentity = c.mIdentity;
+
+		if (!mIdentity) {
+			for (int i = 0; i < 16; i++)
+			{
+				mValues[i] = c.mValues[i];
+			}
+		}
 	}
 
 	Matrix &Matrix::operator=(const Matrix &c)
