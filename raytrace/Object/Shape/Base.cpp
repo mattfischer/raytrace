@@ -2,6 +2,7 @@
 
 #include "Object/Shape/Sphere.hpp"
 #include "Object/Shape/Quad.hpp"
+#include "Object/Shape/Model.hpp"
 
 #include <algorithm>
 
@@ -19,6 +20,9 @@ std::unique_ptr<Base> Base::fromAst(AST *ast)
 		break;
 	case AstQuad:
 		shape = Quad::fromAst(ast);
+		break;
+	case AstModel:
+		shape = Model::fromAst(ast);
 		break;
 	}
 

@@ -7,9 +7,11 @@
 	#include <stdlib.h>
 	
 	void parseVector(char *text, ASTVector *vector);
+	char *parseString(char *text);
 %}
 
 FLOAT -?[[:digit:]]+(\.[[:digit:]]+)?
+STRING \"[^"]*\"
 
 %%
 [[:blank:]]*
@@ -17,14 +19,17 @@ FLOAT -?[[:digit:]]+(\.[[:digit:]]+)?
 
 \<{FLOAT},{FLOAT},{FLOAT}\>	parseVector(Scenetext, &(Scenelval._vector)); return VECTOR;
 {FLOAT} Scenelval._float = atof(Scenetext); return FLOAT;
+{STRING} Scenelval._string = parseString(Scenetext); return STRING;
 
 sphere	return SPHERE;
 quad return QUAD;
+model return MODEL;
 
 transform return TRANSFORM;
 rotate return ROTATE;
 translate return TRANSLATE;
 scale return SCALE;
+uniform_scale return UNIFORM_SCALE;
 
 surface return SURFACE;
 radiance return RADIANCE;
@@ -70,4 +75,12 @@ void parseVector(char *text, ASTVector *vector)
 	vector->z = atof(text);
 	*c = b;
 }
-	
+
+char *parseString(char *text)
+{
+    char *c = malloc(strlen(text) - 1);
+	strcpy(c, text + 1);
+	c[strlen(c) - 1] = '\0';
+
+	return c;
+}

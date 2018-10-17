@@ -15,16 +15,19 @@
 	AST *_ast;
 	ASTVector _vector;
 	float _float;
+	char *_string;
 };
 
 %token SPHERE
 %token BOX
 %token QUAD
+%token MODEL
 
 %token TRANSFORM
 %token TRANSLATE
 %token ROTATE
 %token SCALE
+%token UNIFORM_SCALE
 
 %token SURFACE
 %token ALBEDO
@@ -41,12 +44,13 @@
 %token END
 %token <_vector> VECTOR
 %token <_float> FLOAT
+%token <_string> STRING
 
 %type <_ast> scene object_list object primitive primitive_wrap primitive_modifiers primitive_modifier
 %type <_ast> colordef
 %type <_ast> transformdef transform_list transform_item
 %type <_ast> surfacedef surface_list surface_item albedodef brdf_list brdf_item
-%type <_ast> spheredef quaddef lightdef
+%type <_ast> spheredef quaddef modeldef lightdef
 %type <_ast> cameradef
 %start scene
 
@@ -66,7 +70,7 @@ object: primitive
 primitive: primitive_wrap
 	{ $$ = newAst(AstPrimitive, 1, $1); }
 	
-primitive_wrap: spheredef | quaddef
+primitive_wrap: spheredef | quaddef | modeldef
 	
 spheredef: SPHERE '{' VECTOR FLOAT primitive_modifiers '}'
 	{ $$ = newAst(AstSphere, 2, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)), $5); 
@@ -78,6 +82,11 @@ quaddef: QUAD '{' VECTOR VECTOR VECTOR primitive_modifiers '}'
 	  $$->children[0]->children[0]->data._vector = $3;
 	  $$->children[0]->children[1]->data._vector = $4;
 	  $$->children[0]->children[2]->data._vector = $5;
+	}
+
+modeldef: MODEL '{' STRING primitive_modifiers '}'
+	{ $$ = newAst(AstModel, 2, newAst(AstConstant, 0), $4);
+	  $$->children[0]->data._string = $3;
 	}
 
 primitive_modifiers: primitive_modifier
@@ -101,6 +110,8 @@ transform_item: TRANSLATE VECTOR
 	{ $$ = newAst(AstRotate, 0); $$->data._vector = $2; }
 			 | SCALE VECTOR
 	{ $$ = newAst(AstScale, 0); $$->data._vector = $2; }
+			 | UNIFORM_SCALE FLOAT
+	{ $$ = newAst(AstUniformScale, 0); $$->data._float = $2; }
 
 surfacedef: SURFACE '{' surface_list '}'
 	{ $$ = $3; }

@@ -50,6 +50,7 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 		}
 	}
 
+	/*
 	std::unique_ptr<Object::Shape::Base> model = std::make_unique<Object::Shape::Model>("teapot.bpt");
 
 	std::unique_ptr<Object::Albedo::Base> albedo = std::make_unique<Object::Albedo::Solid>(Object::Color(0, 0.5, 1.0));
@@ -66,7 +67,7 @@ std::unique_ptr<Scene> Scene::fromAST(AST *ast)
 
 	std::unique_ptr<Shape::Base> shape = std::make_unique<Shape::Transformed>(std::move(model), transformation);
 	std::unique_ptr<Primitive> primitive = std::make_unique<Primitive>(std::move(shape), std::move(surface));
-	primitives.push_back(std::move(primitive));
+	primitives.push_back(std::move(primitive));*/
 
 	std::unique_ptr<Scene> scene = std::make_unique<Scene>(std::move(camera), std::move(primitives), std::move(lights));
 

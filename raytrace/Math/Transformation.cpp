@@ -176,7 +176,10 @@ Transformation Transformation::fromAst(AST *ast)
 			t = rotate(Math::Vector(ast->children[i]->data._vector)) * t;
 			break;
 		case AstScale:
-			t = scale(Math::Vector(ast->children[i]->data._vector)) *t;
+			t = scale(Math::Vector(ast->children[i]->data._vector)) * t;
+			break;
+		case AstUniformScale:
+			t = uniformScale(ast->children[i]->data._float) * t;
 			break;
 		}
 	}

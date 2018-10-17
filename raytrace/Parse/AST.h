@@ -8,12 +8,14 @@ typedef enum
 	AstPrimitive,
 	AstSphere,
 	AstQuad,
+	AstModel,
 
 	AstTransform,
 	AstTranslate,
 	AstRotate,
 	AstScale,
-	
+	AstUniformScale,
+
 	AstSurface,
 	AstAlbedo,
 	AstAlbedoSolid,
@@ -54,6 +56,7 @@ struct _AST
 	{
 		ASTVector _vector;
 		float _float;
+		char *_string;
 	} data;
 };
 
