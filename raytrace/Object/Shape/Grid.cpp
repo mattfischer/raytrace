@@ -8,23 +8,28 @@ Grid::Grid(int width, int height, std::vector<Math::Point> &&points, std::vector
 {
 	std::vector<std::unique_ptr<BvhNode>> nodes;
 
-	for (int v = 0; v < mHeight - 1; v++) {
-		for (int u = 0; u < mWidth - 1; u++) {
+	const int GROUP = 1;
+	for (int v = 0; v < mHeight - 1; v += GROUP) {
+		for (int u = 0; u < mWidth - 1; u += GROUP) {
 			std::unique_ptr<BvhNode> node = std::make_unique<BvhNode>();
 
 			node->u = u;
 			node->v = v;
-			node->volume.expand(mPoints[v * mWidth + u]);
-			node->volume.expand(mPoints[v * mWidth + u + 1]);
-			node->volume.expand(mPoints[(v + 1) * mWidth + u]);
-			node->volume.expand(mPoints[(v + 1) * mWidth + u + 1]);
+			node->du = std::min(GROUP, mWidth - 1 - u);
+			node->dv = std::min(GROUP, mHeight - 1 - v);
+
+			for (int i = 0; i < node->du + 1; i++) {
+				for (int j = 0; j < node->dv + 1; j++) {
+					node->volume.expand(mPoints[(v + j) * mWidth + u + i]);
+				}
+			}
 
 			nodes.push_back(std::move(node));
 		}
 	}
 
-	int currentWidth = mWidth - 1;
-	int currentHeight = mHeight - 1;
+	int currentWidth = (mWidth - 1 + GROUP - 1) / GROUP;
+	int currentHeight = (mHeight - 1 + GROUP - 1) / GROUP;
 
 	while (currentWidth > 1 || currentHeight > 1) {
 		std::vector<std::unique_ptr<BvhNode>> newNodes;
@@ -121,15 +126,20 @@ bool Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData 
 {
 	bool ret = false;
 	if (node.u != -1 && node.v != -1) {
-		int idx0 = node.v * mWidth + node.u;
-		int idx1 = node.v * mWidth + node.u + 1;
-		int idx2 = (node.v + 1) * mWidth + node.u;
-		int idx3 = (node.v + 1) * mWidth + node.u + 1;
+		for (int u = node.u; u < node.u + node.du; u++) {
+			for (int v = node.v; v < node.v + node.dv; v++) {
+				int idx0 = v * mWidth + u;
+				int idx1 = v * mWidth + u + 1;
+				int idx2 = (v + 1) * mWidth + u;
+				int idx3 = (v + 1) * mWidth + u + 1;
 
-		if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
-			ret = true;
-		} else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
-			ret = true;
+				if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
+					ret = true;
+				}
+				else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
+					ret = true;
+				}
+			}
 		}
 	}
 	else {

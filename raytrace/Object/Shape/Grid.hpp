@@ -22,6 +22,8 @@ private:
 	struct BvhNode {
 		int u;
 		int v;
+		int du;
+		int dv;
 		BoundingVolume volume;
 
 		std::vector<std::unique_ptr<BvhNode>> children;
