@@ -246,7 +246,7 @@ Object::Color Engine::renderPixel(Thread &thread, int x, int y)
 					color += toneMap(radiance);
 				}
 				else {
-					color += intersection.primitive().surface().albedo().color(intersection.point());
+					color += intersection.albedo();
 				}
 			}
 		}

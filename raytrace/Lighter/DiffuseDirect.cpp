@@ -14,7 +14,7 @@ Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, 
 {
 	const Math::Point &point = intersection.point();
 	Math::Normal normal = intersection.normal();
-	const Object::Color &albedo = intersection.primitive().surface().albedo().color(intersection.point());
+	const Object::Color &albedo = intersection.albedo();
 	const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf().diffuse();
 	const Math::Vector &outgoingDirection = -intersection.ray().direction();
 	if (outgoingDirection * normal < 0) {

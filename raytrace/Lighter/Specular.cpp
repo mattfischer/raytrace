@@ -34,7 +34,7 @@ Object::Radiance Specular::light(const Object::Intersection &intersection, Rende
 
 	if (surface.brdf().hasSpecular() && generation < mMaxGeneration) {
 		const Object::Brdf::Base &brdf = surface.brdf().specular();
-		Object::Color albedo = surface.albedo().color(intersection.point());
+		const Object::Color &albedo = intersection.albedo();
 
 		Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 

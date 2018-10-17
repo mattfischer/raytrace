@@ -17,7 +17,7 @@ class Intersection
 {
 public:
 	Intersection();
-	Intersection(const Object::Primitive &primitive, const Math::Ray &ray, float distance, const Math::Normal &normal);
+	Intersection(const Object::Primitive &primitive, const Math::Ray &ray, const Math::Point &point, float distance, const Math::Normal &normal, const Object::Color &albedo);
 
 	bool valid() const;
 
@@ -26,13 +26,16 @@ public:
 	float distance() const;
 	const Math::Ray &ray() const;
 	const Math::Normal &normal() const;
-	Math::Point point() const;
+	const Math::Point &point() const;
+	const Object::Color &albedo() const;
 
 protected:
 	const Object::Primitive &mPrimitive;
 	const Math::Ray &mRay;
+	Math::Point mPoint;
 	float mDistance;
 	Math::Normal mNormal;
+	Object::Color mAlbedo;
 };
 
 }

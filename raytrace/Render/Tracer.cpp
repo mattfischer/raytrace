@@ -44,7 +44,9 @@ Object::Intersection Tracer::intersect(const Math::Ray &ray)
 	}
 
 	if (shapeIntersection.distance < FLT_MAX) {
-		return Object::Intersection(*primitive, ray, shapeIntersection.distance, shapeIntersection.normal);
+		Math::Point point = ray.origin() + ray.direction() * shapeIntersection.distance;
+		Object::Color albedo = primitive->surface().albedo().color(point);
+		return Object::Intersection(*primitive, ray, point, shapeIntersection.distance, shapeIntersection.normal, albedo);
 	}
 	else {
 		return Object::Intersection();

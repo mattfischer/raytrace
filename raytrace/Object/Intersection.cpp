@@ -7,8 +7,8 @@ Intersection::Intersection()
 {
 }
 
-Intersection::Intersection(const Object::Primitive &primitive, const Math::Ray &ray, float distance, const Math::Normal &normal)
-	: mPrimitive(primitive), mRay(ray), mNormal(normal), mDistance(distance)
+Intersection::Intersection(const Object::Primitive &primitive, const Math::Ray &ray, const Math::Point &point, float distance, const Math::Normal &normal, const Object::Color &albedo)
+	: mPrimitive(primitive), mRay(ray), mPoint(point), mNormal(normal), mDistance(distance), mAlbedo(albedo)
 {
 };
 
@@ -17,9 +17,9 @@ const Math::Normal &Intersection::normal() const
 	return mNormal;
 }
 
-Math::Point Intersection::point() const
+const Math::Point &Intersection::point() const
 {
-	return mRay.origin() + mRay.direction() * mDistance;
+	return mPoint;
 }
 
 bool Intersection::valid() const
@@ -40,6 +40,11 @@ const Math::Ray &Intersection::ray() const
 float Intersection::distance() const
 {
 	return mDistance;
+}
+
+const Object::Color &Intersection::albedo() const
+{
+	return mAlbedo;
 }
 
 }
