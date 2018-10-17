@@ -27,6 +27,7 @@ public:
 	Normal operator+(const Normal &b) const;
 	float operator*(const Normal &b) const;
 	float operator*(const Vector &b) const;
+	Normal operator*(float b) const;
 	Normal operator/(float b) const;
 	Normal operator-() const;
 	Normal operator%(const Normal &b) const;

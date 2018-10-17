@@ -78,6 +78,11 @@ float Normal::operator*(const Vector &b) const
 	return x() * b.x() + y() * b.y() + z() * b.z();
 }
 
+Normal Normal::operator*(float b) const
+{
+	return Normal(x() * b, y() * b, z() * b);
+}
+
 Normal Normal::operator/(float b) const
 {
 	return Normal(x() / b, y() / b, z() / b);

@@ -3,8 +3,8 @@
 namespace Object {
 namespace Shape {
 
-Grid::Grid(int width, int height, std::vector<Math::Point> &&points)
-	: mWidth(width), mHeight(height), mPoints(std::move(points))
+Grid::Grid(int width, int height, std::vector<Math::Point> &&points, std::vector<Math::Normal> &&normals)
+	: mWidth(width), mHeight(height), mPoints(std::move(points)), mNormals(std::move(normals))
 {
 	std::vector<std::unique_ptr<BvhNode>> nodes;
 
@@ -62,8 +62,12 @@ Grid::Grid(int width, int height, std::vector<Math::Point> &&points)
 	mBvhRoot = std::move(nodes[0]);
 }
 
-bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Math::Point &point1, const Math::Point &point2, Shape::Base::Intersection &intersection)
+bool Grid::intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const
 {
+	const Math::Point &point0 = mPoints[idx0];
+	const Math::Point &point1 = mPoints[idx1];
+	const Math::Point &point2 = mPoints[idx2];
+
 	Math::Vector E1 = point1 - point0;
 	Math::Vector E2 = point2 - point0;
 	Math::Vector P = ray.direction() % E2;
@@ -91,7 +95,7 @@ bool intersectTriangle(const Math::Ray &ray, const Math::Point &point0, const Ma
 	}
 
 	intersection.distance = distance;
-	intersection.normal = Math::Normal(E1 % E2).normalize();
+	intersection.normal = mNormals[idx0] * (1 - u - v) + mNormals[idx1] * u + mNormals[idx2] * v;
 	return true;
 }
 
@@ -115,14 +119,14 @@ bool Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData 
 {
 	bool ret = false;
 	if (node.u != -1 && node.v != -1) {
-		const Math::Point point0 = mPoints[node.v * mWidth + node.u];
-		const Math::Point point1 = mPoints[node.v * mWidth + node.u + 1];
-		const Math::Point point2 = mPoints[(node.v + 1) * mWidth + node.u];
-		const Math::Point point3 = mPoints[(node.v + 1) * mWidth + node.u + 1];
+		int idx0 = node.v * mWidth + node.u;
+		int idx1 = node.v * mWidth + node.u + 1;
+		int idx2 = (node.v + 1) * mWidth + node.u;
+		int idx3 = (node.v + 1) * mWidth + node.u + 1;
 
-		if (intersectTriangle(ray, point0, point1, point2, intersection)) {
+		if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
 			ret = true;
-		} else if (intersectTriangle(ray, point3, point2, point1, intersection)) {
+		} else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
 			ret = true;
 		}
 	}
