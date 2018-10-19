@@ -108,7 +108,12 @@ namespace Object {
 		bool Grid::intersect(const Math::Ray &ray, Intersection &intersection) const
 		{
 			BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
-			return intersectBvhNode(ray, rayData, *mBvhRoot, intersection);
+
+			auto callback = [&](const BvhNode &node, Shape::Base::Intersection &intersection) {
+				return intersectBvhLeaf(ray, node, intersection);
+			};
+
+			return intersectBvhNode(rayData, *mBvhRoot, intersection, std::ref(callback));
 		}
 
 		BoundingVolume Grid::boundingVolume(const Math::Transformation &transformation) const
@@ -121,24 +126,12 @@ namespace Object {
 			return volume;
 		}
 
-		bool Grid::intersectBvhNode(const Math::Ray &ray, const BoundingVolume::RayData &rayData, const BvhNode &node, Intersection &intersection) const
+		bool Grid::intersectBvhNode(const BoundingVolume::RayData &rayData, const BvhNode &node, Intersection &intersection, const std::function<bool(const BvhNode &node, Shape::Base::Intersection &intersection)> &func) const
 		{
 			bool ret = false;
 			if (node.u != -1 && node.v != -1) {
-				for (int u = node.u; u < node.u + node.du; u++) {
-					for (int v = node.v; v < node.v + node.dv; v++) {
-						int idx0 = v * mWidth + u;
-						int idx1 = v * mWidth + u + 1;
-						int idx2 = (v + 1) * mWidth + u;
-						int idx3 = (v + 1) * mWidth + u + 1;
-
-						if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
-							ret = true;
-						}
-						else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
-							ret = true;
-						}
-					}
+				if (func(node, intersection)) {
+					ret = true;
 				}
 			}
 			else {
@@ -158,13 +151,33 @@ namespace Object {
 				}
 
 				for (int i = 0; i < numIndices; i++) {
-					if (distances[indices[i]] < intersection.distance && intersectBvhNode(ray, rayData, *node.children[indices[i]], intersection)) {
+					if (distances[indices[i]] < intersection.distance && intersectBvhNode(rayData, *node.children[indices[i]], intersection, func)) {
 						ret = true;
 					}
 				}
 			}
 
 			return ret;
+		}
+
+		bool Grid::intersectBvhLeaf(const Math::Ray &ray, const BvhNode &node, Shape::Base::Intersection &intersection) const
+			{
+			for (int u = node.u; u < node.u + node.du; u++) {
+				for (int v = node.v; v < node.v + node.dv; v++) {
+					int idx0 = v * mWidth + u;
+					int idx1 = v * mWidth + u + 1;
+					int idx2 = (v + 1) * mWidth + u;
+					int idx3 = (v + 1) * mWidth + u + 1;
+
+					if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
+						return true;
+					}
+					else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		bool Grid::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
