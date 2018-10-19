@@ -59,14 +59,17 @@ namespace Lighter {
 		return (d >= -0.01 && weight(entry, point, normal) > 1 / threshold);
 	}
 
-	bool IrradianceCache::visitOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const std::function<bool(const OctreeNode &)> &callback) const
+	bool IrradianceCache::visitOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const std::function<bool(const Entry &)> &callback) const
 	{
 		if (!node) {
 			return true;
 		}
 
-		if (!callback(*node)) {
-			return false;
+		for (const Entry &entry : node->entries)
+		{
+			if (!callback(entry)) {
+				return false;
+			}
 		}
 
 		for (int i = 0; i < 8; i++) {
@@ -95,13 +98,10 @@ namespace Lighter {
 	bool IrradianceCache::testUnlocked(const Math::Point &point, const Math::Normal &normal) const
 	{
 		bool ret = false;
-		auto callback = [&](const OctreeNode &node) {
-			for (const Entry &e : node.entries)
-			{
-				if (isEntryValid(e, point, normal, mThreshold)) {
-					ret = true;
-					return false;
-				}
+		auto callback = [&](const Entry &entry) {
+			if (isEntryValid(entry, point, normal, mThreshold)) {
+				ret = true;
+				return false;
 			}
 			return true;
 		};
@@ -123,21 +123,18 @@ namespace Lighter {
 		Object::Radiance irradiance;
 		float threshold = mThreshold;
 
-		auto callback = [&] (const OctreeNode &node) {
-			for (const Entry &entry : node.entries)
-			{
-				if (isEntryValid(entry, point, normal, threshold)) {
-					float w = weight(entry, point, normal);
-					if (std::isinf(w)) {
-						irradiance = entry.radiance;
-						totalWeight = 1;
-						return false;
-					}
-					Math::Vector cross = Math::Vector(normal % entry.normal);
-					Math::Vector dist = point - entry.point;
-					irradiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * w;
-					totalWeight += w;
+		auto callback = [&] (const Entry &entry) {
+			if (isEntryValid(entry, point, normal, threshold)) {
+				float w = weight(entry, point, normal);
+				if (std::isinf(w)) {
+					irradiance = entry.radiance;
+					totalWeight = 1;
+					return false;
 				}
+				Math::Vector cross = Math::Vector(normal % entry.normal);
+				Math::Vector dist = point - entry.point;
+				irradiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * w;
+				totalWeight += w;
 			}
 			return true;
 		};

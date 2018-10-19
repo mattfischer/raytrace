@@ -109,8 +109,19 @@ namespace Object {
 		{
 			BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
 
-			auto callback = [&](const BvhNode &node, Shape::Base::Intersection &intersection) {
-				return intersectBvhLeaf(ray, node, intersection);
+			auto callback = [&](int u, int v, Shape::Base::Intersection &intersection) {
+				int idx0 = v * mWidth + u;
+				int idx1 = v * mWidth + u + 1;
+				int idx2 = (v + 1) * mWidth + u;
+				int idx3 = (v + 1) * mWidth + u + 1;
+
+				if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
+					return true;
+				}
+				else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
+					return true;
+				}
+				return false;
 			};
 
 			return intersectBvhNode(rayData, *mBvhRoot, intersection, std::ref(callback));
@@ -126,12 +137,16 @@ namespace Object {
 			return volume;
 		}
 
-		bool Grid::intersectBvhNode(const BoundingVolume::RayData &rayData, const BvhNode &node, Intersection &intersection, const std::function<bool(const BvhNode &node, Shape::Base::Intersection &intersection)> &func) const
+		bool Grid::intersectBvhNode(const BoundingVolume::RayData &rayData, const BvhNode &node, Intersection &intersection, const std::function<bool(int, int, Shape::Base::Intersection &)> &func) const
 		{
 			bool ret = false;
 			if (node.u != -1 && node.v != -1) {
-				if (func(node, intersection)) {
-					ret = true;
+				for (int u = node.u; u < node.u + node.du; u++) {
+					for (int v = node.v; v < node.v + node.dv; v++) {
+						if (func(u, v, intersection)) {
+							ret = true;
+						}
+					}
 				}
 			}
 			else {
@@ -158,26 +173,6 @@ namespace Object {
 			}
 
 			return ret;
-		}
-
-		bool Grid::intersectBvhLeaf(const Math::Ray &ray, const BvhNode &node, Shape::Base::Intersection &intersection) const
-			{
-			for (int u = node.u; u < node.u + node.du; u++) {
-				for (int v = node.v; v < node.v + node.dv; v++) {
-					int idx0 = v * mWidth + u;
-					int idx1 = v * mWidth + u + 1;
-					int idx2 = (v + 1) * mWidth + u;
-					int idx3 = (v + 1) * mWidth + u + 1;
-
-					if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
-						return true;
-					}
-					else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
-						return true;
-					}
-				}
-			}
-			return false;
 		}
 
 		bool Grid::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const

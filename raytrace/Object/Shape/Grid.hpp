@@ -30,8 +30,7 @@ namespace Object {
 			};
 
 			bool intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const;
-			bool intersectBvhNode(const BoundingVolume::RayData &raydata, const BvhNode &node, Intersection &intersection, const std::function<bool(const BvhNode &node, Shape::Base::Intersection &intersection)> &func) const;
-			bool intersectBvhLeaf(const Math::Ray &ray, const BvhNode &node, Shape::Base::Intersection &intersection) const;
+			bool intersectBvhNode(const BoundingVolume::RayData &raydata, const BvhNode &node, Intersection &intersection, const std::function<bool(int, int, Shape::Base::Intersection &intersection)> &func) const;
 
 			int mWidth;
 			int mHeight;
