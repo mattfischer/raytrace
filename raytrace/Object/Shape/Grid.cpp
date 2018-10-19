@@ -142,12 +142,24 @@ namespace Object {
 				}
 			}
 			else {
-				for (const std::unique_ptr<BvhNode> &child : node.children) {
-					float volumeDistance;
-					if (child->volume.intersectRay(rayData, volumeDistance) && volumeDistance < intersection.distance) {
-						if (intersectBvhNode(ray, rayData, *child, intersection)) {
-							ret = true;
+				float distances[4];
+				int indices[4];
+				int numIndices = 0;
+				for (int i = 0; i < node.children.size(); i++) {
+					if (node.children[i]->volume.intersectRay(rayData, distances[i]) && distances[i] < intersection.distance) {
+						indices[numIndices] = i;
+						numIndices++;
+						for (int j = 0; j < numIndices - 1; j++) {
+							if(distances[indices[numIndices - 1]] < distances[indices[j]]) {
+								std::swap(indices[numIndices - 1], indices[j]);
+							}
 						}
+					}
+				}
+
+				for (int i = 0; i < numIndices; i++) {
+					if (distances[indices[i]] < intersection.distance && intersectBvhNode(ray, rayData, *node.children[indices[i]], intersection)) {
+						ret = true;
 					}
 				}
 			}
