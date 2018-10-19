@@ -59,19 +59,16 @@ namespace Lighter {
 		return (d >= -0.01 && weight(entry, point, normal) > 1 / threshold);
 	}
 
-	bool IrradianceCache::testOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal) const
+	bool IrradianceCache::visitOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const std::function<bool(const OctreeNode &)> &callback) const
 	{
 		if (!node) {
+			return true;
+		}
+
+		if (!callback(*node)) {
 			return false;
 		}
 
-		for (const Entry &e : node->entries)
-		{
-			if (isEntryValid(e, point, normal, mThreshold)) {
-				return true;
-			}
-		}
-
 		for (int i = 0; i < 8; i++) {
 			Math::Point childOrigin;
 			float childSize;
@@ -80,52 +77,13 @@ namespace Lighter {
 
 			float distance2 = distance2ToNode(point, i, childOrigin, childSize);
 			if (distance2 < childSize * childSize) {
-				if (testOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal)) {
-					return true;
+				if (!visitOctreeNode(node->children[i].get(), childOrigin, childSize, point, callback)) {
+					return false;
 				}
 			}
 		}
 
-		return false;
-	}
-
-	void IrradianceCache::interpolateOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal, float threshold, Object::Radiance &irradiance, float &totalWeight) const
-	{
-		if (!node) {
-			return;
-		}
-
-		for (const Entry &entry : node->entries)
-		{
-			if (isEntryValid(entry, point, normal, threshold)) {
-				float w = weight(entry, point, normal);
-				if (std::isinf(w)) {
-					irradiance = entry.radiance;
-					totalWeight = -1;
-					break;
-				}
-				Math::Vector cross = Math::Vector(normal % entry.normal);
-				Math::Vector dist = point - entry.point;
-				irradiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * w;
-				totalWeight += w;
-			}
-		}
-
-		for (int i = 0; i < 8; i++) {
-			Math::Point childOrigin;
-			float childSize;
-
-			if (totalWeight < 0) {
-				break;
-			}
-
-			getChildNode(origin, size, i, childOrigin, childSize);
-
-			float distance2 = distance2ToNode(point, i, childOrigin, childSize);
-			if (distance2 < childSize * childSize) {
-				interpolateOctreeNode(node->children[i].get(), childOrigin, childSize, point, normal, threshold, irradiance, totalWeight);
-			}
-		}
+		return true;
 	}
 
 	bool IrradianceCache::test(const Math::Point &point, const Math::Normal &normal) const
@@ -136,7 +94,21 @@ namespace Lighter {
 
 	bool IrradianceCache::testUnlocked(const Math::Point &point, const Math::Normal &normal) const
 	{
-		return testOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, normal);
+		bool ret = false;
+		auto callback = [&](const OctreeNode &node) {
+			for (const Entry &e : node.entries)
+			{
+				if (isEntryValid(e, point, normal, mThreshold)) {
+					ret = true;
+					return false;
+				}
+			}
+			return true;
+		};
+
+		visitOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, std::ref(callback));
+
+		return ret;
 	}
 
 	Object::Radiance IrradianceCache::interpolate(const Math::Point &point, const Math::Normal &normal) const
@@ -151,8 +123,27 @@ namespace Lighter {
 		Object::Radiance irradiance;
 		float threshold = mThreshold;
 
+		auto callback = [&] (const OctreeNode &node) {
+			for (const Entry &entry : node.entries)
+			{
+				if (isEntryValid(entry, point, normal, threshold)) {
+					float w = weight(entry, point, normal);
+					if (std::isinf(w)) {
+						irradiance = entry.radiance;
+						totalWeight = 1;
+						return false;
+					}
+					Math::Vector cross = Math::Vector(normal % entry.normal);
+					Math::Vector dist = point - entry.point;
+					irradiance += (entry.radiance + entry.rotGrad * cross + entry.transGrad * dist) * w;
+					totalWeight += w;
+				}
+			}
+			return true;
+		};
+
 		for(int i=0; i<3; i++) {
-			interpolateOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, normal, threshold, irradiance, totalWeight);
+			visitOctreeNode(mOctreeRoot.get(), mOctreeOrigin, mOctreeSize, point, std::ref(callback));
 
 			if (totalWeight > 0) {
 				irradiance = irradiance / totalWeight;

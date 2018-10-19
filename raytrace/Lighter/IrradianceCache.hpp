@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <mutex>
+#include <functional>
 
 namespace Lighter {
 	class IrradianceCache
@@ -42,6 +43,7 @@ namespace Lighter {
 			std::unique_ptr<OctreeNode> children[8];
 		};
 
+		bool visitOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const std::function<bool(const OctreeNode &)> &callback) const;
 		bool testOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal) const;
 		void interpolateOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const Math::Normal &normal, float threshold, Object::Radiance &radiance, float &totalWeight) const;
 
