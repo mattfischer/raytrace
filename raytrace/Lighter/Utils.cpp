@@ -5,30 +5,6 @@
 #include <cmath>
 
 namespace Lighter {
-	void Utils::orthonormalBasis(const Math::Vector &n, Math::Vector &x, Math::Vector &y)
-	{
-		x = Math::Vector();
-		y = Math::Vector();
-
-		Math::Vector vectors[] = { Math::Vector(1,0,0), Math::Vector(0,1,0), Math::Vector(0,0,1) };
-
-		for (const Math::Vector &v : vectors) {
-			Math::Vector p = v - n * (v * n);
-			if (p.magnitude2() > x.magnitude2()) {
-				y = x;
-				x = p;
-			}
-			else if (p.magnitude2() > y.magnitude2()) {
-				y = p;
-			}
-		}
-
-		x = x.normalize();
-		y = y - x * (x * y);
-
-		y = y.normalize();
-	}
-
 	Math::Vector Utils::sampleHemisphereCosineWeighted(int i, int N, std::default_random_engine &engine)
 	{
 		float u, v;

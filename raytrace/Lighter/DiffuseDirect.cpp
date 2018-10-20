@@ -3,6 +3,8 @@
 
 #include "Lighter/Utils.hpp"
 
+#include "Math/OrthonormalBasis.hpp"
+
 namespace Lighter {
 	DiffuseDirect::DiffuseDirect(int numSamples)
 	{
@@ -22,8 +24,7 @@ namespace Lighter {
 
 		clearProbe();
 
-		Math::Vector x, y;
-		Utils::orthonormalBasis(Math::Vector(normal), x, y);
+		Math::OrthonormalBasis basis(normal);
 
 		Object::Radiance radiance;
 		for (const Object::Primitive &primitive : tracer.scene().areaLights()) {
@@ -50,7 +51,7 @@ namespace Lighter {
 				Math::Ray ray(offsetPoint, incidentDirection);
 				Object::Intersection intersection2 = tracer.intersect(ray);
 
-				Math::Vector probeDirection(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
+				Math::Vector probeDirection = basis.worldToLocal(incidentDirection);
 				Object::Radiance probeRadiance;
 				if (intersection2.valid() && &(intersection2.primitive()) == &primitive) {
 					float dot = incidentDirection * normal;
@@ -76,7 +77,7 @@ namespace Lighter {
 			Math::Ray ray(offsetPoint, incidentDirection);
 			Object::Intersection intersection2 = tracer.intersect(ray);
 
-			Math::Vector probeDirection(incidentDirection * x, incidentDirection * y, incidentDirection * normal);
+			Math::Vector probeDirection = basis.worldToLocal(incidentDirection);
 			Object::Radiance probeRadiance;
 			if (!intersection2.valid() || intersection2.distance() >= distance) {
 				float dot = incidentDirection * normal;

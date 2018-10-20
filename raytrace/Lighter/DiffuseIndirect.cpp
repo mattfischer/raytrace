@@ -3,6 +3,8 @@
 
 #include "Lighter/Utils.hpp"
 
+#include "Math/OrthonormalBasis.hpp"
+
 #include <cmath>
 #include <algorithm>
 
@@ -35,8 +37,7 @@ namespace Lighter {
 			radiance = irradiance * albedo * brdf.lambert() / M_PI;
 		}
 		else {
-			Math::Vector x, y;
-			Utils::orthonormalBasis(Math::Vector(intersection.normal()), x, y);
+			Math::OrthonormalBasis basis(intersection.normal());
 
 			const int M = std::sqrt(mIndirectSamples);
 			const int N = mIndirectSamples / M;
@@ -46,13 +47,12 @@ namespace Lighter {
 
 					float phi = 2 * M_PI * (k + dist(mRandomEngine)) / N;
 					float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
-					Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(normal) * std::sin(theta);
-
+					Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
 					Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 					Math::Ray ray(offsetPoint, direction);
 					Object::Intersection intersection2 = tracer.intersect(ray);
 
-					Math::Vector probeDirection(std::cos(phi) * std::cos(theta), std::sin(phi) * std::cos(theta), std::sin(theta));
+					Math::Vector probeDirection = Math::Vector::fromPolar(phi, theta, 1);
 					Object::Radiance probeRadiance;
 					if (intersection2.valid()) {
 						Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer, generation + 1);
@@ -85,8 +85,7 @@ namespace Lighter {
 			return false;
 		}
 
-		Math::Vector x, y;
-		Utils::orthonormalBasis(Math::Vector(normal), x, y);
+		Math::OrthonormalBasis basis(normal);
 
 		float mean = 0;
 		int den = 0;
@@ -103,7 +102,7 @@ namespace Lighter {
 
 				float phi = 2 * M_PI * (k + dist(mRandomEngine)) / N;
 				float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
-				Math::Vector direction = x * std::cos(phi) * std::cos(theta) + y * std::sin(phi) * std::cos(theta) + Math::Vector(normal) * std::sin(theta);
+				Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
 
 				Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
 				Math::Ray ray(offsetPoint, direction);
@@ -143,8 +142,8 @@ namespace Lighter {
 			for (int k = 0; k < N; k++) {
 				int k1 = (k > 0) ? (k - 1) : N - 1;
 				float phi = 2 * M_PI * k / N;
-				Math::Vector u = x * std::cos(phi) + y * std::sin(phi);
-				Math::Vector v = x * std::cos(phi + M_PI / 2) + y * std::sin(phi + M_PI / 2);
+				Math::Vector u = basis.localToWorld(Math::Vector::fromPolar(phi, 0, 1));
+				Math::Vector v = basis.localToWorld(Math::Vector::fromPolar(phi + M_PI / 2, 0, 1));
 
 				for (int j = 0; j < M; j++) {
 					float thetaMinus = std::asin(std::sqrt((float)j / M));

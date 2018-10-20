@@ -182,6 +182,9 @@
     <ClCompile Include="Object\Shape\Group.cpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
+    <ClCompile Include="Math\OrthonormalBasis.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -343,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="Object\Shape\Group.hpp">
       <Filter>Source Files\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\OrthonormalBasis.hpp">
+      <Filter>Source Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

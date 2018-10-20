@@ -3,6 +3,7 @@
 
 #include "Math/Normal.hpp"
 #include "Math/Vector.hpp"
+#include "Math/OrthonormalBasis.hpp"
 
 #include "Lighter/Utils.hpp"
 
@@ -34,10 +35,9 @@ namespace Object {
 			float phi = 2 * M_PI * u;
 			float theta = std::acos(std::pow(v, 1.0f / (mPower + 1)));
 
-			Math::Vector x, y;
-			Lighter::Utils::orthonormalBasis(outgoingDirection, x, y);
+			Math::OrthonormalBasis basis(outgoingDirection);
 
-			Math::Vector direction = x * std::cos(phi) * std::sin(theta) + y * std::sin(phi) * std::sin(theta) + outgoingDirection * std::cos(theta);
+			Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
 			Math::Vector incidentDirection = -(direction - Math::Vector(normal) * (direction * normal * 2));
 
 			float coeff = 0;

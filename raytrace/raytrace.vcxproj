@@ -102,6 +102,7 @@
     <ClCompile Include="Math\Coordinate.cpp" />
     <ClCompile Include="Math\Matrix.cpp" />
     <ClCompile Include="Math\Normal.cpp" />
+    <ClCompile Include="Math\OrthonormalBasis.cpp" />
     <ClCompile Include="Math\Point.cpp" />
     <ClCompile Include="Math\PolySolve.cpp" />
     <ClCompile Include="Math\Ray.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="Math\Coordinate.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />
     <ClInclude Include="Math\Normal.hpp" />
+    <ClInclude Include="Math\OrthonormalBasis.hpp" />
     <ClInclude Include="Math\Point.hpp" />
     <ClInclude Include="Math\PolySolve.hpp" />
     <ClInclude Include="Math\Ray.hpp" />

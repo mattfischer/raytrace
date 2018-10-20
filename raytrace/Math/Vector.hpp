@@ -26,6 +26,8 @@ namespace Math {
 		Vector operator/(float b) const;
 		Vector operator-() const;
 		Vector operator%(const Vector &b) const;
+
+		static Vector fromPolar(float phi, float theta, float r);
 	};
 
 	Vector operator*(const BaseTransformation &transformation, const Vector &vector);

@@ -77,9 +77,13 @@ namespace Math {
 		return Vector(y() * b.z() - z() * b.y(), z() * b.x() - x() * b.z(), x() * b.y() - y() * b.x());
 	}
 
+	Vector Vector::fromPolar(float phi, float theta, float r)
+	{
+		return Vector(r * std::cos(phi) * std::cos(theta), r * std::sin(phi) * std::cos(theta), r * std::sin(theta));
+	}
+
 	Vector operator*(const BaseTransformation &transformation, const Vector &vector)
 	{
-
 		return Vector(transformation.matrix() * vector);
 	}
 }
