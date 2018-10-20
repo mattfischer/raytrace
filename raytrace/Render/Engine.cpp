@@ -174,7 +174,20 @@ namespace Render {
 
 			DWORD endTime = GetTickCount();
 			char buf[256];
-			sprintf_s(buf, sizeof(buf), "Render time: %.3fs", (endTime - mStartTime) / 1000.0f);
+			float seconds = (endTime - mStartTime) / 1000.0f;
+			int hours = seconds / 3600;
+			seconds -= hours * 3600;
+			int minutes = seconds / 60;
+			seconds -= minutes * 60;
+			if (hours > 0) {
+				sprintf_s(buf, sizeof(buf), "Render time: %ih %im %is", hours, minutes, (int)seconds);
+			}
+			else if (minutes > 0) {
+				sprintf_s(buf, sizeof(buf), "Render time: %im %is", minutes, (int)seconds);
+			}
+			else {
+				sprintf_s(buf, sizeof(buf), "Render time: %.3fs", seconds);
+			}
 
 			mListener->onRenderStatus(buf);
 			mListener->onRenderDone();
