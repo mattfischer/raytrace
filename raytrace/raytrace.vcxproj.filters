@@ -140,9 +140,6 @@
     <ClCompile Include="Lighter\Specular.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
-    <ClCompile Include="Lighter\Utils.cpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Light.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
@@ -184,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="Math\OrthonormalBasis.cpp">
       <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Sampler.cpp">
+      <Filter>Source Files\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,9 +302,6 @@
     <ClInclude Include="Lighter\Specular.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
-    <ClInclude Include="Lighter\Utils.hpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Light.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
@@ -349,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="Math\OrthonormalBasis.hpp">
       <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Sampler.hpp">
+      <Filter>Source Files\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

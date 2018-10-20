@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "Lighter/DiffuseDirect.hpp"
 
-#include "Lighter/Utils.hpp"
+#include "Lighter/Sampler.hpp"
 
 #include "Math/OrthonormalBasis.hpp"
 
@@ -25,6 +25,7 @@ namespace Lighter {
 		clearProbe();
 
 		Math::OrthonormalBasis basis(normal);
+		Lighter::Sampler sampler(mNumSamples, mRandomEngine);
 
 		Object::Radiance radiance;
 		for (const Object::Primitive &primitive : tracer.scene().areaLights()) {
@@ -34,7 +35,7 @@ namespace Lighter {
 				float u;
 				float v;
 
-				Utils::stratifiedSamples(i, mNumSamples, u, v, mRandomEngine);
+				sampler.sample(i, u, v);
 
 				Math::Point samplePoint;
 				Math::Vector du;

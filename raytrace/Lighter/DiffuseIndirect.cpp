@@ -1,8 +1,6 @@
 #define _USE_MATH_DEFINES
 #include "Lighter/DiffuseIndirect.hpp"
 
-#include "Lighter/Utils.hpp"
-
 #include "Math/OrthonormalBasis.hpp"
 
 #include <cmath>

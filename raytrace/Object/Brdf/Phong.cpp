@@ -5,8 +5,6 @@
 #include "Math/Vector.hpp"
 #include "Math/OrthonormalBasis.hpp"
 
-#include "Lighter/Utils.hpp"
-
 #include <cmath>
 
 namespace Object {

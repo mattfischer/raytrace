@@ -5,7 +5,6 @@
 #include "Lighter/DiffuseIndirect.hpp"
 #include "Lighter/Radiant.hpp"
 #include "Lighter/Specular.hpp"
-#include "Lighter/Utils.hpp"
 
 #include <algorithm>
 #include <memory>
