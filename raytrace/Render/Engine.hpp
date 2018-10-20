@@ -29,7 +29,7 @@ namespace Render {
 		class Thread
 		{
 		public:
-			Thread(Engine &engine);
+			Thread(Engine &engine, std::function<void(Thread &, int, int)> pixelFunction);
 
 			void start(int startX, int startY, int width, int height);
 
@@ -48,6 +48,7 @@ namespace Render {
 			std::thread mThread;
 			Tracer mTracer;
 			std::default_random_engine mRandomEngine;
+			std::function<void(Thread &, int, int)> mPixelFunction;
 		};
 
 		struct Settings
@@ -82,9 +83,8 @@ namespace Render {
 		void beginPhase();
 		void endPhase();
 
-		Object::Color doPixel(Thread &thread, int x, int y);
-		Object::Color renderPixel(Thread &thread, int x, int y);
-		Object::Color prerenderPixel(Thread &thread, int x, int y);
+		void renderPixel(Thread &thread, int x, int y);
+		void prerenderPixel(Thread &thread, int x, int y);
 
 		const Object::Scene &mScene;
 		Settings mSettings;

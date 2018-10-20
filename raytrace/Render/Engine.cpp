@@ -12,9 +12,10 @@
 namespace Render {
 	static const int BLOCK_SIZE = 64;
 
-	Engine::Thread::Thread(Engine &engine)
+	Engine::Thread::Thread(Engine &engine, std::function<void(Thread &, int, int)> pixelFunction)
 		: mEngine(engine)
 		, mTracer(engine.scene(), engine.settings().width, engine.settings().height)
+		, mPixelFunction(pixelFunction)
 	{
 		mStarted = false;
 	}
@@ -38,8 +39,7 @@ namespace Render {
 		while (true) {
 			for (int y = mStartY; y < mStartY + mHeight; y++) {
 				for (int x = mStartX; x < mStartX + mWidth; x++) {
-					Object::Color color = mEngine.doPixel(*this, x, y);
-					mEngine.framebuffer().setPixel(x, y, color);
+					mPixelFunction(*this, x, y);
 				}
 			}
 
@@ -143,7 +143,17 @@ namespace Render {
 			int w, h;
 			getBlock(mBlocksStarted, x, y, w, h);
 
-			std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this);
+			std::function<void(Thread&, int, int)> func;
+			switch (mState) {
+			case State::Prerender:
+				func = [&](Thread &thread, int x, int y) { prerenderPixel(thread, x, y); };
+				break;
+
+			case State::Render:
+				func = [&](Thread &thread, int x, int y) { renderPixel(thread, x, y); };
+				break;
+			}
+			std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, func);
 			thread->start(x, y, w, h);
 			mThreads.insert(std::move(thread));
 			mBlocksStarted++;
@@ -213,7 +223,7 @@ namespace Render {
 		return Object::Color(red, green, blue);
 	}
 
-	Object::Color Engine::prerenderPixel(Thread &thread, int x, int y)
+	void Engine::prerenderPixel(Thread &thread, int x, int y)
 	{
 		Object::Color color;
 
@@ -226,10 +236,10 @@ namespace Render {
 			}
 		}
 
-		return color;
+		mFramebuffer->setPixel(x, y, color);
 	}
 
-	Object::Color Engine::renderPixel(Thread &thread, int x, int y)
+	void Engine::renderPixel(Thread &thread, int x, int y)
 	{
 		Object::Color color;
 		for (int u = 0; u < mSettings.antialiasSamples; u++) {
@@ -251,23 +261,6 @@ namespace Render {
 		}
 		color = color / (mSettings.antialiasSamples * mSettings.antialiasSamples);
 
-		return color;
-	}
-
-	Object::Color Engine::doPixel(Thread &thread, int x, int y)
-	{
-		Object::Color color;
-
-		switch (mState) {
-			case State::Prerender:
-				color = prerenderPixel(thread, x, y);
-				break;
-
-			case State::Render:
-				color = renderPixel(thread, x, y);
-				break;
-		}
-
-		return color;
+		mFramebuffer->setPixel(x, y, color);
 	}
 }
