@@ -112,6 +112,7 @@
     <ClCompile Include="Object\Albedo\Solid.cpp" />
     <ClCompile Include="Object\BoundingVolume.cpp" />
     <ClCompile Include="Object\Brdf\OrenNayar.cpp" />
+    <ClCompile Include="Object\Brdf\TorranceSparrow.cpp" />
     <ClCompile Include="Object\Primitive.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
@@ -180,6 +181,7 @@
     <ClInclude Include="Object\Albedo\Solid.hpp" />
     <ClInclude Include="Object\BoundingVolume.hpp" />
     <ClInclude Include="Object\Brdf\OrenNayar.hpp" />
+    <ClInclude Include="Object\Brdf\TorranceSparrow.hpp" />
     <ClInclude Include="Object\Primitive.hpp" />
     <ClInclude Include="Object\Brdf\Base.hpp" />
     <ClInclude Include="Object\Brdf\Composite.hpp" />

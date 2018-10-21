@@ -10,6 +10,7 @@
 #include "Object/Brdf/Lambert.hpp"
 #include "Object/Brdf/Phong.hpp"
 #include "Object/Brdf/OrenNayar.hpp"
+#include "Object/Brdf/TorranceSparrow.hpp"
 
 #include "Object/Shape/Model.hpp"
 #include "Object/Shape/Quad.hpp"
@@ -140,6 +141,13 @@ namespace Parse {
 		return std::make_unique<Object::Brdf::Lambert>(ast->data._float);
 	}
 
+	std::unique_ptr<Object::Brdf::OrenNayar> parseBrdfOrenNayar(AST *ast)
+	{
+		float strength = ast->children[0]->data._float;
+		float roughness = ast->children[1]->data._float;
+		return std::make_unique<Object::Brdf::OrenNayar>(strength, roughness);
+	}
+
 	std::unique_ptr<Object::Brdf::Phong> parseBrdfPhong(AST *ast)
 	{
 		float strength = ast->children[0]->data._float;
@@ -147,11 +155,12 @@ namespace Parse {
 		return std::make_unique<Object::Brdf::Phong>(strength, power);
 	}
 
-	std::unique_ptr<Object::Brdf::OrenNayar> parseBrdfOrenNayar(AST *ast)
+	std::unique_ptr<Object::Brdf::TorranceSparrow> parseBrdfTorranceSparrow(AST *ast)
 	{
 		float strength = ast->children[0]->data._float;
 		float roughness = ast->children[1]->data._float;
-		return std::make_unique<Object::Brdf::OrenNayar>(strength, roughness);
+		float ior = ast->children[2]->data._float;
+		return std::make_unique<Object::Brdf::TorranceSparrow>(strength, roughness, ior);
 	}
 
 	std::unique_ptr<Object::Brdf::Composite> parseBrdfComposite(AST *ast)
@@ -161,14 +170,17 @@ namespace Parse {
 
 		for (int i = 0; i<ast->numChildren; i++) {
 			switch (ast->children[i]->type) {
-			case AstLambert:
+			case AstBrdfLambert:
 				diffuse = parseBrdfLambert(ast->children[i]);
 				break;
-			case AstOrenNayar:
+			case AstBrdfOrenNayar:
 				diffuse = parseBrdfOrenNayar(ast->children[i]);
 				break;
-			case AstPhong:
+			case AstBrdfPhong:
 				specular = parseBrdfPhong(ast->children[i]);
+				break;
+			case AstBrdfTorranceSparrow:
+				specular = parseBrdfTorranceSparrow(ast->children[i]);
 				break;
 			}
 		}

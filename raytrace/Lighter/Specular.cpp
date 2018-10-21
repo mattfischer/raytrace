@@ -42,12 +42,13 @@ namespace Lighter {
 
 				float pdf;
 				Math::Vector incidentDirection = brdf.sample(u, v, normal, outgoingDirection, pdf);
-				if(incidentDirection * normal > 0) {
+				float dot = incidentDirection * normal;
+				if(dot > 0) {
 					Math::Ray reflectRay(offsetPoint, incidentDirection);
 					Object::Intersection intersection2 = tracer.intersect(reflectRay);
 
 					if (intersection2.valid()) {
-						Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1);
+						Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1) * dot;
 						radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
 					}
 				}

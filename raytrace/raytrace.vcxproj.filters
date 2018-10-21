@@ -188,6 +188,9 @@
     <ClCompile Include="Object\Brdf\OrenNayar.cpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Brdf\TorranceSparrow.cpp">
+      <Filter>Source Files\Object\Brdf</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -354,6 +357,9 @@
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
     <ClInclude Include="Object\Brdf\OrenNayar.hpp">
+      <Filter>Source Files\Object\Brdf</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Brdf\TorranceSparrow.hpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
   </ItemGroup>

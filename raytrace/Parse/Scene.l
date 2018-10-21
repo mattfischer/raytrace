@@ -41,6 +41,7 @@ checker return CHECKER;
 lambert return LAMBERT;
 phong return PHONG;
 oren_nayar return OREN_NAYAR;
+torrance_sparrow return TORRANCE_SPARROW;
 
 camera return CAMERA;
 

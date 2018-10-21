@@ -23,12 +23,11 @@ typedef enum
 	AstColor,
 	AstRadiance,
 
-	AstSurfaceDiffuse,
 	AstBrdf,
-	AstLambert,
-	AstPhong,
-	AstOrenNayar,
-	AstSurfaceReflection,
+	AstBrdfLambert,
+	AstBrdfPhong,
+	AstBrdfOrenNayar,
+	AstBrdfTorranceSparrow,
 
 	AstCamera,
 
