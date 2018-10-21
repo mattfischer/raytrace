@@ -9,6 +9,7 @@
 
 #include "Object/Brdf/Lambert.hpp"
 #include "Object/Brdf/Phong.hpp"
+#include "Object/Brdf/OrenNayar.hpp"
 
 #include "Object/Shape/Model.hpp"
 #include "Object/Shape/Quad.hpp"
@@ -146,6 +147,13 @@ namespace Parse {
 		return std::make_unique<Object::Brdf::Phong>(strength, power);
 	}
 
+	std::unique_ptr<Object::Brdf::OrenNayar> parseBrdfOrenNayar(AST *ast)
+	{
+		float strength = ast->children[0]->data._float;
+		float roughness = ast->children[1]->data._float;
+		return std::make_unique<Object::Brdf::OrenNayar>(strength, roughness);
+	}
+
 	std::unique_ptr<Object::Brdf::Composite> parseBrdfComposite(AST *ast)
 	{
 		std::unique_ptr<Object::Brdf::Base> diffuse;
@@ -156,7 +164,9 @@ namespace Parse {
 			case AstLambert:
 				diffuse = parseBrdfLambert(ast->children[i]);
 				break;
-
+			case AstOrenNayar:
+				diffuse = parseBrdfOrenNayar(ast->children[i]);
+				break;
 			case AstPhong:
 				specular = parseBrdfPhong(ast->children[i]);
 				break;

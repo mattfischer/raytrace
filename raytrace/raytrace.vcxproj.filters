@@ -185,6 +185,9 @@
     <ClCompile Include="Lighter\Sampler.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Brdf\OrenNayar.cpp">
+      <Filter>Source Files\Object\Brdf</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -349,6 +352,9 @@
     </ClInclude>
     <ClInclude Include="Lighter\Sampler.hpp">
       <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Brdf\OrenNayar.hpp">
+      <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

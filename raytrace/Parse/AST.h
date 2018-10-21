@@ -27,6 +27,7 @@ typedef enum
 	AstBrdf,
 	AstLambert,
 	AstPhong,
+	AstOrenNayar,
 	AstSurfaceReflection,
 
 	AstCamera,

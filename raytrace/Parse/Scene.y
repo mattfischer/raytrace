@@ -37,6 +37,7 @@
 %token BRDF
 %token LAMBERT
 %token PHONG
+%token OREN_NAYAR
 %token CAMERA
 %token RADIANCE
 %token LIGHT
@@ -137,6 +138,10 @@ brdf_item: LAMBERT FLOAT
 	{ $$ = newAst(AstLambert, 0); $$->data._float = $2; }
 			| PHONG FLOAT FLOAT
 	{ $$ = newAst(AstPhong, 2, newAst(AstConstant, 0), newAst(AstConstant, 0));
+	  $$->children[0]->data._float = $2;
+	  $$->children[1]->data._float = $3; }
+			| OREN_NAYAR FLOAT FLOAT
+	{ $$ = newAst(AstOrenNayar, 2, newAst(AstConstant, 0), newAst(AstConstant, 0));
 	  $$->children[0]->data._float = $2;
 	  $$->children[1]->data._float = $3; }
 

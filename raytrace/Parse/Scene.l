@@ -40,6 +40,7 @@ checker return CHECKER;
 
 lambert return LAMBERT;
 phong return PHONG;
+oren_nayar return OREN_NAYAR;
 
 camera return CAMERA;
 
