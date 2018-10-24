@@ -19,10 +19,10 @@ namespace Object {
 
 		Object::Radiance OrenNayar::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 		{
-			float thetaI = std::acos(incidentDirection * normal);
+			float thetaI = std::acos(std::min(1.0f, incidentDirection * normal));
 			float sinThetaI = std::sin(thetaI);
 			
-			float thetaR = std::acos(outgoingDirection * normal);
+			float thetaR = std::acos(std::min(1.0f, outgoingDirection * normal));
 			float sinThetaR = std::sin(thetaR);
 
 			float cosPhi;
