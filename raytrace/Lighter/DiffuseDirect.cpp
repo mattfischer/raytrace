@@ -13,6 +13,10 @@ namespace Lighter {
 
 	Object::Radiance DiffuseDirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 	{
+		if (!intersection.primitive().surface().brdf().hasDiffuse()) {
+			return Object::Radiance();
+		}
+
 		const Math::Point &point = intersection.point();
 		Math::Normal normal = intersection.normal();
 		const Object::Color &albedo = intersection.albedo();

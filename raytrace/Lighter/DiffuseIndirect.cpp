@@ -17,6 +17,10 @@ namespace Lighter {
 
 	Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 	{
+		if (!intersection.primitive().surface().brdf().hasDiffuse()) {
+			return Object::Radiance();
+		}
+
 		const Math::Point &point = intersection.point();
 		Math::Normal normal = intersection.normal();
 		const Object::Color &albedo = intersection.albedo();
@@ -69,6 +73,10 @@ namespace Lighter {
 	bool DiffuseIndirect::prerender(const Object::Intersection &intersection, Render::Tracer &tracer)
 	{
 		if (!mIrradianceCaching) {
+			return false;
+		}
+
+		if (!intersection.primitive().surface().brdf().hasDiffuse()) {
 			return false;
 		}
 
