@@ -17,7 +17,7 @@ namespace Object {
 			return mStrength;
 		}
 
-		Object::Radiance OrenNayar::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+		Object::Radiance OrenNayar::reflected(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 		{
 			float thetaI = std::acos(std::min(1.0f, incidentDirection * normal));
 			float sinThetaI = std::sin(thetaI);

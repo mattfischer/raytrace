@@ -4,7 +4,12 @@
 
 namespace Object {
 	namespace Brdf {
-		Object::Radiance Base::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+		Object::Radiance Base::reflected(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+		{
+			return Object::Radiance(0, 0, 0);
+		}
+
+		Object::Radiance Base::transmitted(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
 		{
 			return Object::Radiance(0, 0, 0);
 		}

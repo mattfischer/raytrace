@@ -15,7 +15,7 @@ namespace Object {
 			mPower = power;
 		}
 
-		Object::Radiance Phong::radiance(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+		Object::Radiance Phong::reflected(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 		{
 			Math::Vector reflectDirection = -(incidentDirection - Math::Vector(normal) * (2 * (normal * incidentDirection)));
 
@@ -26,6 +26,11 @@ namespace Object {
 			}
 
 			return incidentRadiance * mStrength * coeff * (mPower + 1) / (2 * M_PI);
+		}
+
+		Object::Radiance Phong::transmitted(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
+		{
+			return incidentRadiance * (1.0f - mStrength);
 		}
 
 		Math::Vector Phong::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection, float &pdf) const

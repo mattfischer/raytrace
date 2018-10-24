@@ -49,7 +49,7 @@ namespace Lighter {
 
 					if (intersection2.valid()) {
 						Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1) * dot;
-						radiance += brdf.radiance(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
+						radiance += brdf.reflected(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
 					}
 				}
 			}
