@@ -64,12 +64,9 @@ namespace Lighter {
 
 					if (dot > 0) {
 						Object::Radiance incidentRadiance = objectRadiance * sampleDot * dot * area / (distance * distance);
-						Object::Radiance transmittedRadiance;
+						Object::Radiance transmittedRadiance = incidentRadiance;
 						if (intersection.primitive().surface().brdf().hasSpecular()) {
 							transmittedRadiance = intersection.primitive().surface().brdf().specular().transmitted(incidentRadiance, incidentDirection, normal, albedo);
-						}
-						else {
-							transmittedRadiance = incidentRadiance;
 						}
 						radiance += brdf.reflected(transmittedRadiance, incidentDirection, normal, outgoingDirection, albedo) / mNumSamples;
 						probeRadiance = objectRadiance;

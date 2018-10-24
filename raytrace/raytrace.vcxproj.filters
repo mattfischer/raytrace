@@ -191,6 +191,9 @@
     <ClCompile Include="Object\Brdf\TorranceSparrow.cpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClCompile>
+    <ClCompile Include="Lighter\Transmit.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -361,6 +364,9 @@
     </ClInclude>
     <ClInclude Include="Object\Brdf\TorranceSparrow.hpp">
       <Filter>Source Files\Object\Brdf</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Transmit.hpp">
+      <Filter>Source Files\Lighter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

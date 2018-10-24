@@ -39,6 +39,7 @@
 %token PHONG
 %token OREN_NAYAR
 %token TORRANCE_SPARROW
+%token TRANSMIT
 
 %token CAMERA
 %token RADIANCE
@@ -151,6 +152,8 @@ brdf_item: LAMBERT FLOAT
 	  $$->children[0]->data._float = $2;
 	  $$->children[1]->data._float = $3;
 	  $$->children[2]->data._float = $4; }
+			| TRANSMIT FLOAT
+	{ $$ = newAst(AstBrdfTransmit, 0); $$->data._float = $2; }
 
 albedodef: colordef
 	{ $$ = newAst(AstAlbedoSolid, 1, $1); }

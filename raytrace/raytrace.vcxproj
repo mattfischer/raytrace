@@ -97,6 +97,7 @@
     <ClCompile Include="Lighter\Radiant.cpp" />
     <ClCompile Include="Lighter\Sampler.cpp" />
     <ClCompile Include="Lighter\Specular.cpp" />
+    <ClCompile Include="Lighter\Transmit.cpp" />
     <ClCompile Include="LightProbeDlg.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Math\Coordinate.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Lighter\Radiant.hpp" />
     <ClInclude Include="Lighter\Sampler.hpp" />
     <ClInclude Include="Lighter\Specular.hpp" />
+    <ClInclude Include="Lighter\Transmit.hpp" />
     <ClInclude Include="LightProbeDlg.hpp" />
     <ClInclude Include="Math\Coordinate.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />

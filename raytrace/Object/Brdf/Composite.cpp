@@ -10,9 +10,10 @@
 
 namespace Object {
 	namespace Brdf {
-		Composite::Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular)
+		Composite::Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular, float transmitIor)
 		: mDiffuse(std::move(diffuse)), mSpecular(std::move(specular))
 		{
+			mTransmitIor = transmitIor;
 		}
 
 		bool Composite::hasDiffuse() const
@@ -33,6 +34,16 @@ namespace Object {
 		const Base &Composite::specular() const
 		{
 			return *mSpecular;
+		}
+
+		bool Composite::hasTransmit() const
+		{
+			return mTransmitIor != 0;
+		}
+
+		float Composite::transmitIor() const
+		{
+			return mTransmitIor;
 		}
 	}
 }

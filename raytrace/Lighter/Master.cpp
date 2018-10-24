@@ -4,6 +4,7 @@
 #include "Lighter/DiffuseIndirect.hpp"
 #include "Lighter/Radiant.hpp"
 #include "Lighter/Specular.hpp"
+#include "Lighter/Transmit.hpp"
 
 namespace Lighter {
 	Master::Master(const Settings &settings)
@@ -23,6 +24,8 @@ namespace Lighter {
 		if (settings.specularLighting) {
 			mLighters.push_back(std::make_unique<Lighter::Specular>(*this, settings.specularSamples, settings.specularMaxGeneration));
 		}
+
+		mLighters.push_back(std::make_unique<Lighter::Transmit>(*this, settings.specularMaxGeneration));
 	}
 
 	Object::Radiance Master::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const

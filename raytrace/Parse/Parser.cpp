@@ -167,6 +167,7 @@ namespace Parse {
 	{
 		std::unique_ptr<Object::Brdf::Base> diffuse;
 		std::unique_ptr<Object::Brdf::Base> specular;
+		float transmitIor = 0;
 
 		for (int i = 0; i<ast->numChildren; i++) {
 			switch (ast->children[i]->type) {
@@ -182,10 +183,13 @@ namespace Parse {
 			case AstBrdfTorranceSparrow:
 				specular = parseBrdfTorranceSparrow(ast->children[i]);
 				break;
+			case AstBrdfTransmit:
+				transmitIor = ast->children[i]->data._float;
+				break;
 			}
 		}
 
-		return std::make_unique<Object::Brdf::Composite>(std::move(diffuse), std::move(specular));
+		return std::make_unique<Object::Brdf::Composite>(std::move(diffuse), std::move(specular), transmitIor);
 	}
 
 	std::unique_ptr<Object::Surface> parseSurface(AST *ast)

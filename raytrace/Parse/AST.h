@@ -28,6 +28,7 @@ typedef enum
 	AstBrdfPhong,
 	AstBrdfOrenNayar,
 	AstBrdfTorranceSparrow,
+	AstBrdfTransmit,
 
 	AstCamera,
 

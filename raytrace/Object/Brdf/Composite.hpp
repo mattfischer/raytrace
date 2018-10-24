@@ -10,7 +10,7 @@ namespace Object {
 		class Composite
 		{
 		public:
-			Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular);
+			Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular, float transmitIor);
 
 			bool hasDiffuse() const;
 			const Base &diffuse() const;
@@ -18,9 +18,13 @@ namespace Object {
 			bool hasSpecular() const;
 			const Base &specular() const;
 
+			bool hasTransmit() const;
+			float transmitIor() const;
+
 		private:
 			std::unique_ptr<Base> mDiffuse;
 			std::unique_ptr<Base> mSpecular;
+			float mTransmitIor;
 		};
 	}
 }
