@@ -1,6 +1,6 @@
 #include "Lighter/Master.hpp"
 
-#include "Lighter/DiffuseDirect.hpp"
+#include "Lighter/Direct.hpp"
 #include "Lighter/DiffuseIndirect.hpp"
 #include "Lighter/Radiant.hpp"
 #include "Lighter/Specular.hpp"
@@ -10,7 +10,7 @@ namespace Lighter {
 	Master::Master(const Settings &settings)
 	{
 		if (settings.directLighting) {
-			mLighters.push_back(std::make_unique<Lighter::DiffuseDirect>(settings.directSamples));
+			mLighters.push_back(std::make_unique<Lighter::Direct>(settings.directSamples, settings.specularLighting, settings.specularSamples));
 		}
 
 		if (settings.indirectLighting) {
@@ -22,7 +22,7 @@ namespace Lighter {
 		}
 
 		if (settings.specularLighting) {
-			mLighters.push_back(std::make_unique<Lighter::Specular>(*this, settings.specularSamples, settings.specularMaxGeneration));
+			mLighters.push_back(std::make_unique<Lighter::Specular>(*this, settings.specularSamples, settings.specularMaxGeneration, settings.directLighting, settings.directSamples));
 		}
 
 		mLighters.push_back(std::make_unique<Lighter::Transmit>(*this, settings.specularMaxGeneration));

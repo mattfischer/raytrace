@@ -20,7 +20,7 @@ sphere {
 	<-5,-6,0>,4
 	surface {
 		albedo { color <1,0.5,0.25> }
-		brdf { oren_nayar 1 0.5 torrance_sparrow 1 0.05 1.5 }
+		brdf { oren_nayar 1 0.5 torrance_sparrow 1 0.01 1.5 }
 	}
 }
 

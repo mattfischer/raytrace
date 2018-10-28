@@ -143,9 +143,6 @@
     <ClCompile Include="Object\Light.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
-    <ClCompile Include="Lighter\DiffuseDirect.cpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Lighter\DiffuseIndirect.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
@@ -192,6 +189,9 @@
       <Filter>Source Files\Object\Brdf</Filter>
     </ClCompile>
     <ClCompile Include="Lighter\Transmit.cpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighter\Direct.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
   </ItemGroup>
@@ -314,9 +314,6 @@
     <ClInclude Include="Object\Light.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
-    <ClInclude Include="Lighter\DiffuseDirect.hpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Lighter\DiffuseIndirect.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
@@ -366,6 +363,9 @@
       <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
     <ClInclude Include="Lighter\Transmit.hpp">
+      <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighter\Direct.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
   </ItemGroup>

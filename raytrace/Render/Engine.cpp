@@ -1,11 +1,6 @@
 #define NOMINMAX
 #include "Render/Engine.hpp"
 
-#include "Lighter/DiffuseDirect.hpp"
-#include "Lighter/DiffuseIndirect.hpp"
-#include "Lighter/Radiant.hpp"
-#include "Lighter/Specular.hpp"
-
 #include <algorithm>
 #include <memory>
 

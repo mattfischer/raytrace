@@ -55,7 +55,7 @@ namespace Object {
 			return incidentRadiance * (1.0f - mStrength * F);
 		}
 
-		Math::Vector TorranceSparrow::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection, float &pdf) const
+		Math::Vector TorranceSparrow::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
 		{
 			float phi = 2 * M_PI * u;
 			float tanTheta = std::sqrt(-mRoughness * mRoughness * std::log(1 - v));
@@ -63,15 +63,25 @@ namespace Object {
 
 			Math::OrthonormalBasis basis(normal);
 
-			Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
-			Math::Vector incidentDirection = -(outgoingDirection - direction * (outgoingDirection * direction * 2));
+			Math::Vector axis = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
+			Math::Vector incidentDirection = -(outgoingDirection - axis * (outgoingDirection * axis * 2));
 
-			float sinTheta = std::sin(theta);
-			float cosTheta = std::cos(theta);
-			float m2 = mRoughness * mRoughness;
-			pdf = std::exp(-tanTheta * tanTheta / m2) / (M_PI * m2 * cosTheta * cosTheta * cosTheta * cosTheta);
-			pdf = pdf / (4 * (outgoingDirection * direction));
 			return incidentDirection;
+		}
+
+		float TorranceSparrow::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+		{
+			Math::Vector axis = (incidentDirection + outgoingDirection).normalize();
+
+			float cosTheta = axis * Math::Vector(normal);
+			float sinTheta = std::sqrt(std::max(0.0f, 1 - cosTheta * cosTheta));
+			float tanTheta = sinTheta / cosTheta;
+
+			float m2 = mRoughness * mRoughness;
+			float pdf = std::exp(-tanTheta * tanTheta / m2) / (M_PI * m2 * cosTheta * cosTheta * cosTheta * cosTheta);
+			pdf = pdf / (4 * (outgoingDirection * axis));
+
+			return pdf;
 		}
 	}
 }

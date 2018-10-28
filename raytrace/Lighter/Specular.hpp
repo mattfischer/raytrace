@@ -10,7 +10,7 @@ namespace Lighter {
 	class Specular : public Base
 	{
 	public:
-		Specular(const Lighter::Base &lighter, int numSamples, int maxGeneration);
+		Specular(const Lighter::Base &lighter, int numSamples, int maxGeneration, bool misDirect, int numDirectSamples);
 
 		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
 
@@ -18,6 +18,8 @@ namespace Lighter {
 		const Lighter::Base &mLighter;
 		int mNumSamples;
 		int mMaxGeneration;
+		bool mMisDirect;
+		int mNumDirectSamples;
 		mutable std::default_random_engine mRandomEngine;
 	};
 }

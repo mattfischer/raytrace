@@ -1,19 +1,22 @@
-#ifndef LIGHTER_DIFFUSE_DIRECT_HPP
-#define LIGHTER_DIFFUSE_DIRECT_HPP
+#ifndef LIGHTER_DIRECT_HPP
+#define LIGHTER_DIRECT_HPP
 
 #include "Lighter/Base.hpp"
 
 #include <random>
 
 namespace Lighter {
-	class DiffuseDirect : public Base
+	class Direct : public Base
 	{
 	public:
-		DiffuseDirect(int numSamples);
+		Direct(int numSamples, bool misSpecular, int numSpecularSamples);
 		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
 
 	private:
 		int mNumSamples;
+		bool mIncludeSpecular;
+		bool mMisSpecular;
+		int mNumSpecularSamples;
 		mutable std::default_random_engine mRandomEngine;
 	};
 }

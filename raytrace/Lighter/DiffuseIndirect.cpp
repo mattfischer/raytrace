@@ -8,7 +8,7 @@
 
 namespace Lighter {
 	DiffuseIndirect::DiffuseIndirect(int indirectSamples, int indirectDirectSamples, bool irradianceCaching, float irradianceCacheThreshold)
-		: mDirectLighter(indirectDirectSamples)
+		: mDirectLighter(indirectDirectSamples, false, 0)
 		, mIrradianceCache(irradianceCacheThreshold)
 	{
 		mIndirectSamples = indirectSamples;

@@ -19,10 +19,14 @@ namespace Object {
 			return 0;
 		}
 
-		Math::Vector Base::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection, float &pdf) const
+		Math::Vector Base::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
 		{
-			pdf = 0;
 			return Math::Vector(0, 0, 0);
+		}
+
+		float Base::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+		{
+			return 0;
 		}
 	}
 }

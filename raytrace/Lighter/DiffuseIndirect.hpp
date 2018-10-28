@@ -2,7 +2,7 @@
 #define LIGHTER_DIFFUSE_INDIRECT_HPP
 
 #include "Lighter/Base.hpp"
-#include "Lighter/DiffuseDirect.hpp"
+#include "Lighter/Direct.hpp"
 #include "Lighter/IrradianceCache.hpp"
 
 #include <random>
@@ -20,7 +20,7 @@ namespace Lighter {
 		mutable std::default_random_engine mRandomEngine;
 		int mIndirectSamples;
 		bool mIrradianceCaching;
-		DiffuseDirect mDirectLighter;
+		Direct mDirectLighter;
 		IrradianceCache mIrradianceCache;
 	};
 }

@@ -6,11 +6,13 @@
 #include <cmath>
 
 namespace Lighter {
-	Specular::Specular(const Lighter::Base &lighter, int numSamples, int maxGeneration)
+	Specular::Specular(const Lighter::Base &lighter, int numSamples, int maxGeneration, bool misDirect, int numDirectSamples)
 		: mLighter(lighter)
 	{
 		mNumSamples = numSamples;
 		mMaxGeneration = maxGeneration;
+		mMisDirect = misDirect;
+		mNumDirectSamples = numDirectSamples;
 	}
 
 	Object::Radiance Specular::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
@@ -40,8 +42,8 @@ namespace Lighter {
 
 				sampler.sample(i, u, v);
 
-				float pdf;
-				Math::Vector incidentDirection = brdf.sample(u, v, normal, outgoingDirection, pdf);
+				Math::Vector incidentDirection = brdf.sample(u, v, normal, outgoingDirection);
+				float pdf = brdf.pdf(incidentDirection, normal, outgoingDirection);
 				float dot = incidentDirection * normal;
 				if(dot > 0) {
 					Math::Ray reflectRay(offsetPoint, incidentDirection);
@@ -49,7 +51,13 @@ namespace Lighter {
 
 					if (intersection2.valid()) {
 						Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1) * dot;
-						radiance += brdf.reflected(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
+						Object::Radiance reflectedRadiance = brdf.reflected(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
+						float weight = 1.0f;
+						if (mMisDirect && intersection2.primitive().surface().radiance().magnitude() > 0) {
+							float directPdf = (1.0f / intersection2.primitive().shape().sampler()->surfaceArea()) * intersection2.distance() * intersection2.distance() / std::abs(intersection2.normal() * outgoingDirection);
+							weight = (mNumSamples * pdf) / (mNumSamples * pdf + mNumDirectSamples * directPdf);
+						}
+						radiance += reflectedRadiance * weight;
 					}
 				}
 			}
