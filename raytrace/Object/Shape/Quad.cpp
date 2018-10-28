@@ -29,11 +29,19 @@ namespace Object {
 			return false;
 		}
 
-		bool Quad::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
+		const Base::Sampler *Quad::sampler() const
+		{
+			return this;
+		}
+
+		float Quad::surfaceArea() const
+		{
+			return (mSide1 % mSide2).magnitude();
+		}
+
+		bool Quad::sample(float u, float v, Math::Point &point, Math::Normal &normal) const
 		{
 			point = mPosition + mSide1 * u + mSide2 * v;
-			du = mSide1;
-			dv = mSide2;
 			normal = mNormal;
 
 			return true;

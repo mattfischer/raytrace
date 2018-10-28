@@ -34,7 +34,12 @@ namespace Lighter {
 		Object::Radiance radiance;
 		for (const Object::Primitive &primitive : tracer.scene().areaLights()) {
 			const Object::Radiance &objectRadiance = primitive.surface().radiance();
+			const Object::Shape::Base::Sampler *shapeSampler = primitive.shape().sampler();
+			if (!shapeSampler) {
+				continue;
+			}
 
+			float surfaceArea = shapeSampler->surfaceArea();
 			for (int i = 0; i < mNumSamples; i++) {
 				float u;
 				float v;
@@ -46,8 +51,7 @@ namespace Lighter {
 				Math::Vector dv;
 				Math::Normal sampleNormal;
 
-				primitive.shape().sample(u, v, samplePoint, du, dv, sampleNormal);
-				float area = (du % dv).magnitude();
+				shapeSampler->sample(u, v, samplePoint, sampleNormal);
 
 				Math::Vector incidentDirection = samplePoint - point;
 				float distance = incidentDirection.magnitude();
@@ -63,7 +67,7 @@ namespace Lighter {
 					float sampleDot = abs(incidentDirection * sampleNormal);
 
 					if (dot > 0) {
-						Object::Radiance incidentRadiance = objectRadiance * sampleDot * dot * area / (distance * distance);
+						Object::Radiance incidentRadiance = objectRadiance * sampleDot * dot * surfaceArea / (distance * distance);
 						Object::Radiance transmittedRadiance = incidentRadiance;
 						if (intersection.primitive().surface().brdf().hasSpecular()) {
 							transmittedRadiance = intersection.primitive().surface().brdf().specular().transmitted(incidentRadiance, incidentDirection, normal, albedo);

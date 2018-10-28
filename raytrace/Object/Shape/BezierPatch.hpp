@@ -14,7 +14,6 @@ namespace Object {
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
 			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
-			virtual bool sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const;
 
 		private:
 			std::unique_ptr<Grid> mGrid;

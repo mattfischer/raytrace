@@ -63,10 +63,5 @@ namespace Object {
 		{
 			return mGrid->boundingVolume(transformation);
 		}
-
-		bool BezierPatch::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
-		{
-			return mGrid->sample(u, v, point, du, dv, normal);
-		}
 	}
 }

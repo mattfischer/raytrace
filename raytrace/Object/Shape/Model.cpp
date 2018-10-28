@@ -39,10 +39,5 @@ namespace Object {
 		{
 			return mGroup->boundingVolume(transformation);
 		}
-
-		bool Model::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
-		{
-			return mGroup->sample(u, v, point, du, dv, normal);
-		}
 	}
 }

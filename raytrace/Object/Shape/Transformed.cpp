@@ -22,26 +22,5 @@ namespace Object {
 		{
 			return mShape->boundingVolume(transformation * mTransformation);
 		}
-
-		bool Transformed::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
-		{
-			Math::Point objectPoint;
-			Math::Vector objectDu;
-			Math::Vector objectDv;
-			Math::Normal objectNormal;
-
-			if (mShape->sample(u, v, objectPoint, objectDu, objectDv, objectNormal))
-			{
-				point = mTransformation * objectPoint;
-				du = mTransformation * objectDu;
-				dv = mTransformation * objectDv;
-				normal = mTransformation * objectNormal;
-
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
 	}
 }

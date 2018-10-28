@@ -62,10 +62,5 @@ namespace Object {
 
 			return BoundingVolume(mins, maxes);
 		}
-
-		bool Sphere::sample(float u, float v, Math::Point &point, Math::Vector &du, Math::Vector &dv, Math::Normal &normal) const
-		{
-			return false;
-		}
 	}
 }
