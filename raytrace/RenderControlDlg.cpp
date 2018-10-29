@@ -16,15 +16,15 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.antialiasSamples = 3;
 	mSettings.lighterSettings.radiantLighting = true;
 	mSettings.lighterSettings.specularLighting = true;
-	mSettings.lighterSettings.specularSamples = 10;
+	mSettings.lighterSettings.specularSamples = 2;
 	mSettings.lighterSettings.specularMaxGeneration = 2;
 	mSettings.lighterSettings.directLighting = true;
-	mSettings.lighterSettings.directSamples = 10;
+	mSettings.lighterSettings.directSamples = 32;
 	mSettings.lighterSettings.indirectLighting = true;
 	mSettings.lighterSettings.indirectSamples = 1000;
 	mSettings.lighterSettings.indirectDirectSamples = 10;
 	mSettings.lighterSettings.irradianceCaching = true;
-	mSettings.lighterSettings.irradianceCacheThreshold = 0.15;
+	mSettings.lighterSettings.irradianceCacheThreshold = 0.1;
 }
 
 void RenderControlDlg::createWindow(HINSTANCE hInst, Listener *listener)
