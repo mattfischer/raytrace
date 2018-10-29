@@ -5,9 +5,6 @@
 #include "Object/Light.hpp"
 
 #include "Object/Shape/Transformed.hpp"
-#include "Object/Shape/Model.hpp"
-#include "Object/Shape/BezierPatch.hpp"
-#include "Object/Shape/Grid.hpp"
 #include "Object/Albedo/Solid.hpp"
 #include "Object/Brdf/Lambert.hpp"
 #include "Object/Brdf/Phong.hpp"

@@ -149,9 +149,6 @@
     <ClCompile Include="Object\Shape\Grid.cpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Shape\Model.cpp">
-      <Filter>Source Files\Object\Shape</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Shape\Quad.cpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
@@ -190,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="Object\Albedo\Texture.cpp">
       <Filter>Source Files\Object\Albedo</Filter>
+    </ClCompile>
+    <ClCompile Include="Parse\BptLoader.cpp">
+      <Filter>Source Files\Parse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -320,9 +320,6 @@
     <ClInclude Include="Object\Shape\Grid.hpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Shape\Model.hpp">
-      <Filter>Source Files\Object\Shape</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Shape\Quad.hpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClInclude>
@@ -361,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="Object\Albedo\Texture.hpp">
       <Filter>Source Files\Object\Albedo</Filter>
+    </ClInclude>
+    <ClInclude Include="Parse\BptLoader.hpp">
+      <Filter>Source Files\Parse</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

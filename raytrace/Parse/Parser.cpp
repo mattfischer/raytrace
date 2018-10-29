@@ -12,10 +12,11 @@
 #include "Object/Brdf/OrenNayar.hpp"
 #include "Object/Brdf/TorranceSparrow.hpp"
 
-#include "Object/Shape/Model.hpp"
 #include "Object/Shape/Quad.hpp"
 #include "Object/Shape/Sphere.hpp"
 #include "Object/Shape/Transformed.hpp"
+
+#include "Parse/BptLoader.hpp"
 
 #include "AST.h"
 
@@ -64,12 +65,10 @@ namespace Parse {
 		return light;
 	}
 
-	std::unique_ptr<Object::Shape::Model> parseShapeModel(AST *ast)
+	std::unique_ptr<Object::Shape::Base> parseShapeModel(AST *ast)
 	{
 		std::string filename(ast->children[0]->data._string);
-		std::unique_ptr<Object::Shape::Model> model = std::make_unique<Object::Shape::Model>(filename);
-
-		return model;
+		return BptLoader::load(filename);
 	}
 
 	std::unique_ptr<Object::Shape::Quad> parseShapeQuad(AST *ast)
