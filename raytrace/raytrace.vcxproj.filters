@@ -191,6 +191,12 @@
     <ClCompile Include="Parse\BptLoader.cpp">
       <Filter>Source Files\Parse</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Texture.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Parse\BmpLoader.cpp">
+      <Filter>Source Files\Parse</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -360,6 +366,12 @@
       <Filter>Source Files\Object\Albedo</Filter>
     </ClInclude>
     <ClInclude Include="Parse\BptLoader.hpp">
+      <Filter>Source Files\Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Texture.hpp">
+      <Filter>Source Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Parse\BmpLoader.hpp">
       <Filter>Source Files\Parse</Filter>
     </ClInclude>
   </ItemGroup>

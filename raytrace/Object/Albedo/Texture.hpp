@@ -3,22 +3,21 @@
 
 #include "Object/Albedo/Base.hpp"
 
-#include <string>
-#include <vector>
+#include "Object/Texture.hpp"
+
+#include <memory>
 
 namespace Object {
 	namespace Albedo {
 		class Texture : public Base
 		{
 		public:
-			Texture(const std::string &filename);
+			Texture(std::unique_ptr<Object::Texture> texture);
 
 			virtual Object::Color color(float u, float v) const;
 
 		protected:
-			std::vector<unsigned char> mBits;
-			int mWidth;
-			int mHeight;
+			std::unique_ptr<Object::Texture> mTexture;
 		};
 	}
 }
