@@ -16,7 +16,7 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.antialiasSamples = 3;
 	mSettings.lighterSettings.radiantLighting = true;
 	mSettings.lighterSettings.specularLighting = true;
-	mSettings.lighterSettings.specularSamples = 2;
+	mSettings.lighterSettings.specularSamples = 4;
 	mSettings.lighterSettings.specularMaxGeneration = 2;
 	mSettings.lighterSettings.directLighting = true;
 	mSettings.lighterSettings.directSamples = 32;
