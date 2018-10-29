@@ -56,9 +56,6 @@
     <ClCompile Include="Math\Point.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Math\PolySolve.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Transformation.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -216,9 +213,6 @@
       <Filter>Source Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Math\Point.hpp">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\PolySolve.hpp">
       <Filter>Source Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Math\Transformation.hpp">
