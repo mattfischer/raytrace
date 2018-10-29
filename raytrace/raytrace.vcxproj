@@ -108,8 +108,8 @@
     <ClCompile Include="Math\Ray.cpp" />
     <ClCompile Include="Math\Transformation.cpp" />
     <ClCompile Include="Math\Vector.cpp" />
-    <ClCompile Include="Object\Albedo\Checker.cpp" />
     <ClCompile Include="Object\Albedo\Solid.cpp" />
+    <ClCompile Include="Object\Albedo\Texture.cpp" />
     <ClCompile Include="Object\BoundingVolume.cpp" />
     <ClCompile Include="Object\Brdf\OrenNayar.cpp" />
     <ClCompile Include="Object\Brdf\TorranceSparrow.cpp" />
@@ -177,8 +177,8 @@
     <ClInclude Include="Math\Transformation.hpp" />
     <ClInclude Include="Math\Vector.hpp" />
     <ClInclude Include="Object\Albedo\Base.hpp" />
-    <ClInclude Include="Object\Albedo\Checker.hpp" />
     <ClInclude Include="Object\Albedo\Solid.hpp" />
+    <ClInclude Include="Object\Albedo\Texture.hpp" />
     <ClInclude Include="Object\BoundingVolume.hpp" />
     <ClInclude Include="Object\Brdf\OrenNayar.hpp" />
     <ClInclude Include="Object\Brdf\TorranceSparrow.hpp" />

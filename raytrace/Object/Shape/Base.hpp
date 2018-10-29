@@ -18,6 +18,8 @@ namespace Object {
 			struct Intersection {
 				float distance;
 				Math::Normal normal;
+				float u;
+				float v;
 			};
 
 			class Sampler {

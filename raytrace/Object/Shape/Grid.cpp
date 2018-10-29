@@ -102,6 +102,8 @@ namespace Object {
 
 			intersection.distance = distance;
 			intersection.normal = mNormals[idx0] * (1 - u - v) + mNormals[idx1] * u + mNormals[idx2] * v;
+			intersection.u = 0;
+			intersection.v = 0;
 			return true;
 		}
 

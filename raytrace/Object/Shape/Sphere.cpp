@@ -29,6 +29,8 @@ namespace Object {
 					intersection.distance = distance;
 					Math::Point point = ray.origin() + ray.direction() * distance;
 					intersection.normal = Math::Normal(point - mPosition) / mRadius;
+					intersection.u = 0;
+					intersection.v = 0;
 					return true;
 				}
 
@@ -39,6 +41,8 @@ namespace Object {
 					intersection.distance = distance;
 					Math::Point point = ray.origin() + ray.direction() * distance;
 					intersection.normal = Math::Normal(point - mPosition) / mRadius;
+					intersection.u = 0;
+					intersection.v = 0;
 					return true;
 				}
 			}

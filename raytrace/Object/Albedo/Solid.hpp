@@ -10,7 +10,7 @@ namespace Object {
 		public:
 			Solid(const Object::Color &color);
 
-			virtual Object::Color color(const Math::Point &point) const;
+			virtual Object::Color color(float u, float v) const;
 
 		protected:
 			Object::Color mColor;

@@ -83,9 +83,6 @@
     <ClCompile Include="Render\Engine.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Albedo\Checker.cpp">
-      <Filter>Source Files\Object\Albedo</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Albedo\Solid.cpp">
       <Filter>Source Files\Object\Albedo</Filter>
     </ClCompile>
@@ -191,6 +188,9 @@
     <ClCompile Include="Lighter\Direct.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Albedo\Texture.cpp">
+      <Filter>Source Files\Object\Albedo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -222,9 +222,6 @@
       <Filter>Source Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Object\Albedo\Base.hpp">
-      <Filter>Source Files\Object\Albedo</Filter>
-    </ClInclude>
-    <ClInclude Include="Object\Albedo\Checker.hpp">
       <Filter>Source Files\Object\Albedo</Filter>
     </ClInclude>
     <ClInclude Include="Object\Albedo\Solid.hpp">
@@ -361,6 +358,9 @@
     </ClInclude>
     <ClInclude Include="Lighter\Direct.hpp">
       <Filter>Source Files\Lighter</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Albedo\Texture.hpp">
+      <Filter>Source Files\Object\Albedo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

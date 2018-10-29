@@ -10,7 +10,7 @@ namespace Object {
 		class Base
 		{
 		public:
-			virtual Object::Color color(const Math::Point &point) const = 0;
+			virtual Object::Color color(float u, float v) const = 0;
 		};
 	}
 }

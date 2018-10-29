@@ -90,9 +90,9 @@ quad {
 }
 
 quad {
-	<-15,-15,10> <0,30,0> <30,0,0>
+	<-15,-15,10> <30,0,0> <0,30,0>
 	surface {
-		albedo { color <1,1,1> }
+		albedo { texture "bricks.bmp" }
 		brdf { oren_nayar 1 0.5 }
 	}
 }

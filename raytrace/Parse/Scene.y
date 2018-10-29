@@ -32,7 +32,7 @@
 %token SURFACE
 %token ALBEDO
 %token COLOR
-%token CHECKER
+%token TEXTURE
 
 %token BRDF
 %token LAMBERT
@@ -157,8 +157,9 @@ brdf_item: LAMBERT FLOAT
 
 albedodef: colordef
 	{ $$ = newAst(AstAlbedoSolid, 1, $1); }
-			| CHECKER colordef colordef
-	{ $$ = newAst(AstAlbedoChecker, 2, $2, $3); }
+			| TEXTURE STRING
+	{ $$ = newAst(AstAlbedoTexture, 0);
+	  $$->data._string = $2; }
 
 colordef: COLOR VECTOR
 	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }	

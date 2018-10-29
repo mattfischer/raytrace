@@ -5,7 +5,7 @@
 #include "Object/Primitive.hpp"
 
 #include "Object/Albedo/Solid.hpp"
-#include "Object/Albedo/Checker.hpp"
+#include "Object/Albedo/Texture.hpp"
 
 #include "Object/Brdf/Lambert.hpp"
 #include "Object/Brdf/Phong.hpp"
@@ -117,9 +117,10 @@ namespace Parse {
 		return std::make_unique<Object::Albedo::Solid>(parseColor(ast->children[0]->data._vector));
 	}
 
-	std::unique_ptr<Object::Albedo::Checker> parseAlbedoChecker(AST *ast)
+	std::unique_ptr<Object::Albedo::Texture> parseAlbedoTexture(AST *ast)
 	{
-		return std::make_unique<Object::Albedo::Checker>(parseColor(ast->children[0]->data._vector), parseColor(ast->children[1]->data._vector));
+		std::string filename(ast->data._string);
+		return std::make_unique<Object::Albedo::Texture>(filename);
 	}
 
 	std::unique_ptr<Object::Albedo::Base> parseAlbedo(AST *ast)
@@ -129,8 +130,8 @@ namespace Parse {
 		{
 		case AstAlbedoSolid:
 			return parseAlbedoSolid(albedoAst);
-		case AstAlbedoChecker:
-			return parseAlbedoChecker(albedoAst);
+		case AstAlbedoTexture:
+			return parseAlbedoTexture(albedoAst);
 		}
 
 		return 0;

@@ -36,7 +36,7 @@ radiance return RADIANCE;
 brdf return BRDF;
 albedo return ALBEDO;
 color return COLOR;
-checker return CHECKER;
+texture return TEXTURE;
 
 lambert return LAMBERT;
 phong return PHONG;

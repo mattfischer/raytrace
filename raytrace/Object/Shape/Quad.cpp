@@ -22,6 +22,8 @@ namespace Object {
 				{
 					intersection.distance = distance;
 					intersection.normal = mNormal;
+					intersection.u = u;
+					intersection.v = v;
 					return true;
 				}
 			}
