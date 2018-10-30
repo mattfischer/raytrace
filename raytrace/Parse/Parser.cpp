@@ -120,7 +120,7 @@ namespace Parse {
 	std::unique_ptr<Object::Albedo::Texture> parseAlbedoTexture(AST *ast)
 	{
 		std::string filename(ast->data._string);
-		std::unique_ptr<Object::Texture> texture = BmpLoader::load(filename);
+		std::unique_ptr<Object::Texture<3>> texture = BmpLoader::load(filename);
 		return std::make_unique<Object::Albedo::Texture>(std::move(texture));
 	}
 

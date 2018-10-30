@@ -188,9 +188,6 @@
     <ClCompile Include="Parse\BptLoader.cpp">
       <Filter>Source Files\Parse</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Texture.cpp">
-      <Filter>Source Files\Object</Filter>
-    </ClCompile>
     <ClCompile Include="Parse\BmpLoader.cpp">
       <Filter>Source Files\Parse</Filter>
     </ClCompile>

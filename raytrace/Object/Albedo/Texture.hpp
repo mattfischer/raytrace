@@ -12,12 +12,12 @@ namespace Object {
 		class Texture : public Base
 		{
 		public:
-			Texture(std::unique_ptr<Object::Texture> texture);
+			Texture(std::unique_ptr<Object::Texture<3>> texture);
 
 			virtual Object::Color color(const Math::Point2D &surfacePoint) const;
 
 		protected:
-			std::unique_ptr<Object::Texture> mTexture;
+			std::unique_ptr<Object::Texture<3>> mTexture;
 		};
 	}
 }

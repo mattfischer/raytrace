@@ -141,7 +141,6 @@
     <ClCompile Include="Object\Shape\Sphere.cpp" />
     <ClCompile Include="Object\Shape\Transformed.cpp" />
     <ClCompile Include="Object\Surface.cpp" />
-    <ClCompile Include="Object\Texture.cpp" />
     <ClCompile Include="Parse\BmpLoader.cpp" />
     <ClCompile Include="Parse\BptLoader.cpp" />
     <ClCompile Include="Parse\Parser.cpp" />
