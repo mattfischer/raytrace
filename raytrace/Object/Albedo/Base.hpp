@@ -3,14 +3,14 @@
 
 #include "Object/Color.hpp"
 
-#include "Math/Point.hpp"
+#include "Math/Point2D.hpp"
 
 namespace Object {
 	namespace Albedo {
 		class Base
 		{
 		public:
-			virtual Object::Color color(float u, float v) const = 0;
+			virtual Object::Color color(const Math::Point2D &surfacePoint) const = 0;
 		};
 	}
 }

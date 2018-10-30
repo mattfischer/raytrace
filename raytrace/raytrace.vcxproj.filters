@@ -194,6 +194,9 @@
     <ClCompile Include="Parse\BmpLoader.cpp">
       <Filter>Source Files\Parse</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Point2D.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -367,6 +370,9 @@
     </ClInclude>
     <ClInclude Include="Parse\BmpLoader.hpp">
       <Filter>Source Files\Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Point2D.hpp">
+      <Filter>Source Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

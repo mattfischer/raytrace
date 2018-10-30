@@ -3,6 +3,7 @@
 
 #include "Math/Ray.hpp"
 #include "Math/Normal.hpp"
+#include "Math/Point2D.hpp"
 #include "Math/Transformation.hpp"
 
 #include "Object/BoundingVolume.hpp"
@@ -18,14 +19,13 @@ namespace Object {
 			struct Intersection {
 				float distance;
 				Math::Normal normal;
-				float u;
-				float v;
+				Math::Point2D surfacePoint;
 			};
 
 			class Sampler {
 			public:
 				virtual float surfaceArea() const = 0;
-				virtual bool sample(float u, float v, Math::Point &point, Math::Normal &normal) const = 0;
+				virtual bool sample(const Math::Point2D &surfacePoint, Math::Point &point, Math::Normal &normal) const = 0;
 			};
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const = 0;

@@ -8,9 +8,11 @@ namespace Lighter {
 		mStrataV = numSamples / mStrataU;
 	}
 
-	void Sampler::sample(int sample, float &u, float &v)
+	Math::Point2D Sampler::sample(int sample)
 	{
 		std::uniform_real_distribution<float> dist(0, 1);
+		float u;
+		float v;
 
 		if (sample < mStrataU / mStrataV) {
 			int stratumU = sample / mStrataV;
@@ -22,5 +24,7 @@ namespace Lighter {
 			u = dist(mRandomEngine);
 			v = dist(mRandomEngine);
 		}
+
+		return Math::Point2D(u, v);
 	}
 }

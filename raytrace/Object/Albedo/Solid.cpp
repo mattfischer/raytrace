@@ -7,7 +7,7 @@ namespace Object {
 		{
 		}
 
-		Object::Color Solid::color(float u, float v) const
+		Object::Color Solid::color(const Math::Point2D &surfacePoint) const
 		{
 			return mColor;
 		}

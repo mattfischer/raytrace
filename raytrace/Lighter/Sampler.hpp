@@ -1,6 +1,8 @@
 #ifndef LIGHTER_SAMPLER_HPP
 #define LIGHTER_SAMPLER_HPP
 
+#include "Math/Point2D.hpp"
+
 #include <random>
 
 namespace Lighter {
@@ -9,7 +11,7 @@ namespace Lighter {
 	public:
 		Sampler(int numSamples, std::default_random_engine &randomEngine);
 
-		void sample(int sample, float &u, float &v);
+		Math::Point2D sample(int sample);
 
 	private:
 		int mStrataU;

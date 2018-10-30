@@ -55,10 +55,10 @@ namespace Object {
 			return incidentRadiance * (1.0f - mStrength * F);
 		}
 
-		Math::Vector TorranceSparrow::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+		Math::Vector TorranceSparrow::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
 		{
-			float phi = 2 * M_PI * u;
-			float tanTheta = std::sqrt(-mRoughness * mRoughness * std::log(1 - v));
+			float phi = 2 * M_PI * samplePoint.u();
+			float tanTheta = std::sqrt(-mRoughness * mRoughness * std::log(1 - samplePoint.v()));
 			float theta = std::atan(tanTheta);
 
 			Math::OrthonormalBasis basis(normal);

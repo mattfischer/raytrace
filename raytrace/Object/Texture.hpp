@@ -2,6 +2,7 @@
 #define OBJECT_TEXTURE_HPP
 
 #include "Object/Color.hpp"
+#include "Math/Point2D.hpp"
 
 #include <vector>
 
@@ -11,7 +12,7 @@ namespace Object {
 	public:
 		Texture(int width, int height, std::vector<unsigned char> &&bits);
 
-		Object::Color sample(float u, float v) const;
+		Object::Color sample(const Math::Point2D &samplePoint) const;
 
 	protected:
 		std::vector<unsigned char> mBits;

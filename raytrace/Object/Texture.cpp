@@ -6,10 +6,10 @@ namespace Object {
 	{
 	}
 
-	Object::Color Texture::sample(float u, float v) const
+	Object::Color Texture::sample(const Math::Point2D &samplePoint) const
 	{
-		int x = u * mWidth;
-		int y = v * mHeight;
+		int x = samplePoint.u() * mWidth;
+		int y = samplePoint.v() * mHeight;
 
 		unsigned char r = mBits[(y * mWidth + x) * 3 + 2];
 		unsigned char g = mBits[(y * mWidth + x) * 3 + 1];

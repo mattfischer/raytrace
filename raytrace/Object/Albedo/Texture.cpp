@@ -11,9 +11,9 @@ namespace Object {
 		{
 		}
 
-		Object::Color Texture::color(float u, float v) const
+		Object::Color Texture::color(const Math::Point2D &surfacePoint) const
 		{
-			return mTexture->sample(u, v);
+			return mTexture->sample(surfacePoint);
 		}
 	}
 }

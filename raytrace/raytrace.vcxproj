@@ -104,6 +104,7 @@
     <ClCompile Include="Math\Normal.cpp" />
     <ClCompile Include="Math\OrthonormalBasis.cpp" />
     <ClCompile Include="Math\Point.cpp" />
+    <ClCompile Include="Math\Point2D.cpp" />
     <ClCompile Include="Math\Ray.cpp" />
     <ClCompile Include="Math\Transformation.cpp" />
     <ClCompile Include="Math\Vector.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Math\Normal.hpp" />
     <ClInclude Include="Math\OrthonormalBasis.hpp" />
     <ClInclude Include="Math\Point.hpp" />
+    <ClInclude Include="Math\Point2D.hpp" />
     <ClInclude Include="Math\Ray.hpp" />
     <ClInclude Include="Math\Transformation.hpp" />
     <ClInclude Include="Math\Vector.hpp" />

@@ -48,17 +48,14 @@ namespace Lighter {
 
 			float surfaceArea = shapeSampler->surfaceArea();
 			for (int i = 0; i < mNumSamples; i++) {
-				float u;
-				float v;
-
-				sampler.sample(i, u, v);
+				Math::Point2D surfacePoint = sampler.sample(i);
 
 				Math::Point samplePoint;
 				Math::Vector du;
 				Math::Vector dv;
 				Math::Normal sampleNormal;
 
-				shapeSampler->sample(u, v, samplePoint, sampleNormal);
+				shapeSampler->sample(surfacePoint, samplePoint, sampleNormal);
 
 				Math::Vector incidentDirection = samplePoint - point;
 				float distance = incidentDirection.magnitude();

@@ -6,6 +6,7 @@
 
 #include "Math/Vector.hpp"
 #include "Math/Normal.hpp"
+#include "Math/Point2D.hpp"
 
 #include <memory>
 
@@ -18,7 +19,7 @@ namespace Object {
 
 			virtual float lambert() const;
 
-			virtual Math::Vector sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
+			virtual Math::Vector sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
 			virtual float pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
 		};
 	}

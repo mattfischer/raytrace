@@ -14,7 +14,7 @@ namespace Object {
 		public:
 			Texture(std::unique_ptr<Object::Texture> texture);
 
-			virtual Object::Color color(float u, float v) const;
+			virtual Object::Color color(const Math::Point2D &surfacePoint) const;
 
 		protected:
 			std::unique_ptr<Object::Texture> mTexture;

@@ -44,7 +44,7 @@ namespace Render {
 
 		if (shapeIntersection.distance < FLT_MAX) {
 			Math::Point point = ray.origin() + ray.direction() * shapeIntersection.distance;
-			Object::Color albedo = primitive->surface().albedo().color(shapeIntersection.u, shapeIntersection.v);
+			Object::Color albedo = primitive->surface().albedo().color(shapeIntersection.surfacePoint);
 			return Object::Intersection(*primitive, ray, point, shapeIntersection.distance, shapeIntersection.normal, albedo);
 		}
 		else {

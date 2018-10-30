@@ -37,12 +37,9 @@ namespace Lighter {
 			Sampler sampler(mNumSamples, mRandomEngine);
 
 			for (int i = 0; i < mNumSamples; i++) {
-				float u;
-				float v;
+				Math::Point2D samplePoint = sampler.sample(i);
 
-				sampler.sample(i, u, v);
-
-				Math::Vector incidentDirection = brdf.sample(u, v, normal, outgoingDirection);
+				Math::Vector incidentDirection = brdf.sample(samplePoint, normal, outgoingDirection);
 				float pdf = brdf.pdf(incidentDirection, normal, outgoingDirection);
 				float dot = incidentDirection * normal;
 				if(dot > 0) {

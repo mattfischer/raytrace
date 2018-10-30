@@ -22,8 +22,7 @@ namespace Object {
 				{
 					intersection.distance = distance;
 					intersection.normal = mNormal;
-					intersection.u = u;
-					intersection.v = v;
+					intersection.surfacePoint = Math::Point2D(u, v);
 					return true;
 				}
 			}
@@ -41,9 +40,9 @@ namespace Object {
 			return (mSide1 % mSide2).magnitude();
 		}
 
-		bool Quad::sample(float u, float v, Math::Point &point, Math::Normal &normal) const
+		bool Quad::sample(const Math::Point2D &surfacePoint, Math::Point &point, Math::Normal &normal) const
 		{
-			point = mPosition + mSide1 * u + mSide2 * v;
+			point = mPosition + mSide1 * surfacePoint.u() + mSide2 * surfacePoint.v();
 			normal = mNormal;
 
 			return true;

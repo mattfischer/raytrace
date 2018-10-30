@@ -19,7 +19,7 @@ namespace Object {
 			return 0;
 		}
 
-		Math::Vector Base::sample(float u, float v, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+		Math::Vector Base::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
 		{
 			return Math::Vector(0, 0, 0);
 		}
