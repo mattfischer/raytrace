@@ -6,6 +6,8 @@ namespace Object {
 		{
 			std::vector<Math::Point> points;
 			std::vector<Math::Normal> normals;
+			std::vector<Math::Vector> du;
+			std::vector<Math::Vector> dv;
 
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {
@@ -47,11 +49,13 @@ namespace Object {
 					}
 
 					points.push_back(Math::Point(p));
+					du.push_back(ds.normalize());
+					dv.push_back(dt.normalize());
 					normals.push_back(Math::Normal(ds % dt).normalize());
 				}
 			}
 
-			mGrid = std::make_unique<Grid>(width, height, std::move(points), std::move(normals));
+			mGrid = std::make_unique<Grid>(width, height, std::move(points), std::move(normals), std::move(du), std::move(dv));
 		}
 
 		bool BezierPatch::intersect(const Math::Ray &ray, Intersection &intersection) const

@@ -194,11 +194,19 @@ namespace Parse {
 		return std::make_unique<Object::Brdf::Composite>(std::move(diffuse), std::move(specular), transmitIor);
 	}
 
+	std::unique_ptr<Object::NormalMap> parseNormalMap(AST *ast)
+	{
+		std::string filename(ast->children[0]->data._string);
+		std::unique_ptr<Object::Texture<3>> texture = BmpLoader::load(filename);
+		return std::make_unique<Object::NormalMap>(std::move(texture), ast->children[1]->data._float);
+	}
+
 	std::unique_ptr<Object::Surface> parseSurface(AST *ast)
 	{
 		std::unique_ptr<Object::Albedo::Base> albedo;
 		std::unique_ptr<Object::Brdf::Composite> brdf;
 		Object::Radiance radiance;
+		std::unique_ptr<Object::NormalMap> normalMap;
 
 		for (int i = 0; i < ast->numChildren; i++) {
 			switch (ast->children[i]->type) {
@@ -213,10 +221,14 @@ namespace Parse {
 			case AstRadiance:
 				radiance = parseRadiance(ast->children[i]->data._vector);
 				break;
+
+			case AstNormalMap:
+				normalMap = parseNormalMap(ast->children[i]);
+				break;
 			}
 		}
 
-		return std::make_unique<Object::Surface>(std::move(albedo), std::move(brdf), radiance);
+		return std::make_unique<Object::Surface>(std::move(albedo), std::move(brdf), radiance, std::move(normalMap));
 	}
 
 	Math::Transformation parseTransformation(AST *ast)

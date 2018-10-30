@@ -70,6 +70,11 @@ namespace Math {
 		return Normal(x() + b.x(), y() + b.y(), z() + b.z());
 	}
 
+	Normal Normal::operator-(const Normal &b) const
+	{
+		return Normal(x() - b.x(), y() - b.y(), z() - b.z());
+	}
+
 	float Normal::operator*(const Normal &b) const
 	{
 		return x() * b.x() + y() * b.y() + z() * b.z();

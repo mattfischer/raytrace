@@ -23,6 +23,7 @@ namespace Math {
 		float magnitude2() const;
 
 		Normal operator+(const Normal &b) const;
+		Normal operator-(const Normal &b) const;
 		float operator*(const Normal &b) const;
 		float operator*(const Vector &b) const;
 		Normal operator*(float b) const;

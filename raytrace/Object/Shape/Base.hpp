@@ -19,6 +19,8 @@ namespace Object {
 			struct Intersection {
 				float distance;
 				Math::Normal normal;
+				Math::Vector du;
+				Math::Vector dv;
 				Math::Point2D surfacePoint;
 			};
 

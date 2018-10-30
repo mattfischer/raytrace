@@ -22,6 +22,7 @@ typedef enum
 	AstAlbedoTexture,
 	AstColor,
 	AstRadiance,
+	AstNormalMap,
 
 	AstBrdf,
 	AstBrdfLambert,

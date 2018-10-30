@@ -33,6 +33,17 @@ namespace Object {
 			return value;
 		}
 
+		void gradient(const Math::Point2D &samplePoint, Value &du, Value &dv) const
+		{
+			int x = samplePoint.u() * mWidth;
+			int y = samplePoint.v() * mHeight;
+
+			for (int i = 0; i < NUM_CHANNELS; i++) {
+				du.channels[i] = (mValues[(y * mWidth + x + 1) * NUM_CHANNELS + i] - mValues[(y * mWidth + x) * NUM_CHANNELS + i]) * mWidth;
+				dv.channels[i] = (mValues[((y + 1) * mWidth + x) * NUM_CHANNELS + i] - mValues[(y * mWidth + x) * NUM_CHANNELS + i]) * mHeight;
+			}
+		}
+
 	protected:
 		std::vector<float> mValues;
 		int mWidth;

@@ -23,6 +23,8 @@ namespace Object {
 					intersection.distance = distance;
 					intersection.normal = mNormal;
 					intersection.surfacePoint = Math::Point2D(u, v);
+					intersection.du = mSide1;
+					intersection.dv = mSide2;
 					return true;
 				}
 			}

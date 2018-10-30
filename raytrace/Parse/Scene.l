@@ -37,6 +37,7 @@ brdf return BRDF;
 albedo return ALBEDO;
 color return COLOR;
 texture return TEXTURE;
+normal_map return NORMAL_MAP;
 
 lambert return LAMBERT;
 phong return PHONG;

@@ -33,6 +33,7 @@
 %token ALBEDO
 %token COLOR
 %token TEXTURE
+%token NORMAL_MAP
 
 %token BRDF
 %token LAMBERT
@@ -131,6 +132,10 @@ surface_item: ALBEDO '{' albedodef '}'
 	{ $$ = $3; }
 			| RADIANCE VECTOR
 	{ $$ = newAst(AstRadiance, 0); $$->data._vector = $2; }
+			| NORMAL_MAP STRING FLOAT
+	{ $$ = newAst(AstNormalMap, 2, newAst(AstConstant, 0), newAst(AstConstant, 0));
+	  $$->children[0]->data._string = $2;
+	  $$->children[1]->data._float = $3; }
 
 brdf_list: brdf_item
 	{ $$ = newAst(AstBrdf, 1, $1); }
@@ -158,8 +163,7 @@ brdf_item: LAMBERT FLOAT
 albedodef: colordef
 	{ $$ = newAst(AstAlbedoSolid, 1, $1); }
 			| TEXTURE STRING
-	{ $$ = newAst(AstAlbedoTexture, 0);
-	  $$->data._string = $2; }
+	{ $$ = newAst(AstAlbedoTexture, 0); $$->data._string = $2; }
 
 colordef: COLOR VECTOR
 	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }	
