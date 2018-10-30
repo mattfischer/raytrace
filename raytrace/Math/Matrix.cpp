@@ -1,7 +1,5 @@
 #include "Math/Matrix.hpp"
 
-#include "Math/Coordinate.hpp"
-
 namespace Math {
 	Matrix::Matrix()
 	{
@@ -93,54 +91,6 @@ namespace Math {
 		r.mIdentity = false;
 
 		return r;
-	}
-
-	Coordinate operator*(const Matrix &matrix, const Coordinate &coordinate)
-	{
-		if(matrix.identity()) return coordinate;
-
-		float a = matrix(0, 0) * coordinate(0) +
-				  matrix(1, 0) * coordinate(1) +
-				  matrix(2, 0) * coordinate(2) +
-				  matrix(3, 0) * coordinate(3);
-		float b = matrix(0, 1) * coordinate(0) +
-				  matrix(1, 1) * coordinate(1) +
-				  matrix(2, 1) * coordinate(2) +
-				  matrix(3, 1) * coordinate(3);
-		float c = matrix(0, 2) * coordinate(0) +
-				  matrix(1, 2) * coordinate(1) +
-				  matrix(2, 2) * coordinate(2) +
-				  matrix(3, 2) * coordinate(3);
-		float d = matrix(0, 3) * coordinate(0) +
-				  matrix(1, 3) * coordinate(1) +
-				  matrix(2, 3) * coordinate(2) +
-				  matrix(3, 3) * coordinate(3);
-
-		return Coordinate(a, b, c, d);
-	}
-
-	Coordinate operator*(const Coordinate &coordinate, const Matrix &matrix)
-	{
-		if(matrix.identity()) return coordinate;
-
-		float a = matrix(0, 0) * coordinate(0) +
-				  matrix(0, 1) * coordinate(1) +
-				  matrix(0, 2) * coordinate(2) +
-				  matrix(0, 3) * coordinate(3);
-		float b = matrix(1, 0) * coordinate(0) +
-				  matrix(1, 1) * coordinate(1) +
-				  matrix(1, 2) * coordinate(2) +
-				  matrix(1, 3) * coordinate(3);
-		float c = matrix(2, 0) * coordinate(0) +
-				  matrix(2, 1) * coordinate(1) +
-				  matrix(2, 2) * coordinate(2) +
-				  matrix(2, 3) * coordinate(3);
-		float d = matrix(3, 0) * coordinate(0) +
-				  matrix(3, 1) * coordinate(1) +
-				  matrix(3, 2) * coordinate(2) +
-				  matrix(3, 3) * coordinate(3);
-
-		return Coordinate(a, b, c, d);
 	}
 
 	Matrix Matrix::partialTranspose() const

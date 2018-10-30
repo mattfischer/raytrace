@@ -8,21 +8,43 @@
 namespace Math {
 	Vector::Vector()
 	{
+		mX = mY = mZ = 0;
 	}
 
 	Vector::Vector(float x, float y, float z)
-	: Coordinate(x, y, z, 0)
 	{
-	}
-
-	Vector::Vector(const Coordinate &c)
-	: Coordinate(c)
-	{
+		mX = x;
+		mY = y;
+		mZ = z;
 	}
 
 	Vector::Vector(const Point &point)
-	: Coordinate(point.x(), point.y(), point.z(), 0)
 	{
+		mX = point.x();
+		mY = point.y();
+		mZ = point.z();
+	}
+
+	Vector::Vector(const Normal &normal)
+	{
+		mX = normal.x();
+		mY = normal.y();
+		mZ = normal.z();
+	}
+
+	float Vector::x() const
+	{
+		return mX;
+	}
+
+	float Vector::y() const
+	{
+		return mY;
+	}
+
+	float Vector::z() const
+	{
+		return mZ;
 	}
 
 	float Vector::magnitude() const
@@ -85,5 +107,27 @@ namespace Math {
 	Vector operator*(const BaseTransformation &transformation, const Vector &vector)
 	{
 		return Vector(transformation.matrix() * vector);
+	}
+
+	Vector operator*(const Matrix &matrix, const Vector &vector)
+	{
+		if (matrix.identity()) return vector;
+
+		float x = matrix(0, 0) * vector.x() + matrix(1, 0) * vector.y() + matrix(2, 0) * vector.z();
+		float y = matrix(0, 1) * vector.x() + matrix(1, 1) * vector.y() + matrix(2, 1) * vector.z();
+		float z = matrix(0, 2) * vector.x() + matrix(1, 2) * vector.y() + matrix(2, 2) * vector.z();
+
+		return Vector(x, y, z);
+	}
+
+	Vector operator*(const Vector &vector, const Matrix &matrix)
+	{
+		if (matrix.identity()) return vector;
+
+		float x = matrix(0, 0) * vector.x() + matrix(0, 1) * vector.y() + matrix(0, 2) * vector.z();
+		float y = matrix(1, 0) * vector.x() + matrix(1, 1) * vector.y() + matrix(1, 2) * vector.z();
+		float z = matrix(2, 0) * vector.x() + matrix(2, 1) * vector.y() + matrix(2, 2) * vector.z();
+
+		return Vector(x, y, z);
 	}
 }

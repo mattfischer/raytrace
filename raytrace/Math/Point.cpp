@@ -5,21 +5,36 @@
 namespace Math {
 	Point::Point()
 	{
+		mX = mY = mZ = 0;
 	}
 
 	Point::Point(float x, float y, float z)
-	: Coordinate(x, y, z, 1)
 	{
+		mX = x;
+		mY = y;
+		mZ = z;
 	}
 
 	Point::Point(const Vector &c)
-	: Coordinate(c.x(), c.y(), c.z(), 1)
 	{
+		mX = c.x();
+		mY = c.y();
+		mZ = c.z();
 	}
 
-	Point::Point(const Coordinate &c)
-	: Coordinate(c)
+	float Point::x() const
 	{
+		return mX;
+	}
+
+	float Point::y() const
+	{
+		return mY;
+	}
+
+	float Point::z() const
+	{
+		return mZ;
 	}
 
 	Point Point::operator+(const Vector &b) const
@@ -40,5 +55,16 @@ namespace Math {
 	Point operator*(const BaseTransformation &transformation, const Point &point)
 	{
 		return Point(transformation.matrix() * point);
+	}
+
+	Point operator*(const Matrix &matrix, const Point &point)
+	{
+		if (matrix.identity()) return point;
+
+		float x = matrix(0, 0) * point.x() + matrix(1, 0) * point.y() + matrix(2, 0) * point.z() + matrix(3, 0);
+		float y = matrix(0, 1) * point.x() + matrix(1, 1) * point.y() + matrix(2, 1) * point.z() + matrix(3, 1);
+		float z = matrix(0, 2) * point.x() + matrix(1, 2) * point.y() + matrix(2, 2) * point.z() + matrix(3, 2);
+
+		return Point(x, y, z);
 	}
 }

@@ -1,19 +1,22 @@
 #ifndef MATH_VECTOR_HPP
 #define MATH_VECTOR_HPP
 
-#include "Math/Coordinate.hpp"
-
 namespace Math {
 	class Point;
 	class Normal;
 	class BaseTransformation;
-	class Vector : public Coordinate
+	class Matrix;
+	class Vector
 	{
 	public:
 		Vector();
 		Vector(float x, float y, float z);
 		explicit Vector(const Point &point);
-		explicit Vector(const Coordinate &c);
+		explicit Vector(const Normal &normal);
+
+		float x() const;
+		float y() const;
+		float z() const;
 
 		Vector normalize() const;
 		float magnitude() const;
@@ -28,9 +31,16 @@ namespace Math {
 		Vector operator%(const Vector &b) const;
 
 		static Vector fromPolar(float phi, float theta, float r);
+
+	private:
+		float mX;
+		float mY;
+		float mZ;
 	};
 
 	Vector operator*(const BaseTransformation &transformation, const Vector &vector);
+	Vector operator*(const Matrix &matrix, const Vector &vector);
+	Vector operator*(const Vector &vector, const Matrix &matrix);
 }
 
 #endif

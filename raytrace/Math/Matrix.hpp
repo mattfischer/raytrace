@@ -1,8 +1,6 @@
 #ifndef MATH_MATRIX_HPP
 #define MATH_MATRIX_HPP
 
-#include "Math/Coordinate.hpp"
-
 namespace Math {
 	class Matrix
 	{
@@ -28,9 +26,6 @@ namespace Math {
 		float mValues[16];
 		bool mIdentity;
 	};
-
-	Coordinate operator*(const Matrix &matrix, const Coordinate &coordinate);
-	Coordinate operator*(const Coordinate &coordinate, const Matrix &matrix);
 }
 
 #endif

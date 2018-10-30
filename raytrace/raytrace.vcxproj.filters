@@ -44,9 +44,6 @@
     <ClCompile Include="RenderControlDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Math\Coordinate.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Math\Matrix.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -209,9 +206,6 @@
     </BisonParser>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Math\Coordinate.hpp">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Math\Matrix.hpp">
       <Filter>Source Files\Math</Filter>
     </ClInclude>

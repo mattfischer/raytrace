@@ -9,21 +9,43 @@ namespace Math {
 
 	Normal::Normal()
 	{
+		mX = mY = mZ = 0;
 	}
 
 	Normal::Normal(float x, float y, float z)
-	: Coordinate(x, y, z, 0)
 	{
+		mX = x;
+		mY = y;
+		mZ = z;
 	}
 
-	Normal::Normal(const Coordinate &c)
-	: Coordinate(c)
+	Normal::Normal(const Vector &vector)
 	{
+		mX = vector.x();
+		mY = vector.y();
+		mZ = vector.z();
 	}
 
 	Normal::Normal(const Point &point)
-	: Coordinate(point.x(), point.y(), point.z(), 0)
 	{
+		mX = point.x();
+		mY = point.y();
+		mZ = point.z();
+	}
+
+	float Normal::x() const
+	{
+		return mX;
+	}
+
+	float Normal::y() const
+	{
+		return mY;
+	}
+
+	float Normal::z() const
+	{
+		return mZ;
 	}
 
 	float Normal::magnitude() const
@@ -87,4 +109,16 @@ namespace Math {
 	{
 		return normal * vector;
 	}
+
+	Normal operator*(const Normal &normal, const Matrix &matrix)
+	{
+		if (matrix.identity()) return normal;
+
+		float x = matrix(0, 0) * normal.x() + matrix(0, 1) * normal.y() + matrix(0, 2) * normal.z();
+		float y = matrix(1, 0) * normal.x() + matrix(1, 1) * normal.y() + matrix(1, 2) * normal.z();
+		float z = matrix(2, 0) * normal.x() + matrix(2, 1) * normal.y() + matrix(2, 2) * normal.z();
+
+		return Normal(x, y, z);
+	}
+
 }
