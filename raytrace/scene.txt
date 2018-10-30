@@ -5,7 +5,7 @@ camera {
 model {
     "teapot.bpt"
 	surface {
-		albedo { color <0,0.5,1> }
+		albedo { texture "bricks.bmp" }
 		brdf { oren_nayar 1 0.5 torrance_sparrow 0.1 0.05 10 }
 	}
 	transform {
@@ -92,7 +92,7 @@ quad {
 quad {
 	<-15,-15,10> <30,0,0> <0,30,0>
 	surface {
-		albedo { texture "bricks.bmp" }
+		albedo { color <1,1,1> }
 		brdf { oren_nayar 1 0.5 }
 	}
 }

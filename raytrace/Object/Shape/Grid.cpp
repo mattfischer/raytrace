@@ -69,8 +69,11 @@ namespace Object {
 		bool Grid::intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const
 		{
 			const Math::Point &point0 = mPoints[idx0];
+			Math::Point2D surfacePoint0 = Math::Point2D((float)(idx0 % mWidth) / mWidth, (float)(idx0 / mWidth) / mHeight);
 			const Math::Point &point1 = mPoints[idx1];
+			Math::Point2D surfacePoint1 = Math::Point2D((float)(idx1 % mWidth) / mWidth, (float)(idx1 / mWidth) / mHeight);
 			const Math::Point &point2 = mPoints[idx2];
+			Math::Point2D surfacePoint2 = Math::Point2D((float)(idx2 % mWidth) / mWidth, (float)(idx2 / mWidth) / mHeight);
 
 			Math::Vector E1 = point1 - point0;
 			Math::Vector E2 = point2 - point0;
@@ -102,7 +105,7 @@ namespace Object {
 
 			intersection.distance = distance;
 			intersection.normal = mNormals[idx0] * (1 - u - v) + mNormals[idx1] * u + mNormals[idx2] * v;
-			intersection.surfacePoint = Math::Point2D();
+			intersection.surfacePoint = surfacePoint0 * (1 - u - v) + surfacePoint1 * u + surfacePoint2 * v;
 			return true;
 		}
 

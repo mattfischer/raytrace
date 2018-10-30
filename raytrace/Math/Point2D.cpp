@@ -21,4 +21,14 @@ namespace Math {
 	{
 		return mV;
 	}
+
+	Point2D Point2D::operator*(float b) const
+	{
+		return Point2D(mU * b, mV * b);
+	}
+
+	Point2D Point2D::operator+(const Point2D &b) const
+	{
+		return Point2D(mU + b.u(), mV + b.v());
+	}
 }
