@@ -9,6 +9,7 @@ namespace Object {
 			: mPosition(position), mSide1(side1), mSide2(side2)
 		{
 			mNormal = Math::Normal(mSide1 % mSide2).normalize();
+			mTangent = Math::Bivector(mSide1.normalize(), mSide2.normalize());
 		}
 
 		bool Quad::intersect(const Math::Ray &ray, Intersection &intersection) const
@@ -22,9 +23,8 @@ namespace Object {
 				{
 					intersection.distance = distance;
 					intersection.normal = mNormal;
+					intersection.tangent = mTangent;
 					intersection.surfacePoint = Math::Point2D(u, v);
-					intersection.du = mSide1;
-					intersection.dv = mSide2;
 					return true;
 				}
 			}

@@ -100,6 +100,7 @@
     <ClCompile Include="Lighter\Transmit.cpp" />
     <ClCompile Include="LightProbeDlg.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Math\Bivector.cpp" />
     <ClCompile Include="Math\Matrix.cpp" />
     <ClCompile Include="Math\Normal.cpp" />
     <ClCompile Include="Math\OrthonormalBasis.cpp" />
@@ -108,6 +109,7 @@
     <ClCompile Include="Math\Ray.cpp" />
     <ClCompile Include="Math\Transformation.cpp" />
     <ClCompile Include="Math\Vector.cpp" />
+    <ClCompile Include="Math\Vector2D.cpp" />
     <ClCompile Include="Object\Albedo\Solid.cpp" />
     <ClCompile Include="Object\Albedo\Texture.cpp" />
     <ClCompile Include="Object\BoundingVolume.cpp" />
@@ -170,6 +172,7 @@
     <ClInclude Include="Lighter\Specular.hpp" />
     <ClInclude Include="Lighter\Transmit.hpp" />
     <ClInclude Include="LightProbeDlg.hpp" />
+    <ClInclude Include="Math\Bivector.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />
     <ClInclude Include="Math\Normal.hpp" />
     <ClInclude Include="Math\OrthonormalBasis.hpp" />
@@ -178,6 +181,7 @@
     <ClInclude Include="Math\Ray.hpp" />
     <ClInclude Include="Math\Transformation.hpp" />
     <ClInclude Include="Math\Vector.hpp" />
+    <ClInclude Include="Math\Vector2D.hpp" />
     <ClInclude Include="Object\Albedo\Base.hpp" />
     <ClInclude Include="Object\Albedo\Solid.hpp" />
     <ClInclude Include="Object\Albedo\Texture.hpp" />

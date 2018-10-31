@@ -3,6 +3,8 @@
 
 #include "Object/Shape/Base.hpp"
 
+#include "Math/Bivector.hpp"
+
 namespace Object {
 	namespace Shape {
 		class Quad : public Base, public Base::Sampler
@@ -22,6 +24,7 @@ namespace Object {
 			Math::Vector mSide1;
 			Math::Vector mSide2;
 			Math::Normal mNormal;
+			Math::Bivector mTangent;
 		};
 	}
 }

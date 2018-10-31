@@ -7,11 +7,11 @@ namespace Object {
 		mMagnitude = magnitude;
 	}
 
-	Math::Normal NormalMap::perturbNormal(const Math::Point2D &surfacePoint, const Math::Normal &normal, const Math::Vector &du, const Math::Vector &dv) const
+	Math::Normal NormalMap::perturbNormal(const Math::Point2D &surfacePoint, const Math::Normal &normal, const Math::Bivector &tangent) const
 	{
-		Object::Texture<3>::Value textureDu, textureDv;
-		mTexture->gradient(surfacePoint, textureDu, textureDv);
-		Math::Vector offset = du * textureDu.channels[0] + dv * textureDv.channels[0];
+		Math::Vector2D gradient[3];
+		mTexture->gradient(surfacePoint, gradient);
+		Math::Vector offset = tangent * gradient[0];
 		return (normal - Math::Normal(offset) * mMagnitude).normalize();
 	}
 }

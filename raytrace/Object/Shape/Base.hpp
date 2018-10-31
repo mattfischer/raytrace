@@ -4,6 +4,7 @@
 #include "Math/Ray.hpp"
 #include "Math/Normal.hpp"
 #include "Math/Point2D.hpp"
+#include "Math/Bivector.hpp"
 #include "Math/Transformation.hpp"
 
 #include "Object/BoundingVolume.hpp"
@@ -19,8 +20,7 @@ namespace Object {
 			struct Intersection {
 				float distance;
 				Math::Normal normal;
-				Math::Vector du;
-				Math::Vector dv;
+				Math::Bivector tangent;
 				Math::Point2D surfacePoint;
 			};
 

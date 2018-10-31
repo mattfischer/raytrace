@@ -3,6 +3,7 @@
 
 #include "Object/Shape/Base.hpp"
 #include "Math/Point.hpp"
+#include "Math/Bivector.hpp"
 
 #include <vector>
 #include <functional>
@@ -12,7 +13,7 @@ namespace Object {
 		class Grid : public Base
 		{
 		public:
-			Grid(int width, int height, std::vector<Math::Point> &&points, std::vector<Math::Normal> &&normals, std::vector<Math::Vector> &&du, std::vector<Math::Vector> &&dv);
+			Grid(int width, int height, std::vector<Math::Point> &&points, std::vector<Math::Normal> &&normals, std::vector<Math::Bivector> &&tangents);
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
 			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
@@ -35,8 +36,7 @@ namespace Object {
 			int mHeight;
 			std::vector<Math::Point> mPoints;
 			std::vector<Math::Normal> mNormals;
-			std::vector<Math::Vector> mDu;
-			std::vector<Math::Vector> mDv;
+			std::vector<Math::Bivector> mTangents;
 			mutable std::unique_ptr<BvhNode> mBvhRoot;
 		};
 	}

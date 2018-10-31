@@ -30,8 +30,7 @@ namespace Object {
 					Math::Point point = ray.origin() + ray.direction() * distance;
 					intersection.normal = Math::Normal(point - mPosition) / mRadius;
 					intersection.surfacePoint = Math::Point2D();
-					intersection.du = Math::Vector();
-					intersection.dv = Math::Vector();
+					intersection.tangent = Math::Bivector(Math::Vector(), Math::Vector());
 					return true;
 				}
 
@@ -43,8 +42,7 @@ namespace Object {
 					Math::Point point = ray.origin() + ray.direction() * distance;
 					intersection.normal = Math::Normal(point - mPosition) / mRadius;
 					intersection.surfacePoint = Math::Point2D();
-					intersection.du = Math::Vector();
-					intersection.dv = Math::Vector();
+					intersection.tangent = Math::Bivector(Math::Vector(), Math::Vector());
 					return true;
 				}
 			}

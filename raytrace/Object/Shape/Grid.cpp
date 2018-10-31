@@ -2,8 +2,8 @@
 
 namespace Object {
 	namespace Shape {
-		Grid::Grid(int width, int height, std::vector<Math::Point> &&points, std::vector<Math::Normal> &&normals, std::vector<Math::Vector> &&du, std::vector<Math::Vector> &&dv)
-			: mWidth(width), mHeight(height), mPoints(std::move(points)), mNormals(std::move(normals)), mDu(std::move(du)), mDv(std::move(dv))
+		Grid::Grid(int width, int height, std::vector<Math::Point> &&points, std::vector<Math::Normal> &&normals, std::vector<Math::Bivector> &&tangents)
+			: mWidth(width), mHeight(height), mPoints(std::move(points)), mNormals(std::move(normals)), mTangents(std::move(tangents))
 		{
 			std::vector<std::unique_ptr<BvhNode>> nodes;
 
@@ -106,8 +106,7 @@ namespace Object {
 			intersection.distance = distance;
 			intersection.normal = mNormals[idx0] * (1 - u - v) + mNormals[idx1] * u + mNormals[idx2] * v;
 			intersection.surfacePoint = surfacePoint0 * (1 - u - v) + surfacePoint1 * u + surfacePoint2 * v;
-			intersection.du = mDu[idx0] * (1 - u - v) + mDu[idx1] * u + mDu[idx2] * v;
-			intersection.dv = mDv[idx0] * (1 - u - v) + mDv[idx1] * u + mDv[idx2] * v;
+			intersection.tangent = mTangents[idx0] * (1 - u - v) + mTangents[idx1] * u + mTangents[idx2] * v;
 			return true;
 		}
 

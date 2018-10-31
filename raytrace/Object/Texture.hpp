@@ -3,6 +3,7 @@
 
 #include "Object/Color.hpp"
 #include "Math/Point2D.hpp"
+#include "Math/Vector2D.hpp"
 
 #include <vector>
 
@@ -33,14 +34,15 @@ namespace Object {
 			return value;
 		}
 
-		void gradient(const Math::Point2D &samplePoint, Value &du, Value &dv) const
+		void gradient(const Math::Point2D &samplePoint, Math::Vector2D gradient[NUM_CHANNELS]) const
 		{
 			int x = samplePoint.u() * mWidth;
 			int y = samplePoint.v() * mHeight;
 
 			for (int i = 0; i < NUM_CHANNELS; i++) {
-				du.channels[i] = (mValues[(y * mWidth + x + 1) * NUM_CHANNELS + i] - mValues[(y * mWidth + x) * NUM_CHANNELS + i]) * mWidth;
-				dv.channels[i] = (mValues[((y + 1) * mWidth + x) * NUM_CHANNELS + i] - mValues[(y * mWidth + x) * NUM_CHANNELS + i]) * mHeight;
+				float du = (mValues[(y * mWidth + x + 1) * NUM_CHANNELS + i] - mValues[(y * mWidth + x) * NUM_CHANNELS + i]) * mWidth;
+				float dv = (mValues[((y + 1) * mWidth + x) * NUM_CHANNELS + i] - mValues[(y * mWidth + x) * NUM_CHANNELS + i]) * mHeight;
+				gradient[i] = Math::Vector2D(du, dv);
 			}
 		}
 

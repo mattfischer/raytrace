@@ -47,7 +47,7 @@ namespace Render {
 			Object::Color albedo = primitive->surface().albedo().color(shapeIntersection.surfacePoint);
 			Math::Normal normal = shapeIntersection.normal;
 			if (primitive->surface().hasNormalMap()) {
-				normal = primitive->surface().normalMap().perturbNormal(shapeIntersection.surfacePoint, normal, shapeIntersection.du, shapeIntersection.dv);
+				normal = primitive->surface().normalMap().perturbNormal(shapeIntersection.surfacePoint, normal, shapeIntersection.tangent);
 			}
 			return Intersection(*primitive, ray, point, shapeIntersection.distance, normal, albedo);
 		}

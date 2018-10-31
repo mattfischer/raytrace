@@ -197,6 +197,12 @@
     <ClCompile Include="Render\Intersection.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Math\Vector2D.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Bivector.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -376,6 +382,12 @@
     </ClInclude>
     <ClInclude Include="Render\Intersection.hpp">
       <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Vector2D.hpp">
+      <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Bivector.hpp">
+      <Filter>Source Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
