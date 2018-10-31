@@ -126,7 +126,6 @@
     <ClCompile Include="Object\Brdf\Phong.cpp" />
     <ClCompile Include="Object\Camera.cpp" />
     <ClCompile Include="Object\Color.cpp" />
-    <ClCompile Include="Object\Intersection.cpp" />
     <ClCompile Include="Object\Light.cpp" />
     <ClCompile Include="Object\Radiance.cpp" />
     <ClCompile Include="Object\Scene.cpp">
@@ -148,6 +147,7 @@
     <ClCompile Include="RenderControlDlg.cpp" />
     <ClCompile Include="Render\Engine.cpp" />
     <ClCompile Include="Render\Framebuffer.cpp" />
+    <ClCompile Include="Render\Intersection.cpp" />
     <ClCompile Include="Render\Tracer.cpp" />
     <ClCompile Include="Scene.tab.c" />
   </ItemGroup>
@@ -192,7 +192,6 @@
     <ClInclude Include="Object\Brdf\Phong.hpp" />
     <ClInclude Include="Object\Camera.hpp" />
     <ClInclude Include="Object\Color.hpp" />
-    <ClInclude Include="Object\Intersection.hpp" />
     <ClInclude Include="Object\Light.hpp" />
     <ClInclude Include="Object\Radiance.hpp" />
     <ClInclude Include="Object\Scene.hpp" />
@@ -212,6 +211,7 @@
     <ClInclude Include="RenderControlDlg.hpp" />
     <ClInclude Include="Render\Engine.hpp" />
     <ClInclude Include="Render\Framebuffer.hpp" />
+    <ClInclude Include="Render\Intersection.hpp" />
     <ClInclude Include="Render\Tracer.hpp" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>

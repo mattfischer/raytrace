@@ -2,7 +2,7 @@
 #define RENDER_TRACER_HPP
 
 #include "Object/Scene.hpp"
-#include "Object/Intersection.hpp"
+#include "Render/Intersection.hpp"
 
 #include "Math/Ray.hpp"
 
@@ -14,7 +14,7 @@ namespace Render {
 
 		const Object::Scene &scene() const;
 
-		Object::Intersection intersect(const Math::Ray &ray);
+		Intersection intersect(const Math::Ray &ray);
 
 		Math::Ray createCameraRay(float x, float y);
 

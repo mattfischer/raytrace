@@ -236,7 +236,7 @@ namespace Render {
 		Object::Color color;
 
 		Math::Ray ray = thread.tracer().createCameraRay(x, y);
-		Object::Intersection intersection = thread.tracer().intersect(ray);
+		Render::Intersection intersection = thread.tracer().intersect(ray);
 		if (intersection.valid())
 		{
 			if (mSettings.lighting && mLighter->prerender(intersection, thread.tracer())) {
@@ -253,7 +253,7 @@ namespace Render {
 		for (int u = 0; u < mSettings.antialiasSamples; u++) {
 			for (int v = 0; v < mSettings.antialiasSamples; v++) {
 				Math::Ray ray = thread.tracer().createCameraRay(x + (float)u / mSettings.antialiasSamples, y + (float)v / mSettings.antialiasSamples);
-				Object::Intersection intersection = thread.tracer().intersect(ray);
+				Render::Intersection intersection = thread.tracer().intersect(ray);
 
 				if (intersection.valid())
 				{

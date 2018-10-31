@@ -2,6 +2,7 @@
 #define LIGHTER_BASE_HPP
 
 #include "Render/Tracer.hpp"
+#include "Render/Intersection.hpp"
 
 #include "Math/Vector.hpp"
 #include "Object/Radiance.hpp"
@@ -23,8 +24,8 @@ namespace Lighter {
 			std::vector<Entry> entries;
 		};
 
-		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const = 0;
-		virtual bool prerender(const Object::Intersection &intersection, Render::Tracer &tracer);
+		virtual Object::Radiance light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const = 0;
+		virtual bool prerender(const Render::Intersection &intersection, Render::Tracer &tracer);
 
 		void enableProbe(bool enabled);
 		const Probe &probe() const;

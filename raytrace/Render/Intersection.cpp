@@ -1,6 +1,6 @@
-#include "Object/Intersection.hpp"
+#include "Render/Intersection.hpp"
 
-namespace Object {
+namespace Render {
 	Intersection::Intersection()
 		: mPrimitive(*(Object::Primitive*)0), mRay(*(Math::Ray*)0), mDistance(FLT_MAX)
 	{

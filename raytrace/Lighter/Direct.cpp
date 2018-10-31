@@ -13,7 +13,7 @@ namespace Lighter {
 		mNumSpecularSamples = numSpecularSamples;
 	}
 
-	Object::Radiance Direct::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance Direct::light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const
 	{
 		bool hasDiffuse = intersection.primitive().surface().brdf().hasDiffuse();
 		bool hasSpecular = intersection.primitive().surface().brdf().hasSpecular();
@@ -65,7 +65,7 @@ namespace Lighter {
 				if (dot > 0) {
 					Math::Point offsetPoint = point + Math::Vector(normal) * 0.0001;
 					Math::Ray ray(offsetPoint, incidentDirection);
-					Object::Intersection intersection2 = tracer.intersect(ray);
+					Render::Intersection intersection2 = tracer.intersect(ray);
 
 					Math::Vector probeDirection = basis.worldToLocal(incidentDirection);
 					Object::Radiance probeRadiance;
@@ -102,7 +102,7 @@ namespace Lighter {
 			incidentDirection = incidentDirection / distance;
 
 			Math::Ray ray(offsetPoint, incidentDirection);
-			Object::Intersection intersection2 = tracer.intersect(ray);
+			Render::Intersection intersection2 = tracer.intersect(ray);
 
 			Math::Vector probeDirection = basis.worldToLocal(incidentDirection);
 			Object::Radiance probeRadiance;

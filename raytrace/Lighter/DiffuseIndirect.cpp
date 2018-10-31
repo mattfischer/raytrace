@@ -15,7 +15,7 @@ namespace Lighter {
 		mIrradianceCaching = irradianceCaching;
 	}
 
-	Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance DiffuseIndirect::light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const
 	{
 		if (!intersection.primitive().surface().brdf().hasDiffuse()) {
 			return Object::Radiance();
@@ -52,7 +52,7 @@ namespace Lighter {
 					Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
 					Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 					Math::Ray ray(offsetPoint, direction);
-					Object::Intersection intersection2 = tracer.intersect(ray);
+					Render::Intersection intersection2 = tracer.intersect(ray);
 
 					Math::Vector probeDirection = Math::Vector::fromPolar(phi, theta, 1);
 					Object::Radiance probeRadiance;
@@ -70,7 +70,7 @@ namespace Lighter {
 		return radiance;
 	}
 
-	bool DiffuseIndirect::prerender(const Object::Intersection &intersection, Render::Tracer &tracer)
+	bool DiffuseIndirect::prerender(const Render::Intersection &intersection, Render::Tracer &tracer)
 	{
 		if (!mIrradianceCaching) {
 			return false;
@@ -112,7 +112,7 @@ namespace Lighter {
 
 				Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
 				Math::Ray ray(offsetPoint, direction);
-				Object::Intersection intersection2 = tracer.intersect(ray);
+				Render::Intersection intersection2 = tracer.intersect(ray);
 
 				if (intersection2.valid()) {
 					mean += 1 / intersection2.distance();

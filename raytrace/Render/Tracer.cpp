@@ -22,9 +22,9 @@ namespace Render {
 		return mScene;
 	}
 
-	Object::Intersection Tracer::intersect(const Math::Ray &ray)
+	Intersection Tracer::intersect(const Math::Ray &ray)
 	{
-		Object::Intersection intersection;
+		Intersection intersection;
 		Object::Primitive *primitive = 0;
 
 		Object::Shape::Base::Intersection shapeIntersection;
@@ -49,10 +49,10 @@ namespace Render {
 			if (primitive->surface().hasNormalMap()) {
 				normal = primitive->surface().normalMap().perturbNormal(shapeIntersection.surfacePoint, normal, shapeIntersection.du, shapeIntersection.dv);
 			}
-			return Object::Intersection(*primitive, ray, point, shapeIntersection.distance, normal, albedo);
+			return Intersection(*primitive, ray, point, shapeIntersection.distance, normal, albedo);
 		}
 		else {
-			return Object::Intersection();
+			return Intersection();
 		}
 	}
 

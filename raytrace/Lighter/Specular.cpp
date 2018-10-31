@@ -15,7 +15,7 @@ namespace Lighter {
 		mNumDirectSamples = numDirectSamples;
 	}
 
-	Object::Radiance Specular::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance Specular::light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const
 	{
 		const Object::Surface &surface = intersection.primitive().surface();
 		const Math::Ray &ray = intersection.ray();
@@ -44,7 +44,7 @@ namespace Lighter {
 				float dot = incidentDirection * normal;
 				if(dot > 0) {
 					Math::Ray reflectRay(offsetPoint, incidentDirection);
-					Object::Intersection intersection2 = tracer.intersect(reflectRay);
+					Render::Intersection intersection2 = tracer.intersect(reflectRay);
 
 					if (intersection2.valid()) {
 						Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1) * dot;

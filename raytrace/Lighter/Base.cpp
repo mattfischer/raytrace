@@ -5,7 +5,7 @@ namespace Lighter {
 	{
 	}
 
-	bool Base::prerender(const Object::Intersection &intersection, Render::Tracer &tracer)
+	bool Base::prerender(const Render::Intersection &intersection, Render::Tracer &tracer)
 	{
 		return false;
 	}
