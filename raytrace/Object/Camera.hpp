@@ -2,6 +2,7 @@
 #define OBJECT_CAMERA_HPP
 
 #include "Math/Ray.hpp"
+#include "Math/Bivector.hpp"
 
 #include <memory>
 
@@ -11,7 +12,7 @@ namespace Object {
 	public:
 		Camera(const Math::Point &position, const Math::Vector &direction, const Math::Vector &vertical, float fov);
 
-		Math::Ray createRay(float x, float y) const;
+		Math::Ray createRay(float x, float y, Math::Bivector &differential) const;
 		float projectSize(float size, float distance) const;
 
 	private:

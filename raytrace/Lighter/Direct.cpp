@@ -65,7 +65,8 @@ namespace Lighter {
 				if (dot > 0) {
 					Math::Point offsetPoint = point + Math::Vector(normal) * 0.0001;
 					Math::Ray ray(offsetPoint, incidentDirection);
-					Render::Intersection intersection2 = tracer.intersect(ray);
+					Render::Beam beam(ray, Math::Bivector(), Math::Bivector());
+					Render::Intersection intersection2 = tracer.intersect(beam);
 
 					Math::Vector probeDirection = basis.worldToLocal(incidentDirection);
 					Object::Radiance probeRadiance;
@@ -102,7 +103,8 @@ namespace Lighter {
 			incidentDirection = incidentDirection / distance;
 
 			Math::Ray ray(offsetPoint, incidentDirection);
-			Render::Intersection intersection2 = tracer.intersect(ray);
+			Render::Beam beam(ray, Math::Bivector(), Math::Bivector());
+			Render::Intersection intersection2 = tracer.intersect(beam);
 
 			Math::Vector probeDirection = basis.worldToLocal(incidentDirection);
 			Object::Radiance probeRadiance;

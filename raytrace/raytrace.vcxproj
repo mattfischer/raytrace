@@ -150,6 +150,7 @@
     <ClCompile Include="Render\Engine.cpp" />
     <ClCompile Include="Render\Framebuffer.cpp" />
     <ClCompile Include="Render\Intersection.cpp" />
+    <ClCompile Include="Render\Beam.cpp" />
     <ClCompile Include="Render\Tracer.cpp" />
     <ClCompile Include="Scene.tab.c" />
   </ItemGroup>
@@ -216,6 +217,7 @@
     <ClInclude Include="Render\Engine.hpp" />
     <ClInclude Include="Render\Framebuffer.hpp" />
     <ClInclude Include="Render\Intersection.hpp" />
+    <ClInclude Include="Render\Beam.hpp" />
     <ClInclude Include="Render\Tracer.hpp" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>

@@ -15,10 +15,13 @@ namespace Object {
 		mHorizontal = horizontal * size;
 	}
 
-	Math::Ray Camera::createRay(float x, float y) const
+	Math::Ray Camera::createRay(float x, float y, Math::Bivector &differential) const
 	{
-		Math::Vector direction = (mDirection + mHorizontal * x + mVertical * y).normalize();
+		Math::Vector direction = (mDirection + mHorizontal * x + mVertical * y);
+		float length = direction.magnitude();
+		direction = direction / length;
 
+		differential = Math::Bivector(mHorizontal, mVertical) / length;
 		return Math::Ray(mPosition, direction);
 	}
 

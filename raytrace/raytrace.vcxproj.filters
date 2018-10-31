@@ -203,6 +203,9 @@
     <ClCompile Include="Math\Bivector.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Render\Beam.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -388,6 +391,9 @@
     </ClInclude>
     <ClInclude Include="Math\Bivector.hpp">
       <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Beam.hpp">
+      <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

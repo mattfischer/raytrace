@@ -22,8 +22,10 @@ namespace Render {
 		return mScene;
 	}
 
-	Intersection Tracer::intersect(const Math::Ray &ray)
+	Intersection Tracer::intersect(const Render::Beam &beam)
 	{
+		const Math::Ray &ray = beam.ray();
+
 		Intersection intersection;
 		Object::Primitive *primitive = 0;
 
@@ -49,20 +51,23 @@ namespace Render {
 			if (primitive->surface().hasNormalMap()) {
 				normal = primitive->surface().normalMap().perturbNormal(shapeIntersection.surfacePoint, normal, shapeIntersection.tangent);
 			}
-			return Intersection(*primitive, ray, point, shapeIntersection.distance, normal, albedo);
+			return Intersection(*primitive, beam, point, shapeIntersection.distance, normal, albedo);
 		}
 		else {
 			return Intersection();
 		}
 	}
 
-	Math::Ray Tracer::createCameraRay(float x, float y)
+	Beam Tracer::createCameraPixelBeam(float x, float y)
 	{
 		float cx = (2 * x - mWidth) / mWidth;
 		float cy = (2 * y - mHeight) / mWidth;
-		Math::Ray ray = mScene.camera().createRay(cx, -cy);
+		Math::Bivector dv;
+		Math::Ray ray = mScene.camera().createRay(cx, -cy, dv);
 
-		return ray;
+		float pixelSize = 2 / mWidth;
+
+		return Beam(ray, Math::Bivector(), dv * pixelSize);
 	}
 
 	float Tracer::projectedPixelSize(float distance)

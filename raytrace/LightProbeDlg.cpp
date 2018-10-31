@@ -80,9 +80,9 @@ INT_PTR CALLBACK LightProbeDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
 void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 {
 	Render::Tracer tracer(engine.scene(), engine.settings().width, engine.settings().height);
-	Math::Ray ray = tracer.createCameraRay(x, y);
+	Render::Beam beam = tracer.createCameraPixelBeam(x, y);
 
-	Render::Intersection intersection = tracer.intersect(ray);
+	Render::Intersection intersection = tracer.intersect(beam);
 	if (intersection.valid()) {
 		Lighter::DiffuseIndirect lighter(engine.settings().lighterSettings.indirectSamples, engine.settings().lighterSettings.indirectDirectSamples, false, 0);
 		//Trace::Lighter::Direct lighter(engine.settings().lighterSettings.directSamples, false, 0);

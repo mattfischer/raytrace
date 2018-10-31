@@ -44,7 +44,8 @@ namespace Lighter {
 				float dot = incidentDirection * normal;
 				if(dot > 0) {
 					Math::Ray reflectRay(offsetPoint, incidentDirection);
-					Render::Intersection intersection2 = tracer.intersect(reflectRay);
+					Render::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
+					Render::Intersection intersection2 = tracer.intersect(beam);
 
 					if (intersection2.valid()) {
 						Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1) * dot;

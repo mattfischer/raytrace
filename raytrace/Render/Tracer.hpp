@@ -3,6 +3,7 @@
 
 #include "Object/Scene.hpp"
 #include "Render/Intersection.hpp"
+#include "Render/Beam.hpp"
 
 #include "Math/Ray.hpp"
 
@@ -14,9 +15,9 @@ namespace Render {
 
 		const Object::Scene &scene() const;
 
-		Intersection intersect(const Math::Ray &ray);
+		Intersection intersect(const Render::Beam &beam);
 
-		Math::Ray createCameraRay(float x, float y);
+		Beam createCameraPixelBeam(float x, float y);
 
 		float projectedPixelSize(float distance);
 

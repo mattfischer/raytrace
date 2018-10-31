@@ -2,12 +2,12 @@
 
 namespace Render {
 	Intersection::Intersection()
-		: mPrimitive(*(Object::Primitive*)0), mRay(*(Math::Ray*)0), mDistance(FLT_MAX)
+		: mPrimitive(*(Object::Primitive*)0), mBeam(*(Render::Beam*)0), mDistance(FLT_MAX)
 	{
 	}
 
-	Intersection::Intersection(const Object::Primitive &primitive, const Math::Ray &ray, const Math::Point &point, float distance, const Math::Normal &normal, const Object::Color &albedo)
-		: mPrimitive(primitive), mRay(ray), mPoint(point), mNormal(normal), mDistance(distance), mAlbedo(albedo)
+	Intersection::Intersection(const Object::Primitive &primitive, const Render::Beam &beam, const Math::Point &point, float distance, const Math::Normal &normal, const Object::Color &albedo)
+		: mPrimitive(primitive), mBeam(beam), mPoint(point), mNormal(normal), mDistance(distance), mAlbedo(albedo)
 	{
 	};
 
@@ -33,7 +33,12 @@ namespace Render {
 
 	const Math::Ray &Intersection::ray() const
 	{
-		return mRay;
+		return mBeam.ray();
+	}
+
+	const Render::Beam &Intersection::beam() const
+	{
+		return mBeam;
 	}
 
 	float Intersection::distance() const

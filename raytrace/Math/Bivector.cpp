@@ -26,6 +26,11 @@ namespace Math {
 		return Bivector(mU + b.mU, mV + b.mV);
 	}
 
+	Bivector Bivector::operator/(float b) const
+	{
+		return Bivector(mU / b, mV / b);
+	}
+
 	Math::Vector Bivector::operator*(const Math::Vector2D &b) const
 	{
 		return mU * b.u() + mV * b.v();
