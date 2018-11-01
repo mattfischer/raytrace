@@ -7,20 +7,26 @@
 #include "Math/Bivector2D.hpp"
 
 #include <vector>
+#include <memory>
 
 namespace Object {
 	class TextureBase
 	{
 	public:
-		TextureBase(int width, int height, std::vector<float> &&values);
+		TextureBase(int width, int height, int numChannels, std::vector<float> &&values);
 
 	protected:
 		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numValues, float values[]) const;
 		void doGradient(const Math::Point2D &samplePoint, int numValues, Math::Vector2D gradient[]) const;
 
-		int mWidth;
-		int mHeight;
-		std::vector<float> mValues;
+		void generateMipMaps(int numChannels);
+
+		struct MipLevel {
+			int width;
+			int height;
+			std::vector<float> values;
+		};
+		std::vector<std::unique_ptr<MipLevel>> mMipMaps;
 	};
 
 	template <int NUM_CHANNELS>
@@ -28,7 +34,7 @@ namespace Object {
 	{
 	public:
 		Texture(int width, int height, std::vector<float> &&values)
-			: TextureBase(width, height, std::move(values))
+			: TextureBase(width, height, NUM_CHANNELS, std::move(values))
 		{
 		}
 
