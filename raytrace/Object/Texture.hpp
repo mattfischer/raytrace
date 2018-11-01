@@ -9,12 +9,26 @@
 #include <vector>
 
 namespace Object {
-	template <int NUM_CHANNELS>
-	class Texture
+	class TextureBase
 	{
 	public:
-		Texture::Texture(int width, int height, std::vector<float> &&values)
-			: mWidth(width), mHeight(height), mValues(std::move(values))
+		TextureBase(int width, int height, std::vector<float> &&values);
+
+	protected:
+		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numValues, float values[]) const;
+		void doGradient(const Math::Point2D &samplePoint, int numValues, Math::Vector2D gradient[]) const;
+
+		int mWidth;
+		int mHeight;
+		std::vector<float> mValues;
+	};
+
+	template <int NUM_CHANNELS>
+	class Texture : public TextureBase
+	{
+	public:
+		Texture(int width, int height, std::vector<float> &&values)
+			: TextureBase(width, height, std::move(values))
 		{
 		}
 
@@ -24,33 +38,16 @@ namespace Object {
 
 		Value sample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection) const
 		{
-			int x = samplePoint.u() * mWidth;
-			int y = samplePoint.v() * mHeight;
-
 			Value value;
-			for (int i = 0; i < NUM_CHANNELS; i++) {
-				value.channels[i] = mValues[(y * mWidth + x) * NUM_CHANNELS + i];
-			}
+			doSample(samplePoint, sampleProjection, NUM_CHANNELS, value.channels);
 
 			return value;
 		}
 
 		void gradient(const Math::Point2D &samplePoint, Math::Vector2D gradient[NUM_CHANNELS]) const
 		{
-			int x = samplePoint.u() * mWidth;
-			int y = samplePoint.v() * mHeight;
-
-			for (int i = 0; i < NUM_CHANNELS; i++) {
-				float du = (mValues[(y * mWidth + x + 1) * NUM_CHANNELS + i] - mValues[(y * mWidth + x) * NUM_CHANNELS + i]) * mWidth;
-				float dv = (mValues[((y + 1) * mWidth + x) * NUM_CHANNELS + i] - mValues[(y * mWidth + x) * NUM_CHANNELS + i]) * mHeight;
-				gradient[i] = Math::Vector2D(du, dv);
-			}
+			doGradient(samplePoint, NUM_CHANNELS, gradient);
 		}
-
-	protected:
-		std::vector<float> mValues;
-		int mWidth;
-		int mHeight;
 	};
 }
 #endif
