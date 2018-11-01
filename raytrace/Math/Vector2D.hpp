@@ -16,6 +16,8 @@ namespace Math {
 		Vector2D operator+(const Vector2D &b) const;
 		Vector2D operator-(const Vector2D &b) const;
 
+		float operator%(const Vector2D &b) const;
+
 	private:
 		float mU;
 		float mV;

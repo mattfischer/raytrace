@@ -41,4 +41,9 @@ namespace Math {
 	{
 		return Vector2D(mU - b.u(), mV - b.v());
 	}
+
+	float Vector2D::operator%(const Vector2D &b) const
+	{
+		return u() * b.v() - v() * b.u();
+	}
 }

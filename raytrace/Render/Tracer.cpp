@@ -71,7 +71,7 @@ namespace Render {
 		Math::Bivector dv;
 		Math::Ray ray = mScene.camera().createRay(cx, -cy, dv);
 
-		float pixelSize = 2 / mWidth;
+		float pixelSize = 2.0f / mWidth;
 
 		return Beam(ray, Math::Bivector(), dv * pixelSize);
 	}
