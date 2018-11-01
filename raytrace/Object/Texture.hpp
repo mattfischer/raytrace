@@ -4,6 +4,7 @@
 #include "Object/Color.hpp"
 #include "Math/Point2D.hpp"
 #include "Math/Vector2D.hpp"
+#include "Math/Bivector2D.hpp"
 
 #include <vector>
 
@@ -21,7 +22,7 @@ namespace Object {
 			float channels[NUM_CHANNELS];
 		};
 
-		Value sample(const Math::Point2D &samplePoint) const
+		Value sample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection) const
 		{
 			int x = samplePoint.u() * mWidth;
 			int y = samplePoint.v() * mHeight;

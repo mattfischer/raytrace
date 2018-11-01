@@ -27,8 +27,18 @@ namespace Math {
 		return Vector2D(mU * b, mV * b);
 	}
 
+	Vector2D Vector2D::operator/(float b) const
+	{
+		return Vector2D(mU / b, mV / b);
+	}
+
 	Vector2D Vector2D::operator+(const Vector2D &b) const
 	{
 		return Vector2D(mU + b.u(), mV + b.v());
+	}
+
+	Vector2D Vector2D::operator-(const Vector2D &b) const
+	{
+		return Vector2D(mU - b.u(), mV - b.v());
 	}
 }

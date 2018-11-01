@@ -14,7 +14,7 @@ namespace Object {
 		public:
 			Texture(std::unique_ptr<Object::Texture<3>> texture);
 
-			virtual Object::Color color(const Math::Point2D &surfacePoint) const;
+			virtual Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const;
 
 		protected:
 			std::unique_ptr<Object::Texture<3>> mTexture;

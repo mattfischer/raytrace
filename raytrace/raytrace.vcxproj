@@ -101,6 +101,7 @@
     <ClCompile Include="LightProbeDlg.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Math\Bivector.cpp" />
+    <ClCompile Include="Math\Bivector2D.cpp" />
     <ClCompile Include="Math\Matrix.cpp" />
     <ClCompile Include="Math\Normal.cpp" />
     <ClCompile Include="Math\OrthonormalBasis.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Lighter\Transmit.hpp" />
     <ClInclude Include="LightProbeDlg.hpp" />
     <ClInclude Include="Math\Bivector.hpp" />
+    <ClInclude Include="Math\Bivector2D.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />
     <ClInclude Include="Math\Normal.hpp" />
     <ClInclude Include="Math\OrthonormalBasis.hpp" />

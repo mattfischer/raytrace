@@ -20,4 +20,18 @@ namespace Render {
 	{
 		return mDirectionDifferential;
 	}
+
+	Math::Bivector Beam::project(float distance, const Math::Normal &normal) const
+	{
+		const Math::Bivector &dP = mOriginDifferential;
+		const Math::Bivector &dD = mDirectionDifferential;
+		const Math::Vector &D = mRay.direction();
+		const Math::Vector N(normal);
+		float t = distance;
+
+		Math::Bivector A = dP + dD * t;
+		Math::Bivector dtD = Math::Bivector(D * (A.u() * N), D * (A.v() * N)) / (N * D);
+
+		return A - dtD;
+	}
 }

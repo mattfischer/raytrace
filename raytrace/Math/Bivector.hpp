@@ -16,6 +16,7 @@ namespace Math {
 
 		Bivector operator*(float b) const;
 		Bivector operator+(const Bivector &b) const;
+		Bivector operator-(const Bivector &b) const;
 		Bivector operator/(float b) const;
 
 		Math::Vector operator*(const Math::Vector2D &b) const;

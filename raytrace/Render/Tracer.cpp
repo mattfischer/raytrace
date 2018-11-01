@@ -7,6 +7,8 @@
 #include "Object/Albedo/Base.hpp"
 #include "Object/Primitive.hpp"
 
+#include "Math/Bivector2D.hpp"
+
 #include <algorithm>
 
 namespace Render {
@@ -46,7 +48,11 @@ namespace Render {
 
 		if (shapeIntersection.distance < FLT_MAX) {
 			Math::Point point = ray.origin() + ray.direction() * shapeIntersection.distance;
-			Object::Color albedo = primitive->surface().albedo().color(shapeIntersection.surfacePoint);
+			Math::Bivector projection = beam.project(shapeIntersection.distance, shapeIntersection.normal);
+			Math::Vector2D du(projection.u() * shapeIntersection.tangent.u(), projection.u() * shapeIntersection.tangent.v());
+			Math::Vector2D dv(projection.v() * shapeIntersection.tangent.u(), projection.v() * shapeIntersection.tangent.v());
+			Math::Bivector2D surfaceProjection(du, dv);
+			Object::Color albedo = primitive->surface().albedo().color(shapeIntersection.surfacePoint, surfaceProjection);
 			Math::Normal normal = shapeIntersection.normal;
 			if (primitive->surface().hasNormalMap()) {
 				normal = primitive->surface().normalMap().perturbNormal(shapeIntersection.surfacePoint, normal, shapeIntersection.tangent);

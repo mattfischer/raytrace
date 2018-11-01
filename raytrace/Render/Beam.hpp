@@ -15,6 +15,8 @@ namespace Render {
 		const Math::Bivector &originDifferential() const;
 		const Math::Bivector &directionDifferential() const;
 
+		Math::Bivector project(float distance, const Math::Normal &normal) const;
+
 	private:
 		Math::Ray mRay;
 		Math::Bivector mOriginDifferential;
