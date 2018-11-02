@@ -25,5 +25,7 @@ namespace Math {
 		Math::Vector mU;
 		Math::Vector mV;
 	};
+
+	Bivector operator*(const BaseTransformation &transformation, const Bivector &bivector);
 }
 #endif

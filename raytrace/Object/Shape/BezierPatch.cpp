@@ -48,7 +48,7 @@ namespace Object {
 					}
 
 					points.push_back(Math::Point(p));
-					tangents.push_back(Math::Bivector(ds.normalize(), dt.normalize()));
+					tangents.push_back(Math::Bivector(ds, dt));
 					normals.push_back(Math::Normal(ds % dt).normalize());
 				}
 			}

@@ -12,6 +12,7 @@ namespace Object {
 			Math::Ray transformedRay = mTransformation.inverse() * ray;
 			if (mShape->intersect(transformedRay, intersection)) {
 				intersection.normal = (mTransformation * intersection.normal).normalize();
+				intersection.tangent = mTransformation * intersection.tangent;
 				return true;
 			}
 

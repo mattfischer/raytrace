@@ -40,4 +40,9 @@ namespace Math {
 	{
 		return mU * b.u() + mV * b.v();
 	}
+
+	Bivector operator*(const BaseTransformation &transformation, const Bivector &bivector)
+	{
+		return Bivector(transformation * bivector.u(), transformation * bivector.v());
+	}
 }

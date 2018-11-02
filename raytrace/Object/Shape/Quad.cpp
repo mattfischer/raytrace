@@ -9,7 +9,7 @@ namespace Object {
 			: mPosition(position), mSide1(side1), mSide2(side2)
 		{
 			mNormal = Math::Normal(mSide1 % mSide2).normalize();
-			mTangent = Math::Bivector(mSide1.normalize(), mSide2.normalize());
+			mTangent = Math::Bivector(mSide1, mSide2);
 		}
 
 		bool Quad::intersect(const Math::Ray &ray, Intersection &intersection) const
