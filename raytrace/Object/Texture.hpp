@@ -16,16 +16,18 @@ namespace Object {
 		TextureBase(int width, int height, int numChannels, std::vector<float> &&values);
 
 	protected:
-		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numValues, float values[]) const;
-		void doGradient(const Math::Point2D &samplePoint, int numValues, Math::Vector2D gradient[]) const;
-
-		void generateMipMaps(int numChannels);
-
 		struct MipLevel {
 			int width;
 			int height;
 			std::vector<float> values;
 		};
+
+		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numValues, float values[]) const;
+		void doGradient(const Math::Point2D &samplePoint, int numValues, Math::Vector2D gradient[]) const;
+
+		std::unique_ptr<MipLevel> createBaseLevel(int width, int height, int numChannels, std::vector<float> &&values);
+		void generateMipMaps(int numChannels);
+
 		std::vector<std::unique_ptr<MipLevel>> mMipMaps;
 	};
 
