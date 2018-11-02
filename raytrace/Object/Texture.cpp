@@ -14,7 +14,7 @@ namespace Object {
 
 	float TextureBase::selectMipLevel(const Math::Bivector2D &sampleProjection) const
 	{
-		float projectionSize = std::sqrt(std::abs(sampleProjection.u() % sampleProjection.v()));
+		float projectionSize = std::sqrt(std::min(sampleProjection.u().magnitude2(), sampleProjection.v().magnitude2()));
 
 		float level = mMipMaps.size() - 1 + std::log2f(projectionSize);
 		return std::max(0.0f, std::min(level, (float)mMipMaps.size() - 1));

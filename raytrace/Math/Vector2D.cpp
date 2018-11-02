@@ -22,6 +22,11 @@ namespace Math {
 		return mV;
 	}
 
+	float Vector2D::magnitude2() const
+	{
+		return mU * mU + mV * mV;
+	}
+
 	Vector2D Vector2D::operator*(float b) const
 	{
 		return Vector2D(mU * b, mV * b);

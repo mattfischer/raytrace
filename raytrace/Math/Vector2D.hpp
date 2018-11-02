@@ -11,6 +11,8 @@ namespace Math {
 		float u() const;
 		float v() const;
 
+		float magnitude2() const;
+
 		Vector2D operator*(float b) const;
 		Vector2D operator/(float b) const;
 		Vector2D operator+(const Vector2D &b) const;
