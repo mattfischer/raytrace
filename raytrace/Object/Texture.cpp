@@ -33,11 +33,19 @@ namespace Object {
 		int l = selectMipLevel(sampleProjection);
 		const std::unique_ptr<MipLevel> &level = mMipMaps[l];
 
-		int x = samplePoint.u() * level->width;
-		int y = samplePoint.v() * level->height;
+		float fx = samplePoint.u() * (level->width - 1);
+		float fy = samplePoint.v() * (level->height - 1);
+
+		int x = std::floor(fx);
+		int y = std::floor(fy);
+		float dx = fx - x;
+		float dy = fy - y;
 
 		for (int i = 0; i < numChannels; i++) {
-			values[i] = level->values[(y * level->width + x) * numChannels + i];
+			values[i] = (1 - dx) * (1 - dy) * level->values[(y * level->width + x) * numChannels + i] +
+				dx * (1 - dy) * level->values[(y * level->width + x + 1) * numChannels + i] +
+				(1 - dx) * dy * level->values[((y + 1) * level->width + x) * numChannels + i] +
+				dx * dy * level->values[((y + 1) * level->width + x + 1) * numChannels + i];
 		}
 	}
 
