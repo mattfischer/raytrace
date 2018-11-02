@@ -39,7 +39,7 @@ namespace Object {
 
 		std::unique_ptr<MipLevel> createBaseLevel(int width, int height, int numChannels, std::vector<float> &&values);
 		void generateMipMaps();
-		int selectMipLevel(const Math::Bivector2D &sampleProjection) const;
+		float selectMipLevel(const Math::Bivector2D &sampleProjection) const;
 
 		std::vector<std::unique_ptr<MipLevel>> mMipMaps;
 	};

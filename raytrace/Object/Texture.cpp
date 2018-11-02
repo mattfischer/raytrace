@@ -12,55 +12,72 @@ namespace Object {
 		generateMipMaps();
 	}
 
-	int TextureBase::selectMipLevel(const Math::Bivector2D &sampleProjection) const
+	float TextureBase::selectMipLevel(const Math::Bivector2D &sampleProjection) const
 	{
-		int level = 0;
 		float projectionSize = std::sqrt(std::abs(sampleProjection.u() % sampleProjection.v()));
 
-		for (int i = 0; i < mMipMaps.size(); i++) {
-			float texelSize = std::max(1.0f / mMipMaps[i]->width(), 1.0f / mMipMaps[i]->height());
-			if (texelSize >= projectionSize || i == mMipMaps.size() - 1) {
-				level = i;
-				break;
-			}
-		}
-
-		return level;
+		float level = mMipMaps.size() - 1 + std::log2f(projectionSize);
+		return std::max(0.0f, std::min(level, (float)mMipMaps.size() - 1));
 	}
 
 	void TextureBase::doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const
 	{
-		int l = selectMipLevel(sampleProjection);
-		const std::unique_ptr<MipLevel> &level = mMipMaps[l];
+		float lf = selectMipLevel(sampleProjection);
+		int l = std::floor(lf);
+		const std::unique_ptr<MipLevel> &level0 = mMipMaps[l];
+		const std::unique_ptr<MipLevel> &level1 = mMipMaps[std::min(l + 1, (int)mMipMaps.size() - 1)];
+		float dl = lf - l;
 
-		float fx = samplePoint.u() * (level->width() - 1);
-		float fy = samplePoint.v() * (level->height() - 1);
+		float fx0 = samplePoint.u() * (level0->width() - 1);
+		float fy0 = samplePoint.v() * (level0->height() - 1);
+		float fx1 = samplePoint.u() * (level1->width() - 1);
+		float fy1 = samplePoint.v() * (level1->height() - 1);
 
-		int x = std::floor(fx);
-		int y = std::floor(fy);
-		float dx = fx - x;
-		float dy = fy - y;
+		int x0 = std::floor(fx0);
+		int y0 = std::floor(fy0);
+		int x1 = std::floor(fx1);
+		int y1 = std::floor(fy1);
 
-		for (int i = 0; i < level->numChannels(); i++) {
-			values[i] = (1 - dx) * (1 - dy) * level->at(x, y, i) +
-				dx * (1 - dy) * level->at(x + 1, y, i) +
-				(1 - dx) * dy * level->at(x, y + 1, i) +
-				dx * dy * level->at(x + 1, y + 1, i);
+		float dx0 = fx0 - x0;
+		float dy0 = fy0 - y0;
+		float dx1 = fx1 - x1;
+		float dy1 = fy1 - y1;
+
+		for (int i = 0; i < level0->numChannels(); i++) {
+			float v0 = (1 - dx0) * (1 - dy0) * level0->at(x0, y0, i) +
+				dx0 * (1 - dy0) * level0->at(x0 + 1, y0, i) +
+				(1 - dx0) * dy0 * level0->at(x0, y0 + 1, i) +
+				dx0 * dy0 * level0->at(x0 + 1, y0 + 1, i);
+
+			float v1 = (1 - dx1) * (1 - dy1) * level1->at(x1, y1, i) +
+				dx1 * (1 - dy1) * level1->at(x1 + 1, y1, i) +
+				(1 - dx1) * dy1 * level1->at(x1, y1 + 1, i) +
+				dx1 * dy1 * level1->at(x1 + 1, y1 + 1, i);
+
+			values[i] = v0 * (1 - dl) + v1 * dl;
 		}
 	}
 
 	void TextureBase::doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const
 	{
-		int l = selectMipLevel(sampleProjection);
-		const std::unique_ptr<MipLevel> &level = mMipMaps[l];
+		float lf = selectMipLevel(sampleProjection);
+		int l = std::floor(lf);
+		const std::unique_ptr<MipLevel> &level0 = mMipMaps[l];
+		const std::unique_ptr<MipLevel> &level1 = mMipMaps[std::min(l + 1, (int)mMipMaps.size() - 1)];
+		float dl = lf - l;
 
-		int x = samplePoint.u() * level->width();
-		int y = samplePoint.v() * level->height();
+		int x0 = samplePoint.u() * level0->width();
+		int y0 = samplePoint.v() * level0->height();
+		int x1 = samplePoint.u() * level1->width();
+		int y1 = samplePoint.v() * level1->height();
 
-		for (int i = 0; i < level->numChannels(); i++) {
-			float du = (level->at(x + 1, y, i) - level->at(x, y, i)) * level->width();
-			float dv = (level->at(x, y + 1, i) - level->at(x, y, i)) * level->height();
-			gradient[i] = Math::Vector2D(du, dv);
+		for (int i = 0; i < level0->numChannels(); i++) {
+			float du0 = (level0->at(x0 + 1, y0, i) - level0->at(x0, y0, i)) * level0->width();
+			float dv0 = (level0->at(x0, y0 + 1, i) - level0->at(x0, y0, i)) * level0->height();
+			float du1 = (level1->at(x1 + 1, y1, i) - level1->at(x1, y1, i)) * level1->width();
+			float dv1 = (level1->at(x1, y1 + 1, i) - level1->at(x1, y1, i)) * level1->height();
+
+			gradient[i] = Math::Vector2D(du0, dv0) * (1 - dl) + Math::Vector2D(du1, dv1) * dl;
 		}
 	}
 
