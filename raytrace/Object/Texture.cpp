@@ -9,7 +9,7 @@ namespace Object {
 		std::unique_ptr<MipLevel> level = createBaseLevel(width, height, numChannels, std::move(values));
 		mMipMaps.push_back(std::move(level));
 
-		generateMipMaps(numChannels);
+		generateMipMaps();
 	}
 
 	int TextureBase::selectMipLevel(const Math::Bivector2D &sampleProjection) const
@@ -18,7 +18,7 @@ namespace Object {
 		float projectionSize = std::sqrt(std::abs(sampleProjection.u() % sampleProjection.v()));
 
 		for (int i = 0; i < mMipMaps.size(); i++) {
-			float texelSize = std::max(1.0f / mMipMaps[i]->width, 1.0f / mMipMaps[i]->height);
+			float texelSize = std::max(1.0f / mMipMaps[i]->width(), 1.0f / mMipMaps[i]->height());
 			if (texelSize >= projectionSize || i == mMipMaps.size() - 1) {
 				level = i;
 				break;
@@ -28,38 +28,38 @@ namespace Object {
 		return level;
 	}
 
-	void TextureBase::doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numChannels, float values[]) const
+	void TextureBase::doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const
 	{
 		int l = selectMipLevel(sampleProjection);
 		const std::unique_ptr<MipLevel> &level = mMipMaps[l];
 
-		float fx = samplePoint.u() * (level->width - 1);
-		float fy = samplePoint.v() * (level->height - 1);
+		float fx = samplePoint.u() * (level->width() - 1);
+		float fy = samplePoint.v() * (level->height() - 1);
 
 		int x = std::floor(fx);
 		int y = std::floor(fy);
 		float dx = fx - x;
 		float dy = fy - y;
 
-		for (int i = 0; i < numChannels; i++) {
-			values[i] = (1 - dx) * (1 - dy) * level->values[(y * level->width + x) * numChannels + i] +
-				dx * (1 - dy) * level->values[(y * level->width + x + 1) * numChannels + i] +
-				(1 - dx) * dy * level->values[((y + 1) * level->width + x) * numChannels + i] +
-				dx * dy * level->values[((y + 1) * level->width + x + 1) * numChannels + i];
+		for (int i = 0; i < level->numChannels(); i++) {
+			values[i] = (1 - dx) * (1 - dy) * level->at(x, y, i) +
+				dx * (1 - dy) * level->at(x + 1, y, i) +
+				(1 - dx) * dy * level->at(x, y + 1, i) +
+				dx * dy * level->at(x + 1, y + 1, i);
 		}
 	}
 
-	void TextureBase::doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numChannels, Math::Vector2D gradient[]) const
+	void TextureBase::doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const
 	{
 		int l = selectMipLevel(sampleProjection);
 		const std::unique_ptr<MipLevel> &level = mMipMaps[l];
 
-		int x = samplePoint.u() * level->width;
-		int y = samplePoint.v() * level->height;
+		int x = samplePoint.u() * level->width();
+		int y = samplePoint.v() * level->height();
 
-		for (int i = 0; i < numChannels; i++) {
-			float du = (level->values[(y * level->width + x + 1) * numChannels + i] - level->values[(y * level->width + x) * numChannels + i]) * level->width;
-			float dv = (level->values[((y + 1) * level->width + x) * numChannels + i] - level->values[(y * level->width + x) * numChannels + i]) * level->height;
+		for (int i = 0; i < level->numChannels(); i++) {
+			float du = (level->at(x + 1, y, i) - level->at(x, y, i)) * level->width();
+			float dv = (level->at(x, y + 1, i) - level->at(x, y, i)) * level->height();
 			gradient[i] = Math::Vector2D(du, dv);
 		}
 	}
@@ -86,15 +86,18 @@ namespace Object {
 	}
 	std::unique_ptr<TextureBase::MipLevel> TextureBase::createBaseLevel(int width, int height, int numChannels, std::vector<float> &&values)
 	{
+		std::unique_ptr<MipLevel> level = std::make_unique<MipLevel>(width, height, numChannels, std::move(values));
+
 		int widthPot = nextPowerOfTwo(width);
 		if (widthPot != width) {
-			std::vector<float> newValues(widthPot * height * numChannels);
+			std::unique_ptr<MipLevel> newLevel = std::make_unique<MipLevel>(widthPot, height, numChannels);
+
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < widthPot; x++) {
 					float sx = (float)(x * width) / widthPot;
 					const int A = 3;
 					for (int i = 0; i < numChannels; i++) {
-						newValues[(y * widthPot + x) * numChannels + i] = 0;
+						newLevel->at(x, y, i) = 0;
 					}
 
 					for (int xx = std::ceil(sx) - A; xx <= std::floor(sx) + A; xx++) {
@@ -106,28 +109,25 @@ namespace Object {
 							f = A * std::sin(M_PI * u) * std::sin(M_PI * u / A) / (M_PI * M_PI * u * u);
 						}
 						for (int i = 0; i < numChannels; i++) {
-							float c = 0;
-							if (xx >= 0 && xx < width) {
-								c = values[(y * width + xx) * numChannels + i];
-							}
-							newValues[(y * widthPot + x) * numChannels + i] += c * f;
+							float c = (xx >= 0 && xx < width) ? level->at(xx, y, i) : 0;
+							newLevel->at(x, y, i) += c * f;
 						}
 					}
 				}
 			}
-			values = std::move(newValues);
-			width = widthPot;
+			level = std::move(newLevel);
 		}
 
 		int heightPot = nextPowerOfTwo(height);
 		if (heightPot != height) {
-			std::vector<float> newValues(width * heightPot * numChannels);
+			std::unique_ptr<MipLevel> newLevel = std::make_unique<MipLevel>(width, heightPot, numChannels);
+
 			for (int y = 0; y < heightPot; y++) {
 				for (int x = 0; x < width; x++) {
 					float sy = (float)(y * height) / heightPot;
 					const int A = 3;
 					for (int i = 0; i < numChannels; i++) {
-						newValues[(y * width + x) * numChannels + i] = 0;
+						newLevel->at(x, y, i) = 0;
 					}
 
 					for (int yy = std::ceil(sy) - A; yy <= std::floor(sy) + A; yy++) {
@@ -140,35 +140,28 @@ namespace Object {
 							f = A * std::sin(M_PI * u) * std::sin(M_PI * u / A) / (M_PI * M_PI * u * u);
 						}
 						for (int i = 0; i < numChannels; i++) {
-							float c = 0;
-							if (yy >= 0 && yy < height) {
-								c = values[(yy * width + x) * numChannels + i];
-							}
-							newValues[(y * width + x) * numChannels + i] += c * f;
+							float c = (yy >= 0 && yy < height) ? level->at(x, yy, i) : 0;
+							newLevel->at(x, y, i) += c * f;
 						}
 					}
 				}
 			}
-			values = std::move(newValues);
-			height = heightPot;
+			level = std::move(newLevel);
 		}
-
-		std::unique_ptr<MipLevel> level = std::make_unique<MipLevel>();
-		level->width = width;
-		level->height = height;
-		level->values = std::move(values);
 
 		return level;
 	}
 
-	void TextureBase::generateMipMaps(int numChannels)
+	void TextureBase::generateMipMaps()
 	{
-		while (mMipMaps[mMipMaps.size() - 1]->width > 1 || mMipMaps[mMipMaps.size() - 1]->height > 1) {
+		int numChannels = mMipMaps[0]->numChannels();
+
+		while (mMipMaps[mMipMaps.size() - 1]->width() > 1 || mMipMaps[mMipMaps.size() - 1]->height() > 1) {
 			MipLevel &lastLevel = *mMipMaps[mMipMaps.size() - 1];
 
-			int width = std::max(1, lastLevel.width / 2);
-			int height = std::max(1, lastLevel.height / 2);
-			std::vector<float> values(width * height * numChannels);
+			int width = std::max(1, lastLevel.width() / 2);
+			int height = std::max(1, lastLevel.height() / 2);
+			std::unique_ptr<MipLevel> level = std::make_unique<MipLevel>(width, height, numChannels);
 
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
@@ -178,22 +171,43 @@ namespace Object {
 					int y1 = y0 + 1;
 
 					for (int i = 0; i < numChannels; i++) {
-						float s =
-							lastLevel.values[(y0 * lastLevel.width + x0) * numChannels + i] +
-							lastLevel.values[(y0 * lastLevel.width + x1) * numChannels + i] +
-							lastLevel.values[(y1 * lastLevel.width + x0) * numChannels + i] +
-							lastLevel.values[(y1 * lastLevel.width + x1) * numChannels + i];
-						values[(y * width + x) * numChannels + i] = s / 4.0f;
+						float s = lastLevel.at(x0, y0, i) + lastLevel.at(x1, y0, i) + lastLevel.at(x0, y1, i) + lastLevel.at(x1, y1, i);
+						level->at(x, y, i) = s / 4.0f;
 					}
 				}
 			}
 
-			std::unique_ptr<MipLevel> level = std::make_unique<MipLevel>();
-			level->width = width;
-			level->height = height;
-			level->values = std::move(values);
-
 			mMipMaps.push_back(std::move(level));
 		}
+	}
+
+	TextureBase::MipLevel::MipLevel(int width, int height, int numChannels)
+		: mWidth(width), mHeight(height), mNumChannels(numChannels), mValues(width * height * numChannels)
+	{
+	}
+
+	TextureBase::MipLevel::MipLevel(int width, int height, int numChannels, std::vector<float> &&values)
+		: mWidth(width), mHeight(height), mNumChannels(numChannels), mValues(std::move(values))
+	{
+	}
+
+	int TextureBase::MipLevel::width() const
+	{
+		return mWidth;
+	}
+
+	int TextureBase::MipLevel::height() const
+	{
+		return mHeight;
+	}
+
+	int TextureBase::MipLevel::numChannels() const
+	{
+		return mNumChannels;
+	}
+
+	float &TextureBase::MipLevel::at(int x, int y, int channel)
+	{
+		return mValues[(y * mWidth + x) * mNumChannels + channel];
 	}
 }

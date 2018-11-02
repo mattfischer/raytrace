@@ -16,17 +16,29 @@ namespace Object {
 		TextureBase(int width, int height, int numChannels, std::vector<float> &&values);
 
 	protected:
-		struct MipLevel {
-			int width;
-			int height;
-			std::vector<float> values;
+		class MipLevel {
+		public:
+			MipLevel(int width, int height, int numChannels);
+			MipLevel(int width, int height, int numChannels, std::vector<float> &&values);
+
+			int width() const;
+			int height() const;
+			int numChannels() const;
+
+			float &at(int x, int y, int channel);
+
+		public:
+			int mWidth;
+			int mHeight;
+			int mNumChannels;
+			std::vector<float> mValues;
 		};
 
-		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numValues, float values[]) const;
-		void doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numValues, Math::Vector2D gradient[]) const;
+		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const;
+		void doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const;
 
 		std::unique_ptr<MipLevel> createBaseLevel(int width, int height, int numChannels, std::vector<float> &&values);
-		void generateMipMaps(int numChannels);
+		void generateMipMaps();
 		int selectMipLevel(const Math::Bivector2D &sampleProjection) const;
 
 		std::vector<std::unique_ptr<MipLevel>> mMipMaps;
@@ -48,14 +60,14 @@ namespace Object {
 		Value sample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection) const
 		{
 			Value value;
-			doSample(samplePoint, sampleProjection, NUM_CHANNELS, value.channels);
+			doSample(samplePoint, sampleProjection, value.channels);
 
 			return value;
 		}
 
 		void gradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[NUM_CHANNELS]) const
 		{
-			doGradient(samplePoint, sampleProjection, NUM_CHANNELS, gradient);
+			doGradient(samplePoint, sampleProjection, gradient);
 		}
 	};
 }
