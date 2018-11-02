@@ -12,33 +12,46 @@ namespace Object {
 		generateMipMaps(numChannels);
 	}
 
-	void TextureBase::doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numChannels, float values[]) const
+	int TextureBase::selectMipLevel(const Math::Bivector2D &sampleProjection) const
 	{
+		int level = 0;
 		float projectionSize = std::sqrt(std::abs(sampleProjection.u() % sampleProjection.v()));
 
-		for(int i=0; i < mMipMaps.size(); i++) {
-			const std::unique_ptr<MipLevel> &level = mMipMaps[i];
-			float texelSize = std::max(1.0f / level->width, 1.0f / level->height);
+		for (int i = 0; i < mMipMaps.size(); i++) {
+			float texelSize = std::max(1.0f / mMipMaps[i]->width, 1.0f / mMipMaps[i]->height);
 			if (texelSize >= projectionSize || i == mMipMaps.size() - 1) {
-				int x = samplePoint.u() * level->width;
-				int y = samplePoint.v() * level->height;
-
-				for (int i = 0; i < numChannels; i++) {
-					values[i] = level->values[(y * level->width + x) * numChannels + i];
-				}
+				level = i;
 				break;
 			}
 		}
+
+		return level;
 	}
 
-	void TextureBase::doGradient(const Math::Point2D &samplePoint, int numChannels, Math::Vector2D gradient[]) const
+	void TextureBase::doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numChannels, float values[]) const
 	{
-		int x = samplePoint.u() * mMipMaps[0]->width;
-		int y = samplePoint.v() * mMipMaps[0]->height;
+		int l = selectMipLevel(sampleProjection);
+		const std::unique_ptr<MipLevel> &level = mMipMaps[l];
+
+		int x = samplePoint.u() * level->width;
+		int y = samplePoint.v() * level->height;
 
 		for (int i = 0; i < numChannels; i++) {
-			float du = (mMipMaps[0]->values[(y * mMipMaps[0]->width + x + 1) * numChannels + i] - mMipMaps[0]->values[(y * mMipMaps[0]->width + x) * numChannels + i]) * mMipMaps[0]->width;
-			float dv = (mMipMaps[0]->values[((y + 1) * mMipMaps[0]->width + x) * numChannels + i] - mMipMaps[0]->values[(y * mMipMaps[0]->width + x) * numChannels + i]) * mMipMaps[0]->height;
+			values[i] = level->values[(y * level->width + x) * numChannels + i];
+		}
+	}
+
+	void TextureBase::doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, int numChannels, Math::Vector2D gradient[]) const
+	{
+		int l = selectMipLevel(sampleProjection);
+		const std::unique_ptr<MipLevel> &level = mMipMaps[l];
+
+		int x = samplePoint.u() * level->width;
+		int y = samplePoint.v() * level->height;
+
+		for (int i = 0; i < numChannels; i++) {
+			float du = (level->values[(y * level->width + x + 1) * numChannels + i] - level->values[(y * level->width + x) * numChannels + i]) * level->width;
+			float dv = (level->values[((y + 1) * level->width + x) * numChannels + i] - level->values[(y * level->width + x) * numChannels + i]) * level->height;
 			gradient[i] = Math::Vector2D(du, dv);
 		}
 	}

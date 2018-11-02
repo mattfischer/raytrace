@@ -16,7 +16,7 @@ namespace Object {
 	public:
 		NormalMap(std::unique_ptr<Object::Texture<3>> texture, float magnitude);
 
-		Math::Normal perturbNormal(const Math::Point2D &surfacePoint, const Math::Normal &normal, const Math::Bivector &tangent) const;
+		Math::Normal perturbNormal(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection, const Math::Normal &normal, const Math::Bivector &tangent) const;
 
 	private:
 		std::unique_ptr<Object::Texture<3>> mTexture;
