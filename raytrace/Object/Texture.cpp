@@ -20,6 +20,26 @@ namespace Object {
 		return std::max(0.0f, std::min(level, (float)mMipMaps.size() - 1));
 	}
 
+	void TextureBase::bilinearSample(const Math::Point2D &samplePoint, const MipLevel &level, float weight, float values[]) const
+	{
+		float fx = samplePoint.u() * level.width();
+		float fy = samplePoint.v() * level.height();
+		int x = std::floor(fx);
+		int y = std::floor(fy);
+		int x1 = (x == level.width() - 1) ? 0 : x + 1;
+		int y1 = (y == level.height() - 1) ? 0 : y + 1;
+		float dx = fx - x;
+		float dy = fy - y;
+
+		for (int i = 0; i < level.numChannels(); i++) {
+			float v = (1 - dx) * (1 - dy) * level.at(x, y, i) +
+				dx * (1 - dy) * level.at(x1, y, i) +
+				(1 - dx) * dy * level.at(x, y1, i) +
+				dx * dy * level.at(x1, y1, i);
+			values[i] += weight * v;
+		}
+	}
+
 	void TextureBase::doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const
 	{
 		float lf = selectMipLevel(sampleProjection);
@@ -28,34 +48,12 @@ namespace Object {
 		const std::unique_ptr<MipLevel> &level1 = mMipMaps[std::min(l + 1, (int)mMipMaps.size() - 1)];
 		float dl = lf - l;
 
-		float fx0 = samplePoint.u() * (level0->width() - 1);
-		float fy0 = samplePoint.v() * (level0->height() - 1);
-		float fx1 = samplePoint.u() * (level1->width() - 1);
-		float fy1 = samplePoint.v() * (level1->height() - 1);
-
-		int x0 = std::floor(fx0);
-		int y0 = std::floor(fy0);
-		int x1 = std::floor(fx1);
-		int y1 = std::floor(fy1);
-
-		float dx0 = fx0 - x0;
-		float dy0 = fy0 - y0;
-		float dx1 = fx1 - x1;
-		float dy1 = fy1 - y1;
-
 		for (int i = 0; i < level0->numChannels(); i++) {
-			float v0 = (1 - dx0) * (1 - dy0) * level0->at(x0, y0, i) +
-				dx0 * (1 - dy0) * level0->at(x0 + 1, y0, i) +
-				(1 - dx0) * dy0 * level0->at(x0, y0 + 1, i) +
-				dx0 * dy0 * level0->at(x0 + 1, y0 + 1, i);
-
-			float v1 = (1 - dx1) * (1 - dy1) * level1->at(x1, y1, i) +
-				dx1 * (1 - dy1) * level1->at(x1 + 1, y1, i) +
-				(1 - dx1) * dy1 * level1->at(x1, y1 + 1, i) +
-				dx1 * dy1 * level1->at(x1 + 1, y1 + 1, i);
-
-			values[i] = v0 * (1 - dl) + v1 * dl;
+			values[i] = 0;
 		}
+
+		bilinearSample(samplePoint, *level0, 1 - dl, values);
+		bilinearSample(samplePoint, *level1, dl, values);
 	}
 
 	void TextureBase::doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const
@@ -224,6 +222,11 @@ namespace Object {
 	}
 
 	float &TextureBase::MipLevel::at(int x, int y, int channel)
+	{
+		return mValues[(y * mWidth + x) * mNumChannels + channel];
+	}
+
+	float TextureBase::MipLevel::at(int x, int y, int channel) const
 	{
 		return mValues[(y * mWidth + x) * mNumChannels + channel];
 	}

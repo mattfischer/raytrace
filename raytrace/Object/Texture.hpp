@@ -26,6 +26,7 @@ namespace Object {
 			int numChannels() const;
 
 			float &at(int x, int y, int channel);
+			float at(int x, int y, int channel) const;
 
 		public:
 			int mWidth;
@@ -40,6 +41,7 @@ namespace Object {
 		std::unique_ptr<MipLevel> createBaseLevel(int width, int height, int numChannels, std::vector<float> &&values);
 		void generateMipMaps();
 		float selectMipLevel(const Math::Bivector2D &sampleProjection) const;
+		void bilinearSample(const Math::Point2D &samplePoint, const MipLevel &level, float weight, float values[]) const;
 
 		std::vector<std::unique_ptr<MipLevel>> mMipMaps;
 	};
