@@ -13,7 +13,13 @@ namespace Object {
 		class Grid : public Base
 		{
 		public:
-			Grid(int width, int height, std::vector<Math::Point> &&points, std::vector<Math::Normal> &&normals, std::vector<Math::Bivector> &&tangents);
+			struct Vertex {
+				Math::Point point;
+				Math::Normal normal;
+				Math::Bivector tangent;
+			};
+
+			Grid(int width, int height, std::vector<Vertex> &&vertices);
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
 			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
@@ -34,9 +40,7 @@ namespace Object {
 
 			int mWidth;
 			int mHeight;
-			std::vector<Math::Point> mPoints;
-			std::vector<Math::Normal> mNormals;
-			std::vector<Math::Bivector> mTangents;
+			std::vector<Vertex> mVertices;
 			mutable std::unique_ptr<BvhNode> mBvhRoot;
 		};
 	}

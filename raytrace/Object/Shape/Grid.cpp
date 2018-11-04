@@ -2,8 +2,8 @@
 
 namespace Object {
 	namespace Shape {
-		Grid::Grid(int width, int height, std::vector<Math::Point> &&points, std::vector<Math::Normal> &&normals, std::vector<Math::Bivector> &&tangents)
-			: mWidth(width), mHeight(height), mPoints(std::move(points)), mNormals(std::move(normals)), mTangents(std::move(tangents))
+		Grid::Grid(int width, int height, std::vector<Vertex> &&vertices)
+			: mWidth(width), mHeight(height), mVertices(std::move(vertices))
 		{
 			std::vector<std::unique_ptr<BvhNode>> nodes;
 
@@ -19,7 +19,7 @@ namespace Object {
 
 					for (int i = 0; i < node->du + 1; i++) {
 						for (int j = 0; j < node->dv + 1; j++) {
-							node->volume.expand(mPoints[(v + j) * mWidth + u + i]);
+							node->volume.expand(mVertices[(v + j) * mWidth + u + i].point);
 						}
 					}
 
@@ -68,15 +68,15 @@ namespace Object {
 
 		bool Grid::intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const
 		{
-			const Math::Point &point0 = mPoints[idx0];
+			const Vertex &vertex0 = mVertices[idx0];
 			Math::Point2D surfacePoint0 = Math::Point2D((float)(idx0 % mWidth) / mWidth, (float)(idx0 / mWidth) / mHeight);
-			const Math::Point &point1 = mPoints[idx1];
+			const Vertex &vertex1 = mVertices[idx1];
 			Math::Point2D surfacePoint1 = Math::Point2D((float)(idx1 % mWidth) / mWidth, (float)(idx1 / mWidth) / mHeight);
-			const Math::Point &point2 = mPoints[idx2];
+			const Vertex &vertex2 = mVertices[idx2];
 			Math::Point2D surfacePoint2 = Math::Point2D((float)(idx2 % mWidth) / mWidth, (float)(idx2 / mWidth) / mHeight);
 
-			Math::Vector E1 = point1 - point0;
-			Math::Vector E2 = point2 - point0;
+			Math::Vector E1 = vertex1.point - vertex0.point;
+			Math::Vector E2 = vertex2.point - vertex0.point;
 			Math::Vector P = ray.direction() % E2;
 
 			float den = P * E1;
@@ -86,7 +86,7 @@ namespace Object {
 
 			float iden = 1.0f / den;
 
-			Math::Vector T = ray.origin() - point0;
+			Math::Vector T = ray.origin() - vertex0.point;
 			float u = (P * T) * iden;
 			if (u < 0 || u > 1) {
 				return false;
@@ -104,9 +104,9 @@ namespace Object {
 			}
 
 			intersection.distance = distance;
-			intersection.normal = mNormals[idx0] * (1 - u - v) + mNormals[idx1] * u + mNormals[idx2] * v;
+			intersection.normal = vertex0.normal * (1 - u - v) + vertex1.normal * u + vertex2.normal * v;
 			intersection.surfacePoint = surfacePoint0 * (1 - u - v) + surfacePoint1 * u + surfacePoint2 * v;
-			intersection.tangent = mTangents[idx0] * (1 - u - v) + mTangents[idx1] * u + mTangents[idx2] * v;
+			intersection.tangent = vertex0.tangent * (1 - u - v) + vertex1.tangent * u + vertex2.tangent * v;
 			return true;
 		}
 
@@ -135,8 +135,8 @@ namespace Object {
 		BoundingVolume Grid::boundingVolume(const Math::Transformation &transformation) const
 		{
 			BoundingVolume volume;
-			for (const Math::Point &point : mPoints) {
-				volume.expand(transformation * point);
+			for (const Vertex &vertex : mVertices) {
+				volume.expand(transformation * vertex.point);
 			}
 
 			return volume;

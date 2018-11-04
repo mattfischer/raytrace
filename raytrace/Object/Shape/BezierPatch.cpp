@@ -4,9 +4,7 @@ namespace Object {
 	namespace Shape {
 		BezierPatch::BezierPatch(int width, int height, std::vector<Math::Point> &&controlPoints)
 		{
-			std::vector<Math::Point> points;
-			std::vector<Math::Normal> normals;
-			std::vector<Math::Bivector> tangents;
+			std::vector<Grid::Vertex> vertices;
 
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {
@@ -47,13 +45,16 @@ namespace Object {
 						dt = dt1;
 					}
 
-					points.push_back(Math::Point(p));
-					tangents.push_back(Math::Bivector(ds, dt));
-					normals.push_back(Math::Normal(ds % dt).normalize());
+					Grid::Vertex vertex;
+					vertex.point = Math::Point(p);
+					vertex.tangent = Math::Bivector(ds, dt);
+					vertex.normal = Math::Normal(ds % dt).normalize();
+
+					vertices.push_back(vertex);
 				}
 			}
 
-			mGrid = std::make_unique<Grid>(width, height, std::move(points), std::move(normals), std::move(tangents));
+			mGrid = std::make_unique<Grid>(width, height, std::move(vertices));
 		}
 
 		bool BezierPatch::intersect(const Math::Ray &ray, Intersection &intersection) const
