@@ -49,8 +49,10 @@ namespace Render {
 		if (shapeIntersection.distance < FLT_MAX) {
 			Math::Point point = ray.origin() + ray.direction() * shapeIntersection.distance;
 			Math::Bivector projection = beam.project(shapeIntersection.distance, shapeIntersection.normal);
-			Math::Vector2D du(projection.u() * shapeIntersection.tangent.u() / shapeIntersection.tangent.u().magnitude2(), projection.u() * shapeIntersection.tangent.v() / shapeIntersection.tangent.v().magnitude2());
-			Math::Vector2D dv(projection.v() * shapeIntersection.tangent.u() / shapeIntersection.tangent.u().magnitude2(), projection.v() * shapeIntersection.tangent.v() / shapeIntersection.tangent.v().magnitude2());
+			Math::Vector v = shapeIntersection.tangent.u() % shapeIntersection.tangent.v();
+			v = v / v.magnitude2();
+			Math::Vector2D du((projection.u() % shapeIntersection.tangent.v()) * v, (shapeIntersection.tangent.u() % projection.u()) * v);
+			Math::Vector2D dv((projection.v() % shapeIntersection.tangent.v()) * v, (shapeIntersection.tangent.u() % projection.v()) * v);
 			Math::Bivector2D surfaceProjection(du, dv);
 			Object::Color albedo = primitive->surface().albedo().color(shapeIntersection.surfacePoint, surfaceProjection);
 			Math::Normal normal = shapeIntersection.normal;
