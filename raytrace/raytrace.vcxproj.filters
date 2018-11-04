@@ -212,6 +212,9 @@
     <ClCompile Include="Object\Texture.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Object\BoundingVolumeHierarchy.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -403,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="Math\Bivector2D.hpp">
       <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\BoundingVolumeHierarchy.hpp">
+      <Filter>Source Files\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

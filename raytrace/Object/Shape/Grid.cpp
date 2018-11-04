@@ -3,9 +3,13 @@
 namespace Object {
 	namespace Shape {
 		Grid::Grid(int width, int height, std::vector<Vertex> &&vertices)
-			: mWidth(width), mHeight(height), mVertices(std::move(vertices))
+			: mWidth(width), mHeight(height), mVertices(std::move(vertices)), mBoundingVolumeHierarchy(computeBoundingVolumeHierarchy())
 		{
-			std::vector<std::unique_ptr<BvhNode>> nodes;
+		}
+
+		std::unique_ptr<BoundingVolumeHierarchy::Node> Grid::computeBoundingVolumeHierarchy() const
+		{
+			std::vector<std::unique_ptr<BoundingVolumeHierarchy::Node>> nodes;
 
 			const int GROUP = 1;
 			for (int v = 0; v < mHeight - 1; v += GROUP) {
@@ -31,30 +35,43 @@ namespace Object {
 			int currentHeight = (mHeight - 1 + GROUP - 1) / GROUP;
 
 			while (currentWidth > 1 || currentHeight > 1) {
-				std::vector<std::unique_ptr<BvhNode>> newNodes;
+				std::vector<std::unique_ptr<BoundingVolumeHierarchy::Node>> newNodes;
 				for (int v = currentHeight - 2; v >= -1; v -= 2) {
 					for (int u = currentWidth - 2; u >= -1; u -= 2) {
-						std::unique_ptr<BvhNode> newNode;
-						if (u == -1 && v == -1) {
-							newNode = std::move(nodes[0]);
+						std::unique_ptr<BoundingVolumeHierarchy::Node> newNodeU;
+						if (u != -1) {
+							newNodeU = std::make_unique<BoundingVolumeHierarchy::Node>();
 						}
-						else {
-							newNode = std::make_unique<BvhNode>();
-							newNode->u = newNode->v = -1;
-							for (int i = 0; i < 2; i++) {
+
+						for (int i = 0; i < 2; i++) {
+							int uu = u + i;
+							if (uu == -1) {
+								continue;
+							}
+
+							std::unique_ptr<BoundingVolumeHierarchy::Node> newNodeV;
+							if (v == -1) {
+								newNodeV = std::move(nodes[0 * currentWidth + uu]);
+							}
+							else {
+								newNodeV = std::make_unique<BoundingVolumeHierarchy::Node>();
 								for (int j = 0; j < 2; j++) {
-									int uu = u + i;
 									int vv = v + j;
-									if (uu == -1 || vv == -1) {
-										continue;
-									}
-									std::unique_ptr<BvhNode> node = std::move(nodes[vv * currentWidth + uu]);
-									newNode->volume.expand(node->volume);
-									newNode->children.push_back(std::move(node));
+									std::unique_ptr<BoundingVolumeHierarchy::Node> node = std::move(nodes[vv * currentWidth + uu]);
+									newNodeV->volume.expand(node->volume);
+									newNodeV->children[j] = std::move(node);
 								}
 							}
+
+							if (u == -1) {
+								newNodeU = std::move(newNodeV);
+							}
+							else {
+								newNodeU->volume.expand(newNodeV->volume);
+								newNodeU->children[i] = std::move(newNodeV);
+							}
 						}
-						newNodes.push_back(std::move(newNode));
+						newNodes.push_back(std::move(newNodeU));
 					}
 				}
 
@@ -63,7 +80,7 @@ namespace Object {
 				currentHeight = (currentHeight + 1) / 2;
 			}
 
-			mBvhRoot = std::move(nodes[0]);
+			return std::move(nodes[0]);
 		}
 
 		bool Grid::intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const
@@ -114,22 +131,27 @@ namespace Object {
 		{
 			BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
 
-			auto callback = [&](int u, int v, Shape::Base::Intersection &intersection) {
-				int idx0 = v * mWidth + u;
-				int idx1 = v * mWidth + u + 1;
-				int idx2 = (v + 1) * mWidth + u;
-				int idx3 = (v + 1) * mWidth + u + 1;
+			auto callback = [&](const BoundingVolumeHierarchy::Node &node, float &maxDistance) {
+				const BvhNode &bvhNode = static_cast<const BvhNode&>(node);
+				for (int u = bvhNode.u; u < bvhNode.u + bvhNode.du; u++) {
+					for (int v = bvhNode.v; v < bvhNode.v + bvhNode.dv; v++) {
+						int idx0 = v * mWidth + u;
+						int idx1 = v * mWidth + u + 1;
+						int idx2 = (v + 1) * mWidth + u;
+						int idx3 = (v + 1) * mWidth + u + 1;
 
-				if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
-					return true;
-				}
-				else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
-					return true;
+						if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
+							return true;
+						}
+						else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
+							return true;
+						}
+					}
 				}
 				return false;
 			};
 
-			return intersectBvhNode(rayData, *mBvhRoot, intersection, std::ref(callback));
+			return mBoundingVolumeHierarchy.intersect(rayData, intersection.distance, std::ref(callback));
 		}
 
 		BoundingVolume Grid::boundingVolume(const Math::Transformation &transformation) const
@@ -140,44 +162,6 @@ namespace Object {
 			}
 
 			return volume;
-		}
-
-		bool Grid::intersectBvhNode(const BoundingVolume::RayData &rayData, const BvhNode &node, Intersection &intersection, const std::function<bool(int, int, Shape::Base::Intersection &)> &func) const
-		{
-			bool ret = false;
-			if (node.u != -1 && node.v != -1) {
-				for (int u = node.u; u < node.u + node.du; u++) {
-					for (int v = node.v; v < node.v + node.dv; v++) {
-						if (func(u, v, intersection)) {
-							ret = true;
-						}
-					}
-				}
-			}
-			else {
-				float distances[4];
-				int indices[4];
-				int numIndices = 0;
-				for (int i = 0; i < node.children.size(); i++) {
-					if (node.children[i]->volume.intersectRay(rayData, distances[i]) && distances[i] < intersection.distance) {
-						indices[numIndices] = i;
-						numIndices++;
-						for (int j = 0; j < numIndices - 1; j++) {
-							if(distances[indices[numIndices - 1]] < distances[indices[j]]) {
-								std::swap(indices[numIndices - 1], indices[j]);
-							}
-						}
-					}
-				}
-
-				for (int i = 0; i < numIndices; i++) {
-					if (distances[indices[i]] < intersection.distance && intersectBvhNode(rayData, *node.children[indices[i]], intersection, func)) {
-						ret = true;
-					}
-				}
-			}
-
-			return ret;
 		}
 	}
 }

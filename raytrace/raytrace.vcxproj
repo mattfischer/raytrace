@@ -114,6 +114,7 @@
     <ClCompile Include="Object\Albedo\Solid.cpp" />
     <ClCompile Include="Object\Albedo\Texture.cpp" />
     <ClCompile Include="Object\BoundingVolume.cpp" />
+    <ClCompile Include="Object\BoundingVolumeHierarchy.cpp" />
     <ClCompile Include="Object\Brdf\OrenNayar.cpp" />
     <ClCompile Include="Object\Brdf\TorranceSparrow.cpp" />
     <ClCompile Include="Object\NormalMap.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="Object\Albedo\Solid.hpp" />
     <ClInclude Include="Object\Albedo\Texture.hpp" />
     <ClInclude Include="Object\BoundingVolume.hpp" />
+    <ClInclude Include="Object\BoundingVolumeHierarchy.hpp" />
     <ClInclude Include="Object\Brdf\OrenNayar.hpp" />
     <ClInclude Include="Object\Brdf\TorranceSparrow.hpp" />
     <ClInclude Include="Object\NormalMap.hpp" />

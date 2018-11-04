@@ -2,6 +2,8 @@
 #define OBJECT_SHAPE_GRID_HPP
 
 #include "Object/Shape/Base.hpp"
+#include "Object/BoundingVolumeHierarchy.hpp"
+
 #include "Math/Point.hpp"
 #include "Math/Bivector.hpp"
 
@@ -25,23 +27,20 @@ namespace Object {
 			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 
 		private:
-			struct BvhNode {
+			struct BvhNode : BoundingVolumeHierarchy::Node {
 				int u;
 				int v;
 				int du;
 				int dv;
-				BoundingVolume volume;
-
-				std::vector<std::unique_ptr<BvhNode>> children;
 			};
 
 			bool intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const;
-			bool intersectBvhNode(const BoundingVolume::RayData &raydata, const BvhNode &node, Intersection &intersection, const std::function<bool(int, int, Shape::Base::Intersection &intersection)> &func) const;
+			std::unique_ptr<BoundingVolumeHierarchy::Node> computeBoundingVolumeHierarchy() const;
 
 			int mWidth;
 			int mHeight;
 			std::vector<Vertex> mVertices;
-			mutable std::unique_ptr<BvhNode> mBvhRoot;
+			Object::BoundingVolumeHierarchy mBoundingVolumeHierarchy;
 		};
 	}
 }
