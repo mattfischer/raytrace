@@ -21,22 +21,14 @@ namespace Object {
 		}
 		else {
 			float distances[2];
-			int indices[2];
-			int numIndices = 0;
 			for (int i = 0; i < 2; i++) {
-				if (node.children[i]->volume.intersectRay(rayData, distances[i]) && distances[i] < maxDistance) {
-					indices[numIndices] = i;
-					numIndices++;
-					for (int j = 0; j < numIndices - 1; j++) {
-						if (distances[indices[numIndices - 1]] < distances[indices[j]]) {
-							std::swap(indices[numIndices - 1], indices[j]);
-						}
-					}
-				}
+				distances[i] = FLT_MAX;
+				node.children[i]->volume.intersectRay(rayData, distances[i]);
 			}
 
-			for (int i = 0; i < numIndices; i++) {
-				if (distances[indices[i]] < maxDistance && intersectNode(rayData, *node.children[indices[i]], maxDistance, func)) {
+			for (int i = 0; i < 2; i++) {
+				int j = (distances[0] < distances[1]) ? i : 1 - i;
+				if (distances[j] < maxDistance && intersectNode(rayData, *node.children[j], maxDistance, func)) {
 					ret = true;
 				}
 			}
