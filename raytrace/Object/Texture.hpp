@@ -16,6 +16,10 @@ namespace Object {
 		TextureBase(int width, int height, int numChannels, std::vector<float> &&values);
 
 	protected:
+		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const;
+		void doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const;
+
+	private:
 		class MipLevel {
 		public:
 			MipLevel(int width, int height, int numChannels);
@@ -28,20 +32,20 @@ namespace Object {
 			float &at(int x, int y, int channel);
 			float at(int x, int y, int channel) const;
 
-		public:
+			std::unique_ptr<MipLevel> resampleDimension(int newSize, bool horizontal) const;
+
+			void bilinearSample(const Math::Point2D &samplePoint, float weight, float values[]) const;
+			void gradient(const Math::Point2D &samplePoint, float weight, Math::Vector2D gradient[]) const;
+
+		private:
 			int mWidth;
 			int mHeight;
 			int mNumChannels;
 			std::vector<float> mValues;
 		};
 
-		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const;
-		void doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const;
-
-		std::unique_ptr<MipLevel> createBaseLevel(int width, int height, int numChannels, std::vector<float> &&values);
-		void generateMipMaps();
+		void generateMipMaps(std::unique_ptr<MipLevel> baseLevel);
 		float selectMipLevel(const Math::Bivector2D &sampleProjection) const;
-		void bilinearSample(const Math::Point2D &samplePoint, const MipLevel &level, float weight, float values[]) const;
 
 		std::vector<std::unique_ptr<MipLevel>> mMipMaps;
 	};
