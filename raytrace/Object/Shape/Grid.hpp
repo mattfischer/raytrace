@@ -28,14 +28,15 @@ namespace Object {
 
 		private:
 			struct BvhNode : BoundingVolumeHierarchy::Node {
-				int u;
-				int v;
-				int du;
-				int dv;
+				int uMin;
+				int vMin;
+				int uMax;
+				int vMax;
 			};
 
 			bool intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const;
-			std::unique_ptr<BoundingVolumeHierarchy::Node> computeBoundingVolumeHierarchy() const;
+			std::unique_ptr<BoundingVolumeHierarchy::Node> computeBounds(int u, int v, int du, int dv) const;
+			const Vertex &vertex(int u, int v) const;
 
 			int mWidth;
 			int mHeight;

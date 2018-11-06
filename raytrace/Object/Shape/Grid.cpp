@@ -3,84 +3,50 @@
 namespace Object {
 	namespace Shape {
 		Grid::Grid(int width, int height, std::vector<Vertex> &&vertices)
-			: mWidth(width), mHeight(height), mVertices(std::move(vertices)), mBoundingVolumeHierarchy(computeBoundingVolumeHierarchy())
+			: mWidth(width), mHeight(height), mVertices(std::move(vertices)), mBoundingVolumeHierarchy(computeBounds(0, 0, mWidth - 1, mHeight - 1))
 		{
 		}
 
-		std::unique_ptr<BoundingVolumeHierarchy::Node> Grid::computeBoundingVolumeHierarchy() const
+		std::unique_ptr<BoundingVolumeHierarchy::Node> Grid::computeBounds(int uMin, int vMin, int uMax, int vMax) const
 		{
-			std::vector<std::unique_ptr<BoundingVolumeHierarchy::Node>> nodes;
-
 			const int GROUP = 1;
-			for (int v = 0; v < mHeight - 1; v += GROUP) {
-				for (int u = 0; u < mWidth - 1; u += GROUP) {
-					std::unique_ptr<BvhNode> node = std::make_unique<BvhNode>();
 
-					node->u = u;
-					node->v = v;
-					node->du = std::min(GROUP, mWidth - 1 - u);
-					node->dv = std::min(GROUP, mHeight - 1 - v);
-
-					for (int i = 0; i < node->du + 1; i++) {
-						for (int j = 0; j < node->dv + 1; j++) {
-							node->volume.expand(mVertices[(v + j) * mWidth + u + i].point);
-						}
-					}
-
-					nodes.push_back(std::move(node));
-				}
-			}
-
-			int currentWidth = (mWidth - 1 + GROUP - 1) / GROUP;
-			int currentHeight = (mHeight - 1 + GROUP - 1) / GROUP;
-
-			while (currentWidth > 1 || currentHeight > 1) {
-				std::vector<std::unique_ptr<BoundingVolumeHierarchy::Node>> newNodes;
-				for (int v = currentHeight - 2; v >= -1; v -= 2) {
-					for (int u = currentWidth - 2; u >= -1; u -= 2) {
-						std::unique_ptr<BoundingVolumeHierarchy::Node> newNodeU;
-						if (u != -1) {
-							newNodeU = std::make_unique<BoundingVolumeHierarchy::Node>();
-						}
-
-						for (int i = 0; i < 2; i++) {
-							int uu = u + i;
-							if (uu == -1) {
-								continue;
-							}
-
-							std::unique_ptr<BoundingVolumeHierarchy::Node> newNodeV;
-							if (v == -1) {
-								newNodeV = std::move(nodes[0 * currentWidth + uu]);
-							}
-							else {
-								newNodeV = std::make_unique<BoundingVolumeHierarchy::Node>();
-								for (int j = 0; j < 2; j++) {
-									int vv = v + j;
-									std::unique_ptr<BoundingVolumeHierarchy::Node> node = std::move(nodes[vv * currentWidth + uu]);
-									newNodeV->volume.expand(node->volume);
-									newNodeV->children[j] = std::move(node);
-								}
-							}
-
-							if (u == -1) {
-								newNodeU = std::move(newNodeV);
-							}
-							else {
-								newNodeU->volume.expand(newNodeV->volume);
-								newNodeU->children[i] = std::move(newNodeV);
-							}
-						}
-						newNodes.push_back(std::move(newNodeU));
+			if (uMax - uMin <= GROUP && vMax - vMin <= GROUP) {
+				std::unique_ptr<BvhNode> node = std::make_unique<BvhNode>();
+				node->uMin = uMin;
+				node->vMin = vMin;
+				node->uMax = uMax;
+				node->vMax = vMax;
+				for (int i = uMin; i <= uMax; i++) {
+					for (int j = vMin; j <= vMax; j++) {
+						node->volume.expand(vertex(i, j).point);
 					}
 				}
-
-				nodes = std::move(newNodes);
-				currentWidth = (currentWidth + 1) / 2;
-				currentHeight = (currentHeight + 1) / 2;
+				return node;
 			}
+			else {
+				std::unique_ptr<BoundingVolumeHierarchy::Node> node = std::make_unique<BoundingVolumeHierarchy::Node>();
+				if (uMax - uMin >= vMax - vMin) {
+					int uSplit = (uMin + uMax) / 2;
+					node->children[0] = computeBounds(uMin, vMin, uSplit, vMax);
+					node->children[1] = computeBounds(uSplit, vMin, uMax, vMax);
+				}
+				else {
+					int vSplit = (vMin + vMax) / 2;
+					node->children[0] = computeBounds(uMin, vMin, uMax, vSplit);
+					node->children[1] = computeBounds(uMin, vSplit, uMax, vMax);
+				}
 
-			return std::move(nodes[0]);
+				node->volume.expand(node->children[0]->volume);
+				node->volume.expand(node->children[1]->volume);
+
+				return node;
+			}
+		}
+
+		const Grid::Vertex &Grid::vertex(int u, int v) const
+		{
+			return mVertices[v * mWidth + u];
 		}
 
 		bool Grid::intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const
@@ -133,8 +99,8 @@ namespace Object {
 
 			auto callback = [&](const BoundingVolumeHierarchy::Node &node, float &maxDistance) {
 				const BvhNode &bvhNode = static_cast<const BvhNode&>(node);
-				for (int u = bvhNode.u; u < bvhNode.u + bvhNode.du; u++) {
-					for (int v = bvhNode.v; v < bvhNode.v + bvhNode.dv; v++) {
+				for (int u = bvhNode.uMin; u < bvhNode.uMax; u++) {
+					for (int v = bvhNode.vMin; v < bvhNode.vMax; v++) {
 						int idx0 = v * mWidth + u;
 						int idx1 = v * mWidth + u + 1;
 						int idx2 = (v + 1) * mWidth + u;
