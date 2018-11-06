@@ -19,8 +19,7 @@ namespace Object {
 		Math::Normal perturbNormal(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection, const Math::Normal &normal, const Math::Bivector &tangent) const;
 
 	private:
-		std::unique_ptr<Object::Texture<3>> mTexture;
-		float mMagnitude;
+		std::unique_ptr<Object::Texture<2>> mTexture;
 	};
 }
 #endif

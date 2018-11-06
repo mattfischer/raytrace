@@ -13,10 +13,6 @@ namespace Object {
 	class TextureBase
 	{
 	public:
-		TextureBase(int width, int height, int numChannels, std::vector<float> &&values);
-
-		void generateMipMaps();
-
 		class MipMap {
 		public:
 			MipMap(int width, int height, int numChannels);
@@ -29,8 +25,7 @@ namespace Object {
 			float &at(int x, int y, int channel);
 			float at(int x, int y, int channel) const;
 
-			void bilinearSample(const Math::Point2D &samplePoint, float weight, float values[]) const;
-			void gradient(const Math::Point2D &samplePoint, float weight, Math::Vector2D gradient[]) const;
+			void sample(const Math::Point2D &samplePoint, float weight, float values[]) const;
 
 		private:
 			int mWidth;
@@ -39,11 +34,13 @@ namespace Object {
 			std::vector<float> mValues;
 		};
 
+		TextureBase(int width, int height, int numChannels, std::vector<float> &&values);
+
+		void generateMipMaps();
 		const MipMap &mipMap(int level) const;
 
 	protected:
 		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const;
-		void doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const;
 
 	private:
 		float selectMipMap(const Math::Bivector2D &sampleProjection) const;
@@ -71,11 +68,6 @@ namespace Object {
 			doSample(samplePoint, sampleProjection, value.channels);
 
 			return value;
-		}
-
-		void gradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[NUM_CHANNELS]) const
-		{
-			doGradient(samplePoint, sampleProjection, gradient);
 		}
 	};
 }

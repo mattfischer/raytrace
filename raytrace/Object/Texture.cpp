@@ -59,24 +59,8 @@ namespace Object {
 			values[i] = 0;
 		}
 
-		level0->bilinearSample(samplePoint, 1 - dl, values);
-		level1->bilinearSample(samplePoint, dl, values);
-	}
-
-	void TextureBase::doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const
-	{
-		float lf = selectMipMap(sampleProjection);
-		int l = std::floor(lf);
-		const std::unique_ptr<MipMap> &level0 = mMipMaps[l];
-		const std::unique_ptr<MipMap> &level1 = mMipMaps[std::min(l + 1, (int)mMipMaps.size() - 1)];
-		float dl = lf - l;
-
-		for (int i = 0; i < level0->numChannels(); i++) {
-			gradient[i] = Math::Vector2D();
-		}
-
-		level0->gradient(samplePoint, (1 - dl), gradient);
-		level1->gradient(samplePoint, dl, gradient);
+		level0->sample(samplePoint, 1 - dl, values);
+		level1->sample(samplePoint, dl, values);
 	}
 
 	void TextureBase::generateMipMaps()
@@ -206,7 +190,7 @@ namespace Object {
 		return mValues[(y * mWidth + x) * mNumChannels + channel];
 	}
 
-	void TextureBase::MipMap::bilinearSample(const Math::Point2D &samplePoint, float weight, float values[]) const
+	void TextureBase::MipMap::sample(const Math::Point2D &samplePoint, float weight, float values[]) const
 	{
 		float fx = samplePoint.u() * mWidth;
 		float fy = samplePoint.v() * mHeight;
@@ -223,21 +207,6 @@ namespace Object {
 				(1 - dx) * dy * at(x, y1, i) +
 				dx * dy * at(x1, y1, i);
 			values[i] += weight * v;
-		}
-	}
-
-	void TextureBase::MipMap::gradient(const Math::Point2D &samplePoint, float weight, Math::Vector2D gradient[]) const
-	{
-		int x = samplePoint.u() * mWidth;
-		int y = samplePoint.v() * mHeight;
-		int x1 = (x == mWidth - 1) ? 0 : x + 1;
-		int y1 = (y == mHeight - 1) ? 0 : y + 1;
-
-		for (int i = 0; i < mNumChannels; i++) {
-			float du = (at(x1, y, i) - at(x, y, i)) * mWidth;
-			float dv = (at(x, y1, i) - at(x, y, i)) * mHeight;
-
-			gradient[i] = gradient[i] + Math::Vector2D(du, dv) * weight;
 		}
 	}
 }
