@@ -49,17 +49,10 @@ namespace Object {
 			return mVertices[v * mWidth + u];
 		}
 
-		bool Grid::intersectTriangle(const Math::Ray &ray, int idx0, int idx1, int idx2, Shape::Base::Intersection &intersection) const
+		bool Grid::intersectTriangle(const Math::Ray &ray, const Math::Point &p, const Math::Point &pu, const Math::Point &pv, float &distance, float &u, float &v) const
 		{
-			const Vertex &vertex0 = mVertices[idx0];
-			Math::Point2D surfacePoint0 = Math::Point2D((float)(idx0 % mWidth) / mWidth, (float)(idx0 / mWidth) / mHeight);
-			const Vertex &vertex1 = mVertices[idx1];
-			Math::Point2D surfacePoint1 = Math::Point2D((float)(idx1 % mWidth) / mWidth, (float)(idx1 / mWidth) / mHeight);
-			const Vertex &vertex2 = mVertices[idx2];
-			Math::Point2D surfacePoint2 = Math::Point2D((float)(idx2 % mWidth) / mWidth, (float)(idx2 / mWidth) / mHeight);
-
-			Math::Vector E1 = vertex1.point - vertex0.point;
-			Math::Vector E2 = vertex2.point - vertex0.point;
+			Math::Vector E1 = pu - p;
+			Math::Vector E2 = pv - p;
 			Math::Vector P = ray.direction() % E2;
 
 			float den = P * E1;
@@ -69,27 +62,26 @@ namespace Object {
 
 			float iden = 1.0f / den;
 
-			Math::Vector T = ray.origin() - vertex0.point;
-			float u = (P * T) * iden;
-			if (u < 0 || u > 1) {
+			Math::Vector T = ray.origin() - p;
+			float uu = (P * T) * iden;
+			if (uu < 0 || uu > 1) {
 				return false;
 			}
 
 			Math::Vector Q = T % E1;
-			float v = (Q * ray.direction()) * iden;
-			if (v < 0 || u + v > 1) {
+			float vv = (Q * ray.direction()) * iden;
+			if (vv < 0 || uu + vv > 1) {
 				return false;
 			}
 
-			float distance = (Q * E2) * iden;
-			if (distance < 0 || distance >= intersection.distance) {
+			float d = (Q * E2) * iden;
+			if (d < 0 || d >= distance) {
 				return false;
 			}
 
-			intersection.distance = distance;
-			intersection.normal = vertex0.normal * (1 - u - v) + vertex1.normal * u + vertex2.normal * v;
-			intersection.surfacePoint = surfacePoint0 * (1 - u - v) + surfacePoint1 * u + surfacePoint2 * v;
-			intersection.tangent = vertex0.tangent * (1 - u - v) + vertex1.tangent * u + vertex2.tangent * v;
+			distance = d;
+			u = uu;
+			v = vv;
 			return true;
 		}
 
@@ -101,15 +93,31 @@ namespace Object {
 				const BvhNode &bvhNode = static_cast<const BvhNode&>(node);
 				for (int u = bvhNode.uMin; u < bvhNode.uMax; u++) {
 					for (int v = bvhNode.vMin; v < bvhNode.vMax; v++) {
-						int idx0 = v * mWidth + u;
-						int idx1 = v * mWidth + u + 1;
-						int idx2 = (v + 1) * mWidth + u;
-						int idx3 = (v + 1) * mWidth + u + 1;
+						const Vertex &vertex0 = vertex(u, v);
+						Math::Point2D surfacePoint0((float)u / mWidth, (float)v / mHeight);
+						const Vertex &vertex1 = vertex(u + 1, v);
+						Math::Point2D surfacePoint1((float)(u + 1) / mWidth, (float)v / mHeight);
+						const Vertex &vertex2 = vertex(u, v + 1);
+						Math::Point2D surfacePoint2((float)u / mWidth, (float)(v + 1) / mHeight);
+						const Vertex &vertex3 = vertex(u + 1, v + 1);
+						Math::Point2D surfacePoint3((float)(u + 1) / mWidth, (float)(v + 1) / mHeight);
 
-						if (intersectTriangle(ray, idx0, idx1, idx2, intersection)) {
-							return true;
+						float tu, tv;
+						bool ret = false;
+						if (intersectTriangle(ray, vertex0.point, vertex1.point, vertex2.point, intersection.distance, tu, tv)) {
+							intersection.normal = vertex0.normal * (1 - tu - tv) + vertex1.normal * tu + vertex2.normal * tv;
+							intersection.tangent = vertex0.tangent * (1 - tu - tv) + vertex1.tangent * tu + vertex2.tangent * tv;
+							intersection.surfacePoint = surfacePoint0 * (1 - tu - tv) + surfacePoint1 * tu + surfacePoint2 * tv;
+							ret = true;
 						}
-						else if (intersectTriangle(ray, idx3, idx2, idx1, intersection)) {
+						if (intersectTriangle(ray, vertex3.point, vertex2.point, vertex1.point, intersection.distance, tu, tv)) {
+							intersection.normal = vertex3.normal * (1 - tu - tv) + vertex2.normal * tu + vertex1.normal * tv;
+							intersection.tangent = vertex3.tangent * (1 - tu - tv) + vertex2.tangent * tu + vertex1.tangent * tv;
+							intersection.surfacePoint = surfacePoint3 * (1 - tu - tv) + surfacePoint2 * tu + surfacePoint1 * tv;
+							ret = true;
+						}
+
+						if (ret) {
 							return true;
 						}
 					}
