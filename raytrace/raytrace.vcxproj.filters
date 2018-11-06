@@ -215,6 +215,9 @@
     <ClCompile Include="Object\BoundingVolumeHierarchy.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Object\Shape\Triangle.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -409,6 +412,9 @@
     </ClInclude>
     <ClInclude Include="Object\BoundingVolumeHierarchy.hpp">
       <Filter>Source Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Shape\Triangle.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

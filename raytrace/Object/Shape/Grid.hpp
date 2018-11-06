@@ -34,7 +34,6 @@ namespace Object {
 				int vMax;
 			};
 
-			bool intersectTriangle(const Math::Ray &ray, const Math::Point &p, const Math::Point &pu, const Math::Point &pv, float &distance, float &u, float &v) const;
 			std::unique_ptr<BoundingVolumeHierarchy::Node> computeBounds(int u, int v, int du, int dv) const;
 			const Vertex &vertex(int u, int v) const;
 
