@@ -15,15 +15,12 @@ namespace Object {
 	public:
 		TextureBase(int width, int height, int numChannels, std::vector<float> &&values);
 
-	protected:
-		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const;
-		void doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const;
+		void generateMipMaps();
 
-	private:
-		class MipLevel {
+		class MipMap {
 		public:
-			MipLevel(int width, int height, int numChannels);
-			MipLevel(int width, int height, int numChannels, std::vector<float> &&values);
+			MipMap(int width, int height, int numChannels);
+			MipMap(int width, int height, int numChannels, std::vector<float> &&values);
 
 			int width() const;
 			int height() const;
@@ -31,8 +28,6 @@ namespace Object {
 
 			float &at(int x, int y, int channel);
 			float at(int x, int y, int channel) const;
-
-			std::unique_ptr<MipLevel> resampleDimension(int newSize, bool horizontal) const;
 
 			void bilinearSample(const Math::Point2D &samplePoint, float weight, float values[]) const;
 			void gradient(const Math::Point2D &samplePoint, float weight, Math::Vector2D gradient[]) const;
@@ -44,10 +39,17 @@ namespace Object {
 			std::vector<float> mValues;
 		};
 
-		void generateMipMaps(std::unique_ptr<MipLevel> baseLevel);
-		float selectMipLevel(const Math::Bivector2D &sampleProjection) const;
+		const MipMap &mipMap(int level) const;
 
-		std::vector<std::unique_ptr<MipLevel>> mMipMaps;
+	protected:
+		void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const;
+		void doGradient(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, Math::Vector2D gradient[]) const;
+
+	private:
+		float selectMipMap(const Math::Bivector2D &sampleProjection) const;
+		std::unique_ptr<MipMap> resampleMipMap(const MipMap &mipMap, int newSize, bool horizontal) const;
+
+		std::vector<std::unique_ptr<MipMap>> mMipMaps;
 	};
 
 	template <int NUM_CHANNELS>

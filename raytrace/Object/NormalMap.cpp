@@ -4,6 +4,7 @@ namespace Object {
 	NormalMap::NormalMap(std::unique_ptr<Object::Texture<3>> texture, float magnitude)
 		: mTexture(std::move(texture))
 	{
+		mTexture->generateMipMaps();
 		mMagnitude = magnitude;
 	}
 
