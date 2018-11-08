@@ -67,21 +67,38 @@ namespace Object {
 
 		std::unique_ptr<TriangleMesh::TreeNode> TriangleMesh::buildKdTree(const std::vector<Math::Point> &centroids, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const
 		{
+			int numIndices = indicesEnd - indicesBegin;
 			std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
-			if (indicesEnd - indicesBegin == 1) {
+			if (numIndices == 1) {
 				node->index = *indicesBegin;
 			}
 			else {
 				const Math::Vector &splitPlane = splitPlanes[splitIndex];
-				auto cmp = [&](const int &idx0, const int &idx1) {
+
+				auto pointDistance = [&](const int &idx0, const int &idx1) {
 					return Math::Vector(centroids[idx0]) * splitPlane < Math::Vector(centroids[idx1]) * splitPlane;
 				};
 
-				std::sort(indicesBegin, indicesEnd, cmp);
+				std::vector<int>::iterator minIt = std::min_element(indicesBegin, indicesEnd, pointDistance);
+				std::vector<int>::iterator maxIt = std::max_element(indicesBegin, indicesEnd, pointDistance);
 
-				int splitIdx = (indicesEnd - indicesBegin) / 2;
-				node->children[0] = buildKdTree(centroids, indicesBegin, indicesBegin + splitIdx, (splitIndex + 1) % 3);
-				node->children[1] = buildKdTree(centroids, indicesBegin + splitIdx, indicesEnd, (splitIndex + 1) % 3);
+				float min = Math::Vector(centroids[*minIt]) * splitPlane;
+				float max = Math::Vector(centroids[*maxIt]) * splitPlane;
+				float pivot = (min + max) / 2;
+
+				auto belowPivot = [&](const int &idx) {
+					return Math::Vector(centroids[idx]) * splitPlane < pivot;
+				};
+
+				std::vector<int>::iterator split = std::stable_partition(indicesBegin, indicesEnd, belowPivot);
+				if (split == indicesBegin) {
+					split++;
+				}
+				else if (split == indicesEnd) {
+					split--;
+				}
+				node->children[0] = buildKdTree(centroids, indicesBegin, split, (splitIndex + 1) % 3);
+				node->children[1] = buildKdTree(centroids, split, indicesEnd, (splitIndex + 1) % 3);
 			}
 
 			return node;
