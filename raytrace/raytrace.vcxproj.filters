@@ -218,6 +218,12 @@
     <ClCompile Include="Object\Shape\Triangle.cpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
+    <ClCompile Include="Parse\PlyLoader.cpp">
+      <Filter>Source Files\Parse</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\Shape\TriangleMesh.cpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -414,6 +420,12 @@
       <Filter>Source Files\Object</Filter>
     </ClInclude>
     <ClInclude Include="Object\Shape\Triangle.hpp">
+      <Filter>Source Files\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Parse\PlyLoader.hpp">
+      <Filter>Source Files\Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\Shape\TriangleMesh.hpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClInclude>
   </ItemGroup>

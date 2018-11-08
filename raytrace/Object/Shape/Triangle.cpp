@@ -9,7 +9,7 @@ namespace Object {
 			Math::Vector P = ray.direction() % E2;
 
 			float den = P * E1;
-			if (den > -0.000001 && den < 0.000001) {
+			if (den > -1.0e-10f && den < 1.0e-10f) {
 				return false;
 			}
 

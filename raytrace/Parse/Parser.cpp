@@ -18,6 +18,7 @@
 
 #include "Parse/BmpLoader.hpp"
 #include "Parse/BptLoader.hpp"
+#include "Parse/PlyLoader.hpp"
 
 #include "AST.h"
 
@@ -69,7 +70,16 @@ namespace Parse {
 	std::unique_ptr<Object::Shape::Base> parseShapeModel(AST *ast)
 	{
 		std::string filename(ast->children[0]->data._string);
-		return BptLoader::load(filename);
+		std::unique_ptr<Object::Shape::Base> model;
+		std::string extension = filename.substr(filename.find_last_of('.'));
+		if (extension == ".bpt") {
+			model = BptLoader::load(filename);
+		}
+		else if (extension == ".ply") {
+			model = PlyLoader::load(filename);
+		}
+
+		return model;
 	}
 
 	std::unique_ptr<Object::Shape::Quad> parseShapeQuad(AST *ast)
