@@ -20,6 +20,8 @@ namespace Object {
 
 		bool intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(int, float&)> &func) const;
 
+		const std::vector<Node> &nodes() const;
+
 	private:
 		bool intersectNode(const BoundingVolume::RayData &rayData, int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const;
 

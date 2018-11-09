@@ -6,6 +6,11 @@ namespace Object {
 	{
 	}
 
+	const std::vector<BoundingVolumeHierarchy::Node> &BoundingVolumeHierarchy::nodes() const
+	{
+		return mNodes;
+	}
+
 	bool BoundingVolumeHierarchy::intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(int, float&)> &func) const
 	{
 		return intersectNode(rayData, 0, maxDistance, func);

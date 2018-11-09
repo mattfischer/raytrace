@@ -13,4 +13,5 @@ raytrace/*.tab.c
 raytrace/lex.*.c
 raytrace/*.user
 raytrace/*.aps
+*.bvh
 

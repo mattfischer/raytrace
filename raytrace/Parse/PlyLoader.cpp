@@ -1,5 +1,7 @@
 #include "Parse/PlyLoader.hpp"
 
+#include "Parse/BvhFile.hpp"
+
 #include "Object/Shape/TriangleMesh.hpp"
 
 #include "Math/Point.hpp"
@@ -181,6 +183,16 @@ namespace Parse {
 			}
 		}
 
-		return std::make_unique<Object::Shape::TriangleMesh>(std::move(vertices), std::move(triangles));
+		std::string bvhFilename = filename + ".bvh";
+		std::ifstream bvhFile(bvhFilename);
+		if (bvhFile.good()) {
+			Object::BoundingVolumeHierarchy boundingVolumeHierarchy = BvhFile::load(bvhFilename);
+			return std::make_unique<Object::Shape::TriangleMesh>(std::move(vertices), std::move(triangles), std::move(boundingVolumeHierarchy));
+		}
+		else {
+			std::unique_ptr<Object::Shape::TriangleMesh> mesh = std::make_unique<Object::Shape::TriangleMesh>(std::move(vertices), std::move(triangles));
+			BvhFile::save(bvhFilename, mesh->boundingVolumeHierarchy());
+			return mesh;
+		}
 	}
 }

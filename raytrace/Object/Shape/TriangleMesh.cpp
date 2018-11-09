@@ -8,31 +8,13 @@ namespace Object {
 		const Math::Vector splitPlanes[3] = { Math::Vector(1, 0, 0), Math::Vector(0, 1, 0), Math::Vector(0, 0, 1) };
 
 		TriangleMesh::TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles)
-			: mVertices(std::move(vertices)), mTriangles(std::move(triangles))
+			: mVertices(std::move(vertices)), mTriangles(std::move(triangles)), mBoundingVolumeHierarchy(computeBoundingVolumeHierarchy())
 		{
-			std::vector<Math::Point> centroids(mTriangles.size());
-			for (unsigned int i = 0; i < mTriangles.size(); i++) {
-				const Triangle &triangle = mTriangles[i];
-				Math::Vector centroid;
-				for (unsigned int j = 0; j < 3; j++) {
-					centroid = centroid + Math::Vector(mVertices[triangle.vertices[j]].point);
-				}
-				centroids[i] = Math::Point(centroid / 3.0f);
-			}
+		}
 
-			std::vector<int> indices(mTriangles.size());
-			for (unsigned int i = 0; i < indices.size(); i++) {
-				indices[i] = i;
-			}
-
-			std::vector<TreeNode> tree;
-			tree.reserve(centroids.size() * 2);
-			buildKdTree(centroids, tree, indices.begin(), indices.end(), 0);
-
-			std::vector<Object::BoundingVolumeHierarchy::Node> bvhNodes;
-			bvhNodes.reserve(centroids.size() * 2);
-			computeBounds(bvhNodes, tree, 0);
-			mBoundingVolumeHierarchy = Object::BoundingVolumeHierarchy(std::move(bvhNodes));
+		TriangleMesh::TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles, Object::BoundingVolumeHierarchy &&boundingVolumeHierarchy)
+			: mVertices(std::move(vertices)), mTriangles(std::move(triangles)), mBoundingVolumeHierarchy(std::move(boundingVolumeHierarchy))
+		{
 		}
 
 		bool TriangleMesh::intersect(const Math::Ray &ray, Intersection &intersection) const
@@ -68,6 +50,11 @@ namespace Object {
 			}
 
 			return volume;
+		}
+
+		const Object::BoundingVolumeHierarchy &TriangleMesh::boundingVolumeHierarchy() const
+		{
+			return mBoundingVolumeHierarchy;
 		}
 
 		int TriangleMesh::buildKdTree(const std::vector<Math::Point> &centroids, std::vector<TreeNode> &tree, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const
@@ -136,6 +123,33 @@ namespace Object {
 			}
 
 			return nodeIndex;
+		}
+
+		Object::BoundingVolumeHierarchy TriangleMesh::computeBoundingVolumeHierarchy() const
+		{
+			std::vector<Math::Point> centroids(mTriangles.size());
+			for (unsigned int i = 0; i < mTriangles.size(); i++) {
+				const Triangle &triangle = mTriangles[i];
+				Math::Vector centroid;
+				for (unsigned int j = 0; j < 3; j++) {
+					centroid = centroid + Math::Vector(mVertices[triangle.vertices[j]].point);
+				}
+				centroids[i] = Math::Point(centroid / 3.0f);
+			}
+
+			std::vector<int> indices(mTriangles.size());
+			for (unsigned int i = 0; i < indices.size(); i++) {
+				indices[i] = i;
+			}
+
+			std::vector<TreeNode> tree;
+			tree.reserve(centroids.size() * 2);
+			buildKdTree(centroids, tree, indices.begin(), indices.end(), 0);
+
+			std::vector<Object::BoundingVolumeHierarchy::Node> bvhNodes;
+			bvhNodes.reserve(centroids.size() * 2);
+			computeBounds(bvhNodes, tree, 0);
+			return Object::BoundingVolumeHierarchy(std::move(bvhNodes));
 		}
 	}
 }

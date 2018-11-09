@@ -224,6 +224,9 @@
     <ClCompile Include="Object\Shape\TriangleMesh.cpp">
       <Filter>Source Files\Object\Shape</Filter>
     </ClCompile>
+    <ClCompile Include="Parse\BvhFile.cpp">
+      <Filter>Source Files\Parse</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -427,6 +430,9 @@
     </ClInclude>
     <ClInclude Include="Object\Shape\TriangleMesh.hpp">
       <Filter>Source Files\Object\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Parse\BvhFile.hpp">
+      <Filter>Source Files\Parse</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

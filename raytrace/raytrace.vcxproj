@@ -150,6 +150,7 @@
     <ClCompile Include="Object\Texture.cpp" />
     <ClCompile Include="Parse\BmpLoader.cpp" />
     <ClCompile Include="Parse\BptLoader.cpp" />
+    <ClCompile Include="Parse\BvhFile.cpp" />
     <ClCompile Include="Parse\Parser.cpp" />
     <ClCompile Include="Parse\PlyLoader.cpp" />
     <ClCompile Include="RenderControlDlg.cpp" />
@@ -222,6 +223,7 @@
     <ClInclude Include="Parse\AST.h" />
     <ClInclude Include="Parse\BmpLoader.hpp" />
     <ClInclude Include="Parse\BptLoader.hpp" />
+    <ClInclude Include="Parse\BvhFile.hpp" />
     <ClInclude Include="Parse\Parser.hpp" />
     <ClInclude Include="Parse\PlyLoader.hpp" />
     <ClInclude Include="RenderControlDlg.hpp" />

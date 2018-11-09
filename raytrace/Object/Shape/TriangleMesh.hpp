@@ -25,9 +25,12 @@ namespace Object {
 			};
 
 			TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles);
+			TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles, Object::BoundingVolumeHierarchy &&boundingVolumeHierarchy);
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
 			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+
+			const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
 		private:
 			struct TreeNode {
@@ -36,6 +39,7 @@ namespace Object {
 
 			int buildKdTree(const std::vector<Math::Point> &centroids, std::vector<TreeNode> &tree, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const;
 			int computeBounds(std::vector<Object::BoundingVolumeHierarchy::Node> &bvh, const std::vector<TreeNode> &tree, int index) const;
+			Object::BoundingVolumeHierarchy TriangleMesh::computeBoundingVolumeHierarchy() const;
 
 			std::vector<Vertex> mVertices;
 			std::vector<Triangle> mTriangles;
