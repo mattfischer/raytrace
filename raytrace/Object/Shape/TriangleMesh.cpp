@@ -25,8 +25,10 @@ namespace Object {
 				indices[i] = i;
 			}
 
-			std::unique_ptr<TreeNode> root = buildKdTree(centroids, indices.begin(), indices.end(), 0);
-			mBoundingVolumeHierarchy = Object::BoundingVolumeHierarchy(computeBounds(*root));
+			std::vector<TreeNode> tree;
+			tree.reserve(centroids.size() * 2);
+			buildKdTree(centroids, tree, indices.begin(), indices.end(), 0);
+			mBoundingVolumeHierarchy = Object::BoundingVolumeHierarchy(computeBounds(tree, 0));
 		}
 
 		bool TriangleMesh::intersect(const Math::Ray &ray, Intersection &intersection) const
@@ -65,12 +67,16 @@ namespace Object {
 			return volume;
 		}
 
-		std::unique_ptr<TriangleMesh::TreeNode> TriangleMesh::buildKdTree(const std::vector<Math::Point> &centroids, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const
+		int TriangleMesh::buildKdTree(const std::vector<Math::Point> &centroids, std::vector<TreeNode> &tree, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const
 		{
+			tree.push_back(TreeNode());
+			int nodeIndex = tree.size() - 1;
+			TreeNode &node = tree[nodeIndex];
+
 			int numIndices = indicesEnd - indicesBegin;
-			std::unique_ptr<TreeNode> node = std::make_unique<TreeNode>();
 			if (numIndices == 1) {
-				node->index = *indicesBegin;
+				int triangleIndex = *indicesBegin;
+				node.index = -triangleIndex;
 			}
 			else {
 				const Math::Vector &splitPlane = splitPlanes[splitIndex];
@@ -97,27 +103,32 @@ namespace Object {
 				else if (split == indicesEnd) {
 					split--;
 				}
-				node->children[0] = buildKdTree(centroids, indicesBegin, split, (splitIndex + 1) % 3);
-				node->children[1] = buildKdTree(centroids, split, indicesEnd, (splitIndex + 1) % 3);
+
+				buildKdTree(centroids, tree, indicesBegin, split, (splitIndex + 1) % 3);
+				node.index = buildKdTree(centroids, tree, split, indicesEnd, (splitIndex + 1) % 3);
 			}
 
-			return node;
+			return nodeIndex;
 		}
 
-		std::unique_ptr<Object::BoundingVolumeHierarchy::Node> TriangleMesh::computeBounds(const TreeNode &treeNode) const
+		std::unique_ptr<Object::BoundingVolumeHierarchy::Node> TriangleMesh::computeBounds(const std::vector<TreeNode> &tree, int index) const
 		{
-			if (!treeNode.children[0] && !treeNode.children[1]) {
+			const TreeNode &treeNode = tree[index];
+
+			if (treeNode.index <= 0) {
 				std::unique_ptr<BvhNode> bvhNode = std::make_unique<BvhNode>();
-				bvhNode->index = treeNode.index;
+				bvhNode->index = -treeNode.index;
 				for (unsigned int i = 0; i < 3; i++) {
-					bvhNode->volume.expand(mVertices[mTriangles[treeNode.index].vertices[i]].point);
+					bvhNode->volume.expand(mVertices[mTriangles[bvhNode->index].vertices[i]].point);
 				}
 				return bvhNode;
 			}
 			else {
 				std::unique_ptr<Object::BoundingVolumeHierarchy::Node> bvhNode = std::make_unique<Object::BoundingVolumeHierarchy::Node>();
+				bvhNode->children[0] = computeBounds(tree, index + 1);
+				bvhNode->children[1] = computeBounds(tree, treeNode.index);
+
 				for (unsigned int i = 0; i < 2; i++) {
-					bvhNode->children[i] = computeBounds(*treeNode.children[i]);
 					bvhNode->volume.expand(bvhNode->children[i]->volume);
 				}
 				return bvhNode;

@@ -32,15 +32,14 @@ namespace Object {
 		private:
 			struct TreeNode {
 				int index;
-				std::unique_ptr<TreeNode> children[2];
 			};
 
 			struct BvhNode : BoundingVolumeHierarchy::Node {
 				int index;
 			};
 
-			std::unique_ptr<TreeNode> buildKdTree(const std::vector<Math::Point> &centroids, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const;
-			std::unique_ptr<Object::BoundingVolumeHierarchy::Node> computeBounds(const TreeNode &node) const;
+			int buildKdTree(const std::vector<Math::Point> &centroids, std::vector<TreeNode> &tree, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const;
+			std::unique_ptr<Object::BoundingVolumeHierarchy::Node> computeBounds(const std::vector<TreeNode> &tree, int index) const;
 
 			std::vector<Vertex> mVertices;
 			std::vector<Triangle> mTriangles;
