@@ -168,10 +168,12 @@ albedodef: colordef
 colordef: COLOR VECTOR
 	{ $$ = newAst(AstColor, 0); $$->data._vector = $2; }	
 
-cameradef: CAMERA '{' VECTOR VECTOR '}'
-	{ $$ = newAst(AstCamera, 2, newAst(AstConstant, 0), newAst(AstConstant, 0)); 
+cameradef: CAMERA '{' VECTOR VECTOR FLOAT FLOAT '}'
+	{ $$ = newAst(AstCamera, 4, newAst(AstConstant, 0), newAst(AstConstant, 0), newAst(AstConstant, 0), newAst(AstConstant, 0)); 
 	  $$->children[0]->data._vector = $3;
 	  $$->children[1]->data._vector = $4;
+	  $$->children[2]->data._float = $5;
+	  $$->children[3]->data._float = $6;
 	}
 	
 lightdef: LIGHT '{' VECTOR VECTOR '}'

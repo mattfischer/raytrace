@@ -52,8 +52,10 @@ namespace Parse {
 	{
 		Math::Point position = parsePoint(ast->children[0]->data._vector);
 		Math::Point lookAt = parsePoint(ast->children[1]->data._vector);
+		float focalLength = ast->children[2]->data._float;
+		float apertureSize = ast->children[3]->data._float;
 
-		std::unique_ptr<Object::Camera> camera = std::make_unique<Object::Camera>(position, (lookAt - position).normalize(), Math::Vector(0, 1, 0), 60.0f);
+		std::unique_ptr<Object::Camera> camera = std::make_unique<Object::Camera>(position, (lookAt - position).normalize(), Math::Vector(0, 1, 0), 60.0f, focalLength, apertureSize);
 
 		return camera;
 	}

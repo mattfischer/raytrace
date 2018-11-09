@@ -17,7 +17,7 @@ namespace Render {
 
 		Intersection intersect(const Render::Beam &beam);
 
-		Beam createCameraPixelBeam(float x, float y);
+		Beam createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint);
 
 		float projectedPixelSize(float distance);
 

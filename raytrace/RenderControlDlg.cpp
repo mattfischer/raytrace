@@ -13,7 +13,7 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.width = 800;
 	mSettings.height = 600;
 	mSettings.lighting = true;
-	mSettings.antialiasSamples = 3;
+	mSettings.antialiasSamples = 9;
 	mSettings.lighterSettings.radiantLighting = true;
 	mSettings.lighterSettings.specularLighting = true;
 	mSettings.lighterSettings.specularSamples = 4;

@@ -66,12 +66,13 @@ namespace Render {
 		}
 	}
 
-	Beam Tracer::createCameraPixelBeam(float x, float y)
+	Beam Tracer::createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint)
 	{
-		float cx = (2 * x - mWidth) / mWidth;
-		float cy = (2 * y - mHeight) / mWidth;
+		float cx = (2 * imagePoint.u() - mWidth) / mWidth;
+		float cy = (2 * imagePoint.v() - mHeight) / mWidth;
 		Math::Bivector dv;
-		Math::Ray ray = mScene.camera().createRay(cx, -cy, dv);
+		Math::Point2D imagePointTransformed(cx, -cy);
+		Math::Ray ray = mScene.camera().createRay(imagePointTransformed, aperturePoint, dv);
 
 		float pixelSize = 2.0f / mWidth;
 

@@ -235,7 +235,7 @@ namespace Render {
 	{
 		Object::Color color;
 
-		Render::Beam beam = thread.tracer().createCameraPixelBeam(x, y);
+		Render::Beam beam = thread.tracer().createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
 		Render::Intersection intersection = thread.tracer().intersect(beam);
 		if (intersection.valid())
 		{
@@ -249,26 +249,31 @@ namespace Render {
 
 	void Engine::renderPixel(Thread &thread, int x, int y)
 	{
+		std::uniform_real_distribution<float> dist(0, 1);
 		Object::Color color;
-		for (int u = 0; u < mSettings.antialiasSamples; u++) {
-			for (int v = 0; v < mSettings.antialiasSamples; v++) {
-				Math::Bivector dv;
-				Render::Beam beam = thread.tracer().createCameraPixelBeam(x + (float)u / mSettings.antialiasSamples, y + (float)v / mSettings.antialiasSamples);
-				Render::Intersection intersection = thread.tracer().intersect(beam);
+		for (int i = 0; i < mSettings.antialiasSamples; i++) {
+			Math::Bivector dv;
+			float u = dist(thread.randomEngine());
+			float v = dist(thread.randomEngine());
+			Math::Point2D imagePoint(x + u, y + v);
+			u = dist(thread.randomEngine());
+			v = dist(thread.randomEngine());
+			Math::Point2D aperturePoint(u, v);
+			Render::Beam beam = thread.tracer().createCameraPixelBeam(imagePoint, aperturePoint);
+			Render::Intersection intersection = thread.tracer().intersect(beam);
 
-				if (intersection.valid())
-				{
-					if (mSettings.lighting) {
-						Object::Radiance radiance = mLighter->light(intersection, thread.tracer(), 0);
-						color += toneMap(radiance);
-					}
-					else {
-						color += intersection.albedo();
-					}
+			if (intersection.valid())
+			{
+				if (mSettings.lighting) {
+					Object::Radiance radiance = mLighter->light(intersection, thread.tracer(), 0);
+					color += toneMap(radiance);
+				}
+				else {
+					color += intersection.albedo();
 				}
 			}
 		}
-		color = color / (mSettings.antialiasSamples * mSettings.antialiasSamples);
+		color = color / mSettings.antialiasSamples;
 
 		mFramebuffer->setPixel(x, y, color);
 	}

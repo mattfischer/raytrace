@@ -1,4 +1,5 @@
 #include "Math/Vector2D.hpp"
+#include "Math/Point2D.hpp"
 
 namespace Math {
 	Vector2D::Vector2D()
@@ -10,6 +11,11 @@ namespace Math {
 	{
 		mU = u;
 		mV = v;
+	}
+
+	Vector2D::Vector2D(const Point2D &point)
+		: mU(point.u()), mV(point.v())
+	{
 	}
 
 	float Vector2D::u() const
