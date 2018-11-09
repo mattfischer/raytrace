@@ -14,4 +14,4 @@ raytrace/lex.*.c
 raytrace/*.user
 raytrace/*.aps
 *.bvh
-
+*.bin
