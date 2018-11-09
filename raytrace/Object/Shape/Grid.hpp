@@ -27,14 +27,7 @@ namespace Object {
 			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 
 		private:
-			struct BvhNode : BoundingVolumeHierarchy::Node {
-				int uMin;
-				int vMin;
-				int uMax;
-				int vMax;
-			};
-
-			std::unique_ptr<BoundingVolumeHierarchy::Node> computeBounds(int u, int v, int du, int dv) const;
+			int computeBounds(std::vector<Object::BoundingVolumeHierarchy::Node> &nodes, int u, int v, int du, int dv) const;
 			const Vertex &vertex(int u, int v) const;
 
 			int mWidth;

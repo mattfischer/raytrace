@@ -28,16 +28,19 @@ namespace Object {
 			std::vector<TreeNode> tree;
 			tree.reserve(centroids.size() * 2);
 			buildKdTree(centroids, tree, indices.begin(), indices.end(), 0);
-			mBoundingVolumeHierarchy = Object::BoundingVolumeHierarchy(computeBounds(tree, 0));
+
+			std::vector<Object::BoundingVolumeHierarchy::Node> bvhNodes;
+			bvhNodes.reserve(centroids.size() * 2);
+			computeBounds(bvhNodes, tree, 0);
+			mBoundingVolumeHierarchy = Object::BoundingVolumeHierarchy(std::move(bvhNodes));
 		}
 
 		bool TriangleMesh::intersect(const Math::Ray &ray, Intersection &intersection) const
 		{
 			BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
 
-			auto callback = [&](const BoundingVolumeHierarchy::Node &node, float &maxDistance) {
-				const BvhNode &bvhNode = static_cast<const BvhNode&>(node);
-				const Triangle &triangle = mTriangles[bvhNode.index];
+			auto callback = [&](int index, float &maxDistance) {
+				const Triangle &triangle = mTriangles[index];
 				bool ret = false;
 
 				const Vertex &vertex0 = mVertices[triangle.vertices[0]];
@@ -111,28 +114,28 @@ namespace Object {
 			return nodeIndex;
 		}
 
-		std::unique_ptr<Object::BoundingVolumeHierarchy::Node> TriangleMesh::computeBounds(const std::vector<TreeNode> &tree, int index) const
+		int TriangleMesh::computeBounds(std::vector<Object::BoundingVolumeHierarchy::Node> &nodes, const std::vector<TreeNode> &tree, int treeIndex) const
 		{
-			const TreeNode &treeNode = tree[index];
+			const TreeNode &treeNode = tree[treeIndex];
+			nodes.push_back(Object::BoundingVolumeHierarchy::Node());
+			int nodeIndex = nodes.size() - 1;
+			Object::BoundingVolumeHierarchy::Node &node = nodes[nodeIndex];
 
 			if (treeNode.index <= 0) {
-				std::unique_ptr<BvhNode> bvhNode = std::make_unique<BvhNode>();
-				bvhNode->index = -treeNode.index;
+				int index = -treeNode.index;
+				node.index = -index;
 				for (unsigned int i = 0; i < 3; i++) {
-					bvhNode->volume.expand(mVertices[mTriangles[bvhNode->index].vertices[i]].point);
+					node.volume.expand(mVertices[mTriangles[index].vertices[i]].point);
 				}
-				return bvhNode;
 			}
 			else {
-				std::unique_ptr<Object::BoundingVolumeHierarchy::Node> bvhNode = std::make_unique<Object::BoundingVolumeHierarchy::Node>();
-				bvhNode->children[0] = computeBounds(tree, index + 1);
-				bvhNode->children[1] = computeBounds(tree, treeNode.index);
-
-				for (unsigned int i = 0; i < 2; i++) {
-					bvhNode->volume.expand(bvhNode->children[i]->volume);
-				}
-				return bvhNode;
+				computeBounds(nodes, tree, treeIndex + 1);
+				node.volume.expand(nodes[nodeIndex + 1].volume);
+				node.index = computeBounds(nodes, tree, treeNode.index);
+				node.volume.expand(nodes[node.index].volume);
 			}
+
+			return nodeIndex;
 		}
 	}
 }

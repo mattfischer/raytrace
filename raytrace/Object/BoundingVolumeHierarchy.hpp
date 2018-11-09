@@ -3,7 +3,7 @@
 
 #include "Object/BoundingVolume.hpp"
 
-#include <memory>
+#include <vector>
 #include <functional>
 
 namespace Object {
@@ -12,18 +12,18 @@ namespace Object {
 	public:
 		struct Node {
 			BoundingVolume volume;
-			std::unique_ptr<Node> children[2];
+			int index;
 		};
 
 		BoundingVolumeHierarchy() = default;
-		BoundingVolumeHierarchy(std::unique_ptr<Node> root);
+		BoundingVolumeHierarchy(std::vector<Node> &&nodes);
 
-		bool intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(const Node&, float&)> &func) const;
+		bool intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(int, float&)> &func) const;
 
 	private:
-		bool intersectNode(const BoundingVolume::RayData &rayData, const Node &node, float &maxDistance, const std::function<bool(const Node&, float&)> &func) const;
+		bool intersectNode(const BoundingVolume::RayData &rayData, int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const;
 
-		std::unique_ptr<Node> mRoot;
+		std::vector<Node> mNodes;
 	};
 }
 #endif

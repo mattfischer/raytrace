@@ -34,12 +34,8 @@ namespace Object {
 				int index;
 			};
 
-			struct BvhNode : BoundingVolumeHierarchy::Node {
-				int index;
-			};
-
 			int buildKdTree(const std::vector<Math::Point> &centroids, std::vector<TreeNode> &tree, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const;
-			std::unique_ptr<Object::BoundingVolumeHierarchy::Node> computeBounds(const std::vector<TreeNode> &tree, int index) const;
+			int computeBounds(std::vector<Object::BoundingVolumeHierarchy::Node> &bvh, const std::vector<TreeNode> &tree, int index) const;
 
 			std::vector<Vertex> mVertices;
 			std::vector<Triangle> mTriangles;

@@ -1,34 +1,38 @@
 #include "Object/BoundingVolumeHierarchy.hpp"
 
 namespace Object {
-	BoundingVolumeHierarchy::BoundingVolumeHierarchy(std::unique_ptr<Node> root)
-		: mRoot(std::move(root))
+	BoundingVolumeHierarchy::BoundingVolumeHierarchy(std::vector<Node> &&nodes)
+		: mNodes(std::move(nodes))
 	{
 	}
 
-	bool BoundingVolumeHierarchy::intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(const Node&, float&)> &func) const
+	bool BoundingVolumeHierarchy::intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(int, float&)> &func) const
 	{
-		return intersectNode(rayData, *mRoot, maxDistance, func);
+		return intersectNode(rayData, 0, maxDistance, func);
 	}
 
-	bool BoundingVolumeHierarchy::intersectNode(const BoundingVolume::RayData &rayData, const Node &node, float &maxDistance, const std::function<bool(const Node&, float&)> &func) const
+	bool BoundingVolumeHierarchy::intersectNode(const BoundingVolume::RayData &rayData, int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const
 	{
+		const Node &node = mNodes[nodeIndex];
+
 		bool ret = false;
-		if (!node.children[0] && !node.children[1]) {
-			if (func(node, maxDistance)) {
+		if (node.index <= 0) {
+			int index = -node.index;
+			if (func(index, maxDistance)) {
 				ret = true;
 			}
 		}
 		else {
+			int indices[2] = { nodeIndex + 1, node.index };
 			float distances[2];
 			for (int i = 0; i < 2; i++) {
 				distances[i] = FLT_MAX;
-				node.children[i]->volume.intersectRay(rayData, distances[i]);
+				mNodes[indices[i]].volume.intersectRay(rayData, distances[i]);
 			}
 
 			for (int i = 0; i < 2; i++) {
 				int j = (distances[0] < distances[1]) ? i : 1 - i;
-				if (distances[j] < maxDistance && intersectNode(rayData, *node.children[j], maxDistance, func)) {
+				if (distances[j] < maxDistance && intersectNode(rayData, indices[j], maxDistance, func)) {
 					ret = true;
 				}
 			}
