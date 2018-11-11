@@ -77,28 +77,12 @@ namespace Object {
 		else {
 			const Math::Vector &splitPlane = splitPlanes[splitIndex];
 
-			auto pointDistance = [&](const int &idx0, const int &idx1) {
+			auto cmp = [&](const int &idx0, const int &idx1) {
 				return Math::Vector(centroids[idx0]) * splitPlane < Math::Vector(centroids[idx1]) * splitPlane;
 			};
 
-			std::vector<int>::iterator minIt = std::min_element(indicesBegin, indicesEnd, pointDistance);
-			std::vector<int>::iterator maxIt = std::max_element(indicesBegin, indicesEnd, pointDistance);
-
-			float min = Math::Vector(centroids[*minIt]) * splitPlane;
-			float max = Math::Vector(centroids[*maxIt]) * splitPlane;
-			float pivot = (min + max) / 2;
-
-			auto belowPivot = [&](const int &idx) {
-				return Math::Vector(centroids[idx]) * splitPlane < pivot;
-			};
-
-			std::vector<int>::iterator split = std::stable_partition(indicesBegin, indicesEnd, belowPivot);
-			if (split == indicesBegin) {
-				split++;
-			}
-			else if (split == indicesEnd) {
-				split--;
-			}
+			std::vector<int>::iterator split = indicesBegin + (indicesEnd - indicesBegin) / 2;
+			std::nth_element(indicesBegin, split, indicesEnd, cmp);
 
 			buildKdTree(centroids, tree, indicesBegin, split, (splitIndex + 1) % 3);
 			node.index = buildKdTree(centroids, tree, split, indicesEnd, (splitIndex + 1) % 3);
