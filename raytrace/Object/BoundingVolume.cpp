@@ -108,4 +108,19 @@ namespace Object {
 
 		return rayData;
 	}
+
+	Math::Point BoundingVolume::centroid() const
+	{
+		float d0 = (mMins[0] + mMaxes[0]) / 2;
+		float d1 = (mMins[1] + mMaxes[1]) / 2;
+		float d2 = (mMins[2] + mMaxes[2]) / 2;
+
+		const Math::Vector &v0 = sVectors[0];
+		const Math::Vector &v1 = sVectors[1];
+		const Math::Vector &v2 = sVectors[2];
+
+		float d = v0 * (v1 % v2);
+
+		return Math::Point((v1 % v2) * (d0 / d) + (v2 % v0) * (d1 / d) + (v0 % v1) * (d2 / d));
+	}
 }

@@ -15,11 +15,22 @@ namespace Object {
 		, mPrimitives(std::move(primitives))
 		, mLights(std::move(lights))
 	{
+		std::vector<Math::Point> centroids;
+		centroids.reserve(mPrimitives.size());
+
 		for (std::unique_ptr<Primitive> &primitive : mPrimitives) {
+			centroids.push_back(primitive->boundingVolume().centroid());
+
 			if (primitive->surface().radiance().magnitude() > 0) {
 				mAreaLights.push_back(static_cast<Object::Primitive&>(*primitive));
 			}
 		}
+
+		auto func = [&](int index) {
+			return mPrimitives[index]->boundingVolume();
+		};
+
+		mBoundingVolumeHierarchy = Object::BoundingVolumeHierarchy(std::move(centroids), func);
 	}
 
 	const Camera &Scene::camera() const
@@ -40,5 +51,10 @@ namespace Object {
 	const std::vector<std::unique_ptr<Light>> &Scene::lights() const
 	{
 		return mLights;
+	}
+
+	const Object::BoundingVolumeHierarchy &Scene::boundingVolumeHierarchy() const
+	{
+		return mBoundingVolumeHierarchy;
 	}
 }

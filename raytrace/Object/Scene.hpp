@@ -4,6 +4,7 @@
 #include "Object/Camera.hpp"
 #include "Object/Primitive.hpp"
 #include "Object/Light.hpp"
+#include "Object/BoundingVolumeHierarchy.hpp"
 
 #include <vector>
 #include <memory>
@@ -19,11 +20,15 @@ namespace Object {
 		const std::vector<std::reference_wrapper<Primitive>> &areaLights() const;
 		const std::vector<std::unique_ptr<Light>> &lights() const;
 
+		const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
+
 	protected:
 		std::unique_ptr<Camera> mCamera;
 		std::vector<std::unique_ptr<Primitive>> mPrimitives;
 		std::vector<std::reference_wrapper<Primitive>> mAreaLights;
 		std::vector<std::unique_ptr<Light>> mLights;
+
+		Object::BoundingVolumeHierarchy mBoundingVolumeHierarchy;
 	};
 }
 
