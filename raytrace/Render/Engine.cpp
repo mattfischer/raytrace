@@ -251,6 +251,7 @@ namespace Render {
 	{
 		std::uniform_real_distribution<float> dist(0, 1);
 		Object::Color color;
+		Object::Radiance radiance;
 		for (int i = 0; i < mSettings.antialiasSamples; i++) {
 			Math::Bivector dv;
 			float u = dist(thread.randomEngine());
@@ -265,15 +266,21 @@ namespace Render {
 			if (intersection.valid())
 			{
 				if (mSettings.lighting) {
-					Object::Radiance radiance = mLighter->light(intersection, thread.tracer(), 0);
-					color += toneMap(radiance);
+					radiance += mLighter->light(intersection, thread.tracer(), 0);
 				}
 				else {
 					color += intersection.albedo();
 				}
 			}
 		}
-		color = color / mSettings.antialiasSamples;
+
+		if (mSettings.lighting) {
+			radiance = radiance / mSettings.antialiasSamples;
+			color = toneMap(radiance);
+		}
+		else {
+			color = color / mSettings.antialiasSamples;
+		}
 
 		mFramebuffer->setPixel(x, y, color);
 	}
