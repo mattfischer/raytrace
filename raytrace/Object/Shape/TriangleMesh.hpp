@@ -33,12 +33,6 @@ namespace Object {
 			const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
 		private:
-			struct TreeNode {
-				int index;
-			};
-
-			int buildKdTree(const std::vector<Math::Point> &centroids, std::vector<TreeNode> &tree, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const;
-			int computeBounds(std::vector<Object::BoundingVolumeHierarchy::Node> &bvh, const std::vector<TreeNode> &tree, int index) const;
 			Object::BoundingVolumeHierarchy TriangleMesh::computeBoundingVolumeHierarchy() const;
 
 			std::vector<Vertex> mVertices;
