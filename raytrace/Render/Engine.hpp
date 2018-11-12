@@ -56,7 +56,9 @@ namespace Render {
 			int width;
 			int height;
 			bool lighting;
-			int antialiasSamples;
+			int minSamples;
+			int maxSamples;
+			float sampleThreshold;
 			Lighter::Master::Settings lighterSettings;
 		};
 

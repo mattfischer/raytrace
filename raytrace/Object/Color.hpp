@@ -13,10 +13,13 @@ namespace Object {
 		float blue() const;
 
 		Color operator+(const Color &b) const;
+		Color operator-(const Color &b) const;
 		Color &operator+=(const Color &b);
 		Color operator/(float b) const;
 		Color operator*(const Color &b) const;
 		Color operator*(float b) const;
+
+		float magnitude2() const;
 
 	protected:
 		float mRed;

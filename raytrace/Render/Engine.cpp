@@ -251,8 +251,15 @@ namespace Render {
 	{
 		std::uniform_real_distribution<float> dist(0, 1);
 		Object::Color color;
-		Object::Radiance radiance;
-		for (int i = 0; i < mSettings.antialiasSamples; i++) {
+
+		Object::Radiance totalRadiance;
+		Object::Color totalColor;
+		int numSamples = 0;
+
+		const int runLength = 10;
+		Object::Color colors[runLength];
+		int colorIdx = 0;
+		while(true) {
 			Math::Bivector dv;
 			float u = dist(thread.randomEngine());
 			float v = dist(thread.randomEngine());
@@ -262,24 +269,36 @@ namespace Render {
 			Math::Point2D aperturePoint(u, v);
 			Render::Beam beam = thread.tracer().createCameraPixelBeam(imagePoint, aperturePoint);
 			Render::Intersection intersection = thread.tracer().intersect(beam);
+			numSamples++;
 
 			if (intersection.valid())
 			{
 				if (mSettings.lighting) {
-					radiance += mLighter->light(intersection, thread.tracer(), 0);
+					totalRadiance += mLighter->light(intersection, thread.tracer(), 0);
+					color = toneMap(totalRadiance / numSamples);
 				}
 				else {
-					color += intersection.albedo();
+					totalColor += intersection.albedo();
+					color = totalColor / numSamples;
 				}
 			}
-		}
 
-		if (mSettings.lighting) {
-			radiance = radiance / mSettings.antialiasSamples;
-			color = toneMap(radiance);
-		}
-		else {
-			color = color / mSettings.antialiasSamples;
+			if (numSamples > mSettings.minSamples) {
+				if (numSamples >= mSettings.maxSamples) {
+					break;
+				}
+				float variance = 0;
+				int numVarianceSamples = std::min(runLength, numSamples);
+				for (int i = 0; i < numVarianceSamples; i++) {
+					variance += (colors[i] - color).magnitude2() / numVarianceSamples;
+				}
+				if (variance < mSettings.sampleThreshold * mSettings.sampleThreshold) {
+					break;
+				}
+			}
+
+			colors[colorIdx] = color;
+			colorIdx = (colorIdx + 1) % runLength;
 		}
 
 		mFramebuffer->setPixel(x, y, color);

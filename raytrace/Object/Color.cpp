@@ -35,6 +35,11 @@ namespace Object {
 		return Color(mRed + b.mRed, mGreen + b.mGreen, mBlue + b.mBlue);
 	}
 
+	Color Color::operator-(const Color &b) const
+	{
+		return Color(mRed - b.mRed, mGreen - b.mGreen, mBlue - b.mBlue);
+	}
+
 	Color &Color::operator+=(const Color &b)
 	{
 		mRed += b.mRed;
@@ -57,5 +62,10 @@ namespace Object {
 	Color Color::operator*(float b) const
 	{
 		return Color(mRed * b, mGreen * b, mBlue * b);
+	}
+
+	float Color::magnitude2() const
+	{
+		return mRed * mRed + mGreen * mGreen + mBlue * mBlue;
 	}
 }

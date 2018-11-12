@@ -17,7 +17,10 @@
 #define IDC_RENDER_STATUS               1012
 #define IDC_THRESHOLD                   1013
 #define IDC_AA_SAMPLES                  1013
+#define IDC_MIN_SAMPLES                 1013
 #define IDC_MAX_GEN                     1014
+#define IDC_MAX_SAMPLES2                1014
+#define IDC_MAX_SAMPLES                 1014
 #define IDC_RADIANT                     1015
 #define IDC_DIRECT                      1016
 #define IDC_DIRECT_SAMPLES              1017
@@ -31,6 +34,7 @@
 #define IDC_SPECULAR_SAMPLES            1024
 #define IDC_DIRECT_SAMPLES3             1025
 #define IDC_SPECULAR_MAX_GENERATION     1025
+#define IDC_SAMPLE_THRESHOLD            1026
 
 // Next default values for new objects
 // 

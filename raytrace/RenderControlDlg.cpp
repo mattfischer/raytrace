@@ -13,13 +13,15 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.width = 800;
 	mSettings.height = 600;
 	mSettings.lighting = true;
-	mSettings.antialiasSamples = 9;
+	mSettings.minSamples = 100;
+	mSettings.maxSamples = 10000;
+	mSettings.sampleThreshold = 0.0005;
 	mSettings.lighterSettings.radiantLighting = true;
 	mSettings.lighterSettings.specularLighting = true;
-	mSettings.lighterSettings.specularSamples = 4;
+	mSettings.lighterSettings.specularSamples = 1;
 	mSettings.lighterSettings.specularMaxGeneration = 2;
 	mSettings.lighterSettings.directLighting = true;
-	mSettings.lighterSettings.directSamples = 32;
+	mSettings.lighterSettings.directSamples = 1;
 	mSettings.lighterSettings.indirectLighting = true;
 	mSettings.lighterSettings.indirectSamples = 1000;
 	mSettings.lighterSettings.indirectDirectSamples = 10;
@@ -75,7 +77,10 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		SetDlgItemInt(hwndDlg, IDC_WIDTH, mSettings.width, TRUE);
 		SetDlgItemInt(hwndDlg, IDC_HEIGHT, mSettings.height, TRUE);
 		CheckDlgButton(hwndDlg, IDC_LIGHTING, mSettings.lighting ? BST_CHECKED : BST_UNCHECKED);
-		SetDlgItemInt(hwndDlg, IDC_AA_SAMPLES, mSettings.antialiasSamples, TRUE);
+		SetDlgItemInt(hwndDlg, IDC_MIN_SAMPLES, mSettings.minSamples, TRUE);
+		SetDlgItemInt(hwndDlg, IDC_MAX_SAMPLES, mSettings.maxSamples, TRUE);
+		sprintf_s(buf, sizeof(buf), "%.4f", mSettings.sampleThreshold);
+		SetDlgItemText(hwndDlg, IDC_SAMPLE_THRESHOLD, buf);
 		SendDlgItemMessage(hwndDlg, IDC_MAX_GEN_SPIN, UDM_SETRANGE, 0, MAKELPARAM(20, 1));
 		CheckDlgButton(hwndDlg, IDC_RADIANT, mSettings.lighterSettings.radiantLighting ? BST_CHECKED : BST_UNCHECKED);
 		CheckDlgButton(hwndDlg, IDC_SPECULAR, mSettings.lighterSettings.specularLighting ? BST_CHECKED : BST_UNCHECKED);
@@ -87,7 +92,7 @@ INT_PTR CALLBACK RenderControlDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 		SetDlgItemInt(hwndDlg, IDC_INDIRECT_SAMPLES, mSettings.lighterSettings.indirectSamples, TRUE);
 		SetDlgItemInt(hwndDlg, IDC_INDIRECT_DIRECT_SAMPLES, mSettings.lighterSettings.indirectDirectSamples, TRUE);
 		CheckDlgButton(hwndDlg, IDC_IRRADIANCE_CACHING, mSettings.lighterSettings.irradianceCaching ? BST_CHECKED : BST_UNCHECKED);
-		sprintf_s(buf, sizeof(buf), "%f", mSettings.lighterSettings.irradianceCacheThreshold);
+		sprintf_s(buf, sizeof(buf), "%.3f", mSettings.lighterSettings.irradianceCacheThreshold);
 		SetDlgItemText(hwndDlg, IDC_IRRADIANCE_CACHE_THRESHOLD, buf);
 		return FALSE;
 
@@ -115,7 +120,10 @@ void RenderControlDlg::refreshSettings()
 	mSettings.width = GetDlgItemInt(mHDlg, IDC_WIDTH, NULL, TRUE);
 	mSettings.height = GetDlgItemInt(mHDlg, IDC_HEIGHT, NULL, TRUE);
 	mSettings.lighting = IsDlgButtonChecked(mHDlg, IDC_LIGHTING);
-	mSettings.antialiasSamples = GetDlgItemInt(mHDlg, IDC_AA_SAMPLES, NULL, TRUE);
+	mSettings.minSamples = GetDlgItemInt(mHDlg, IDC_MIN_SAMPLES, NULL, TRUE);
+	mSettings.maxSamples = GetDlgItemInt(mHDlg, IDC_MAX_SAMPLES, NULL, TRUE);
+	GetDlgItemText(mHDlg, IDC_SAMPLE_THRESHOLD, buf, sizeof(buf));
+	mSettings.sampleThreshold = atof(buf);
 	mSettings.lighterSettings.radiantLighting = IsDlgButtonChecked(mHDlg, IDC_RADIANT);
 	mSettings.lighterSettings.specularLighting = IsDlgButtonChecked(mHDlg, IDC_SPECULAR);
 	mSettings.lighterSettings.specularSamples = GetDlgItemInt(mHDlg, IDC_SPECULAR_SAMPLES, NULL, TRUE);
