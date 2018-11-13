@@ -1,6 +1,8 @@
 #define NOMINMAX
 #include "Render/Engine.hpp"
 
+#include "Render/Sampler.hpp"
+
 #include <algorithm>
 #include <memory>
 
@@ -259,46 +261,46 @@ namespace Render {
 		const int runLength = 10;
 		Object::Color colors[runLength];
 		int colorIdx = 0;
+		std::default_random_engine engine;
+		Sampler sampler(mSettings.minSamples, engine);
 		while(true) {
-			Math::Bivector dv;
-			float u = dist(thread.randomEngine());
-			float v = dist(thread.randomEngine());
-			Math::Point2D imagePoint(x + u, y + v);
-			u = dist(thread.randomEngine());
-			v = dist(thread.randomEngine());
-			Math::Point2D aperturePoint(u, v);
-			Render::Beam beam = thread.tracer().createCameraPixelBeam(imagePoint, aperturePoint);
-			Render::Intersection intersection = thread.tracer().intersect(beam);
-			numSamples++;
+			sampler.startSequence();
+			for (int i = 0; i < mSettings.minSamples; i++) {
+				Math::Bivector dv;
+				sampler.startSample();
+				Math::Point2D imagePoint = Math::Point2D(x, y) + sampler.getValue();
+				Math::Point2D aperturePoint = sampler.getValue();
+				Render::Beam beam = thread.tracer().createCameraPixelBeam(imagePoint, aperturePoint);
+				Render::Intersection intersection = thread.tracer().intersect(beam);
+				numSamples++;
 
-			if (intersection.valid())
-			{
-				if (mSettings.lighting) {
-					totalRadiance += mLighter->light(intersection, thread.tracer(), 0);
-					color = toneMap(totalRadiance / numSamples);
+				if (intersection.valid())
+				{
+					if (mSettings.lighting) {
+						totalRadiance += mLighter->light(intersection, thread.tracer(), 0);
+						color = toneMap(totalRadiance / numSamples);
+					}
+					else {
+						totalColor += intersection.albedo();
+						color = totalColor / numSamples;
+					}
 				}
-				else {
-					totalColor += intersection.albedo();
-					color = totalColor / numSamples;
-				}
+
+				colors[colorIdx] = color;
+				colorIdx = (colorIdx + 1) % runLength;
 			}
 
-			if (numSamples > mSettings.minSamples) {
-				if (numSamples >= mSettings.maxSamples) {
-					break;
-				}
-				float variance = 0;
-				int numVarianceSamples = std::min(runLength, numSamples);
-				for (int i = 0; i < numVarianceSamples; i++) {
-					variance += (colors[i] - color).magnitude2() / numVarianceSamples;
-				}
-				if (variance < mSettings.sampleThreshold * mSettings.sampleThreshold) {
-					break;
-				}
+			if (numSamples >= mSettings.maxSamples) {
+				break;
 			}
-
-			colors[colorIdx] = color;
-			colorIdx = (colorIdx + 1) % runLength;
+			float variance = 0;
+			int numVarianceSamples = std::min(runLength, numSamples);
+			for (int i = 0; i < numVarianceSamples; i++) {
+				variance += (colors[i] - color).magnitude2() / numVarianceSamples;
+			}
+			if (variance < mSettings.sampleThreshold * mSettings.sampleThreshold) {
+				break;
+			}
 		}
 
 		mFramebuffer->setPixel(x, y, color);
