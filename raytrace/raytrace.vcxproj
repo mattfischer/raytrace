@@ -95,7 +95,6 @@
     <ClCompile Include="Lighter\Master.cpp" />
     <ClCompile Include="Lighter\RadianceGradient.cpp" />
     <ClCompile Include="Lighter\Radiant.cpp" />
-    <ClCompile Include="Lighter\Sampler.cpp" />
     <ClCompile Include="Lighter\Specular.cpp" />
     <ClCompile Include="Lighter\Transmit.cpp" />
     <ClCompile Include="LightProbeDlg.cpp" />
@@ -158,6 +157,7 @@
     <ClCompile Include="Render\Framebuffer.cpp" />
     <ClCompile Include="Render\Intersection.cpp" />
     <ClCompile Include="Render\Beam.cpp" />
+    <ClCompile Include="Render\Sampler.cpp" />
     <ClCompile Include="Render\Tracer.cpp" />
     <ClCompile Include="Scene.tab.c" />
   </ItemGroup>
@@ -176,7 +176,6 @@
     <ClInclude Include="Lighter\Master.hpp" />
     <ClInclude Include="Lighter\RadianceGradient.hpp" />
     <ClInclude Include="Lighter\Radiant.hpp" />
-    <ClInclude Include="Lighter\Sampler.hpp" />
     <ClInclude Include="Lighter\Specular.hpp" />
     <ClInclude Include="Lighter\Transmit.hpp" />
     <ClInclude Include="LightProbeDlg.hpp" />
@@ -231,6 +230,7 @@
     <ClInclude Include="Render\Framebuffer.hpp" />
     <ClInclude Include="Render\Intersection.hpp" />
     <ClInclude Include="Render\Beam.hpp" />
+    <ClInclude Include="Render\Sampler.hpp" />
     <ClInclude Include="Render\Tracer.hpp" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>

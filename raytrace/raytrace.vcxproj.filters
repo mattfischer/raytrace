@@ -164,9 +164,6 @@
     <ClCompile Include="Math\OrthonormalBasis.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Lighter\Sampler.cpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClCompile>
     <ClCompile Include="Object\Brdf\OrenNayar.cpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClCompile>
@@ -226,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="Parse\BvhFile.cpp">
       <Filter>Source Files\Parse</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Sampler.cpp">
+      <Filter>Source Files\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -371,9 +371,6 @@
     <ClInclude Include="Math\OrthonormalBasis.hpp">
       <Filter>Source Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Lighter\Sampler.hpp">
-      <Filter>Source Files\Lighter</Filter>
-    </ClInclude>
     <ClInclude Include="Object\Brdf\OrenNayar.hpp">
       <Filter>Source Files\Object\Brdf</Filter>
     </ClInclude>
@@ -433,6 +430,9 @@
     </ClInclude>
     <ClInclude Include="Parse\BvhFile.hpp">
       <Filter>Source Files\Parse</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Sampler.hpp">
+      <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

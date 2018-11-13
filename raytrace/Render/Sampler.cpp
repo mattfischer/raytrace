@@ -1,22 +1,34 @@
-#include "Lighter/Sampler.hpp"
+#include "Render/Sampler.hpp"
 
-namespace Lighter {
+namespace Render {
 	Sampler::Sampler(int numSamples, std::default_random_engine &randomEngine)
 		: mRandomEngine(randomEngine)
 	{
+		mNumSamples = numSamples;
+		mCurrentSample = 0;
 		mStrataU = std::sqrt(numSamples);
 		mStrataV = numSamples / mStrataU;
 	}
 
-	Math::Point2D Sampler::sample(int sample)
+	void Sampler::startSequence()
+	{
+		mCurrentSample = -1;
+	}
+
+	void Sampler::startSample()
+	{
+		mCurrentSample++;
+	}
+
+	Math::Point2D Sampler::getValue()
 	{
 		std::uniform_real_distribution<float> dist(0, 1);
 		float u;
 		float v;
 
-		if (sample < mStrataU / mStrataV) {
-			int stratumU = sample / mStrataV;
-			int stratumV = sample % mStrataV;
+		if (mCurrentSample < mStrataU / mStrataV) {
+			int stratumU = mCurrentSample / mStrataV;
+			int stratumV = mCurrentSample % mStrataV;
 			u = (stratumU + dist(mRandomEngine)) / mStrataU;
 			v = (stratumV + dist(mRandomEngine)) / mStrataV;
 		}

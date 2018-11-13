@@ -1,19 +1,24 @@
-#ifndef LIGHTER_SAMPLER_HPP
-#define LIGHTER_SAMPLER_HPP
+#ifndef RENDER_SAMPLER_HPP
+#define RENDER_SAMPLER_HPP
 
 #include "Math/Point2D.hpp"
 
 #include <random>
 
-namespace Lighter {
-	class Sampler
-	{
+namespace Render {
+	class Sampler {
 	public:
 		Sampler(int numSamples, std::default_random_engine &randomEngine);
 
-		Math::Point2D sample(int sample);
+		void startSequence();
+		void startSample();
+
+		Math::Point2D getValue();
 
 	private:
+		int mNumSamples;
+		int mCurrentSample;
+
 		int mStrataU;
 		int mStrataV;
 		std::default_random_engine &mRandomEngine;

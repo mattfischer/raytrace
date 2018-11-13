@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "Lighter/Specular.hpp"
 
-#include "Lighter/Sampler.hpp"
+#include "Render/Sampler.hpp"
 
 #include <cmath>
 
@@ -34,10 +34,12 @@ namespace Lighter {
 
 			Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 
-			Sampler sampler(mNumSamples, mRandomEngine);
+			Render::Sampler sampler(mNumSamples, mRandomEngine);
+			sampler.startSequence();
 
 			for (int i = 0; i < mNumSamples; i++) {
-				Math::Point2D samplePoint = sampler.sample(i);
+				sampler.startSample();
+				Math::Point2D samplePoint = sampler.getValue();
 
 				Math::Vector incidentDirection = brdf.sample(samplePoint, normal, outgoingDirection);
 				float pdf = brdf.pdf(incidentDirection, normal, outgoingDirection);

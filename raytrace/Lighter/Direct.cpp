@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "Lighter/Direct.hpp"
 
-#include "Lighter/Sampler.hpp"
+#include "Render/Sampler.hpp"
 
 #include "Math/OrthonormalBasis.hpp"
 
@@ -36,7 +36,7 @@ namespace Lighter {
 		clearProbe();
 
 		Math::OrthonormalBasis basis(normal);
-		Lighter::Sampler sampler(mNumSamples, mRandomEngine);
+		Render::Sampler sampler(mNumSamples, mRandomEngine);
 
 		Object::Radiance radiance;
 		for (const Object::Primitive &light : tracer.scene().areaLights()) {
@@ -46,9 +46,12 @@ namespace Lighter {
 				continue;
 			}
 
+			sampler.startSequence();
+
 			float surfaceArea = shapeSampler->surfaceArea();
 			for (int i = 0; i < mNumSamples; i++) {
-				Math::Point2D surfacePoint = sampler.sample(i);
+				sampler.startSample();
+				Math::Point2D surfacePoint = sampler.getValue();
 
 				Math::Point samplePoint;
 				Math::Vector du;
