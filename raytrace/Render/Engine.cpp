@@ -11,7 +11,7 @@ namespace Render {
 
 	Engine::Thread::Thread(Engine &engine, std::function<void(Thread &, int, int)> pixelFunction)
 		: mEngine(engine)
-		, mSampler(engine.settings().minSamples)
+		, mSampler(engine.settings().minSamples, 4)
 		, mTracer(engine.scene(), engine.settings().width, engine.settings().height, mSampler)
 		, mPixelFunction(pixelFunction)
 	{
@@ -238,6 +238,8 @@ namespace Render {
 	{
 		Object::Color color;
 
+		thread.sampler().startSequence();
+		thread.sampler().startSample();
 		Render::Beam beam = thread.tracer().createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
 		Render::Intersection intersection = thread.tracer().intersect(beam);
 		if (intersection.valid())

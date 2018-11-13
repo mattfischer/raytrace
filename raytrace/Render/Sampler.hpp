@@ -8,7 +8,7 @@
 namespace Render {
 	class Sampler {
 	public:
-		Sampler(int numSamples);
+		Sampler(int numSamples, int numDimensions);
 
 		void startSequence();
 		void startSample();
@@ -16,12 +16,15 @@ namespace Render {
 		Math::Point2D getValue();
 
 	private:
+		int mNumDimensions;
 		int mNumSamples;
 		int mCurrentSample;
+		int mCurrentDimension;
 
 		int mStrataU;
 		int mStrataV;
 		std::default_random_engine mRandomEngine;
+		std::vector<int> mPermutations;
 	};
 }
 #endif
