@@ -36,7 +36,6 @@ namespace Lighter {
 		clearProbe();
 
 		Math::OrthonormalBasis basis(normal);
-		Render::Sampler sampler(mNumSamples, mRandomEngine);
 
 		Object::Radiance radiance;
 		for (const Object::Primitive &light : tracer.scene().areaLights()) {
@@ -46,12 +45,9 @@ namespace Lighter {
 				continue;
 			}
 
-			sampler.startSequence();
-
 			float surfaceArea = shapeSampler->surfaceArea();
 			for (int i = 0; i < mNumSamples; i++) {
-				sampler.startSample();
-				Math::Point2D surfacePoint = sampler.getValue();
+				Math::Point2D surfacePoint = tracer.sampler().getValue();
 
 				Math::Point samplePoint;
 				Math::Vector du;

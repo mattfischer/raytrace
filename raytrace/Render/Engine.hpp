@@ -34,7 +34,7 @@ namespace Render {
 			void start(int startX, int startY, int width, int height);
 
 			Tracer &tracer();
-			std::default_random_engine &randomEngine();
+			Sampler &sampler();
 
 		private:
 			void run();
@@ -46,8 +46,8 @@ namespace Render {
 			bool mStarted;
 			Engine &mEngine;
 			std::thread mThread;
+			Sampler mSampler;
 			Tracer mTracer;
-			std::default_random_engine mRandomEngine;
 			std::function<void(Thread &, int, int)> mPixelFunction;
 		};
 

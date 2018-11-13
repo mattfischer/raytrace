@@ -3,8 +3,6 @@
 
 #include "Lighter/Base.hpp"
 
-#include <random>
-
 namespace Lighter {
 	class Direct : public Base
 	{
@@ -17,7 +15,6 @@ namespace Lighter {
 		bool mIncludeSpecular;
 		bool mMisSpecular;
 		int mNumSpecularSamples;
-		mutable std::default_random_engine mRandomEngine;
 	};
 }
 

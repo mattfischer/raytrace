@@ -15,7 +15,7 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.lighting = true;
 	mSettings.minSamples = 100;
 	mSettings.maxSamples = 10000;
-	mSettings.sampleThreshold = 0.005;
+	mSettings.sampleThreshold = 0.001;
 	mSettings.lighterSettings.radiantLighting = true;
 	mSettings.lighterSettings.specularLighting = true;
 	mSettings.lighterSettings.specularSamples = 1;

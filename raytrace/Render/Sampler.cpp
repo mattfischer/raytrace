@@ -1,8 +1,7 @@
 #include "Render/Sampler.hpp"
 
 namespace Render {
-	Sampler::Sampler(int numSamples, std::default_random_engine &randomEngine)
-		: mRandomEngine(randomEngine)
+	Sampler::Sampler(int numSamples)
 	{
 		mNumSamples = numSamples;
 		mCurrentSample = 0;

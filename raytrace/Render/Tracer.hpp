@@ -4,6 +4,7 @@
 #include "Object/Scene.hpp"
 #include "Render/Intersection.hpp"
 #include "Render/Beam.hpp"
+#include "Render/Sampler.hpp"
 
 #include "Math/Ray.hpp"
 
@@ -11,7 +12,7 @@ namespace Render {
 	class Tracer
 	{
 	public:
-		Tracer(const Object::Scene &scene, int width, int height);
+		Tracer(const Object::Scene &scene, int width, int height, Sampler &sampler);
 
 		const Object::Scene &scene() const;
 
@@ -21,10 +22,13 @@ namespace Render {
 
 		float projectedPixelSize(float distance);
 
+		Sampler &sampler();
+
 	protected:
 		const Object::Scene &mScene;
 		int mWidth;
 		int mHeight;
+		Sampler &mSampler;
 	};
 }
 

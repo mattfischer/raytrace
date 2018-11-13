@@ -11,7 +11,8 @@ namespace Render {
 
 	Engine::Thread::Thread(Engine &engine, std::function<void(Thread &, int, int)> pixelFunction)
 		: mEngine(engine)
-		, mTracer(engine.scene(), engine.settings().width, engine.settings().height)
+		, mSampler(engine.settings().minSamples)
+		, mTracer(engine.scene(), engine.settings().width, engine.settings().height, mSampler)
 		, mPixelFunction(pixelFunction)
 	{
 		mStarted = false;
@@ -52,9 +53,9 @@ namespace Render {
 		return mTracer;
 	}
 
-	std::default_random_engine &Engine::Thread::randomEngine()
+	Sampler &Engine::Thread::sampler()
 	{
-		return mRandomEngine;
+		return mSampler;
 	}
 
 	Engine::Engine(const Object::Scene &scene)
@@ -261,15 +262,13 @@ namespace Render {
 		const int runLength = 10;
 		Object::Color colors[runLength];
 		int colorIdx = 0;
-		std::default_random_engine engine;
-		Sampler sampler(mSettings.minSamples, engine);
 		while(true) {
-			sampler.startSequence();
+			thread.sampler().startSequence();
 			for (int i = 0; i < mSettings.minSamples; i++) {
 				Math::Bivector dv;
-				sampler.startSample();
-				Math::Point2D imagePoint = Math::Point2D(x, y) + sampler.getValue();
-				Math::Point2D aperturePoint = sampler.getValue();
+				thread.sampler().startSample();
+				Math::Point2D imagePoint = Math::Point2D(x, y) + thread.sampler().getValue();
+				Math::Point2D aperturePoint = thread.sampler().getValue();
 				Render::Beam beam = thread.tracer().createCameraPixelBeam(imagePoint, aperturePoint);
 				Render::Intersection intersection = thread.tracer().intersect(beam);
 				numSamples++;

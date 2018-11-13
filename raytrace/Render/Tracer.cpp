@@ -12,8 +12,8 @@
 #include <algorithm>
 
 namespace Render {
-	Tracer::Tracer(const Object::Scene &scene, int width, int height)
-		: mScene(scene)
+	Tracer::Tracer(const Object::Scene &scene, int width, int height, Sampler &sampler)
+		: mScene(scene), mSampler(sampler)
 	{
 		mWidth = width;
 		mHeight = height;
@@ -96,5 +96,10 @@ namespace Render {
 	float Tracer::projectedPixelSize(float distance)
 	{
 		return mScene.camera().projectSize(2.0f / mWidth, distance);
+	}
+
+	Sampler &Tracer::sampler()
+	{
+		return mSampler;
 	}
 }

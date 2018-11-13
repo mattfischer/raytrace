@@ -4,8 +4,6 @@
 #include "Lighter/Base.hpp"
 #include "Render/Engine.hpp"
 
-#include <random>
-
 namespace Lighter {
 	class Specular : public Base
 	{
@@ -20,7 +18,6 @@ namespace Lighter {
 		int mMaxGeneration;
 		bool mMisDirect;
 		int mNumDirectSamples;
-		mutable std::default_random_engine mRandomEngine;
 	};
 }
 

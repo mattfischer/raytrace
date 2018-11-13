@@ -34,12 +34,8 @@ namespace Lighter {
 
 			Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 
-			Render::Sampler sampler(mNumSamples, mRandomEngine);
-			sampler.startSequence();
-
 			for (int i = 0; i < mNumSamples; i++) {
-				sampler.startSample();
-				Math::Point2D samplePoint = sampler.getValue();
+				Math::Point2D samplePoint = tracer.sampler().getValue();
 
 				Math::Vector incidentDirection = brdf.sample(samplePoint, normal, outgoingDirection);
 				float pdf = brdf.pdf(incidentDirection, normal, outgoingDirection);
