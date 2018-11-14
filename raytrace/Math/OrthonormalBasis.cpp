@@ -1,28 +1,15 @@
 #include "Math/OrthonormalBasis.hpp"
 
+#include <cmath>
+
 namespace Math {
 	OrthonormalBasis::OrthonormalBasis(const Math::Vector &z)
 	{
-		Math::Vector x;
-		Math::Vector y;
-
-		Math::Vector vectors[] = { Math::Vector(1,0,0), Math::Vector(0,1,0), Math::Vector(0,0,1) };
-
-		for (const Math::Vector &v : vectors) {
-			Math::Vector p = v - z * (v * z);
-			if (p.magnitude2() > x.magnitude2()) {
-				y = x;
-				x = p;
-			}
-			else if (p.magnitude2() > y.magnitude2()) {
-				y = p;
-			}
-		}
-
-		x = x.normalize();
-		y = y - x * (x * y);
-
-		y = y.normalize();
+		float sign = std::copysignf(1.0f, z.z());
+		const float a = -1.0f / (sign + z.z());
+		const float b = z.x() *	z.y() *	a;
+		Math::Vector x(1.0f + sign * z.x() * z.x() * a, sign * b, -sign * z.x());
+		Math::Vector y(b, sign + z.y() * z.y() * a, -z.y());
 
 		mMatrix = Math::Matrix(x.x(), y.x(), z.x(), 0,
 							   x.y(), y.y(), z.y(), 0,
