@@ -24,7 +24,7 @@ RenderControlDlg::RenderControlDlg()
 	mSettings.lighterSettings.directSamples = 1;
 	mSettings.lighterSettings.indirectLighting = true;
 	mSettings.lighterSettings.indirectSamples = 1000;
-	mSettings.lighterSettings.indirectDirectSamples = 10;
+	mSettings.lighterSettings.indirectDirectSamples = 1;
 	mSettings.lighterSettings.irradianceCaching = true;
 	mSettings.lighterSettings.irradianceCacheThreshold = 0.1;
 }

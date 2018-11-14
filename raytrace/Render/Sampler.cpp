@@ -1,63 +1,63 @@
 #include "Render/Sampler.hpp"
 
 #include <algorithm>
+#include <tuple>
 
 namespace Render {
-	Sampler::Sampler(int numSamples, int numDimensions)
-	{
-		mNumDimensions = numDimensions;
-		mNumSamples = numSamples;
-		mCurrentSample = 0;
-		mStrataU = std::sqrt(numSamples);
-		mStrataV = numSamples / mStrataU;
+	const int sPrimes[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31 };
 
-		mPermutations.resize(mNumSamples * mNumDimensions);
-		for (int i = 0; i < mNumDimensions; i++) {
-			for (int j = 0; j < mNumSamples; j++) {
-				mPermutations[i * mNumSamples + j] = j;
-			}
-			std::shuffle(mPermutations.begin() + i * mNumSamples, mPermutations.begin() + (i + 1) * mNumSamples, mRandomEngine);
-		}
+	Sampler::Sampler(unsigned int numDimensions)
+	{
+		mNumDimensions = std::min((unsigned int)numDimensions, sizeof(sPrimes) / sizeof(sPrimes[0]));
+		mLastSamples.resize(mNumDimensions);
 	}
 
 	void Sampler::startSequence()
 	{
-		mCurrentSample = -1;
 		mCurrentDimension = 0;
+		for (std::tuple<int, int> &sample : mLastSamples) {
+			sample = std::make_tuple(0, 1);
+		}
 	}
 
 	void Sampler::startSample()
 	{
-		mCurrentSample++;
 		mCurrentDimension = 0;
 	}
 
-	Math::Point2D Sampler::getValue()
+	float Sampler::getValue()
 	{
-		std::uniform_real_distribution<float> dist(0, 1);
-		float u;
-		float v;
+		if (mCurrentDimension >= mNumDimensions) {
+			std::uniform_real_distribution<float> dist(0, 1);
+			return dist(mRandomEngine);
+		}
 
-		int sample;
-		if (mCurrentDimension < mNumDimensions) {
-			sample = mPermutations[mCurrentDimension * mNumSamples + mCurrentSample];
+		int b = sPrimes[mCurrentDimension];
+
+		int N;
+		int D;
+		std::tie(N, D) = mLastSamples[mCurrentDimension];
+
+		int X = D - N;
+		if (X == 1) {
+			N = 1;
+			D = b * D;
 		}
 		else {
-			sample = mCurrentSample;
+			int Y = D / b;
+			while (X <= Y) {
+				Y = Y / b;
+			}
+			N = (b + 1) * Y - X;
 		}
+
+		mLastSamples[mCurrentDimension] = std::make_tuple(N, D);
 		mCurrentDimension++;
+		return (float)N / (float)D;
+	}
 
-		if (sample < mStrataU / mStrataV) {
-			int stratumU = sample / mStrataV;
-			int stratumV = sample % mStrataV;
-			u = (stratumU + dist(mRandomEngine)) / mStrataU;
-			v = (stratumV + dist(mRandomEngine)) / mStrataV;
-		}
-		else {
-			u = dist(mRandomEngine);
-			v = dist(mRandomEngine);
-		}
-
-		return Math::Point2D(u, v);
+	Math::Point2D Sampler::getValue2D()
+	{
+		return Math::Point2D(getValue(), getValue());
 	}
 }

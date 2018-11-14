@@ -47,7 +47,7 @@ namespace Lighter {
 
 			float surfaceArea = shapeSampler->surfaceArea();
 			for (int i = 0; i < mNumSamples; i++) {
-				Math::Point2D surfacePoint = tracer.sampler().getValue();
+				Math::Point2D surfacePoint = tracer.sampler().getValue2D();
 
 				Math::Point samplePoint;
 				Math::Vector du;

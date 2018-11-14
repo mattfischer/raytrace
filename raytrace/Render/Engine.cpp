@@ -11,7 +11,7 @@ namespace Render {
 
 	Engine::Thread::Thread(Engine &engine, std::function<void(Thread &, int, int)> pixelFunction)
 		: mEngine(engine)
-		, mSampler(engine.settings().minSamples, 4)
+		, mSampler(8)
 		, mTracer(engine.scene(), engine.settings().width, engine.settings().height, mSampler)
 		, mPixelFunction(pixelFunction)
 	{
@@ -239,7 +239,6 @@ namespace Render {
 		Object::Color color;
 
 		thread.sampler().startSequence();
-		thread.sampler().startSample();
 		Render::Beam beam = thread.tracer().createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
 		Render::Intersection intersection = thread.tracer().intersect(beam);
 		if (intersection.valid())
@@ -264,43 +263,44 @@ namespace Render {
 		const int runLength = 10;
 		Object::Color colors[runLength];
 		int colorIdx = 0;
+		thread.sampler().startSequence();
 		while(true) {
-			thread.sampler().startSequence();
-			for (int i = 0; i < mSettings.minSamples; i++) {
-				Math::Bivector dv;
-				thread.sampler().startSample();
-				Math::Point2D imagePoint = Math::Point2D(x, y) + thread.sampler().getValue();
-				Math::Point2D aperturePoint = thread.sampler().getValue();
-				Render::Beam beam = thread.tracer().createCameraPixelBeam(imagePoint, aperturePoint);
-				Render::Intersection intersection = thread.tracer().intersect(beam);
-				numSamples++;
+			Math::Bivector dv;
+			thread.sampler().startSample();
+			Math::Point2D imagePoint = Math::Point2D(x, y) + thread.sampler().getValue2D();
+			Math::Point2D aperturePoint = thread.sampler().getValue2D();
+			Render::Beam beam = thread.tracer().createCameraPixelBeam(imagePoint, aperturePoint);
+			Render::Intersection intersection = thread.tracer().intersect(beam);
+			numSamples++;
 
-				if (intersection.valid())
-				{
-					if (mSettings.lighting) {
-						totalRadiance += mLighter->light(intersection, thread.tracer(), 0);
-						color = toneMap(totalRadiance / numSamples);
-					}
-					else {
-						totalColor += intersection.albedo();
-						color = totalColor / numSamples;
-					}
+			if (intersection.valid())
+			{
+				if (mSettings.lighting) {
+					totalRadiance += mLighter->light(intersection, thread.tracer(), 0);
+					color = toneMap(totalRadiance / numSamples);
 				}
-
-				colors[colorIdx] = color;
-				colorIdx = (colorIdx + 1) % runLength;
+				else {
+					totalColor += intersection.albedo();
+					color = totalColor / numSamples;
+				}
 			}
+
+			colors[colorIdx] = color;
+			colorIdx = (colorIdx + 1) % runLength;
 
 			if (numSamples >= mSettings.maxSamples) {
 				break;
 			}
-			float variance = 0;
-			int numVarianceSamples = std::min(runLength, numSamples);
-			for (int i = 0; i < numVarianceSamples; i++) {
-				variance += (colors[i] - color).magnitude2() / numVarianceSamples;
-			}
-			if (variance < mSettings.sampleThreshold * mSettings.sampleThreshold) {
-				break;
+
+			if (numSamples > mSettings.minSamples) {
+				float variance = 0;
+				int numVarianceSamples = std::min(runLength, numSamples);
+				for (int i = 0; i < numVarianceSamples; i++) {
+					variance += (colors[i] - color).magnitude2() / numVarianceSamples;
+				}
+				if (variance < mSettings.sampleThreshold * mSettings.sampleThreshold) {
+					break;
+				}
 			}
 		}
 

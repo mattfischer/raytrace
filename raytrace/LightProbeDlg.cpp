@@ -79,7 +79,7 @@ INT_PTR CALLBACK LightProbeDlg::dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
 
 void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 {
-	Render::Sampler sampler(engine.settings().minSamples, 0);
+	Render::Sampler sampler(0);
 	Render::Tracer tracer(engine.scene(), engine.settings().width, engine.settings().height, sampler);
 	Render::Beam beam = tracer.createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
 

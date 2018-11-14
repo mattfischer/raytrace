@@ -3,28 +3,26 @@
 
 #include "Math/Point2D.hpp"
 
+#include <vector>
 #include <random>
 
 namespace Render {
 	class Sampler {
 	public:
-		Sampler(int numSamples, int numDimensions);
+		Sampler(unsigned int numDimensions);
 
 		void startSequence();
 		void startSample();
 
-		Math::Point2D getValue();
+		float getValue();
+		Math::Point2D getValue2D();
 
 	private:
-		int mNumDimensions;
-		int mNumSamples;
-		int mCurrentSample;
-		int mCurrentDimension;
-
-		int mStrataU;
-		int mStrataV;
+		unsigned int mNumDimensions;
+		unsigned int mCurrentDimension;
 		std::default_random_engine mRandomEngine;
-		std::vector<int> mPermutations;
+
+		std::vector<std::tuple<int, int>> mLastSamples;
 	};
 }
 #endif

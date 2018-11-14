@@ -119,6 +119,7 @@ namespace Lighter {
 				if (intersection2.valid()) {
 					mean += 1 / intersection2.distance();
 					den++;
+					tracer.sampler().startSample();
 					Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer, 1);
 
 					samples[k * M + j] = incidentRadiance;
