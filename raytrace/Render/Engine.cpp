@@ -11,7 +11,7 @@ namespace Render {
 
 	Engine::Thread::Thread(Engine &engine, std::function<void(Thread &, int, int)> pixelFunction)
 		: mEngine(engine)
-		, mSampler(8)
+		, mSampler(10)
 		, mTracer(engine.scene(), engine.settings().width, engine.settings().height, mSampler)
 		, mPixelFunction(pixelFunction)
 	{
