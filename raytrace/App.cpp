@@ -75,6 +75,7 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 	switch(iMsg)
 	{
 		case WM_DESTROY:
+			mEngine->stop();
 			PostQuitMessage(0);
 			break;
 

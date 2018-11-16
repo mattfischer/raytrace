@@ -3,6 +3,8 @@
 
 #include "Render/Tracer.hpp"
 #include "Render/Intersection.hpp"
+#include "Render/Job.hpp"
+#include "Render/Framebuffer.hpp"
 
 #include "Math/Vector.hpp"
 #include "Object/Radiance.hpp"
@@ -25,7 +27,7 @@ namespace Lighter {
 		};
 
 		virtual Object::Radiance light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const = 0;
-		virtual bool prerender(const Render::Intersection &intersection, Render::Tracer &tracer);
+		virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(Render::Framebuffer &framebuffer);
 
 		void enableProbe(bool enabled);
 		const Probe &probe() const;

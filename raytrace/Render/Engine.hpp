@@ -7,12 +7,15 @@
 
 #include "Render/Framebuffer.hpp"
 #include "Render/Tracer.hpp"
+#include "Render/Job.hpp"
+
 #include "Lighter/Master.hpp"
 
 #include <set>
 #include <thread>
 #include <mutex>
 #include <random>
+#include <deque>
 
 #include <windows.h>
 
@@ -24,31 +27,6 @@ namespace Render {
 		public:
 			virtual void onRenderDone() = 0;
 			virtual void onRenderStatus(const char *message) = 0;
-		};
-
-		class Thread
-		{
-		public:
-			Thread(Engine &engine, std::function<void(Thread &, int, int)> pixelFunction);
-
-			void start(int startX, int startY, int width, int height);
-
-			Tracer &tracer();
-			Sampler &sampler();
-
-		private:
-			void run();
-
-			int mStartX;
-			int mStartY;
-			int mWidth;
-			int mHeight;
-			bool mStarted;
-			Engine &mEngine;
-			std::thread mThread;
-			Sampler mSampler;
-			Tracer mTracer;
-			std::function<void(Thread &, int, int)> mPixelFunction;
 		};
 
 		struct Settings
@@ -64,12 +42,13 @@ namespace Render {
 
 		Engine(const Object::Scene &scene);
 
+		void stop();
+
 		const Object::Scene &scene() const;
 
 		bool rendering() const;
 
 		void startRender(Listener *listener);
-		bool threadDone(Thread *thread);
 		void setSettings(const Settings &settings);
 
 		const Settings &settings() const;
@@ -78,31 +57,27 @@ namespace Render {
 		Object::Color toneMap(const Object::Radiance &radiance) const;
 
 	private:
-		void getBlock(int block, int &x, int &y, int &w, int &h);
-		int widthInBlocks();
-		int heightInBlocks();
+		void addJob(std::unique_ptr<Job> job);
+		void runThread();
 
-		void beginPhase();
-		void endPhase();
-
-		void renderPixel(Thread &thread, int x, int y);
-		void prerenderPixel(Thread &thread, int x, int y);
+		void renderPixel(int x, int y, Tracer &tracer);
+		void renderDone();
 
 		const Object::Scene &mScene;
 		Settings mSettings;
 		Listener *mListener;
 		std::unique_ptr<Framebuffer> mFramebuffer;
-		enum class State {
-			Stopped,
-			Prerender,
-			Render
-		};
-		State mState;
+		bool mRendering;
 		DWORD mStartTime;
-		std::mutex mMutex;
-		std::set<std::unique_ptr<Thread>> mThreads;
-		int mBlocksStarted;
 		std::unique_ptr<Lighter::Master> mLighter;
+
+		std::mutex mMutex;
+		std::condition_variable mConditionVariable;
+		std::vector<std::unique_ptr<std::thread>> mThreads;
+		std::unique_ptr<Job> mCurrentJob;
+		std::deque<std::unique_ptr<Job>> mJobs;
+		int mNumRunningThreads;
+		bool mStopThreads;
 	};
 }
 

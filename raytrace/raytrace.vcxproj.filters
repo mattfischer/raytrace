@@ -227,6 +227,12 @@
     <ClCompile Include="Render\Sampler.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
+    <ClCompile Include="Render\TileJob.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Job.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -432,6 +438,12 @@
       <Filter>Source Files\Parse</Filter>
     </ClInclude>
     <ClInclude Include="Render\Sampler.hpp">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\TileJob.hpp">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Job.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>

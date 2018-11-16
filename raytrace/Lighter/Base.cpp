@@ -5,9 +5,9 @@ namespace Lighter {
 	{
 	}
 
-	bool Base::prerender(const Render::Intersection &intersection, Render::Tracer &tracer)
+	std::vector<std::unique_ptr<Render::Job>> Base::createPrerenderJobs(Render::Framebuffer &framebuffer)
 	{
-		return false;
+		return std::vector<std::unique_ptr<Render::Job>>();
 	}
 
 	const Base::Probe &Base::probe() const

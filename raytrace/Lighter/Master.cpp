@@ -38,15 +38,16 @@ namespace Lighter {
 		return radiance;
 	}
 
-	bool Master::prerender(const Render::Intersection &intersection, Render::Tracer &tracer) const
+	std::vector<std::unique_ptr<Render::Job>> Master::createPrerenderJobs(Render::Framebuffer &framebuffer)
 	{
-		bool ret = false;
+		std::vector<std::unique_ptr<Render::Job>> jobs;
 		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
-			if (lighter->prerender(intersection, tracer)) {
-				ret = true;
+			std::vector<std::unique_ptr<Render::Job>> newJobs = lighter->createPrerenderJobs(framebuffer);
+			for (std::unique_ptr<Render::Job> &job : newJobs) {
+				jobs.push_back(std::move(job));
 			}
 		}
 
-		return ret;
+		return jobs;
 	}
 }

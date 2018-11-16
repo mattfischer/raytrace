@@ -1,68 +1,40 @@
 #define NOMINMAX
 #include "Render/Engine.hpp"
 
-#include "Render/Sampler.hpp"
+#include "Render/TileJob.hpp"
 
 #include <algorithm>
 #include <memory>
 
 namespace Render {
-	static const int BLOCK_SIZE = 64;
-
-	Engine::Thread::Thread(Engine &engine, std::function<void(Thread &, int, int)> pixelFunction)
-		: mEngine(engine)
-		, mSampler(10)
-		, mTracer(engine.scene(), engine.settings().width, engine.settings().height, mSampler)
-		, mPixelFunction(pixelFunction)
-	{
-		mStarted = false;
-	}
-
-	void Engine::Thread::start(int startX, int startY, int width, int height)
-	{
-		mStartX = startX;
-		mStartY = startY;
-		mWidth = width;
-		mHeight = height;
-
-		if (!mStarted) {
-			mStarted = true;
-			mThread = std::thread([=] { run(); });
-			mThread.detach();
-		}
-	}
-
-	void Engine::Thread::run()
-	{
-		while (true) {
-			for (int y = mStartY; y < mStartY + mHeight; y++) {
-				for (int x = mStartX; x < mStartX + mWidth; x++) {
-					mPixelFunction(*this, x, y);
-				}
-			}
-
-			bool stop = mEngine.threadDone(this);
-			if (stop) {
-				break;
-			}
-		}
-	}
-
-	Tracer &Engine::Thread::tracer()
-	{
-		return mTracer;
-	}
-
-	Sampler &Engine::Thread::sampler()
-	{
-		return mSampler;
-	}
-
 	Engine::Engine(const Object::Scene &scene)
 		: mScene(scene)
 	{
-		mState = State::Stopped;
+		mRendering = false;
 		mFramebuffer = std::make_unique<Framebuffer>(0, 0);
+		mStopThreads = false;
+
+		SYSTEM_INFO sysinfo;
+		GetSystemInfo(&sysinfo);
+		int numThreads = sysinfo.dwNumberOfProcessors;
+
+		mNumRunningThreads = 0;
+		for (int i = 0; i < numThreads; i++) {
+			mThreads.push_back(std::make_unique<std::thread>([=]() { runThread(); }));
+		}
+	}
+
+	void Engine::stop()
+	{
+		{
+			std::unique_lock<std::mutex> lock(mMutex);
+			mStopThreads = true;
+			mConditionVariable.notify_all();
+		}
+
+		for (std::unique_ptr<std::thread> &thread : mThreads) {
+			thread->join();
+		}
 	}
 
 	const Object::Scene &Engine::scene() const
@@ -73,138 +45,27 @@ namespace Render {
 	void Engine::startRender(Listener *listener)
 	{
 		mListener = listener;
-		mState = State::Prerender;
+		mRendering = true;
 		mListener->onRenderStatus("");
 
 		mStartTime = GetTickCount();
 
-		mLighter = std::make_unique<Lighter::Master>(mSettings.lighterSettings);
+		if (mSettings.lighting) {
+			mLighter = std::make_unique<Lighter::Master>(mSettings.lighterSettings);
+			std::vector<std::unique_ptr<Job>> prerenderJobs = mLighter->createPrerenderJobs(*mFramebuffer);
+			for (std::unique_ptr<Job> &job : prerenderJobs) {
+				addJob(std::move(job));
+			}
+		}
 
-		beginPhase();
+		std::unique_ptr<Job> renderJob = std::make_unique<TileJob>(*mFramebuffer, [=](int x, int y, Framebuffer &, Tracer &tracer) { renderPixel(x, y, tracer); } );
+		renderJob->setDoneHandler([=]() { renderDone(); } );
+		addJob(std::move(renderJob));
 	}
 
 	bool Engine::rendering() const
 	{
-		return mState != State::Stopped;
-	}
-
-	bool Engine::threadDone(Thread *doneThread)
-	{
-		bool ret;
-
-		std::lock_guard<std::mutex> guard(mMutex);
-
-		if (mBlocksStarted < widthInBlocks() * heightInBlocks()) {
-			int x, y;
-			int w, h;
-
-			getBlock(mBlocksStarted, x, y, w, h);
-			doneThread->start(x, y, w, h);
-			mBlocksStarted++;
-			ret = false;
-		}
-		else {
-			for (const std::unique_ptr<Thread> &thread : mThreads) {
-				if (thread.get() == doneThread) {
-					mThreads.erase(thread);
-				}
-			}
-
-			if (mThreads.size() == 0) {
-				endPhase();
-			}
-			ret = true;
-		}
-
-		return ret;
-	}
-
-	void Engine::getBlock(int block, int &x, int &y, int &w, int &h)
-	{
-		int row = block / widthInBlocks();
-		int col = block % widthInBlocks();
-
-		x = col * BLOCK_SIZE;
-		y = row * BLOCK_SIZE;
-		w = std::min(BLOCK_SIZE, mSettings.width - x);
-		h = std::min(BLOCK_SIZE, mSettings.height - y);
-	}
-
-	void Engine::beginPhase()
-	{
-		SYSTEM_INFO sysinfo;
-		GetSystemInfo(&sysinfo);
-		int numThreads = sysinfo.dwNumberOfProcessors;
-		mBlocksStarted = 0;
-		for (int i = 0; i<numThreads; i++) {
-			int x, y;
-			int w, h;
-			getBlock(mBlocksStarted, x, y, w, h);
-
-			std::function<void(Thread&, int, int)> func;
-			switch (mState) {
-			case State::Prerender:
-				func = [&](Thread &thread, int x, int y) { prerenderPixel(thread, x, y); };
-				break;
-
-			case State::Render:
-				func = [&](Thread &thread, int x, int y) { renderPixel(thread, x, y); };
-				break;
-			}
-			std::unique_ptr<Thread> thread = std::make_unique<Thread>(*this, func);
-			thread->start(x, y, w, h);
-			mThreads.insert(std::move(thread));
-			mBlocksStarted++;
-		}
-	}
-
-	void Engine::endPhase()
-	{
-		switch (mState) {
-		case State::Prerender:
-			mState = State::Render;
-			beginPhase();
-			break;
-
-		case State::Render:
-		{
-			mState = State::Stopped;
-
-			DWORD endTime = GetTickCount();
-			char buf[256];
-			float seconds = (endTime - mStartTime) / 1000.0f;
-			int hours = seconds / 3600;
-			seconds -= hours * 3600;
-			int minutes = seconds / 60;
-			seconds -= minutes * 60;
-			if (hours > 0) {
-				sprintf_s(buf, sizeof(buf), "Render time: %ih %im %is", hours, minutes, (int)seconds);
-			}
-			else if (minutes > 0) {
-				sprintf_s(buf, sizeof(buf), "Render time: %im %is", minutes, (int)seconds);
-			}
-			else {
-				sprintf_s(buf, sizeof(buf), "Render time: %.3fs", seconds);
-			}
-
-			mListener->onRenderStatus(buf);
-			mListener->onRenderDone();
-			break;
-		}
-
-		default:
-			break;
-		}
-	}
-
-	int Engine::widthInBlocks()
-	{
-		return (mSettings.width + BLOCK_SIZE - 1) / BLOCK_SIZE;
-	}
-
-	int Engine::heightInBlocks()
-	{
-		return (mSettings.height + BLOCK_SIZE - 1) / BLOCK_SIZE;
+		return mRendering;
 	}
 
 	const Engine::Settings &Engine::settings() const
@@ -234,26 +95,79 @@ namespace Render {
 		return Object::Color(red, green, blue);
 	}
 
-	void Engine::prerenderPixel(Thread &thread, int x, int y)
+	void Engine::addJob(std::unique_ptr<Job> job)
 	{
-		Object::Color color;
+		std::unique_lock<std::mutex> lock(mMutex);
 
-		thread.sampler().startSequence();
-		Render::Beam beam = thread.tracer().createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
-		Render::Intersection intersection = thread.tracer().intersect(beam);
-		if (intersection.valid())
-		{
-			if (mSettings.lighting && mLighter->prerender(intersection, thread.tracer())) {
-				color = Object::Color(1, 1, 1);
-			}
+		if (!mCurrentJob && mNumRunningThreads == 0) {
+			mCurrentJob = std::move(job);
+			mConditionVariable.notify_all();
 		}
-
-		mFramebuffer->setPixel(x, y, color);
+		else {
+			mJobs.push_back(std::move(job));
+		}
 	}
 
-	void Engine::renderPixel(Thread &thread, int x, int y)
+	void Engine::runThread()
 	{
-		std::uniform_real_distribution<float> dist(0, 1);
+		while (true) {
+			std::unique_lock<std::mutex> lock(mMutex);
+			if (mStopThreads) {
+				return;
+			}
+
+			mNumRunningThreads++;
+
+			bool block = false;
+
+			if (mCurrentJob) {
+				Sampler sampler(10);
+				Tracer tracer(mScene, mFramebuffer->width(), mFramebuffer->height(), sampler);
+
+				while (true) {
+					if (mStopThreads) {
+						return;
+					}
+					std::unique_ptr<Job::Task> task = mCurrentJob->getNextTask();
+
+					if (!task) {
+						block = true;
+						break;
+					}
+
+					lock.unlock();
+					(*task)(tracer);
+					lock.lock();
+				}
+			}
+
+			mNumRunningThreads--;
+
+			if (mNumRunningThreads == 0) {
+				if (mCurrentJob) {
+					mCurrentJob->done();
+					mCurrentJob.reset();
+				}
+
+				if (mJobs.size() > 0) {
+					mCurrentJob = std::move(mJobs.front());
+					mJobs.pop_front();
+					mConditionVariable.notify_all();
+					block = false;
+				}
+				else {
+					block = true;
+				}
+			}
+
+			if (block) {
+				mConditionVariable.wait(lock);
+			}
+		}
+	}
+
+	void Engine::renderPixel(int x, int y, Tracer &tracer)
+	{
 		Object::Color color;
 
 		Object::Radiance totalRadiance;
@@ -263,20 +177,20 @@ namespace Render {
 		const int runLength = 10;
 		Object::Color colors[runLength];
 		int colorIdx = 0;
-		thread.sampler().startSequence();
-		while(true) {
+		tracer.sampler().startSequence();
+		while (true) {
 			Math::Bivector dv;
-			thread.sampler().startSample();
-			Math::Point2D imagePoint = Math::Point2D(x, y) + thread.sampler().getValue2D();
-			Math::Point2D aperturePoint = thread.sampler().getValue2D();
-			Render::Beam beam = thread.tracer().createCameraPixelBeam(imagePoint, aperturePoint);
-			Render::Intersection intersection = thread.tracer().intersect(beam);
+			tracer.sampler().startSample();
+			Math::Point2D imagePoint = Math::Point2D(x, y) + tracer.sampler().getValue2D();
+			Math::Point2D aperturePoint = tracer.sampler().getValue2D();
+			Render::Beam beam = tracer.createCameraPixelBeam(imagePoint, aperturePoint);
+			Render::Intersection intersection = tracer.intersect(beam);
 			numSamples++;
 
 			if (intersection.valid())
 			{
 				if (mSettings.lighting) {
-					totalRadiance += mLighter->light(intersection, thread.tracer(), 0);
+					totalRadiance += mLighter->light(intersection, tracer, 0);
 					color = toneMap(totalRadiance / numSamples);
 				}
 				else {
@@ -305,5 +219,30 @@ namespace Render {
 		}
 
 		mFramebuffer->setPixel(x, y, color);
+	}
+
+	void Engine::renderDone()
+	{
+		DWORD endTime = GetTickCount();
+		char buf[256];
+		float seconds = (endTime - mStartTime) / 1000.0f;
+		int hours = seconds / 3600;
+		seconds -= hours * 3600;
+		int minutes = seconds / 60;
+		seconds -= minutes * 60;
+		if (hours > 0) {
+			sprintf_s(buf, sizeof(buf), "Render time: %ih %im %is", hours, minutes, (int)seconds);
+		}
+		else if (minutes > 0) {
+			sprintf_s(buf, sizeof(buf), "Render time: %im %is", minutes, (int)seconds);
+		}
+		else {
+			sprintf_s(buf, sizeof(buf), "Render time: %.3fs", seconds);
+		}
+		mRendering = false;
+		mLighter.reset();
+
+		mListener->onRenderStatus(buf);
+		mListener->onRenderDone();
 	}
 }

@@ -3,6 +3,8 @@
 
 #include "Math/OrthonormalBasis.hpp"
 
+#include "Render/TileJob.hpp"
+
 #include <cmath>
 #include <algorithm>
 
@@ -184,5 +186,29 @@ namespace Lighter {
 		}
 
 		return false;
+	}
+
+	std::vector<std::unique_ptr<Render::Job>> DiffuseIndirect::createPrerenderJobs(Render::Framebuffer &framebuffer)
+	{
+		std::vector<std::unique_ptr<Render::Job>> jobs;
+
+		auto func = [=](int x, int y, Render::Framebuffer &framebuffer, Render::Tracer &tracer) {
+			tracer.sampler().startSequence();
+			Render::Beam beam = tracer.createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
+			Render::Intersection intersection = tracer.intersect(beam);
+
+			Object::Color color;
+			if (intersection.valid())
+			{
+				if (prerender(intersection, tracer)) {
+					color = Object::Color(1, 1, 1);
+				}
+			}
+			framebuffer.setPixel(x, y, color);
+		};
+
+		jobs.push_back(std::make_unique<Render::TileJob>(framebuffer, std::move(func)));
+
+		return jobs;
 	}
 }

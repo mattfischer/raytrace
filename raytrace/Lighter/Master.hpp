@@ -27,7 +27,7 @@ namespace Lighter {
 		Master(const Settings &settings);
 
 		virtual Object::Radiance light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const;
-		virtual bool prerender(const Render::Intersection &intersection, Render::Tracer &tracer) const;
+		virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(Render::Framebuffer &framebuffer);
 
 	private:
 		std::vector<std::unique_ptr<Lighter::Base>> mLighters;
