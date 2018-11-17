@@ -57,4 +57,35 @@ namespace Object {
 	{
 		return mBoundingVolumeHierarchy;
 	}
+
+	bool Scene::intersect(const Math::Ray &ray, Shape::Base::Intersection &shapeIntersection, Object::Primitive *&primitive) const
+	{
+		Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(ray);
+
+		auto func = [&](int index, float &maxDistance) {
+			if (mPrimitives[index]->shape().intersect(ray, shapeIntersection)) {
+				primitive = mPrimitives[index].get();
+				return true;
+			}
+
+			return false;
+		};
+
+		bool valid = false;
+
+		//valid = mBoundingVolumeHierarchy.intersect(rayData, shapeIntersection.distance, std::ref(func));
+
+		for (const std::unique_ptr<Object::Primitive> &testPrimitive : mPrimitives)
+		{
+			float volumeDistance;
+			if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < shapeIntersection.distance) {
+				if (testPrimitive->shape().intersect(ray, shapeIntersection)) {
+					primitive = testPrimitive.get();
+					valid = true;
+				}
+			}
+		}
+
+		return valid;
+	}
 }

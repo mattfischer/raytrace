@@ -22,6 +22,8 @@ namespace Object {
 
 		const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
+		bool intersect(const Math::Ray &ray, Shape::Base::Intersection &shapeIntersection, Object::Primitive *&primitive) const;
+
 	protected:
 		std::unique_ptr<Camera> mCamera;
 		std::vector<std::unique_ptr<Primitive>> mPrimitives;

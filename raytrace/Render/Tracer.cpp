@@ -28,37 +28,11 @@ namespace Render {
 	{
 		const Math::Ray &ray = beam.ray();
 
-		Intersection intersection;
 		Object::Primitive *primitive = 0;
-
 		Object::Shape::Base::Intersection shapeIntersection;
 		shapeIntersection.distance = FLT_MAX;
 
-		Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(ray);
-
-		auto func = [&](int index, float &maxDistance) {
-			if (mScene.primitives()[index]->shape().intersect(ray, shapeIntersection)) {
-				primitive = mScene.primitives()[index].get();
-				return true;
-			}
-
-			return false;
-		};
-
-		bool valid = false;
-
-		//valid = mScene.boundingVolumeHierarchy().intersect(rayData, shapeIntersection.distance, std::ref(func));
-
-		for (const std::unique_ptr<Object::Primitive> &testPrimitive : mScene.primitives())
-		{
-			float volumeDistance;
-			if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < shapeIntersection.distance) {
-				if (testPrimitive->shape().intersect(ray, shapeIntersection)) {
-					primitive = testPrimitive.get();
-					valid = true;
-				}
-			}
-		}
+		bool valid = mScene.intersect(ray, shapeIntersection, primitive);
 
 		if (valid) {
 			Math::Point point = ray.origin() + ray.direction() * shapeIntersection.distance;
