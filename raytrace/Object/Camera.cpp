@@ -33,6 +33,19 @@ namespace Object {
 		return Math::Ray(q, direction);
 	}
 
+	Math::Beam Camera::createPixelBeam(const Math::Point2D &imagePoint, int width, int height, const Math::Point2D &aperturePoint) const
+	{
+		float cx = (2 * imagePoint.u() - width) / width;
+		float cy = (2 * imagePoint.v() - height) / width;
+		Math::Bivector dv;
+		Math::Point2D imagePointTransformed(cx, -cy);
+		Math::Ray ray = createRay(imagePointTransformed, aperturePoint, dv);
+
+		float pixelSize = 2.0f / width;
+
+		return Math::Beam(ray, Math::Bivector(), dv * pixelSize);
+	}
+
 	float Camera::projectSize(float size, float distance) const
 	{
 		return size * mImageSize * distance;

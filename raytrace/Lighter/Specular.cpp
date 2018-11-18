@@ -42,7 +42,7 @@ namespace Lighter {
 				float dot = incidentDirection * normal;
 				if(dot > 0) {
 					Math::Ray reflectRay(offsetPoint, incidentDirection);
-					Render::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
+					Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
 					Render::Intersection intersection2 = tracer.intersect(beam);
 
 					if (intersection2.valid()) {

@@ -24,7 +24,7 @@ namespace Render {
 		return mScene;
 	}
 
-	Intersection Tracer::intersect(const Render::Beam &beam)
+	Intersection Tracer::intersect(const Math::Beam &beam)
 	{
 		const Math::Ray &ray = beam.ray();
 
@@ -42,17 +42,9 @@ namespace Render {
 		}
 	}
 
-	Beam Tracer::createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint)
+	Math::Beam Tracer::createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint)
 	{
-		float cx = (2 * imagePoint.u() - mWidth) / mWidth;
-		float cy = (2 * imagePoint.v() - mHeight) / mWidth;
-		Math::Bivector dv;
-		Math::Point2D imagePointTransformed(cx, -cy);
-		Math::Ray ray = mScene.camera().createRay(imagePointTransformed, aperturePoint, dv);
-
-		float pixelSize = 2.0f / mWidth;
-
-		return Beam(ray, Math::Bivector(), dv * pixelSize);
+		return mScene.camera().createPixelBeam(imagePoint, mWidth, mHeight, aperturePoint);
 	}
 
 	Sampler &Tracer::sampler()

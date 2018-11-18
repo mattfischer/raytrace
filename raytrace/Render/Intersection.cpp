@@ -2,12 +2,12 @@
 
 namespace Render {
 	Intersection::Intersection()
-		: mPrimitive(*(Object::Primitive*)0), mBeam(*(Render::Beam*)0)
+		: mPrimitive(*(Object::Primitive*)0), mBeam(*(Math::Beam*)0)
 	{
 		mShapeIntersection.distance = FLT_MAX;
 	}
 
-	Intersection::Intersection(const Object::Primitive &primitive, const Render::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection)
+	Intersection::Intersection(const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection)
 		: mPrimitive(primitive), mBeam(beam), mShapeIntersection(shapeIntersection)
 	{
 		mPoint = mBeam.ray().origin() + mBeam.ray().direction() * mShapeIntersection.distance;
@@ -50,7 +50,7 @@ namespace Render {
 		return mBeam.ray();
 	}
 
-	const Render::Beam &Intersection::beam() const
+	const Math::Beam &Intersection::beam() const
 	{
 		return mBeam;
 	}

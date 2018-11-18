@@ -54,7 +54,7 @@ namespace Lighter {
 					Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
 					Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 					Math::Ray ray(offsetPoint, direction);
-					Render::Beam beam(ray, Math::Bivector(), Math::Bivector());
+					Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
 					Render::Intersection intersection2 = tracer.intersect(beam);
 
 					Math::Vector probeDirection = Math::Vector::fromPolar(phi, theta, 1);
@@ -77,7 +77,7 @@ namespace Lighter {
 	{
 		Object::Color pixelColor;
 		tracer.sampler().startSequence();
-		Render::Beam beam = tracer.createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
+		Math::Beam beam = tracer.createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
 		Render::Intersection intersection = tracer.intersect(beam);
 
 		if (intersection.valid() && intersection.primitive().surface().brdf().hasDiffuse()) {
@@ -110,7 +110,7 @@ namespace Lighter {
 
 						Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
 						Math::Ray ray(offsetPoint, direction);
-						Render::Beam beam(ray, Math::Bivector(), Math::Bivector());
+						Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
 						Render::Intersection intersection2 = tracer.intersect(beam);
 
 						if (intersection2.valid()) {

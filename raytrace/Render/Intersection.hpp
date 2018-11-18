@@ -5,10 +5,9 @@
 #include "Math/Vector.hpp"
 #include "Math/Normal.hpp"
 #include "Math/Transformation.hpp"
+#include "Math/Beam.hpp"
 
 #include "Object/Primitive.hpp"
-
-#include "Render/Beam.hpp"
 
 #include "Object/Shape/Base.hpp"
 
@@ -19,7 +18,7 @@ namespace Render {
 	{
 	public:
 		Intersection();
-		Intersection(const Object::Primitive &primitive, const Render::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection);
+		Intersection(const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection);
 
 		bool valid() const;
 
@@ -27,7 +26,7 @@ namespace Render {
 
 		float distance() const;
 		const Math::Ray &ray() const;
-		const Render::Beam &beam() const;
+		const Math::Beam &beam() const;
 		const Math::Normal &normal() const;
 		const Math::Point &point() const;
 		const Object::Color &albedo() const;
@@ -35,7 +34,7 @@ namespace Render {
 
 	protected:
 		const Object::Primitive &mPrimitive;
-		const Render::Beam &mBeam;
+		const Math::Beam &mBeam;
 		Object::Shape::Base::Intersection mShapeIntersection;
 		Math::Point mPoint;
 

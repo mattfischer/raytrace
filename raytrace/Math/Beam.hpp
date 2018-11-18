@@ -1,10 +1,10 @@
-#ifndef RENDER_BEAM_HPP
-#define RENDER_BEAM_HPP
+#ifndef MATH_BEAM_HPP
+#define MATH_BEAM_HPP
 
 #include "Math/Ray.hpp"
 #include "Math/Bivector.hpp"
 
-namespace Render {
+namespace Math {
 	class Beam
 	{
 	public:

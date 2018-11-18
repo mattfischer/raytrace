@@ -39,7 +39,7 @@ namespace Lighter {
 
 			Math::Vector incidentDirection = Math::Vector(normal) * (ratio * c1 - c2) - outgoingDirection * ratio;
 			Math::Ray transmitRay(offsetPoint, incidentDirection);
-			Render::Beam beam(transmitRay, Math::Bivector(), Math::Bivector());
+			Math::Beam beam(transmitRay, Math::Bivector(), Math::Bivector());
 			Render::Intersection intersection2 = tracer.intersect(beam);
 
 			Math::Normal incidentNormal = -normal;

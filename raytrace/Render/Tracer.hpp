@@ -3,10 +3,10 @@
 
 #include "Object/Scene.hpp"
 #include "Render/Intersection.hpp"
-#include "Render/Beam.hpp"
 #include "Render/Sampler.hpp"
 
 #include "Math/Ray.hpp"
+#include "Math/Beam.hpp"
 
 namespace Render {
 	class Tracer
@@ -16,9 +16,9 @@ namespace Render {
 
 		const Object::Scene &scene() const;
 
-		Intersection intersect(const Render::Beam &beam);
+		Intersection intersect(const Math::Beam &beam);
 
-		Beam createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint);
+		Math::Beam createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint);
 
 		Sampler &sampler();
 

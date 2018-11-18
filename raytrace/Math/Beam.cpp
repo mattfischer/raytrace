@@ -1,6 +1,6 @@
-#include "Render/Beam.hpp"
+#include "Math/Beam.hpp"
 
-namespace Render {
+namespace Math {
 	Beam::Beam(const Math::Ray &ray, const Math::Bivector &originDifferential, const Math::Bivector &directionDifferential)
 		: mRay(ray), mOriginDifferential(originDifferential), mDirectionDifferential(directionDifferential)
 	{

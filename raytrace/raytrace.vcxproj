@@ -99,6 +99,7 @@
     <ClCompile Include="Lighter\Transmit.cpp" />
     <ClCompile Include="LightProbeDlg.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Math\Beam.cpp" />
     <ClCompile Include="Math\Bivector.cpp" />
     <ClCompile Include="Math\Bivector2D.cpp" />
     <ClCompile Include="Math\Matrix.cpp" />
@@ -156,7 +157,6 @@
     <ClCompile Include="Render\Engine.cpp" />
     <ClCompile Include="Render\Framebuffer.cpp" />
     <ClCompile Include="Render\Intersection.cpp" />
-    <ClCompile Include="Render\Beam.cpp" />
     <ClCompile Include="Render\Job.cpp" />
     <ClCompile Include="Render\Sampler.cpp" />
     <ClCompile Include="Render\TileJob.cpp" />
@@ -181,6 +181,7 @@
     <ClInclude Include="Lighter\Specular.hpp" />
     <ClInclude Include="Lighter\Transmit.hpp" />
     <ClInclude Include="LightProbeDlg.hpp" />
+    <ClInclude Include="Math\Beam.hpp" />
     <ClInclude Include="Math\Bivector.hpp" />
     <ClInclude Include="Math\Bivector2D.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />
@@ -231,7 +232,6 @@
     <ClInclude Include="Render\Engine.hpp" />
     <ClInclude Include="Render\Framebuffer.hpp" />
     <ClInclude Include="Render\Intersection.hpp" />
-    <ClInclude Include="Render\Beam.hpp" />
     <ClInclude Include="Render\Job.hpp" />
     <ClInclude Include="Render\Sampler.hpp" />
     <ClInclude Include="Render\TileJob.hpp" />

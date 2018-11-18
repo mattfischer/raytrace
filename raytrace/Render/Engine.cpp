@@ -183,7 +183,7 @@ namespace Render {
 			tracer.sampler().startSample();
 			Math::Point2D imagePoint = Math::Point2D(x, y) + tracer.sampler().getValue2D();
 			Math::Point2D aperturePoint = tracer.sampler().getValue2D();
-			Render::Beam beam = tracer.createCameraPixelBeam(imagePoint, aperturePoint);
+			Math::Beam beam = tracer.createCameraPixelBeam(imagePoint, aperturePoint);
 			Render::Intersection intersection = tracer.intersect(beam);
 			numSamples++;
 
