@@ -42,11 +42,6 @@ namespace Render {
 		}
 	}
 
-	Math::Beam Tracer::createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint)
-	{
-		return mScene.camera().createPixelBeam(imagePoint, mWidth, mHeight, aperturePoint);
-	}
-
 	Sampler &Tracer::sampler()
 	{
 		return mSampler;

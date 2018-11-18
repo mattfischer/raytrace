@@ -81,7 +81,7 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 {
 	Render::Sampler sampler(0);
 	Render::Tracer tracer(engine.scene(), engine.settings().width, engine.settings().height, sampler);
-	Math::Beam beam = tracer.createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
+	Math::Beam beam = engine.scene().camera().createPixelBeam(Math::Point2D(x, y), engine.settings().width, engine.settings().height, Math::Point2D());
 
 	Render::Intersection intersection = tracer.intersect(beam);
 	if (intersection.valid()) {

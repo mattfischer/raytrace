@@ -77,7 +77,7 @@ namespace Lighter {
 	{
 		Object::Color pixelColor;
 		tracer.sampler().startSequence();
-		Math::Beam beam = tracer.createCameraPixelBeam(Math::Point2D(x, y), Math::Point2D());
+		Math::Beam beam = tracer.scene().camera().createPixelBeam(Math::Point2D(x, y), framebuffer.width(), framebuffer.height(), Math::Point2D());
 		Render::Intersection intersection = tracer.intersect(beam);
 
 		if (intersection.valid() && intersection.primitive().surface().brdf().hasDiffuse()) {

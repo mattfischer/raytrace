@@ -18,8 +18,6 @@ namespace Render {
 
 		Intersection intersect(const Math::Beam &beam);
 
-		Math::Beam createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint);
-
 		Sampler &sampler();
 
 	protected:
