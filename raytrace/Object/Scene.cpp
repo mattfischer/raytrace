@@ -58,11 +58,11 @@ namespace Object {
 		return mBoundingVolumeHierarchy;
 	}
 
-	bool Scene::intersect(const Math::Ray &ray, Shape::Base::Intersection &shapeIntersection, Object::Primitive *&primitive) const
+	Object::Intersection Scene::intersect(const Math::Beam &beam) const
 	{
-		Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(ray);
+		Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(beam.ray());
 
-		auto func = [&](int index, float &maxDistance) {
+		/*auto func = [&](int index, float &maxDistance) {
 			if (mPrimitives[index]->shape().intersect(ray, shapeIntersection)) {
 				primitive = mPrimitives[index].get();
 				return true;
@@ -71,21 +71,27 @@ namespace Object {
 			return false;
 		};
 
-		bool valid = false;
+		mBoundingVolumeHierarchy.intersect(rayData, shapeIntersection.distance, std::ref(func));*/
 
-		//valid = mBoundingVolumeHierarchy.intersect(rayData, shapeIntersection.distance, std::ref(func));
+		Object::Shape::Base::Intersection shapeIntersection;
+		shapeIntersection.distance = FLT_MAX;
+		Object::Primitive *primitive = 0;
 
 		for (const std::unique_ptr<Object::Primitive> &testPrimitive : mPrimitives)
 		{
 			float volumeDistance;
 			if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < shapeIntersection.distance) {
-				if (testPrimitive->shape().intersect(ray, shapeIntersection)) {
+				if (testPrimitive->shape().intersect(beam.ray(), shapeIntersection)) {
 					primitive = testPrimitive.get();
-					valid = true;
 				}
 			}
 		}
 
-		return valid;
+		if (primitive) {
+			return Object::Intersection(*primitive, beam, shapeIntersection);
+		}
+		else {
+			return Object::Intersection();
+		}
 	}
 }

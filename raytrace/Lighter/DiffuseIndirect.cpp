@@ -17,7 +17,7 @@ namespace Lighter {
 		mIrradianceCaching = irradianceCaching;
 	}
 
-	Object::Radiance DiffuseIndirect::light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 	{
 		if (!intersection.primitive().surface().brdf().hasDiffuse()) {
 			return Object::Radiance();
@@ -55,7 +55,7 @@ namespace Lighter {
 					Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 					Math::Ray ray(offsetPoint, direction);
 					Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-					Render::Intersection intersection2 = tracer.intersect(beam);
+					Object::Intersection intersection2 = tracer.scene().intersect(beam);
 
 					Math::Vector probeDirection = Math::Vector::fromPolar(phi, theta, 1);
 					Object::Radiance probeRadiance;
@@ -78,7 +78,8 @@ namespace Lighter {
 		Object::Color pixelColor;
 		tracer.sampler().startSequence();
 		Math::Beam beam = tracer.scene().camera().createPixelBeam(Math::Point2D(x, y), framebuffer.width(), framebuffer.height(), Math::Point2D());
-		Render::Intersection intersection = tracer.intersect(beam);
+
+		Object::Intersection intersection = tracer.scene().intersect(beam);
 
 		if (intersection.valid() && intersection.primitive().surface().brdf().hasDiffuse()) {
 			const Math::Point &point = intersection.point();
@@ -111,7 +112,7 @@ namespace Lighter {
 						Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
 						Math::Ray ray(offsetPoint, direction);
 						Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-						Render::Intersection intersection2 = tracer.intersect(beam);
+						Object::Intersection intersection2 = tracer.scene().intersect(beam);
 
 						if (intersection2.valid()) {
 							mean += 1 / intersection2.distance();

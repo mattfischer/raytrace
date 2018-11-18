@@ -5,6 +5,7 @@
 #include "Object/Primitive.hpp"
 #include "Object/Light.hpp"
 #include "Object/BoundingVolumeHierarchy.hpp"
+#include "Object/Intersection.hpp"
 
 #include <vector>
 #include <memory>
@@ -22,7 +23,7 @@ namespace Object {
 
 		const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
-		bool intersect(const Math::Ray &ray, Shape::Base::Intersection &shapeIntersection, Object::Primitive *&primitive) const;
+		Object::Intersection intersect(const Math::Beam &beam) const;
 
 	protected:
 		std::unique_ptr<Camera> mCamera;

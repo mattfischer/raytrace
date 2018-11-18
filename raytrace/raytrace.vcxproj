@@ -117,6 +117,7 @@
     <ClCompile Include="Object\BoundingVolumeHierarchy.cpp" />
     <ClCompile Include="Object\Brdf\OrenNayar.cpp" />
     <ClCompile Include="Object\Brdf\TorranceSparrow.cpp" />
+    <ClCompile Include="Object\Intersection.cpp" />
     <ClCompile Include="Object\NormalMap.cpp" />
     <ClCompile Include="Object\Primitive.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -156,7 +157,6 @@
     <ClCompile Include="RenderControlDlg.cpp" />
     <ClCompile Include="Render\Engine.cpp" />
     <ClCompile Include="Render\Framebuffer.cpp" />
-    <ClCompile Include="Render\Intersection.cpp" />
     <ClCompile Include="Render\Job.cpp" />
     <ClCompile Include="Render\Sampler.cpp" />
     <ClCompile Include="Render\TileJob.cpp" />
@@ -200,6 +200,7 @@
     <ClInclude Include="Object\BoundingVolumeHierarchy.hpp" />
     <ClInclude Include="Object\Brdf\OrenNayar.hpp" />
     <ClInclude Include="Object\Brdf\TorranceSparrow.hpp" />
+    <ClInclude Include="Object\Intersection.hpp" />
     <ClInclude Include="Object\NormalMap.hpp" />
     <ClInclude Include="Object\Primitive.hpp" />
     <ClInclude Include="Object\Brdf\Base.hpp" />
@@ -231,7 +232,6 @@
     <ClInclude Include="RenderControlDlg.hpp" />
     <ClInclude Include="Render\Engine.hpp" />
     <ClInclude Include="Render\Framebuffer.hpp" />
-    <ClInclude Include="Render\Intersection.hpp" />
     <ClInclude Include="Render\Job.hpp" />
     <ClInclude Include="Render\Sampler.hpp" />
     <ClInclude Include="Render\TileJob.hpp" />

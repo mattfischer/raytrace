@@ -2,12 +2,13 @@
 #define LIGHTER_BASE_HPP
 
 #include "Render/Tracer.hpp"
-#include "Render/Intersection.hpp"
 #include "Render/Job.hpp"
 #include "Render/Framebuffer.hpp"
 
 #include "Math/Vector.hpp"
+
 #include "Object/Radiance.hpp"
+#include "Object/Intersection.hpp"
 
 #include <vector>
 #include <memory>
@@ -26,7 +27,7 @@ namespace Lighter {
 			std::vector<Entry> entries;
 		};
 
-		virtual Object::Radiance light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const = 0;
+		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const = 0;
 		virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(Render::Framebuffer &framebuffer);
 
 		void enableProbe(bool enabled);

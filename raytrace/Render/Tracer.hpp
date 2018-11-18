@@ -2,7 +2,6 @@
 #define RENDER_TRACER_HPP
 
 #include "Object/Scene.hpp"
-#include "Render/Intersection.hpp"
 #include "Render/Sampler.hpp"
 
 #include "Math/Ray.hpp"
@@ -15,8 +14,6 @@ namespace Render {
 		Tracer(const Object::Scene &scene, int width, int height, Sampler &sampler);
 
 		const Object::Scene &scene() const;
-
-		Intersection intersect(const Math::Beam &beam);
 
 		Sampler &sampler();
 

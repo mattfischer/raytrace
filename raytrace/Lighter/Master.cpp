@@ -28,7 +28,7 @@ namespace Lighter {
 		mLighters.push_back(std::make_unique<Lighter::Transmit>(*this, settings.specularMaxGeneration));
 	}
 
-	Object::Radiance Master::light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance Master::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 	{
 		Object::Radiance radiance;
 		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {

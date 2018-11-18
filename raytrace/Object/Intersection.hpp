@@ -1,5 +1,5 @@
-#ifndef RENDER_INTERSECTION_HPP
-#define RENDER_INTERSECTION_HPP
+#ifndef OBJECT_INTERSECTION_HPP
+#define OBJECT_INTERSECTION_HPP
 
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"
@@ -13,7 +13,7 @@
 
 #include <vector>
 
-namespace Render {
+namespace Object {
 	class Intersection
 	{
 	public:

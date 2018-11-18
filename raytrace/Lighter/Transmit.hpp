@@ -11,7 +11,7 @@ namespace Lighter {
 	public:
 		Transmit(const Lighter::Base &lighter, int maxGeneration);
 
-		virtual Object::Radiance light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const;
+		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
 
 	private:
 		const Lighter::Base &mLighter;

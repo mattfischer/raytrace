@@ -1,6 +1,6 @@
-#include "Render/Intersection.hpp"
+#include "Object/Intersection.hpp"
 
-namespace Render {
+namespace Object {
 	Intersection::Intersection()
 		: mPrimitive(*(Object::Primitive*)0), mBeam(*(Math::Beam*)0)
 	{

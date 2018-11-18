@@ -24,24 +24,6 @@ namespace Render {
 		return mScene;
 	}
 
-	Intersection Tracer::intersect(const Math::Beam &beam)
-	{
-		const Math::Ray &ray = beam.ray();
-
-		Object::Primitive *primitive = 0;
-		Object::Shape::Base::Intersection shapeIntersection;
-		shapeIntersection.distance = FLT_MAX;
-
-		bool valid = mScene.intersect(ray, shapeIntersection, primitive);
-
-		if (valid) {
-			return Intersection(*primitive, beam, shapeIntersection);
-		}
-		else {
-			return Intersection();
-		}
-	}
-
 	Sampler &Tracer::sampler()
 	{
 		return mSampler;

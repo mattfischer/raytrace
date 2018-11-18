@@ -10,7 +10,7 @@ namespace Lighter {
 		mMaxGeneration = maxGeneration;
 	}
 
-	Object::Radiance Transmit::light(const Render::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance Transmit::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
 	{
 		const Object::Surface &surface = intersection.primitive().surface();
 		const Math::Ray &ray = intersection.ray();
@@ -40,7 +40,7 @@ namespace Lighter {
 			Math::Vector incidentDirection = Math::Vector(normal) * (ratio * c1 - c2) - outgoingDirection * ratio;
 			Math::Ray transmitRay(offsetPoint, incidentDirection);
 			Math::Beam beam(transmitRay, Math::Bivector(), Math::Bivector());
-			Render::Intersection intersection2 = tracer.intersect(beam);
+			Object::Intersection intersection2 = tracer.scene().intersect(beam);
 
 			Math::Normal incidentNormal = -normal;
 			float dot = incidentDirection * incidentNormal;
