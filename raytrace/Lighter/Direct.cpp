@@ -8,11 +8,9 @@
 #include "Math/OrthonormalBasis.hpp"
 
 namespace Lighter {
-	Direct::Direct(int numSamples, bool misSpecular, int numSpecularSamples)
+	Direct::Direct(bool misSpecular)
 	{
-		mNumSamples = numSamples;
 		mMisSpecular = misSpecular;
-		mNumSpecularSamples = numSpecularSamples;
 	}
 
 	Object::Radiance Direct::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
@@ -44,45 +42,43 @@ namespace Lighter {
 			}
 
 			float surfaceArea = shapeSampler->surfaceArea();
-			for (int i = 0; i < mNumSamples; i++) {
-				Math::Point2D surfacePoint = sampler.getValue2D();
+			Math::Point2D surfacePoint = sampler.getValue2D();
 
-				Math::Point samplePoint;
-				Math::Vector du;
-				Math::Vector dv;
-				Math::Normal sampleNormal;
+			Math::Point samplePoint;
+			Math::Vector du;
+			Math::Vector dv;
+			Math::Normal sampleNormal;
 
-				shapeSampler->sample(surfacePoint, samplePoint, sampleNormal);
+			shapeSampler->sample(surfacePoint, samplePoint, sampleNormal);
 
-				Math::Vector incidentDirection = samplePoint - point;
-				float distance = incidentDirection.magnitude();
-				incidentDirection = incidentDirection / distance;
+			Math::Vector incidentDirection = samplePoint - point;
+			float distance = incidentDirection.magnitude();
+			incidentDirection = incidentDirection / distance;
 
-				float dot = incidentDirection * normal;
-				if (dot > 0) {
-					Math::Point offsetPoint = point + Math::Vector(normal) * 0.0001;
-					Math::Ray ray(offsetPoint, incidentDirection);
-					Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-					Object::Intersection intersection2 = scene.intersect(beam);
+			float dot = incidentDirection * normal;
+			if (dot > 0) {
+				Math::Point offsetPoint = point + Math::Vector(normal) * 0.0001;
+				Math::Ray ray(offsetPoint, incidentDirection);
+				Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+				Object::Intersection intersection2 = scene.intersect(beam);
 
-					if (intersection2.valid() && &(intersection2.primitive()) == &light) {
-						float dot = incidentDirection * normal;
-						float sampleDot = abs(incidentDirection * sampleNormal);
-						float pdf = 1.0f / surfaceArea;
+				if (intersection2.valid() && &(intersection2.primitive()) == &light) {
+					float dot = incidentDirection * normal;
+					float sampleDot = abs(incidentDirection * sampleNormal);
+					float pdf = 1.0f / surfaceArea;
 
-						Object::Radiance incidentRadiance = objectRadiance * sampleDot * dot / (distance * distance);
-						Object::Radiance transmittedRadiance = incidentRadiance;
-						if (hasSpecular && mMisSpecular) {
-							Object::Radiance reflectedRadiance = specularBrdf.reflected(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
-							float specularPdf = specularBrdf.pdf(incidentDirection, normal, outgoingDirection) * sampleDot / (distance * distance);
-							float weight = (mNumSamples * pdf) / (mNumSamples * pdf + mNumSpecularSamples * specularPdf);
-							radiance += reflectedRadiance * weight;
-							transmittedRadiance = specularBrdf.transmitted(incidentRadiance, incidentDirection, normal, albedo);
-						}
+					Object::Radiance incidentRadiance = objectRadiance * sampleDot * dot / (distance * distance);
+					Object::Radiance transmittedRadiance = incidentRadiance;
+					if (hasSpecular && mMisSpecular) {
+						Object::Radiance reflectedRadiance = specularBrdf.reflected(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / pdf;
+						float specularPdf = specularBrdf.pdf(incidentDirection, normal, outgoingDirection) * sampleDot / (distance * distance);
+						float weight = pdf / (pdf + specularPdf);
+						radiance += reflectedRadiance * weight;
+						transmittedRadiance = specularBrdf.transmitted(incidentRadiance, incidentDirection, normal, albedo);
+					}
 
-						if (hasDiffuse) {
-							radiance += diffuseBrdf.reflected(transmittedRadiance, incidentDirection, normal, outgoingDirection, albedo) / (pdf * mNumSamples);
-						}
+					if (hasDiffuse) {
+						radiance += diffuseBrdf.reflected(transmittedRadiance, incidentDirection, normal, outgoingDirection, albedo) / pdf;
 					}
 				}
 			}
@@ -103,7 +99,7 @@ namespace Lighter {
 				if (dot > 0) {
 					Object::Radiance incidentRadiance = light->radiance() * dot / (distance * distance);
 					Object::Radiance transmittedRadiance = incidentRadiance;
-					if (hasSpecular && mIncludeSpecular) {
+					if (hasSpecular && mMisSpecular) {
 						transmittedRadiance = intersection.primitive().surface().brdf().specular().transmitted(incidentRadiance, incidentDirection, normal, albedo);
 					}
 					

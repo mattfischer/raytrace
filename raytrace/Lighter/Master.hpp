@@ -13,13 +13,10 @@ namespace Lighter {
 		struct Settings {
 			bool radiantLighting;
 			bool specularLighting;
-			int specularSamples;
 			int specularMaxGeneration;
 			bool directLighting;
-			int directSamples;
 			bool indirectLighting;
 			int indirectSamples;
-			int indirectDirectSamples;
 			bool irradianceCaching;
 			float irradianceCacheThreshold;
 		};

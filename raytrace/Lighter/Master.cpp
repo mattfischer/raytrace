@@ -10,11 +10,11 @@ namespace Lighter {
 	Master::Master(const Settings &settings)
 	{
 		if (settings.directLighting) {
-			mLighters.push_back(std::make_unique<Lighter::Direct>(settings.directSamples, settings.specularLighting, settings.specularSamples));
+			mLighters.push_back(std::make_unique<Lighter::Direct>(settings.specularLighting));
 		}
 
 		if (settings.indirectLighting) {
-			mLighters.push_back(std::make_unique<Lighter::DiffuseIndirect>(settings.indirectSamples, settings.indirectDirectSamples, settings.irradianceCaching, settings.irradianceCacheThreshold));
+			mLighters.push_back(std::make_unique<Lighter::DiffuseIndirect>(settings.indirectSamples, settings.irradianceCaching, settings.irradianceCacheThreshold));
 		}
 
 		if (settings.radiantLighting) {
@@ -22,7 +22,7 @@ namespace Lighter {
 		}
 
 		if (settings.specularLighting) {
-			mLighters.push_back(std::make_unique<Lighter::Specular>(*this, settings.specularSamples, settings.specularMaxGeneration, settings.directLighting, settings.directSamples));
+			mLighters.push_back(std::make_unique<Lighter::Specular>(*this, settings.specularMaxGeneration, settings.directLighting));
 		}
 
 		mLighters.push_back(std::make_unique<Lighter::Transmit>(*this, settings.specularMaxGeneration));

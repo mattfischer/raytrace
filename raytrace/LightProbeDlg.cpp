@@ -85,8 +85,8 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 	Object::Intersection intersection = engine.scene().intersect(beam);
 
 	if (intersection.valid()) {
-		Lighter::DiffuseIndirect lighter(engine.settings().lighterSettings.indirectSamples, engine.settings().lighterSettings.indirectDirectSamples, false, 0);
-		//Trace::Lighter::Direct lighter(engine.settings().lighterSettings.directSamples, false, 0);
+		Lighter::DiffuseIndirect lighter(engine.settings().lighterSettings.indirectSamples, false, 0);
+		//Trace::Lighter::Direct lighter(false, 0);
 
 		mSamples.clear();
 
