@@ -17,15 +17,10 @@ namespace Lighter {
 		const Object::Scene &scene = intersection.scene();
 		const Object::Surface &surface = intersection.primitive().surface();
 		const Math::Ray &ray = intersection.ray();
-		Math::Normal normal = intersection.normal();
+		const Math::Normal &normal = intersection.facingNormal();
 		const Object::Color &albedo = intersection.albedo();
 		Math::Vector outgoingDirection = -ray.direction();
-		bool reverse = false;
-
-		if (normal * outgoingDirection < 0) {
-			normal = -normal;
-			reverse = true;
-		}
+		bool reverse = (intersection.normal() * outgoingDirection < 0);
 
 		Object::Radiance radiance;
 

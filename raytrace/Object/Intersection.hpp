@@ -30,6 +30,7 @@ namespace Object {
 		const Math::Ray &ray() const;
 		const Math::Beam &beam() const;
 		const Math::Normal &normal() const;
+		const Math::Normal &facingNormal() const;
 		const Math::Point &point() const;
 		const Object::Color &albedo() const;
 		const Math::Bivector2D &surfaceProjection() const;
@@ -46,6 +47,7 @@ namespace Object {
 
 		mutable bool mNormalValid;
 		mutable Math::Normal mNormal;
+		mutable Math::Normal mFacingNormal;
 
 		mutable bool mAlbedoValid;
 		mutable Object::Color mAlbedo;

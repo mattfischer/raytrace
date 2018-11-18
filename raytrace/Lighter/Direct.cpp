@@ -26,15 +26,12 @@ namespace Lighter {
 
 		const Object::Scene &scene = intersection.scene();
 		const Math::Point &point = intersection.point();
-		Math::Normal normal = intersection.normal();
+		const Math::Normal &normal = intersection.facingNormal();
 		const Object::Color &albedo = intersection.albedo();
 		
 		const Object::Brdf::Base &diffuseBrdf = intersection.primitive().surface().brdf().diffuse();
 		const Object::Brdf::Base &specularBrdf = intersection.primitive().surface().brdf().specular();
 		const Math::Vector &outgoingDirection = -intersection.ray().direction();
-		if (outgoingDirection * normal < 0) {
-			normal = -normal;
-		}
 
 		Math::OrthonormalBasis basis(normal);
 
@@ -124,12 +121,7 @@ namespace Lighter {
 	{
 		const Object::Scene &scene = intersection.scene();
 		const Math::Point &point = intersection.point();
-		Math::Normal normal = intersection.normal();
-
-		const Math::Vector &outgoingDirection = -intersection.ray().direction();
-		if (outgoingDirection * normal < 0) {
-			normal = -normal;
-		}
+		const Math::Normal normal = intersection.facingNormal();
 
 		Object::Radiance irradiance;
 

@@ -90,7 +90,7 @@ void LightProbeDlg::renderProbe(Render::Engine &engine, int x, int y)
 
 		mSamples.clear();
 
-		Math::OrthonormalBasis basis(intersection.normal());
+		Math::OrthonormalBasis basis(intersection.facingNormal());
 		for(int i=0; i<1000; i++) {
 			Math::Vector localIncidentDirection;
 			Object::Radiance irradiance = lighter.sampleIrradiance(intersection, basis, sampler, localIncidentDirection);

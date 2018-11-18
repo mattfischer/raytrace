@@ -19,12 +19,8 @@ namespace Lighter {
 	{
 		const Object::Surface &surface = intersection.primitive().surface();
 		const Math::Ray &ray = intersection.ray();
-		Math::Normal normal = intersection.normal();
+		const Math::Normal &normal = intersection.facingNormal();
 		Math::Vector outgoingDirection = -ray.direction();
-
-		if (normal * outgoingDirection < 0) {
-			normal = -normal;
-		}
 
 		Object::Radiance radiance;
 

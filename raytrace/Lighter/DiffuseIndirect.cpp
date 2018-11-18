@@ -24,14 +24,10 @@ namespace Lighter {
 		}
 
 		const Math::Point &point = intersection.point();
-		Math::Normal normal = intersection.normal();
+		const Math::Normal &normal = intersection.facingNormal();
 		const Object::Color &albedo = intersection.albedo();
 		const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf().diffuse();
 		const Math::Vector &outgoingDirection = -intersection.ray().direction();
-
-		if (outgoingDirection * normal < 0) {
-			normal = -normal;
-		}
 
 		Object::Radiance radiance;
 		if (mIrradianceCaching) {
@@ -39,7 +35,7 @@ namespace Lighter {
 			radiance = irradiance * albedo * brdf.lambert() / M_PI;
 		}
 		else {
-			Math::OrthonormalBasis basis(intersection.normal());
+			Math::OrthonormalBasis basis(intersection.facingNormal());
 
 			for (int i = 0; i < mIndirectSamples; i++) {
 				Math::Vector incomingDirection;
@@ -53,7 +49,7 @@ namespace Lighter {
 
 	Object::Radiance DiffuseIndirect::sampleIrradiance(const Object::Intersection &intersection, const Math::OrthonormalBasis &basis, Render::Sampler &sampler, Math::Vector &localIncidentDirection) const
 	{
-		const Math::Normal &normal = intersection.normal();
+		const Math::Normal &normal = intersection.facingNormal();
 
 		float phi = 2 * M_PI * sampler.getValue();
 		float theta = std::asin(std::sqrt(sampler.getValue()));
@@ -82,11 +78,7 @@ namespace Lighter {
 
 		if (intersection.valid() && intersection.primitive().surface().brdf().hasDiffuse()) {
 			const Math::Point &point = intersection.point();
-			Math::Normal normal = intersection.normal();
-			const Math::Vector outgoingDirection = -intersection.ray().direction();
-			if (outgoingDirection * normal < 0) {
-				normal = -normal;
-			}
+			const Math::Normal &normal = intersection.facingNormal();
 
 			if (!mIrradianceCache.test(point, normal)) {
 				Math::OrthonormalBasis basis(normal);

@@ -24,10 +24,19 @@ namespace Object {
 			if (mPrimitive.surface().hasNormalMap()) {
 				mNormal = mPrimitive.surface().normalMap().perturbNormal(mShapeIntersection.surfacePoint, surfaceProjection(), mNormal, mShapeIntersection.tangent);
 			}
+			Math::Vector outgoingDirection = -mBeam.ray().direction();
+			float dot = mNormal * outgoingDirection;
+			mFacingNormal = (dot > 0) ? mNormal : -mNormal;
 			mNormalValid = true;
 		}
 
 		return mNormal;
+	}
+
+	const Math::Normal &Intersection::facingNormal() const
+	{
+		normal();
+		return mFacingNormal;
 	}
 
 	const Math::Point &Intersection::point() const
