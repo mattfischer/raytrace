@@ -3,8 +3,6 @@
 
 #include "Object/Scene.hpp"
 
-#include "Math/OrthonormalBasis.hpp"
-
 #include "Render/TileJob.hpp"
 
 #include <cmath>
@@ -35,8 +33,6 @@ namespace Lighter {
 			normal = -normal;
 		}
 
-		clearProbe();
-
 		Object::Radiance radiance;
 		if (mIrradianceCaching) {
 			Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, normal);
@@ -45,34 +41,35 @@ namespace Lighter {
 		else {
 			Math::OrthonormalBasis basis(intersection.normal());
 
-			const int M = std::sqrt(mIndirectSamples);
-			const int N = mIndirectSamples / M;
-			for (int k = 0; k < N; k++) {
-				for (int j = 0; j < M; j++) {
-					std::uniform_real_distribution<float> dist(0, 1);
-
-					float phi = 2 * M_PI * (k + dist(mRandomEngine)) / N;
-					float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
-					Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
-					Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
-					Math::Ray ray(offsetPoint, direction);
-					Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-					Object::Intersection intersection2 = intersection.scene().intersect(beam);
-
-					Math::Vector probeDirection = Math::Vector::fromPolar(phi, theta, 1);
-					Object::Radiance probeRadiance;
-					if (intersection2.valid()) {
-						Object::Radiance irradiance = mDirectLighter.light(intersection2, sampler, generation + 1);
-						radiance += irradiance * albedo * brdf.lambert() / (M * N);
-						probeRadiance = irradiance;
-					}
-
-					addProbeEntry(probeDirection, probeRadiance);
-				}
+			for (int i = 0; i < mIndirectSamples; i++) {
+				Math::Vector incomingDirection;
+				Object::Radiance irradiance = sampleIrradiance(intersection, basis, sampler, incomingDirection);
+				radiance += irradiance * albedo * brdf.lambert() / mIndirectSamples;
 			}
 		}
 
 		return radiance;
+	}
+
+	Object::Radiance DiffuseIndirect::sampleIrradiance(const Object::Intersection &intersection, const Math::OrthonormalBasis &basis, Render::Sampler &sampler, Math::Vector &localIncidentDirection) const
+	{
+		const Math::Normal &normal = intersection.normal();
+
+		float phi = 2 * M_PI * sampler.getValue();
+		float theta = std::asin(std::sqrt(sampler.getValue()));
+		Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
+		Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
+		Math::Ray ray(offsetPoint, direction);
+		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+		Object::Intersection intersection2 = intersection.scene().intersect(beam);
+
+		localIncidentDirection = Math::Vector::fromPolar(phi, theta, 1);
+		Object::Radiance irradiance;
+		if (intersection2.valid()) {
+			irradiance = mDirectLighter.light(intersection2, sampler, 0) * theta;
+		}
+
+		return irradiance;
 	}
 
 	void DiffuseIndirect::prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler)
