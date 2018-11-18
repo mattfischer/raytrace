@@ -17,7 +17,7 @@ namespace Lighter {
 		virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(Render::Framebuffer &framebuffer);
 
 	private:
-		bool prerender(const Render::Intersection &intersection, Render::Tracer &tracer);
+		void prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, Render::Tracer &tracer);
 
 		mutable std::default_random_engine mRandomEngine;
 		int mIndirectSamples;

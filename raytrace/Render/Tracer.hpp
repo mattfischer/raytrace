@@ -20,8 +20,6 @@ namespace Render {
 
 		Beam createCameraPixelBeam(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint);
 
-		float projectedPixelSize(float distance);
-
 		Sampler &sampler();
 
 	protected:

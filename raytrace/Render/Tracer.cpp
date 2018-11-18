@@ -55,11 +55,6 @@ namespace Render {
 		return Beam(ray, Math::Bivector(), dv * pixelSize);
 	}
 
-	float Tracer::projectedPixelSize(float distance)
-	{
-		return mScene.camera().projectSize(2.0f / mWidth, distance);
-	}
-
 	Sampler &Tracer::sampler()
 	{
 		return mSampler;
