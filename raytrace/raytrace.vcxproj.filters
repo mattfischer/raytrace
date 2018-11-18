@@ -110,9 +110,6 @@
     <ClCompile Include="Math\Ray.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Tracer.cpp">
-      <Filter>Source Files\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Lighter\Base.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
@@ -319,9 +316,6 @@
     </ClInclude>
     <ClInclude Include="Math\Ray.hpp">
       <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Tracer.hpp">
-      <Filter>Source Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="Lighter\Base.hpp">
       <Filter>Source Files\Lighter</Filter>

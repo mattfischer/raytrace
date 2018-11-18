@@ -13,11 +13,11 @@ namespace Lighter {
 	public:
 		DiffuseIndirect(int indirectSamples, int indirectDirectSamples, bool irradianceCaching, float irradianceCacheThreshold);
 
-		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const;
-		virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(Render::Framebuffer &framebuffer);
+		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
+		virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
 
 	private:
-		void prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, Render::Tracer &tracer);
+		void prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler);
 
 		mutable std::default_random_engine mRandomEngine;
 		int mIndirectSamples;

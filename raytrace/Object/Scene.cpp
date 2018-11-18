@@ -88,7 +88,7 @@ namespace Object {
 		}
 
 		if (primitive) {
-			return Object::Intersection(*primitive, beam, shapeIntersection);
+			return Object::Intersection(*this, *primitive, beam, shapeIntersection);
 		}
 		else {
 			return Object::Intersection();

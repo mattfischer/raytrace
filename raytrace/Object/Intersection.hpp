@@ -14,14 +14,16 @@
 #include <vector>
 
 namespace Object {
+	class Scene;
 	class Intersection
 	{
 	public:
 		Intersection();
-		Intersection(const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection);
+		Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection);
 
 		bool valid() const;
 
+		const Object::Scene &scene() const;
 		const Object::Primitive &primitive() const;
 
 		float distance() const;
@@ -33,6 +35,7 @@ namespace Object {
 		const Math::Bivector2D &surfaceProjection() const;
 
 	protected:
+		const Object::Scene &mScene;
 		const Object::Primitive &mPrimitive;
 		const Math::Beam &mBeam;
 		Object::Shape::Base::Intersection mShapeIntersection;

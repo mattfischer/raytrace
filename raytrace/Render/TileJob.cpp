@@ -5,7 +5,7 @@
 namespace Render {
 	const int TILE_SIZE = 64;
 
-	TileJob::TileJob(Framebuffer &framebuffer, std::function<void(int, int, Framebuffer&, Tracer&)> &&pixelFunc)
+	TileJob::TileJob(Framebuffer &framebuffer, std::function<void(int, int, Framebuffer&, Sampler&)> &&pixelFunc)
 		: mFramebuffer(framebuffer), mPixelFunc(std::move(pixelFunc))
 	{
 		mNextTile = 0;
@@ -23,10 +23,10 @@ namespace Render {
 			int width = std::min(TILE_SIZE, mFramebuffer.width() - x);
 			int height = std::min(TILE_SIZE, mFramebuffer.height() - y);
 
-			auto func = [=](Tracer &tracer) {
+			auto func = [=](Sampler &sampler) {
 				for (int j = y; j < y + height; j++) {
 					for (int i = x; i < x + width; i++) {
-						mPixelFunc(i, j, mFramebuffer, tracer);
+						mPixelFunc(i, j, mFramebuffer, sampler);
 					}
 				}
 			};

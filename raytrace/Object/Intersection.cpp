@@ -2,13 +2,13 @@
 
 namespace Object {
 	Intersection::Intersection()
-		: mPrimitive(*(Object::Primitive*)0), mBeam(*(Math::Beam*)0)
+		: mScene(*(Object::Scene*)0), mPrimitive(*(Object::Primitive*)0), mBeam(*(Math::Beam*)0)
 	{
 		mShapeIntersection.distance = FLT_MAX;
 	}
 
-	Intersection::Intersection(const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection)
-		: mPrimitive(primitive), mBeam(beam), mShapeIntersection(shapeIntersection)
+	Intersection::Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection)
+		: mScene(scene), mPrimitive(primitive), mBeam(beam), mShapeIntersection(shapeIntersection)
 	{
 		mPoint = mBeam.ray().origin() + mBeam.ray().direction() * mShapeIntersection.distance;
 
@@ -38,6 +38,11 @@ namespace Object {
 	bool Intersection::valid() const
 	{
 		return mShapeIntersection.distance != FLT_MAX;
+	}
+
+	const Object::Scene &Intersection::scene() const
+	{
+		return mScene;
 	}
 
 	const Object::Primitive &Intersection::primitive() const

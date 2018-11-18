@@ -52,13 +52,13 @@ namespace Render {
 
 		if (mSettings.lighting) {
 			mLighter = std::make_unique<Lighter::Master>(mSettings.lighterSettings);
-			std::vector<std::unique_ptr<Job>> prerenderJobs = mLighter->createPrerenderJobs(*mFramebuffer);
+			std::vector<std::unique_ptr<Job>> prerenderJobs = mLighter->createPrerenderJobs(mScene, *mFramebuffer);
 			for (std::unique_ptr<Job> &job : prerenderJobs) {
 				addJob(std::move(job));
 			}
 		}
 
-		std::unique_ptr<Job> renderJob = std::make_unique<TileJob>(*mFramebuffer, [=](int x, int y, Framebuffer &, Tracer &tracer) { renderPixel(x, y, tracer); } );
+		std::unique_ptr<Job> renderJob = std::make_unique<TileJob>(*mFramebuffer, [=](int x, int y, Framebuffer &, Sampler &sampler) { renderPixel(x, y, sampler); } );
 		renderJob->setDoneHandler([=]() { renderDone(); } );
 		addJob(std::move(renderJob));
 	}
@@ -122,7 +122,6 @@ namespace Render {
 
 			if (mCurrentJob) {
 				Sampler sampler(10);
-				Tracer tracer(mScene, mFramebuffer->width(), mFramebuffer->height(), sampler);
 
 				while (true) {
 					if (mStopThreads) {
@@ -136,7 +135,7 @@ namespace Render {
 					}
 
 					lock.unlock();
-					(*task)(tracer);
+					(*task)(sampler);
 					lock.lock();
 				}
 			}
@@ -166,7 +165,7 @@ namespace Render {
 		}
 	}
 
-	void Engine::renderPixel(int x, int y, Tracer &tracer)
+	void Engine::renderPixel(int x, int y, Sampler &sampler)
 	{
 		Object::Color color;
 
@@ -177,12 +176,12 @@ namespace Render {
 		const int runLength = 10;
 		Object::Color colors[runLength];
 		int colorIdx = 0;
-		tracer.sampler().startSequence();
+		sampler.startSequence();
 		while (true) {
 			Math::Bivector dv;
-			tracer.sampler().startSample();
-			Math::Point2D imagePoint = Math::Point2D(x, y) + tracer.sampler().getValue2D();
-			Math::Point2D aperturePoint = tracer.sampler().getValue2D();
+			sampler.startSample();
+			Math::Point2D imagePoint = Math::Point2D(x, y) + sampler.getValue2D();
+			Math::Point2D aperturePoint = sampler.getValue2D();
 			Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, mFramebuffer->width(), mFramebuffer->height(), aperturePoint);
 			Object::Intersection intersection = mScene.intersect(beam);
 			numSamples++;
@@ -190,7 +189,7 @@ namespace Render {
 			if (intersection.valid())
 			{
 				if (mSettings.lighting) {
-					totalRadiance += mLighter->light(intersection, tracer, 0);
+					totalRadiance += mLighter->light(intersection, sampler, 0);
 					color = toneMap(totalRadiance / numSamples);
 				}
 				else {

@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 #include "Lighter/DiffuseIndirect.hpp"
 
+#include "Object/Scene.hpp"
+
 #include "Math/OrthonormalBasis.hpp"
 
 #include "Render/TileJob.hpp"
@@ -17,7 +19,7 @@ namespace Lighter {
 		mIrradianceCaching = irradianceCaching;
 	}
 
-	Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance DiffuseIndirect::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
 	{
 		if (!intersection.primitive().surface().brdf().hasDiffuse()) {
 			return Object::Radiance();
@@ -55,12 +57,12 @@ namespace Lighter {
 					Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
 					Math::Ray ray(offsetPoint, direction);
 					Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-					Object::Intersection intersection2 = tracer.scene().intersect(beam);
+					Object::Intersection intersection2 = intersection.scene().intersect(beam);
 
 					Math::Vector probeDirection = Math::Vector::fromPolar(phi, theta, 1);
 					Object::Radiance probeRadiance;
 					if (intersection2.valid()) {
-						Object::Radiance irradiance = mDirectLighter.light(intersection2, tracer, generation + 1);
+						Object::Radiance irradiance = mDirectLighter.light(intersection2, sampler, generation + 1);
 						radiance += irradiance * albedo * brdf.lambert() / (M * N);
 						probeRadiance = irradiance;
 					}
@@ -73,13 +75,13 @@ namespace Lighter {
 		return radiance;
 	}
 
-	void DiffuseIndirect::prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, Render::Tracer &tracer)
+	void DiffuseIndirect::prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler)
 	{
 		Object::Color pixelColor;
-		tracer.sampler().startSequence();
-		Math::Beam beam = tracer.scene().camera().createPixelBeam(Math::Point2D(x, y), framebuffer.width(), framebuffer.height(), Math::Point2D());
+		sampler.startSequence();
+		Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D(x, y), framebuffer.width(), framebuffer.height(), Math::Point2D());
 
-		Object::Intersection intersection = tracer.scene().intersect(beam);
+		Object::Intersection intersection = scene.intersect(beam);
 
 		if (intersection.valid() && intersection.primitive().surface().brdf().hasDiffuse()) {
 			const Math::Point &point = intersection.point();
@@ -112,13 +114,13 @@ namespace Lighter {
 						Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
 						Math::Ray ray(offsetPoint, direction);
 						Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-						Object::Intersection intersection2 = tracer.scene().intersect(beam);
+						Object::Intersection intersection2 = scene.intersect(beam);
 
 						if (intersection2.valid()) {
 							mean += 1 / intersection2.distance();
 							den++;
-							tracer.sampler().startSample();
-							Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, tracer, 1);
+							sampler.startSample();
+							Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, sampler, 1);
 
 							samples[k * M + j] = incidentRadiance;
 							sampleDistances[k * M + j] = intersection2.distance();
@@ -140,7 +142,7 @@ namespace Lighter {
 					newEntry.radiance = radiance;
 
 					float radius = mean;
-					float projectedPixelSize = tracer.scene().camera().projectSize(2.0f / framebuffer.width(), intersection.distance());
+					float projectedPixelSize = scene.camera().projectSize(2.0f / framebuffer.width(), intersection.distance());
 					float minRadius = 3 * projectedPixelSize / mIrradianceCache.threshold();
 					float maxRadius = 20 * minRadius;
 					newEntry.radius = std::min(std::max(radius, minRadius), maxRadius);
@@ -187,12 +189,12 @@ namespace Lighter {
 		framebuffer.setPixel(x, y, pixelColor);
 	}
 
-	std::vector<std::unique_ptr<Render::Job>> DiffuseIndirect::createPrerenderJobs(Render::Framebuffer &framebuffer)
+	std::vector<std::unique_ptr<Render::Job>> DiffuseIndirect::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
 	{
 		std::vector<std::unique_ptr<Render::Job>> jobs;
 
-		auto func = [=](int x, int y, Render::Framebuffer &framebuffer, Render::Tracer &tracer) {
-			prerenderPixel(x, y, framebuffer, tracer);
+		auto func = [&](int x, int y, Render::Framebuffer &framebuffer, Render::Sampler &sampler) {
+			prerenderPixel(x, y, framebuffer, scene, sampler);
 		};
 
 		if (mIrradianceCaching) {

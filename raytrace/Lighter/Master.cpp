@@ -28,21 +28,21 @@ namespace Lighter {
 		mLighters.push_back(std::make_unique<Lighter::Transmit>(*this, settings.specularMaxGeneration));
 	}
 
-	Object::Radiance Master::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance Master::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
 	{
 		Object::Radiance radiance;
 		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
-			radiance += lighter->light(intersection, tracer, generation);
+			radiance += lighter->light(intersection, sampler, generation);
 		}
 
 		return radiance;
 	}
 
-	std::vector<std::unique_ptr<Render::Job>> Master::createPrerenderJobs(Render::Framebuffer &framebuffer)
+	std::vector<std::unique_ptr<Render::Job>> Master::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
 	{
 		std::vector<std::unique_ptr<Render::Job>> jobs;
 		for (const std::unique_ptr<Lighter::Base> &lighter : mLighters) {
-			std::vector<std::unique_ptr<Render::Job>> newJobs = lighter->createPrerenderJobs(framebuffer);
+			std::vector<std::unique_ptr<Render::Job>> newJobs = lighter->createPrerenderJobs(scene, framebuffer);
 			for (std::unique_ptr<Render::Job> &job : newJobs) {
 				jobs.push_back(std::move(job));
 			}

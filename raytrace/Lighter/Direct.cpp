@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 #include "Lighter/Direct.hpp"
 
+#include "Object/Scene.hpp"
+
 #include "Render/Sampler.hpp"
 
 #include "Math/OrthonormalBasis.hpp"
@@ -13,7 +15,7 @@ namespace Lighter {
 		mNumSpecularSamples = numSpecularSamples;
 	}
 
-	Object::Radiance Direct::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance Direct::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
 	{
 		bool hasDiffuse = intersection.primitive().surface().brdf().hasDiffuse();
 		bool hasSpecular = intersection.primitive().surface().brdf().hasSpecular();
@@ -22,6 +24,7 @@ namespace Lighter {
 			return Object::Radiance();
 		}
 
+		const Object::Scene &scene = intersection.scene();
 		const Math::Point &point = intersection.point();
 		Math::Normal normal = intersection.normal();
 		const Object::Color &albedo = intersection.albedo();
@@ -38,7 +41,7 @@ namespace Lighter {
 		Math::OrthonormalBasis basis(normal);
 
 		Object::Radiance radiance;
-		for (const Object::Primitive &light : tracer.scene().areaLights()) {
+		for (const Object::Primitive &light : scene.areaLights()) {
 			const Object::Radiance &objectRadiance = light.surface().radiance();
 			const Object::Shape::Base::Sampler *shapeSampler = light.shape().sampler();
 			if (!shapeSampler) {
@@ -47,7 +50,7 @@ namespace Lighter {
 
 			float surfaceArea = shapeSampler->surfaceArea();
 			for (int i = 0; i < mNumSamples; i++) {
-				Math::Point2D surfacePoint = tracer.sampler().getValue2D();
+				Math::Point2D surfacePoint = sampler.getValue2D();
 
 				Math::Point samplePoint;
 				Math::Vector du;
@@ -65,7 +68,7 @@ namespace Lighter {
 					Math::Point offsetPoint = point + Math::Vector(normal) * 0.0001;
 					Math::Ray ray(offsetPoint, incidentDirection);
 					Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-					Object::Intersection intersection2 = tracer.scene().intersect(beam);
+					Object::Intersection intersection2 = scene.intersect(beam);
 
 					Math::Vector probeDirection = basis.worldToLocal(incidentDirection);
 					Object::Radiance probeRadiance;
@@ -95,7 +98,7 @@ namespace Lighter {
 			}
 		}
 
-		for (const std::unique_ptr<Object::Light> &light : tracer.scene().lights()) {
+		for (const std::unique_ptr<Object::Light> &light : scene.lights()) {
 			Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
 			Math::Vector incidentDirection = light->position() - offsetPoint;
 			float distance = incidentDirection.magnitude();
@@ -103,7 +106,7 @@ namespace Lighter {
 
 			Math::Ray ray(offsetPoint, incidentDirection);
 			Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-			Object::Intersection intersection2 = tracer.scene().intersect(beam);
+			Object::Intersection intersection2 = scene.intersect(beam);
 
 			Math::Vector probeDirection = basis.worldToLocal(incidentDirection);
 			Object::Radiance probeRadiance;

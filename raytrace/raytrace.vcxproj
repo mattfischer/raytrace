@@ -160,7 +160,6 @@
     <ClCompile Include="Render\Job.cpp" />
     <ClCompile Include="Render\Sampler.cpp" />
     <ClCompile Include="Render\TileJob.cpp" />
-    <ClCompile Include="Render\Tracer.cpp" />
     <ClCompile Include="Scene.tab.c" />
   </ItemGroup>
   <ItemGroup>
@@ -235,7 +234,6 @@
     <ClInclude Include="Render\Job.hpp" />
     <ClInclude Include="Render\Sampler.hpp" />
     <ClInclude Include="Render\TileJob.hpp" />
-    <ClInclude Include="Render\Tracer.hpp" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>

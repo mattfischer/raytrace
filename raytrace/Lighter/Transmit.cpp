@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 #include "Lighter/Transmit.hpp"
 
+#include "Object/Scene.hpp"
+
 #include <cmath>
 
 namespace Lighter {
@@ -10,8 +12,9 @@ namespace Lighter {
 		mMaxGeneration = maxGeneration;
 	}
 
-	Object::Radiance Transmit::light(const Object::Intersection &intersection, Render::Tracer &tracer, int generation) const
+	Object::Radiance Transmit::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
 	{
+		const Object::Scene &scene = intersection.scene();
 		const Object::Surface &surface = intersection.primitive().surface();
 		const Math::Ray &ray = intersection.ray();
 		Math::Normal normal = intersection.normal();
@@ -40,12 +43,12 @@ namespace Lighter {
 			Math::Vector incidentDirection = Math::Vector(normal) * (ratio * c1 - c2) - outgoingDirection * ratio;
 			Math::Ray transmitRay(offsetPoint, incidentDirection);
 			Math::Beam beam(transmitRay, Math::Bivector(), Math::Bivector());
-			Object::Intersection intersection2 = tracer.scene().intersect(beam);
+			Object::Intersection intersection2 = scene.intersect(beam);
 
 			Math::Normal incidentNormal = -normal;
 			float dot = incidentDirection * incidentNormal;
 			if (intersection2.valid()) {
-				Object::Radiance incidentRadiance = mLighter.light(intersection2, tracer, generation + 1) * dot;
+				Object::Radiance incidentRadiance = mLighter.light(intersection2, sampler, generation + 1) * dot;
 				Object::Radiance transmittedRadiance = incidentRadiance;
 				if (intersection.primitive().surface().brdf().hasSpecular()) {
 					transmittedRadiance = intersection.primitive().surface().brdf().specular().transmitted(incidentRadiance, incidentDirection, incidentNormal, albedo);

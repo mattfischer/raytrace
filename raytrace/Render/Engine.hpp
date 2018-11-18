@@ -6,7 +6,6 @@
 #include "Object/Radiance.hpp"
 
 #include "Render/Framebuffer.hpp"
-#include "Render/Tracer.hpp"
 #include "Render/Job.hpp"
 
 #include "Lighter/Master.hpp"
@@ -60,7 +59,7 @@ namespace Render {
 		void addJob(std::unique_ptr<Job> job);
 		void runThread();
 
-		void renderPixel(int x, int y, Tracer &tracer);
+		void renderPixel(int x, int y, Sampler &sampler);
 		void renderDone();
 
 		const Object::Scene &mScene;

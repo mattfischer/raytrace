@@ -1,7 +1,7 @@
 #ifndef RENDER_JOB_HPP
 #define RENDER_JOB_HPP
 
-#include "Render/Tracer.hpp"
+#include "Render/Sampler.hpp"
 
 #include <memory>
 #include <functional>
@@ -9,7 +9,7 @@
 namespace Render {
 	class Job {
 	public:
-		typedef std::function<void(Tracer &)> Task;
+		typedef std::function<void(Sampler &)> Task;
 
 		virtual std::unique_ptr<Task> getNextTask() = 0;
 
