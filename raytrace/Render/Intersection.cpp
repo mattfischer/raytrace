@@ -11,22 +11,22 @@ namespace Render {
 		: mPrimitive(primitive), mBeam(beam), mShapeIntersection(shapeIntersection)
 	{
 		mPoint = mBeam.ray().origin() + mBeam.ray().direction() * mShapeIntersection.distance;
-		Math::Bivector projection = mBeam.project(mShapeIntersection.distance, mShapeIntersection.normal);
-		Math::Vector v = mShapeIntersection.tangent.u() % mShapeIntersection.tangent.v();
-		v = v / v.magnitude2();
-		Math::Vector2D du((projection.u() % mShapeIntersection.tangent.v()) * v, (mShapeIntersection.tangent.u() % projection.u()) * v);
-		Math::Vector2D dv((projection.v() % mShapeIntersection.tangent.v()) * v, (mShapeIntersection.tangent.u() % projection.v()) * v);
-		Math::Bivector2D surfaceProjection(du, dv);
 
-		mAlbedo = mPrimitive.surface().albedo().color(mShapeIntersection.surfacePoint, surfaceProjection);
-		mNormal = mShapeIntersection.normal;
-		if (mPrimitive.surface().hasNormalMap()) {
-			mNormal = mPrimitive.surface().normalMap().perturbNormal(mShapeIntersection.surfacePoint, surfaceProjection, mNormal, shapeIntersection.tangent);
-		}
+		mAlbedoValid = false;
+		mNormalValid = false;
+		mSurfaceProjectionValid = false;
 	};
 
 	const Math::Normal &Intersection::normal() const
 	{
+		if (!mNormalValid) {
+			mNormal = mShapeIntersection.normal;
+			if (mPrimitive.surface().hasNormalMap()) {
+				mNormal = mPrimitive.surface().normalMap().perturbNormal(mShapeIntersection.surfacePoint, surfaceProjection(), mNormal, mShapeIntersection.tangent);
+			}
+			mNormalValid = true;
+		}
+
 		return mNormal;
 	}
 
@@ -62,6 +62,26 @@ namespace Render {
 
 	const Object::Color &Intersection::albedo() const
 	{
+		if (!mAlbedoValid) {
+			mAlbedo = mPrimitive.surface().albedo().color(mShapeIntersection.surfacePoint, surfaceProjection());
+			mAlbedoValid = true;
+		}
+
 		return mAlbedo;
+	}
+
+	const Math::Bivector2D &Intersection::surfaceProjection() const
+	{
+		if (!mSurfaceProjectionValid) {
+			Math::Bivector projection = mBeam.project(mShapeIntersection.distance, mShapeIntersection.normal);
+			Math::Vector v = mShapeIntersection.tangent.u() % mShapeIntersection.tangent.v();
+			v = v / v.magnitude2();
+			Math::Vector2D du((projection.u() % mShapeIntersection.tangent.v()) * v, (mShapeIntersection.tangent.u() % projection.u()) * v);
+			Math::Vector2D dv((projection.v() % mShapeIntersection.tangent.v()) * v, (mShapeIntersection.tangent.u() % projection.v()) * v);
+			mSurfaceProjection = Math::Bivector2D(du, dv);
+			mSurfaceProjectionValid = true;
+		}
+
+		return mSurfaceProjection;
 	}
 }

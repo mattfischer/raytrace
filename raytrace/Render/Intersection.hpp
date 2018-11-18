@@ -31,14 +31,22 @@ namespace Render {
 		const Math::Normal &normal() const;
 		const Math::Point &point() const;
 		const Object::Color &albedo() const;
+		const Math::Bivector2D &surfaceProjection() const;
 
 	protected:
 		const Object::Primitive &mPrimitive;
 		const Render::Beam &mBeam;
 		Object::Shape::Base::Intersection mShapeIntersection;
 		Math::Point mPoint;
-		Math::Normal mNormal;
-		Object::Color mAlbedo;
+
+		mutable bool mSurfaceProjectionValid;
+		mutable Math::Bivector2D mSurfaceProjection;
+
+		mutable bool mNormalValid;
+		mutable Math::Normal mNormal;
+
+		mutable bool mAlbedoValid;
+		mutable Object::Color mAlbedo;
 	};
 }
 
