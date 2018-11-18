@@ -35,19 +35,7 @@ namespace Render {
 		bool valid = mScene.intersect(ray, shapeIntersection, primitive);
 
 		if (valid) {
-			Math::Point point = ray.origin() + ray.direction() * shapeIntersection.distance;
-			Math::Bivector projection = beam.project(shapeIntersection.distance, shapeIntersection.normal);
-			Math::Vector v = shapeIntersection.tangent.u() % shapeIntersection.tangent.v();
-			v = v / v.magnitude2();
-			Math::Vector2D du((projection.u() % shapeIntersection.tangent.v()) * v, (shapeIntersection.tangent.u() % projection.u()) * v);
-			Math::Vector2D dv((projection.v() % shapeIntersection.tangent.v()) * v, (shapeIntersection.tangent.u() % projection.v()) * v);
-			Math::Bivector2D surfaceProjection(du, dv);
-			Object::Color albedo = primitive->surface().albedo().color(shapeIntersection.surfacePoint, surfaceProjection);
-			Math::Normal normal = shapeIntersection.normal;
-			if (primitive->surface().hasNormalMap()) {
-				normal = primitive->surface().normalMap().perturbNormal(shapeIntersection.surfacePoint, surfaceProjection, normal, shapeIntersection.tangent);
-			}
-			return Intersection(*primitive, beam, point, shapeIntersection.distance, normal, albedo);
+			return Intersection(*primitive, beam, shapeIntersection);
 		}
 		else {
 			return Intersection();

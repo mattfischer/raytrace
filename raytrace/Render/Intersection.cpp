@@ -2,13 +2,27 @@
 
 namespace Render {
 	Intersection::Intersection()
-		: mPrimitive(*(Object::Primitive*)0), mBeam(*(Render::Beam*)0), mDistance(FLT_MAX)
+		: mPrimitive(*(Object::Primitive*)0), mBeam(*(Render::Beam*)0)
 	{
+		mShapeIntersection.distance = FLT_MAX;
 	}
 
-	Intersection::Intersection(const Object::Primitive &primitive, const Render::Beam &beam, const Math::Point &point, float distance, const Math::Normal &normal, const Object::Color &albedo)
-		: mPrimitive(primitive), mBeam(beam), mPoint(point), mNormal(normal), mDistance(distance), mAlbedo(albedo)
+	Intersection::Intersection(const Object::Primitive &primitive, const Render::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection)
+		: mPrimitive(primitive), mBeam(beam), mShapeIntersection(shapeIntersection)
 	{
+		mPoint = mBeam.ray().origin() + mBeam.ray().direction() * mShapeIntersection.distance;
+		Math::Bivector projection = mBeam.project(mShapeIntersection.distance, mShapeIntersection.normal);
+		Math::Vector v = mShapeIntersection.tangent.u() % mShapeIntersection.tangent.v();
+		v = v / v.magnitude2();
+		Math::Vector2D du((projection.u() % mShapeIntersection.tangent.v()) * v, (mShapeIntersection.tangent.u() % projection.u()) * v);
+		Math::Vector2D dv((projection.v() % mShapeIntersection.tangent.v()) * v, (mShapeIntersection.tangent.u() % projection.v()) * v);
+		Math::Bivector2D surfaceProjection(du, dv);
+
+		mAlbedo = mPrimitive.surface().albedo().color(mShapeIntersection.surfacePoint, surfaceProjection);
+		mNormal = mShapeIntersection.normal;
+		if (mPrimitive.surface().hasNormalMap()) {
+			mNormal = mPrimitive.surface().normalMap().perturbNormal(mShapeIntersection.surfacePoint, surfaceProjection, mNormal, shapeIntersection.tangent);
+		}
 	};
 
 	const Math::Normal &Intersection::normal() const
@@ -23,7 +37,7 @@ namespace Render {
 
 	bool Intersection::valid() const
 	{
-		return mDistance != FLT_MAX;
+		return mShapeIntersection.distance != FLT_MAX;
 	}
 
 	const Object::Primitive &Intersection::primitive() const
@@ -43,7 +57,7 @@ namespace Render {
 
 	float Intersection::distance() const
 	{
-		return mDistance;
+		return mShapeIntersection.distance;
 	}
 
 	const Object::Color &Intersection::albedo() const
