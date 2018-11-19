@@ -125,9 +125,6 @@
     <ClCompile Include="Lighter\Specular.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Light.cpp">
-      <Filter>Source Files\Object</Filter>
-    </ClCompile>
     <ClCompile Include="Lighter\DiffuseIndirect.cpp">
       <Filter>Source Files\Lighter</Filter>
     </ClCompile>
@@ -228,6 +225,9 @@
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Object\Intersection.cpp">
+      <Filter>Source Files\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Object\PointLight.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
   </ItemGroup>
@@ -332,9 +332,6 @@
     <ClInclude Include="Lighter\Specular.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Light.hpp">
-      <Filter>Source Files\Object</Filter>
-    </ClInclude>
     <ClInclude Include="Lighter\DiffuseIndirect.hpp">
       <Filter>Source Files\Lighter</Filter>
     </ClInclude>
@@ -438,6 +435,9 @@
       <Filter>Source Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Object\Intersection.hpp">
+      <Filter>Source Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Object\PointLight.hpp">
       <Filter>Source Files\Object</Filter>
     </ClInclude>
   </ItemGroup>

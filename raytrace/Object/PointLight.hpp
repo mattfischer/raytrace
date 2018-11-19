@@ -1,5 +1,5 @@
-#ifndef OBJECT_LIGHT_HPP
-#define OBJECT_LIGHT_HPP
+#ifndef OBJECT_POINT_LIGHT_HPP
+#define OBJECT_POINT_LIGHT_HPP
 
 #include "Math/Point.hpp"
 #include "Object/Radiance.hpp"
@@ -7,10 +7,10 @@
 #include <memory>
 
 namespace Object {
-	class Light
+	class PointLight
 	{
 	public:
-		Light(const Math::Point &position, const Object::Radiance &radiance);
+		PointLight(const Math::Point &position, const Object::Radiance &radiance);
 
 		const Math::Point &position() const;
 		const Object::Radiance &radiance() const;

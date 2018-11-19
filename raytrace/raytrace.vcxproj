@@ -131,7 +131,7 @@
     <ClCompile Include="Object\Brdf\Phong.cpp" />
     <ClCompile Include="Object\Camera.cpp" />
     <ClCompile Include="Object\Color.cpp" />
-    <ClCompile Include="Object\Light.cpp" />
+    <ClCompile Include="Object\PointLight.cpp" />
     <ClCompile Include="Object\Radiance.cpp" />
     <ClCompile Include="Object\Scene.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -208,7 +208,7 @@
     <ClInclude Include="Object\Brdf\Phong.hpp" />
     <ClInclude Include="Object\Camera.hpp" />
     <ClInclude Include="Object\Color.hpp" />
-    <ClInclude Include="Object\Light.hpp" />
+    <ClInclude Include="Object\PointLight.hpp" />
     <ClInclude Include="Object\Radiance.hpp" />
     <ClInclude Include="Object\Scene.hpp" />
     <ClInclude Include="Object\Shape\Base.hpp" />

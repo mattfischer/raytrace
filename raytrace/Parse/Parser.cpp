@@ -1,7 +1,7 @@
 #include "Parse/Parser.hpp"
 
 #include "Object/Camera.hpp"
-#include "Object/Light.hpp"
+#include "Object/PointLight.hpp"
 #include "Object/Primitive.hpp"
 
 #include "Object/Albedo/Solid.hpp"
@@ -60,13 +60,13 @@ namespace Parse {
 		return camera;
 	}
 
-	std::unique_ptr<Object::Light> parseLight(AST *ast)
+	std::unique_ptr<Object::PointLight> parsePointLight(AST *ast)
 	{
 		Math::Point position = parsePoint(ast->children[0]->children[0]->data._vector);
 		Object::Radiance radiance = parseRadiance(ast->children[0]->children[1]->data._vector);
-		std::unique_ptr<Object::Light> light = std::make_unique<Object::Light>(position, radiance);
+		std::unique_ptr<Object::PointLight> pointLight = std::make_unique<Object::PointLight>(position, radiance);
 
-		return light;
+		return pointLight;
 	}
 
 	std::unique_ptr<Object::Shape::Base> parseShapeModel(AST *ast)
@@ -305,7 +305,7 @@ namespace Parse {
 
 		std::unique_ptr<Object::Camera> camera;
 		std::vector<std::unique_ptr<Object::Primitive>> primitives;
-		std::vector<std::unique_ptr<Object::Light>> lights;
+		std::vector<std::unique_ptr<Object::PointLight>> pointLights;
 
 		for (int i = 0; i<ast->numChildren; i++)
 		{
@@ -319,13 +319,13 @@ namespace Parse {
 			case AstCamera:
 				camera = parseCamera(child);
 				break;
-			case AstLight:
-				lights.push_back(parseLight(child));
+			case AstPointLight:
+				pointLights.push_back(parsePointLight(child));
 				break;
 			}
 		}
 
-		std::unique_ptr<Object::Scene> scene = std::make_unique<Object::Scene>(std::move(camera), std::move(primitives), std::move(lights));
+		std::unique_ptr<Object::Scene> scene = std::make_unique<Object::Scene>(std::move(camera), std::move(primitives), std::move(pointLights));
 
 		return scene;
 	}

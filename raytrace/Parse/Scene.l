@@ -47,7 +47,7 @@ transmit return TRANSMIT;
 
 camera return CAMERA;
 
-light return LIGHT;
+point_light return POINT_LIGHT;
 
 \{|\}		return *yytext;
 <<EOF>>	return END;

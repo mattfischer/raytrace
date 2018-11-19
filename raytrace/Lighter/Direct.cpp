@@ -84,9 +84,9 @@ namespace Lighter {
 			}
 		}
 
-		for (const std::unique_ptr<Object::Light> &light : scene.lights()) {
+		for (const std::unique_ptr<Object::PointLight> &pointLight : scene.pointLights()) {
 			Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
-			Math::Vector incidentDirection = light->position() - offsetPoint;
+			Math::Vector incidentDirection = pointLight->position() - offsetPoint;
 			float distance = incidentDirection.magnitude();
 			incidentDirection = incidentDirection / distance;
 
@@ -97,7 +97,7 @@ namespace Lighter {
 			if (!intersection2.valid() || intersection2.distance() >= distance) {
 				float dot = incidentDirection * normal;
 				if (dot > 0) {
-					Object::Radiance incidentRadiance = light->radiance() * dot / (distance * distance);
+					Object::Radiance incidentRadiance = pointLight->radiance() * dot / (distance * distance);
 					Object::Radiance transmittedRadiance = incidentRadiance;
 					if (hasSpecular && mMisSpecular) {
 						transmittedRadiance = intersection.primitive().surface().brdf().specular().transmitted(incidentRadiance, incidentDirection, normal, albedo);
