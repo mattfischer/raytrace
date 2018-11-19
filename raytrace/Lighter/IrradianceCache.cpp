@@ -53,10 +53,10 @@ namespace Lighter {
 		childOrigin = origin + Math::Vector(x, y, z) * childSize;
 	}
 
-	bool IrradianceCache::isEntryValid(const Entry &entry, const Math::Point &point, const Math::Normal &normal, float threshold) const
+	bool IrradianceCache::isEntryValid(const Entry &entry, const Math::Point &point, const Math::Normal &normal, float weight, float threshold) const
 	{
 		float d = (point - entry.point) * ((normal + entry.normal) / 2);
-		return (d >= -0.01 && weight(entry, point, normal) > 1 / threshold);
+		return (d >= -0.01 && weight > 1 / threshold);
 	}
 
 	bool IrradianceCache::visitOctreeNode(OctreeNode *node, const Math::Point &origin, float size, const Math::Point &point, const std::function<bool(const Entry &)> &callback) const
@@ -99,7 +99,8 @@ namespace Lighter {
 	{
 		bool ret = false;
 		auto callback = [&](const Entry &entry) {
-			if (isEntryValid(entry, point, normal, mThreshold)) {
+			float w = weight(entry, point, normal);
+			if (isEntryValid(entry, point, normal, w, mThreshold)) {
 				ret = true;
 				return false;
 			}
@@ -124,8 +125,8 @@ namespace Lighter {
 		float threshold = mThreshold;
 
 		auto callback = [&] (const Entry &entry) {
-			if (isEntryValid(entry, point, normal, threshold)) {
-				float w = weight(entry, point, normal);
+			float w = weight(entry, point, normal);
+			if (isEntryValid(entry, point, normal, w, threshold)) {
 				if (std::isinf(w)) {
 					irradiance = entry.radiance;
 					totalWeight = 1;
