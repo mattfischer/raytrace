@@ -7,8 +7,6 @@
 
 #include "Math/OrthonormalBasis.hpp"
 
-#include <random>
-
 namespace Lighter {
 	class DiffuseIndirect : public Base
 	{
@@ -23,7 +21,6 @@ namespace Lighter {
 	private:
 		void prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler);
 
-		mutable std::default_random_engine mRandomEngine;
 		int mIndirectSamples;
 		bool mIrradianceCaching;
 		Direct mDirectLighter;

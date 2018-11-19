@@ -45,8 +45,6 @@ namespace Lighter {
 			Math::Point2D surfacePoint = sampler.getValue2D();
 
 			Math::Point samplePoint;
-			Math::Vector du;
-			Math::Vector dv;
 			Math::Normal sampleNormal;
 
 			shapeSampler->sample(surfacePoint, samplePoint, sampleNormal);

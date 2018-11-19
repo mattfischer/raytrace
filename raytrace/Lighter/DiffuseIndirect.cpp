@@ -94,10 +94,10 @@ namespace Lighter {
 				sampleDistances.resize(M * N);
 				for (int k = 0; k < N; k++) {
 					for (int j = 0; j < M; j++) {
-						std::uniform_real_distribution<float> dist(0, 1);
+						sampler.startSample();
 
-						float phi = 2 * M_PI * (k + dist(mRandomEngine)) / N;
-						float theta = std::asin(std::sqrt((j + dist(mRandomEngine)) / M));
+						float phi = 2 * M_PI * (k + sampler.getValue()) / N;
+						float theta = std::asin(std::sqrt((j + sampler.getValue()) / M));
 						Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
 
 						Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
@@ -108,7 +108,6 @@ namespace Lighter {
 						if (intersection2.valid()) {
 							mean += 1 / intersection2.distance();
 							den++;
-							sampler.startSample();
 							Object::Radiance incidentRadiance = mDirectLighter.light(intersection2, sampler, 1);
 
 							samples[k * M + j] = incidentRadiance;
