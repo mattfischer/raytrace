@@ -15,6 +15,7 @@ namespace Render {
 
 	private:
 		virtual void renderPixel(int x, int y, Sampler &sampler);
+		virtual bool frameDone();
 
 		const Object::Scene &mScene;
 		const Settings &mSettings;

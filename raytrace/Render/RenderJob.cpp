@@ -71,4 +71,9 @@ namespace Render {
 
 		framebuffer().setPixel(x, y, color);
 	}
+
+	bool RenderJob::frameDone()
+	{
+		return true;
+	}
 }
