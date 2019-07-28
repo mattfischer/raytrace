@@ -10,14 +10,14 @@
 
 namespace Render {
 	RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Master &lighter, Framebuffer &framebuffer)
-		: TileJob(framebuffer, [=](int x, int y, Framebuffer &framebuffer, Sampler &sampler) { renderPixel(x, y, framebuffer, sampler); } )
+		: TileJob(framebuffer)
 		, mScene(scene)
 		, mSettings(settings)
 		, mLighter(lighter)
 	{
 	}
 
-	void RenderJob::renderPixel(int x, int y, Framebuffer &framebuffer, Sampler &sampler)
+	void RenderJob::renderPixel(int x, int y, Sampler &sampler)
 	{
 		Object::Color color;
 
@@ -34,7 +34,7 @@ namespace Render {
 			sampler.startSample();
 			Math::Point2D imagePoint = Math::Point2D(x, y) + sampler.getValue2D();
 			Math::Point2D aperturePoint = sampler.getValue2D();
-			Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, framebuffer.width(), framebuffer.height(), aperturePoint);
+			Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, framebuffer().width(), framebuffer().height(), aperturePoint);
 			Object::Intersection intersection = mScene.intersect(beam);
 			numSamples++;
 
@@ -69,6 +69,6 @@ namespace Render {
 			}
 		}
 
-		framebuffer.setPixel(x, y, color);
+		framebuffer().setPixel(x, y, color);
 	}
 }

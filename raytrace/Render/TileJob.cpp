@@ -5,8 +5,8 @@
 namespace Render {
 	const int TILE_SIZE = 64;
 
-	TileJob::TileJob(Framebuffer &framebuffer, std::function<void(int, int, Framebuffer&, Sampler&)> &&pixelFunc)
-		: mFramebuffer(framebuffer), mPixelFunc(std::move(pixelFunc))
+	TileJob::TileJob(Framebuffer &framebuffer)
+		: mFramebuffer(framebuffer)
 	{
 		mNextTile = 0;
 	}
@@ -26,7 +26,7 @@ namespace Render {
 			auto func = [=](Sampler &sampler) {
 				for (int j = y; j < y + height; j++) {
 					for (int i = x; i < x + width; i++) {
-						mPixelFunc(i, j, mFramebuffer, sampler);
+						renderPixel(i, j, sampler);
 					}
 				}
 			};
@@ -36,5 +36,20 @@ namespace Render {
 		}
 
 		return task;
+	}
+
+	Framebuffer &TileJob::framebuffer()
+	{
+		return mFramebuffer;
+	}
+
+	TileJobSimple::TileJobSimple(Framebuffer &framebuffer, std::function<void(int, int, Framebuffer&, Sampler&)> &&pixelFunc)
+		: TileJob(framebuffer), mPixelFunc(std::move(pixelFunc))
+	{
+	}
+
+	void TileJobSimple::renderPixel(int x, int y, Sampler &sampler)
+	{
+		mPixelFunc(x, y, framebuffer(), sampler);
 	}
 }

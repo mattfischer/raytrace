@@ -186,7 +186,7 @@ namespace Lighter {
 		};
 
 		if (mIrradianceCaching) {
-			jobs.push_back(std::make_unique<Render::TileJob>(framebuffer, std::move(func)));
+			jobs.push_back(std::make_unique<Render::TileJobSimple>(framebuffer, std::move(func)));
 		}
 
 		return jobs;

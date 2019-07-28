@@ -14,7 +14,7 @@ namespace Render {
 		RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Master &lighter, Framebuffer &framebuffer);
 
 	private:
-		void renderPixel(int x, int y, Framebuffer &framebuffer, Sampler &sampler);
+		virtual void renderPixel(int x, int y, Sampler &sampler);
 
 		const Object::Scene &mScene;
 		const Settings &mSettings;
