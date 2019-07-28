@@ -121,7 +121,7 @@ namespace Render {
 			bool block = false;
 
 			if (mCurrentJob) {
-				Sampler sampler(10);
+				std::unique_ptr<Job::ThreadLocal> threadLocal = mCurrentJob->createThreadLocal();
 
 				while (true) {
 					if (mStopThreads) {
@@ -135,7 +135,7 @@ namespace Render {
 					}
 
 					lock.unlock();
-					(*task)(sampler);
+					(*task)(*threadLocal);
 					lock.lock();
 				}
 			}

@@ -3,7 +3,7 @@
 
 #include "Object/Scene.hpp"
 
-#include "Render/TileJob.hpp"
+#include "Render/TileJobSimple.hpp"
 
 #include <cmath>
 #include <algorithm>

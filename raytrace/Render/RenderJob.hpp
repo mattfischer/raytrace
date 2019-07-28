@@ -13,8 +13,17 @@ namespace Render {
 	public:
 		RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Master &lighter, Framebuffer &framebuffer);
 
+		virtual std::unique_ptr<Job::ThreadLocal> createThreadLocal();
+
 	private:
-		virtual void renderPixel(int x, int y, Sampler &sampler);
+		struct ThreadLocal : public Job::ThreadLocal
+		{
+			Sampler sampler;
+
+			ThreadLocal(int samplerDimensions) : sampler(samplerDimensions) {}
+		};
+
+		virtual void renderPixel(int x, int y, Job::ThreadLocal &threadLocal);
 		virtual bool frameDone();
 
 		const Object::Scene &mScene;

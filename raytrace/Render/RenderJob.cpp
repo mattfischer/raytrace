@@ -17,8 +17,15 @@ namespace Render {
 	{
 	}
 
-	void RenderJob::renderPixel(int x, int y, Sampler &sampler)
+	std::unique_ptr<Job::ThreadLocal> RenderJob::createThreadLocal()
 	{
+		return std::make_unique<ThreadLocal>(10);
+	}
+
+	void RenderJob::renderPixel(int x, int y, Job::ThreadLocal &threadLocal)
+	{
+		Sampler &sampler = static_cast<ThreadLocal&>(threadLocal).sampler;
+
 		Object::Color color;
 
 		Object::Radiance totalRadiance;

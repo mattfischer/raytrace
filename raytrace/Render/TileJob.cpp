@@ -28,10 +28,10 @@ namespace Render {
 				int width = std::min(TILE_SIZE, mFramebuffer.width() - x);
 				int height = std::min(TILE_SIZE, mFramebuffer.height() - y);
 
-				auto func = [=](Sampler &sampler) {
+				auto func = [=](Job::ThreadLocal &threadLocal) {
 					for (int j = y; j < y + height; j++) {
 						for (int i = x; i < x + width; i++) {
-							renderPixel(i, j, sampler);
+							renderPixel(i, j, threadLocal);
 						}
 					}
 					jobDone();
@@ -67,17 +67,7 @@ namespace Render {
 		}
 	}
 
-	TileJobSimple::TileJobSimple(Framebuffer &framebuffer, std::function<void(int, int, Framebuffer&, Sampler&)> &&pixelFunc)
-		: TileJob(framebuffer), mPixelFunc(std::move(pixelFunc))
-	{
-	}
-
-	void TileJobSimple::renderPixel(int x, int y, Sampler &sampler)
-	{
-		mPixelFunc(x, y, framebuffer(), sampler);
-	}
-
-	bool TileJobSimple::frameDone()
+	bool TileJob::frameDone()
 	{
 		return true;
 	}
