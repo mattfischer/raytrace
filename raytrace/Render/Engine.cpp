@@ -1,7 +1,7 @@
 #define NOMINMAX
 #include "Render/Engine.hpp"
 
-#include "Render/TileJob.hpp"
+#include "Render/RenderJob.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -58,7 +58,7 @@ namespace Render {
 			}
 		}
 
-		std::unique_ptr<Job> renderJob = std::make_unique<TileJob>(*mFramebuffer, [=](int x, int y, Framebuffer &, Sampler &sampler) { renderPixel(x, y, sampler); } );
+		std::unique_ptr<Job> renderJob = std::make_unique<RenderJob>(mScene, mSettings, *mLighter, *mFramebuffer);
 		renderJob->setDoneHandler([=]() { renderDone(); } );
 		addJob(std::move(renderJob));
 	}
@@ -68,7 +68,7 @@ namespace Render {
 		return mRendering;
 	}
 
-	const Engine::Settings &Engine::settings() const
+	const Settings &Engine::settings() const
 	{
 		return mSettings;
 	}
@@ -86,7 +86,7 @@ namespace Render {
 		return *mFramebuffer;
 	}
 
-	Object::Color Engine::toneMap(const Object::Radiance &radiance) const
+	Object::Color Engine::toneMap(const Object::Radiance &radiance)
 	{
 		float red = radiance.red() / (radiance.red() + 1);
 		float green = radiance.green() / (radiance.green() + 1);
@@ -163,61 +163,6 @@ namespace Render {
 				mConditionVariable.wait(lock);
 			}
 		}
-	}
-
-	void Engine::renderPixel(int x, int y, Sampler &sampler)
-	{
-		Object::Color color;
-
-		Object::Radiance totalRadiance;
-		Object::Color totalColor;
-		int numSamples = 0;
-
-		const int runLength = 10;
-		Object::Color colors[runLength];
-		int colorIdx = 0;
-		sampler.startSequence();
-		while (true) {
-			Math::Bivector dv;
-			sampler.startSample();
-			Math::Point2D imagePoint = Math::Point2D(x, y) + sampler.getValue2D();
-			Math::Point2D aperturePoint = sampler.getValue2D();
-			Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, mFramebuffer->width(), mFramebuffer->height(), aperturePoint);
-			Object::Intersection intersection = mScene.intersect(beam);
-			numSamples++;
-
-			if (intersection.valid())
-			{
-				if (mSettings.lighting) {
-					totalRadiance += mLighter->light(intersection, sampler, 0);
-					color = toneMap(totalRadiance / numSamples);
-				}
-				else {
-					totalColor += intersection.albedo();
-					color = totalColor / numSamples;
-				}
-			}
-
-			colors[colorIdx] = color;
-			colorIdx = (colorIdx + 1) % runLength;
-
-			if (numSamples >= mSettings.maxSamples) {
-				break;
-			}
-
-			if (numSamples > mSettings.minSamples) {
-				float variance = 0;
-				int numVarianceSamples = std::min(runLength, numSamples);
-				for (int i = 0; i < numVarianceSamples; i++) {
-					variance += (colors[i] - color).magnitude2() / numVarianceSamples;
-				}
-				if (variance < mSettings.sampleThreshold * mSettings.sampleThreshold) {
-					break;
-				}
-			}
-		}
-
-		mFramebuffer->setPixel(x, y, color);
 	}
 
 	void Engine::renderDone()

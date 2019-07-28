@@ -39,7 +39,7 @@ bool RenderControlDlg::isDialogMessage(MSG *msg)
 	return IsDialogMessage(mHDlg, msg);
 }
 
-Render::Engine::Settings &RenderControlDlg::settings()
+Render::Settings &RenderControlDlg::settings()
 {
 	return mSettings;
 }

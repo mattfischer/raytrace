@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-#include "Render/Engine.hpp"
+#include "Render/Settings.hpp"
 
 class RenderControlDlg
 {
@@ -19,7 +19,7 @@ public:
 	void createWindow(HINSTANCE hInst, Listener *listener);
 	bool isDialogMessage(MSG *msg);
 
-	Render::Engine::Settings &settings();
+	Render::Settings &settings();
 
 	void setStatusMessage(const char *message);
 	void enableRenderButton(bool enabled);
@@ -34,7 +34,7 @@ private:
 	INT_PTR CALLBACK dialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	HWND mHDlg;
-	Render::Engine::Settings mSettings;
+	Render::Settings mSettings;
 	Listener *mListener;
 };
 

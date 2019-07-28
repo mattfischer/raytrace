@@ -230,6 +230,9 @@
     <ClCompile Include="Object\PointLight.cpp">
       <Filter>Source Files\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Render\RenderJob.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FlexGenerator Include="Parse\Scene.l">
@@ -439,6 +442,12 @@
     </ClInclude>
     <ClInclude Include="Object\PointLight.hpp">
       <Filter>Source Files\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\RenderJob.hpp">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Settings.hpp">
+      <Filter>Source Files\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

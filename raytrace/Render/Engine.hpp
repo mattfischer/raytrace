@@ -7,6 +7,7 @@
 
 #include "Render/Framebuffer.hpp"
 #include "Render/Job.hpp"
+#include "Render/Settings.hpp"
 
 #include "Lighter/Master.hpp"
 
@@ -28,17 +29,6 @@ namespace Render {
 			virtual void onRenderStatus(const char *message) = 0;
 		};
 
-		struct Settings
-		{
-			int width;
-			int height;
-			bool lighting;
-			int minSamples;
-			int maxSamples;
-			float sampleThreshold;
-			Lighter::Master::Settings lighterSettings;
-		};
-
 		Engine(const Object::Scene &scene);
 
 		void stop();
@@ -53,13 +43,12 @@ namespace Render {
 		const Settings &settings() const;
 		Framebuffer &framebuffer();
 
-		Object::Color toneMap(const Object::Radiance &radiance) const;
+		static Object::Color toneMap(const Object::Radiance &radiance);
 
 	private:
 		void addJob(std::unique_ptr<Job> job);
 		void runThread();
 
-		void renderPixel(int x, int y, Sampler &sampler);
 		void renderDone();
 
 		const Object::Scene &mScene;

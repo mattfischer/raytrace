@@ -158,6 +158,7 @@
     <ClCompile Include="Render\Engine.cpp" />
     <ClCompile Include="Render\Framebuffer.cpp" />
     <ClCompile Include="Render\Job.cpp" />
+    <ClCompile Include="Render\RenderJob.cpp" />
     <ClCompile Include="Render\Sampler.cpp" />
     <ClCompile Include="Render\TileJob.cpp" />
     <ClCompile Include="Scene.tab.c" />
@@ -232,7 +233,9 @@
     <ClInclude Include="Render\Engine.hpp" />
     <ClInclude Include="Render\Framebuffer.hpp" />
     <ClInclude Include="Render\Job.hpp" />
+    <ClInclude Include="Render\RenderJob.hpp" />
     <ClInclude Include="Render\Sampler.hpp" />
+    <ClInclude Include="Render\Settings.hpp" />
     <ClInclude Include="Render\TileJob.hpp" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
