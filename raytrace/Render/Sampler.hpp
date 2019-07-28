@@ -9,13 +9,20 @@
 namespace Render {
 	class Sampler {
 	public:
+		struct State {
+			std::vector<std::tuple<int, int>> lastSamples;
+		};
+
 		Sampler(unsigned int numDimensions);
 
-		void startSequence();
+		void startSequence(int index = 0);
+		void startSequence(const State &state);
 		void startSample();
 
 		float getValue();
 		Math::Point2D getValue2D();
+
+		State state() const;
 
 	private:
 		unsigned int mNumDimensions;
