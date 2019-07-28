@@ -16,18 +16,18 @@ namespace Render {
 
 	protected:
 		virtual void renderPixel(int x, int y, Job::ThreadLocal &threadLocal) = 0;
-		virtual bool frameDone();
+		virtual bool needRepeat();
 		Framebuffer &framebuffer();
 
 	private:
-		void jobDone();
+		void taskDone();
 
 		Framebuffer &mFramebuffer;
 		int mWidthInTiles;
 		int mHeightInTiles;
 		int mNextTile;
-		bool mDone;
-		int mOutstandingJobs;
+		bool mRepeat;
+		int mOutstandingTasks;
 		std::mutex mMutex;
 		std::condition_variable mCondVar;
 	};
