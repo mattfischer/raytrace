@@ -15,6 +15,7 @@ namespace Render {
 
 		virtual std::unique_ptr<Task> getNextTask() = 0;
 		virtual std::unique_ptr<ThreadLocal> createThreadLocal() = 0;
+		virtual void stop();
 
 		void setDoneHandler(std::function<void()> &&handler);
 		void done();

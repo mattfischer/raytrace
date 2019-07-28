@@ -12,16 +12,6 @@ namespace Render {
 	{
 		mRendering = false;
 		mFramebuffer = std::make_unique<Framebuffer>(0, 0);
-		mStopThreads = false;
-
-		SYSTEM_INFO sysinfo;
-		GetSystemInfo(&sysinfo);
-		int numThreads = sysinfo.dwNumberOfProcessors;
-
-		mNumRunningThreads = 0;
-		for (int i = 0; i < numThreads; i++) {
-			mThreads.push_back(std::make_unique<std::thread>([=]() { runThread(); }));
-		}
 	}
 
 	void Engine::stop()
@@ -29,12 +19,20 @@ namespace Render {
 		{
 			std::unique_lock<std::mutex> lock(mMutex);
 			mStopThreads = true;
+			if (mCurrentJob) {
+				mCurrentJob->stop();
+			}
 			mConditionVariable.notify_all();
 		}
 
 		for (std::unique_ptr<std::thread> &thread : mThreads) {
 			thread->join();
 		}
+		mThreads.clear();
+		mCurrentJob.reset();
+		mJobs.clear();
+
+		renderDone();
 	}
 
 	const Object::Scene &Engine::scene() const
@@ -61,6 +59,16 @@ namespace Render {
 		std::unique_ptr<Job> renderJob = std::make_unique<RenderJob>(mScene, mSettings, *mLighter, *mFramebuffer);
 		renderJob->setDoneHandler([=]() { renderDone(); } );
 		addJob(std::move(renderJob));
+
+		SYSTEM_INFO sysinfo;
+		GetSystemInfo(&sysinfo);
+		int numThreads = sysinfo.dwNumberOfProcessors;
+
+		mNumRunningThreads = 0;
+		mStopThreads = false;
+		for (int i = 0; i < numThreads; i++) {
+			mThreads.push_back(std::make_unique<std::thread>([=]() { runThread(); }));
+		}
 	}
 
 	bool Engine::rendering() const
@@ -159,7 +167,7 @@ namespace Render {
 				}
 			}
 
-			if (block) {
+			if (block && !mStopThreads) {
 				mConditionVariable.wait(lock);
 			}
 		}

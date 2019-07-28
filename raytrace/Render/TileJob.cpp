@@ -10,7 +10,7 @@ namespace Render {
 	{
 		mNextTile = 0;
 		mOutstandingTasks = 0;
-		mRepeat = true;
+		mStop = false;
 		mWidthInTiles = (mFramebuffer.width() + TILE_SIZE - 1) / TILE_SIZE;
 		mHeightInTiles = (mFramebuffer.height() + TILE_SIZE - 1) / TILE_SIZE;
 	}
@@ -21,7 +21,7 @@ namespace Render {
 
 		std::unique_ptr<Job::Task> task;
 
-		while (mRepeat) {
+		while (!mStop) {
 			if (mNextTile < mWidthInTiles * mHeightInTiles) {
 				int x = (mNextTile % mWidthInTiles) * TILE_SIZE;
 				int y = (mNextTile / mWidthInTiles) * TILE_SIZE;
@@ -50,6 +50,13 @@ namespace Render {
 		return task;
 	}
 
+	void TileJob::stop()
+	{
+		std::unique_lock<std::mutex>(mMutex);
+		mStop = true;
+		mCondVar.notify_all();
+	}
+
 	Framebuffer &TileJob::framebuffer()
 	{
 		return mFramebuffer;
@@ -62,7 +69,7 @@ namespace Render {
 		mOutstandingTasks--;
 		if (mOutstandingTasks == 0 && mNextTile >= mWidthInTiles * mHeightInTiles) {
 			mNextTile = 0;
-			mRepeat = needRepeat();
+			mStop = !needRepeat();
 			mCondVar.notify_all();
 		}
 	}

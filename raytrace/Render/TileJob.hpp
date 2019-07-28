@@ -13,6 +13,7 @@ namespace Render {
 		TileJob(Framebuffer &framebuffer);
 
 		std::unique_ptr<Job::Task> getNextTask();
+		virtual void stop();
 
 	protected:
 		virtual void renderPixel(int x, int y, Job::ThreadLocal &threadLocal) = 0;
@@ -26,10 +27,10 @@ namespace Render {
 		int mWidthInTiles;
 		int mHeightInTiles;
 		int mNextTile;
-		bool mRepeat;
 		int mOutstandingTasks;
 		std::mutex mMutex;
 		std::condition_variable mCondVar;
+		bool mStop;
 	};
 }
 #endif

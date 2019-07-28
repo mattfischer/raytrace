@@ -49,9 +49,9 @@ void RenderControlDlg::setStatusMessage(const char *message)
 	SetDlgItemText(mHDlg, IDC_RENDER_STATUS, message);
 }
 
-void RenderControlDlg::enableRenderButton(bool enabled)
+void RenderControlDlg::setRenderingStatus(bool rendering)
 {
-	EnableWindow(GetDlgItem(mHDlg, ID_RENDER), enabled);
+	SetDlgItemText(mHDlg, ID_RENDER, rendering ? "Stop Render" : "Render");
 }
 
 void RenderControlDlg::show()

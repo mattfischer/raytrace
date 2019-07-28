@@ -126,19 +126,24 @@ LRESULT CALLBACK App::wndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 
 void App::onRenderButtonClicked()
 {
-	updateFramebuffer();
+	if (mEngine->rendering()) {
+		mEngine->stop();
+	}
+	else {
+		updateFramebuffer();
 
-	mRenderControl.enableRenderButton(false);
+		mRenderControl.setRenderingStatus(true);
 
-	mEngine->setSettings(mRenderControl.settings());
-	mEngine->startRender(this);
+		mEngine->setSettings(mRenderControl.settings());
+		mEngine->startRender(this);
 
-	SetTimer(mHWnd, 0, 0, NULL);
+		SetTimer(mHWnd, 0, 0, NULL);
+	}
 }
 
 void App::onRenderDone()
 {
-	mRenderControl.enableRenderButton(true);
+	mRenderControl.setRenderingStatus(false);
 }
 
 void App::onRenderStatus(const char *message)

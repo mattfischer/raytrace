@@ -12,4 +12,8 @@ namespace Render {
 			mDoneHandler();
 		}
 	}
+
+	void Job::stop()
+	{
+	}
 }

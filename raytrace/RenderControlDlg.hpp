@@ -22,7 +22,7 @@ public:
 	Render::Settings &settings();
 
 	void setStatusMessage(const char *message);
-	void enableRenderButton(bool enabled);
+	void setRenderingStatus(bool rendering);
 
 	void show();
 	void refreshSettings();
