@@ -34,9 +34,9 @@ namespace Render {
 
 		std::vector<bool> mPixelsDone;
 		std::vector<Object::Radiance> mTotalRadiance;
+		std::vector<unsigned int> mSamplerOffsets;
 		int mNumSamplesCompleted;
 		bool mNeedRepeat;
-		Sampler::State mSamplerState;
 	};
 }
 #endif

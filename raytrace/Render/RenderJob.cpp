@@ -7,6 +7,7 @@
 #include "Render/Engine.hpp"
 
 #include <algorithm>
+#include <random>
 
 namespace Render {
 	const int NumSamplesPerIteration = 10;
@@ -19,6 +20,13 @@ namespace Render {
 	{
 		mPixelsDone.resize(framebuffer.width() * framebuffer.height());
 		mTotalRadiance.resize(framebuffer.width() * framebuffer.height());
+		mSamplerOffsets.resize(framebuffer.width() * framebuffer.height());
+
+		std::uniform_int_distribution<unsigned int> dist(0, 256);
+		std::default_random_engine engine;
+		for (unsigned int &offset : mSamplerOffsets) {
+			offset = dist(engine);
+		}
 		setupIteration(0);
 	}
 
@@ -43,7 +51,7 @@ namespace Render {
 		const int runLength = 10;
 		Object::Color colors[runLength];
 		int colorIdx = 0;
-		sampler.startSequence(mSamplerState);
+		sampler.startSequence(mSamplerOffsets[index] + mNumSamplesCompleted);
 		for (int sample = 0; sample < NumSamplesPerIteration; sample++) {
 			Math::Bivector dv;
 			sampler.startSample();
@@ -109,9 +117,6 @@ namespace Render {
 	void RenderJob::setupIteration(int startSample)
 	{
 		mNeedRepeat = false;
-		Sampler sampler(10);
-		sampler.startSequence(startSample);
-		mSamplerState = sampler.state();
 		mNumSamplesCompleted = startSample;
 	}
 }
