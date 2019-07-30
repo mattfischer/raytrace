@@ -37,11 +37,9 @@ namespace Lighter {
 		else {
 			Math::OrthonormalBasis basis(intersection.facingNormal());
 
-			for (int i = 0; i < mIndirectSamples; i++) {
-				Math::Vector incomingDirection;
-				Object::Radiance irradiance = sampleIrradiance(intersection, basis, sampler, incomingDirection);
-				radiance += irradiance * albedo * brdf.lambert() / mIndirectSamples;
-			}
+			Math::Vector incomingDirection;
+			Object::Radiance irradiance = sampleIrradiance(intersection, basis, sampler, incomingDirection);
+			radiance = irradiance * albedo * brdf.lambert();
 		}
 
 		return radiance;
