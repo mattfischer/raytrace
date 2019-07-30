@@ -26,12 +26,11 @@ namespace Render {
 		virtual void renderPixel(int x, int y, Job::ThreadLocal &threadLocal);
 		virtual bool needRepeat();
 
-		void setupIteration(int startSample);
-
 		const Object::Scene &mScene;
 		const Settings &mSettings;
 		const Lighter::Master &mLighter;
 
+		int mNumSamplesThisIteration;
 		std::vector<bool> mPixelsDone;
 		std::vector<Object::Radiance> mTotalRadiance;
 		std::vector<unsigned int> mSamplerOffsets;

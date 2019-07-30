@@ -10,7 +10,7 @@
 #include <random>
 
 namespace Render {
-	const int NumSamplesPerIteration = 10;
+	const int MaxSamplesPerIteration = 100;
 
 	RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Master &lighter, Framebuffer &framebuffer)
 		: TileJob(framebuffer)
@@ -27,7 +27,9 @@ namespace Render {
 		for (unsigned int &offset : mSamplerOffsets) {
 			offset = dist(engine);
 		}
-		setupIteration(0);
+		mNeedRepeat = false;
+		mNumSamplesCompleted = 0;
+		mNumSamplesThisIteration = 1;
 	}
 
 	std::unique_ptr<Job::ThreadLocal> RenderJob::createThreadLocal()
@@ -52,7 +54,7 @@ namespace Render {
 		Object::Color colors[runLength];
 		int colorIdx = 0;
 		sampler.startSequence(mSamplerOffsets[index] + mNumSamplesCompleted);
-		for (int sample = 0; sample < NumSamplesPerIteration; sample++) {
+		for (int sample = 0; sample < mNumSamplesThisIteration; sample++) {
 			Math::Bivector dv;
 			sampler.startSample();
 			Math::Point2D imagePoint = Math::Point2D(x, y) + sampler.getValue2D();
@@ -81,7 +83,7 @@ namespace Render {
 				break;
 			}
 
-			if (numSamples > mSettings.minSamples) {
+			/*if (numSamples > mSettings.minSamples) {
 				float variance = 0;
 				int numVarianceSamples = std::min(runLength, numSamples);
 				for (int i = 0; i < numVarianceSamples; i++) {
@@ -91,7 +93,7 @@ namespace Render {
 					pixelDone = true;
 					break;
 				}
-			}
+			}*/
 		}
 
 		framebuffer().setPixel(x, y, color);
@@ -108,15 +110,12 @@ namespace Render {
 	{
 		bool needRepeat = mNeedRepeat;
 		if (mNeedRepeat) {
-			setupIteration(mNumSamplesCompleted + NumSamplesPerIteration);
+			mNeedRepeat = false;
+			mNumSamplesCompleted += mNumSamplesThisIteration;
+			mNumSamplesThisIteration *= 2;
+			mNumSamplesThisIteration = std::min(mNumSamplesThisIteration, MaxSamplesPerIteration);
 		}
 
 		return needRepeat;
-	}
-
-	void RenderJob::setupIteration(int startSample)
-	{
-		mNeedRepeat = false;
-		mNumSamplesCompleted = startSample;
 	}
 }
