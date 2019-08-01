@@ -3,6 +3,7 @@
 
 #include "Render/TileJob.hpp"
 #include "Render/Settings.hpp"
+#include "Render/Raster.hpp"
 
 #include "Object/Scene.hpp"
 #include "Lighter/Master.hpp"
@@ -31,9 +32,9 @@ namespace Render {
 		const Lighter::Master &mLighter;
 
 		int mNumSamplesThisIteration;
-		std::vector<bool> mPixelsDone;
-		std::vector<Object::Radiance> mTotalRadiance;
-		std::vector<unsigned int> mSamplerOffsets;
+		Raster<bool> mPixelsDone;
+		Raster<Object::Radiance> mTotalRadiance;
+		Raster<unsigned int> mSamplerOffsets;
 		int mNumSamplesCompleted;
 		bool mNeedRepeat;
 	};

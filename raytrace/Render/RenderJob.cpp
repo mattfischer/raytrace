@@ -17,15 +17,16 @@ namespace Render {
 		, mScene(scene)
 		, mSettings(settings)
 		, mLighter(lighter)
+		, mPixelsDone(framebuffer.width(), framebuffer.height())
+		, mTotalRadiance(framebuffer.width(), framebuffer.height())
+		, mSamplerOffsets(framebuffer.width(), framebuffer.height())
 	{
-		mPixelsDone.resize(framebuffer.width() * framebuffer.height());
-		mTotalRadiance.resize(framebuffer.width() * framebuffer.height());
-		mSamplerOffsets.resize(framebuffer.width() * framebuffer.height());
-
 		std::uniform_int_distribution<unsigned int> dist(0, 256);
 		std::default_random_engine engine;
-		for (unsigned int &offset : mSamplerOffsets) {
-			offset = dist(engine);
+		for (int x = 0; x < framebuffer.width(); x++) {
+			for (int y = 0; y < framebuffer.height(); y++) {
+				mSamplerOffsets.set(x, y, dist(engine));
+			}
 		}
 		mNeedRepeat = false;
 		mNumSamplesCompleted = 0;
@@ -39,8 +40,7 @@ namespace Render {
 
 	void RenderJob::renderPixel(int x, int y, Job::ThreadLocal &threadLocal)
 	{
-		int index = y * framebuffer().width() + x;
-		if (mPixelsDone[index]) {
+		if (mPixelsDone.get(x, y)) {
 			return;
 		}
 
@@ -53,7 +53,7 @@ namespace Render {
 		const int runLength = 10;
 		Object::Color colors[runLength];
 		int colorIdx = 0;
-		sampler.startSequence(mSamplerOffsets[index] + mNumSamplesCompleted);
+		sampler.startSequence(mSamplerOffsets.get(x, y) + mNumSamplesCompleted);
 		for (int sample = 0; sample < mNumSamplesThisIteration; sample++) {
 			Math::Bivector dv;
 			sampler.startSample();
@@ -66,8 +66,9 @@ namespace Render {
 			if (intersection.valid())
 			{
 				if (mSettings.lighting) {
-					mTotalRadiance[index] += mLighter.light(intersection, sampler, 0);
-					color = Engine::toneMap(mTotalRadiance[index] / numSamples);
+					Object::Radiance radiance = mTotalRadiance.get(x, y) + mLighter.light(intersection, sampler, 0);
+					mTotalRadiance.set(x, y, radiance);
+					color = Engine::toneMap(radiance / numSamples);
 				}
 				else {
 					totalColor += intersection.albedo();
@@ -99,7 +100,7 @@ namespace Render {
 		framebuffer().setPixel(x, y, color);
 
 		if (pixelDone) {
-			mPixelsDone[index] = true;
+			mPixelsDone.set(x, y, true);
 		}
 		else {
 			mNeedRepeat = true;

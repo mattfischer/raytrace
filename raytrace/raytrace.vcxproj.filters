@@ -455,6 +455,9 @@
     <ClInclude Include="Render\TileJobSimple.hpp">
       <Filter>Source Files\Render</Filter>
     </ClInclude>
+    <ClInclude Include="Render\Raster.hpp">
+      <Filter>Source Files\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources.rc">

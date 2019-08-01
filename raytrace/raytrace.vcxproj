@@ -234,6 +234,7 @@
     <ClInclude Include="Render\Engine.hpp" />
     <ClInclude Include="Render\Framebuffer.hpp" />
     <ClInclude Include="Render\Job.hpp" />
+    <ClInclude Include="Render\Raster.hpp" />
     <ClInclude Include="Render\RenderJob.hpp" />
     <ClInclude Include="Render\Sampler.hpp" />
     <ClInclude Include="Render\Settings.hpp" />
