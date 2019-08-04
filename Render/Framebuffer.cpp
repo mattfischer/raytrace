@@ -27,9 +27,8 @@ namespace Render {
 
 	void Framebuffer::setPixel(int x, int y, const Object::Color &color)
 	{
-		int scany = mHeight - y - 1;
-		mBits[(mWidth * scany + x) * 3 + 0] = color.blue() * 0xff;
-		mBits[(mWidth * scany + x) * 3 + 1] = color.green() * 0xff;
-		mBits[(mWidth * scany + x) * 3 + 2] = color.red() * 0xff;
+		mBits[(mWidth * y + x) * 3 + 0] = color.red() * 0xff;
+		mBits[(mWidth * y + x) * 3 + 1] = color.green() * 0xff;
+		mBits[(mWidth * y + x) * 3 + 2] = color.blue() * 0xff;
 	}
 }

@@ -1,12 +1,13 @@
-#include <windows.h>
+#include "App/MainWindow.hpp"
 
-#include "App.hpp"
+#include <QApplication>
 
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iCmdShow)
+int main(int argc, char *argv[])
 {
-	App app;
+	QApplication app(argc, argv);
 
-	return app.run(hInst, hPrev, lpCmdLine, iCmdShow);
+	MainWindow window;
+	window.show();
+
+	return app.exec();
 }
-
-
