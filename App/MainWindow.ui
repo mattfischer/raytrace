@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1145</width>
+    <height>660</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,12 +31,12 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>479</width>
-         <height>539</height>
+         <width>824</width>
+         <height>599</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
+        <item alignment="Qt::AlignLeft|Qt::AlignTop">
          <widget class="QLabel" name="renderView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -60,7 +60,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1145</width>
      <height>21</height>
     </rect>
    </property>
