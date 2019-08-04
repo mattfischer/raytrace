@@ -5,7 +5,9 @@ namespace Render {
 		: mWidth(width), mHeight(height)
 	{
 		mBits.resize(mWidth * mHeight * 3);
-		std::memset(&mBits[0], 0, mBits.size());
+		if(mBits.size() > 0) {
+			std::memset(&mBits[0], 0, mBits.size());
+		}
 	}
 
 	int Framebuffer::width() const

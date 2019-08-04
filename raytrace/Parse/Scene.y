@@ -2,7 +2,10 @@
 	#include "Parse/AST.h"
 	#include <stdarg.h>
 	#include <stdio.h>
-		
+
+	int Scenelex();
+	int Sceneerror(const char *s);
+
 	AST *newAst(ASTType type, int numChildren, ...);
 	AST *addChild(AST *ast, AST *child);
 	AST *addChildren(AST *ast, int numChildren, AST *children[]);
@@ -203,7 +206,7 @@ AST *newAst(ASTType type, int numChildren, ...)
 	va_list va;
 	int i;
 	
-	AST *ast = malloc(sizeof(AST));
+	AST *ast = (AST*)malloc(sizeof(AST));
 	
 	ast->type = type;
 	ast->numChildren = numChildren;

@@ -8,7 +8,7 @@ namespace Render {
 
 	Sampler::Sampler(unsigned int numDimensions)
 	{
-		mNumDimensions = std::min((unsigned int)numDimensions, sizeof(sPrimes) / sizeof(sPrimes[0]));
+		mNumDimensions = std::min((size_t)numDimensions, sizeof(sPrimes) / sizeof(sPrimes[0]));
 		mLastSamples.resize(mNumDimensions);
 	}
 

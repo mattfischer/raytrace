@@ -2,10 +2,12 @@
 
 %{
 	#include "Parse/AST.h"
-	#include "Scene.tab.h"
+	#include "Scene_yacc.h"
 	#include <string.h>
 	#include <stdlib.h>
-	
+	#include <io.h>
+	#define isatty _isatty
+
 	void parseVector(char *text, ASTVector *vector);
 	char *parseString(char *text);
 %}
@@ -82,7 +84,7 @@ void parseVector(char *text, ASTVector *vector)
 
 char *parseString(char *text)
 {
-    char *c = malloc(strlen(text) - 1);
+	char *c = (char*)malloc(strlen(text) - 1);
 	strcpy(c, text + 1);
 	c[strlen(c) - 1] = '\0';
 

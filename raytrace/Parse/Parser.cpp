@@ -22,10 +22,7 @@
 
 #include "AST.h"
 
-extern "C"
-{
-	AST *parseScene(const char *filename);
-}
+AST *parseScene(const char *filename);
 
 namespace Parse {
 	Math::Point parsePoint(const ASTVector &v)
