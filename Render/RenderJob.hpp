@@ -6,13 +6,13 @@
 #include "Render/Raster.hpp"
 
 #include "Object/Scene.hpp"
-#include "Lighter/Master.hpp"
+#include "Lighter/UniPath.hpp"
 
 namespace Render {
 	class RenderJob : public TileJob
 	{
 	public:
-		RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Master &lighter, Framebuffer &framebuffer);
+        RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Base &lighter, Framebuffer &framebuffer);
 
 		virtual std::unique_ptr<Job::ThreadLocal> createThreadLocal();
 
@@ -29,7 +29,7 @@ namespace Render {
 
 		const Object::Scene &mScene;
 		const Settings &mSettings;
-		const Lighter::Master &mLighter;
+        const Lighter::Base &mLighter;
 
 		int mNumSamplesThisIteration;
 		Raster<bool> mPixelsDone;

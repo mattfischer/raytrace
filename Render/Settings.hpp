@@ -1,7 +1,7 @@
 #ifndef RENDER_SETTINGS_HPP
 #define RENDER_SETTINGS_HPP
 
-#include "Lighter/Master.hpp"
+#include "Lighter/UniPath.hpp"
 
 namespace Render {
 	struct Settings
@@ -12,7 +12,7 @@ namespace Render {
 		int minSamples;
 		int maxSamples;
 		float sampleThreshold;
-		Lighter::Master::Settings lighterSettings;
+        Lighter::UniPath::Settings lighterSettings;
 	};
 }
 #endif

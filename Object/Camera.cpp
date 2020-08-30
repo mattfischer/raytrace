@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "Object/Camera.hpp"
 
-#include <math.h>
+#include <cmath>
 #include <stdio.h>
 
 namespace Object {

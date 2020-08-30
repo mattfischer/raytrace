@@ -9,7 +9,7 @@
 #include "Render/Job.hpp"
 #include "Render/Settings.hpp"
 
-#include "Lighter/Master.hpp"
+#include "Lighter/UniPath.hpp"
 
 #include <set>
 #include <thread>
@@ -57,7 +57,7 @@ namespace Render {
 		std::unique_ptr<Framebuffer> mFramebuffer;
 		bool mRendering;
 		DWORD mStartTime;
-		std::unique_ptr<Lighter::Master> mLighter;
+        std::unique_ptr<Lighter::UniPath> mLighter;
 
 		std::mutex mMutex;
 		std::condition_variable mConditionVariable;

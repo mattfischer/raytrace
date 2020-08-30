@@ -4,6 +4,7 @@
 #include "Math/Vector.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 namespace Lighter {
 	IrradianceCache::IrradianceCache(float threshold)

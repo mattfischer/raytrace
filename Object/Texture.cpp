@@ -2,6 +2,7 @@
 #include "Object/Texture.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 namespace Object {
 	int nextPowerOfTwo(int x)

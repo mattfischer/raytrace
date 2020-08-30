@@ -12,7 +12,7 @@
 namespace Render {
 	const int MaxSamplesPerIteration = 100;
 
-	RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Master &lighter, Framebuffer &framebuffer)
+    RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Base &lighter, Framebuffer &framebuffer)
 		: TileJob(framebuffer)
 		, mScene(scene)
 		, mSettings(settings)
