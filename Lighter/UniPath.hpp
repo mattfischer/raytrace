@@ -2,9 +2,7 @@
 #define LIGHTER_UNIPATH_HPP
 
 #include "Lighter/Base.hpp"
-#include "Lighter/IrradianceCache.hpp"
-
-#include "Math/OrthonormalBasis.hpp"
+#include "Lighter/IndirectCached.hpp"
 
 namespace Lighter {
     class UniPath : public Base
@@ -34,10 +32,8 @@ namespace Lighter {
         Object::Radiance lightSpecular(const Object::Intersection &intersection, Render::Sampler &sampler, int generation, bool misDirect) const;
         Object::Radiance lightTransmit(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
 
-        void prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler);
-
         Settings mSettings;
-        IrradianceCache mIrradianceCache;
+        std::unique_ptr<Lighter::IndirectCached> mIndirectCachedLighter;
     };
 }
 #endif

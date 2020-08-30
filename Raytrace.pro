@@ -5,6 +5,7 @@ QT = core gui widgets
 
 HEADERS = \
     Lighter/Base.hpp \
+    Lighter/IndirectCached.hpp \
     Lighter/IrradianceCache.hpp \
     Lighter/RadianceGradient.hpp \
     Lighter/UniPath.hpp \
@@ -69,6 +70,7 @@ HEADERS = \
 
 SOURCES = \
     Lighter/Base.cpp \
+    Lighter/IndirectCached.cpp \
     Lighter/IrradianceCache.cpp \
     Lighter/RadianceGradient.cpp \
     Lighter/UniPath.cpp \
