@@ -35,7 +35,6 @@ namespace Lighter {
         Object::Radiance lightTransmit(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
 
         void prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler);
-        Object::Radiance sampleIrradiance(const Object::Intersection &intersection, const Math::OrthonormalBasis &basis, Render::Sampler &sampler, Math::Vector &localIncidentDirection) const;
 
         Settings mSettings;
         IrradianceCache mIrradianceCache;
