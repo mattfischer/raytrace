@@ -6,7 +6,7 @@
 #include "Render/Raster.hpp"
 
 #include "Object/Scene.hpp"
-#include "Lighter/UniPath.hpp"
+#include "Lighter/Combined.hpp"
 
 namespace Render {
 	class RenderJob : public TileJob

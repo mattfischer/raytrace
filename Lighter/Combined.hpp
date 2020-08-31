@@ -1,11 +1,11 @@
-#ifndef LIGHTER_UNIPATH_HPP
-#define LIGHTER_UNIPATH_HPP
+#ifndef LIGHTER_COMBINED_HPP
+#define LIGHTER_COMBINED_HPP
 
 #include "Lighter/Base.hpp"
 #include "Lighter/IndirectCached.hpp"
 
 namespace Lighter {
-    class UniPath : public Base
+    class Combined : public Base
     {
     public:
         struct Settings {
@@ -19,7 +19,7 @@ namespace Lighter {
             float irradianceCacheThreshold;
         };
 
-        UniPath(Settings &settings);
+        Combined(Settings &settings);
 
         virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
 

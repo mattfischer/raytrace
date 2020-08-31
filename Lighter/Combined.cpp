@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "Lighter/UniPath.hpp"
+#include "Lighter/Combined.hpp"
 
 #include "Object/Scene.hpp"
 #include "Math/OrthonormalBasis.hpp"
@@ -7,7 +7,7 @@
 #include <cmath>
 
 namespace Lighter {
-    UniPath::UniPath(Settings &settings)
+    Combined::Combined(Settings &settings)
         : mSettings(settings)
     {
         if(settings.indirectLighting && settings.irradianceCaching)
@@ -17,12 +17,12 @@ namespace Lighter {
             subSettings.indirectLighting = false;
             subSettings.specularLighting = false;
             subSettings.radiantLighting = false;
-            std::unique_ptr<Lighter::Base> subLighter = std::make_unique<UniPath>(subSettings);
+            std::unique_ptr<Lighter::Base> subLighter = std::make_unique<Combined>(subSettings);
             mIndirectCachedLighter = std::make_unique<IndirectCached>(std::move(subLighter), settings.indirectSamples, settings.irradianceCacheThreshold);
         }
     }
 
-    Object::Radiance UniPath::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
+    Object::Radiance Combined::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
         Object::Radiance radiance;
 
@@ -47,7 +47,7 @@ namespace Lighter {
         return radiance;
     }
 
-    std::vector<std::unique_ptr<Render::Job>> UniPath::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
+    std::vector<std::unique_ptr<Render::Job>> Combined::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
     {
         std::vector<std::unique_ptr<Render::Job>> jobs;
 
@@ -58,7 +58,7 @@ namespace Lighter {
         return jobs;
     }
 
-    Object::Radiance UniPath::lightDiffuseIndirect(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
+    Object::Radiance Combined::lightDiffuseIndirect(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
         Object::Radiance radiance;
 
@@ -98,7 +98,7 @@ namespace Lighter {
         return radiance;
     }
 
-    Object::Radiance UniPath::lightDirect(const Object::Intersection &intersection, Render::Sampler &sampler, int generation, bool misSpecular) const
+    Object::Radiance Combined::lightDirect(const Object::Intersection &intersection, Render::Sampler &sampler, int generation, bool misSpecular) const
     {
         bool hasDiffuse = intersection.primitive().surface().brdf().hasDiffuse();
         bool hasSpecular = intersection.primitive().surface().brdf().hasSpecular();
@@ -197,12 +197,12 @@ namespace Lighter {
     }
 
 
-    Object::Radiance UniPath::lightRadiant(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
+    Object::Radiance Combined::lightRadiant(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
         return intersection.primitive().surface().radiance();
     }
 
-    Object::Radiance UniPath::lightSpecular(const Object::Intersection &intersection, Render::Sampler &sampler, int generation, bool misDirect) const
+    Object::Radiance Combined::lightSpecular(const Object::Intersection &intersection, Render::Sampler &sampler, int generation, bool misDirect) const
     {
         const Object::Surface &surface = intersection.primitive().surface();
         const Math::Ray &ray = intersection.ray();
@@ -244,7 +244,7 @@ namespace Lighter {
         return radiance;
     }
 
-    Object::Radiance UniPath::lightTransmit(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
+    Object::Radiance Combined::lightTransmit(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
         const Object::Scene &scene = intersection.scene();
         const Object::Surface &surface = intersection.primitive().surface();
