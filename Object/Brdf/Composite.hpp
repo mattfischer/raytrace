@@ -12,6 +12,9 @@ namespace Object {
 		public:
 			Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular, float transmitIor);
 
+            virtual Object::Radiance reflected(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
+            virtual Object::Radiance transmitted(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const;
+
 			bool hasDiffuse() const;
 			const Base &diffuse() const;
 

@@ -16,6 +16,38 @@ namespace Object {
 			mTransmitIor = transmitIor;
 		}
 
+        Object::Radiance Composite::reflected(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+        {
+            Object::Radiance radiance;
+            Object::Radiance transmittedRadiance = incidentRadiance;
+
+            if(hasSpecular()) {
+                radiance += specular().reflected(transmittedRadiance, incidentDirection, normal, outgoingDirection, albedo);
+                transmittedRadiance = specular().transmitted(transmittedRadiance, incidentDirection, normal, albedo);
+            }
+
+            if(hasDiffuse()) {
+                radiance += diffuse().reflected(transmittedRadiance, incidentDirection, normal, outgoingDirection, albedo);
+            }
+
+            return radiance;
+        }
+
+        Object::Radiance Composite::transmitted(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
+        {
+            Object::Radiance transmittedRadiance = incidentRadiance;
+
+            if(hasSpecular()) {
+                transmittedRadiance = specular().transmitted(transmittedRadiance, incidentDirection, normal, albedo);
+            }
+
+            if(hasDiffuse()) {
+                transmittedRadiance = diffuse().transmitted(transmittedRadiance, incidentDirection, normal, albedo);
+            }
+
+            return transmittedRadiance;
+        }
+
 		bool Composite::hasDiffuse() const
 		{
 			return mDiffuse.get();

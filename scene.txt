@@ -7,7 +7,7 @@ model {
 	transform { translate <0,-12.75,0> uniform_scale 50 rotate <0,15,0> }
 	surface {
 		albedo { color <1,0.5,0.25> }
-		brdf { lambert 1 torrance_sparrow 0.1 0.05 10 }
+                brdf { lambert 0.9 torrance_sparrow 0.1 0.05 10 }
 	}
 }
 
@@ -24,7 +24,7 @@ quad {
 	<-15,-10,-15> <0,0,30> <30,0,0>
 	surface {
 		albedo { color <1,1,1> }
-		brdf { oren_nayar 1 0.5 }
+                brdf { oren_nayar 0.9 0.5 }
 	}
 }
 
@@ -32,7 +32,7 @@ quad {
 	<-15,10,-15> <30,0,0> <0,0,11>
 	surface {
 		albedo { color <1,1,1> }
-		brdf { oren_nayar 1 0.5 }
+                brdf { oren_nayar 0.9 0.5 }
 	}
 }
 
@@ -40,7 +40,7 @@ quad {
 	<-15,10,4> <30,0,0> <0,0,11>
 	surface {
 		albedo { color <1,1,1> }
-		brdf { oren_nayar 1 0.5 }
+                brdf { oren_nayar 0.9 0.5 }
 	}
 }
 
@@ -48,7 +48,7 @@ quad {
 	<-15,10,-15> <11,0,0> <0,0,30>
 	surface {
 		albedo { color <1,1,1> }
-		brdf { oren_nayar 1 0.5 }
+                brdf { oren_nayar 0.9 0.5 }
 	}
 }
 
@@ -56,7 +56,7 @@ quad {
 	<4,10,-15> <11,0,0> <0,0,30>
 	surface {
 		albedo { color <1,1,1> }
-		brdf { oren_nayar 1 0.5 }
+                brdf { oren_nayar 0.9 0.5 }
 	}
 }
 
@@ -64,7 +64,7 @@ quad {
     <-10,-15,-15> <0,30,0> <0,0,30>
 	surface {
 		albedo { color <1,0,0> }
-		brdf { oren_nayar 1 0.5 }
+                brdf { oren_nayar 0.9 0.5 }
 	}
 }
 
@@ -72,14 +72,14 @@ quad {
     <10,-15,-15> <0,0,30> <0,30,0>
 	surface {
 		albedo { color <0,0,1> }
-		brdf { oren_nayar 1 0.5 }
+                brdf { oren_nayar 0.9 0.5 }
 	}
 }
 
 quad {
-	<-15,-15,10> <30,0,0> <0,30,0>
+        <-15,-15,10> <0,30,0> <30,0,0>
 	surface {
 		albedo { color <1,1,1> }
-		brdf { oren_nayar 1 0.5 }
+                brdf { oren_nayar 0.9 0.5 }
 	}
 }

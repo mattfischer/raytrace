@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 #include "Object/Brdf/OrenNayar.hpp"
 
+#include "Math/OrthonormalBasis.hpp"
+
 #include <cmath>
 #include <algorithm>
 
@@ -46,5 +48,22 @@ namespace Object {
 
 			return incidentRadiance * albedo * mStrength * (A + B * std::max(0.0f, cosPhi) * sinAlpha * tanBeta) / M_PI;
 		}
-	}
+
+        Math::Vector OrenNayar::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        {
+            Math::OrthonormalBasis basis(normal);
+            float phi = 2 * M_PI * samplePoint.u();
+            float theta = std::asin(std::sqrt(samplePoint.v()));
+
+            Math::Vector incidentDirection = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
+
+            return incidentDirection;
+        }
+
+        float OrenNayar::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        {
+            float cosTheta = incidentDirection * Math::Vector(normal);
+            return cosTheta / M_PI;
+        }
+    }
 }

@@ -35,7 +35,7 @@ namespace Render {
 
 	std::unique_ptr<Job::ThreadLocal> RenderJob::createThreadLocal()
 	{
-		return std::make_unique<ThreadLocal>(10);
+        return std::make_unique<ThreadLocal>(50);
 	}
 
 	void RenderJob::renderPixel(int x, int y, Job::ThreadLocal &threadLocal)

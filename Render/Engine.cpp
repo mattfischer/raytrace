@@ -3,7 +3,7 @@
 
 #include "Render/RenderJob.hpp"
 
-#include "Lighter/Combined.hpp"
+#include "Lighter/UniPath.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -51,7 +51,7 @@ namespace Render {
 		mStartTime = GetTickCount();
 
 		if (mSettings.lighting) {
-            mLighter = std::make_unique<Lighter::Combined>(mSettings.lighterSettings);
+            mLighter = std::make_unique<Lighter::UniPath>();
 			std::vector<std::unique_ptr<Job>> prerenderJobs = mLighter->createPrerenderJobs(mScene, *mFramebuffer);
 			for (std::unique_ptr<Job> &job : prerenderJobs) {
 				addJob(std::move(job));

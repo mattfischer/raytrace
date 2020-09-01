@@ -5,6 +5,10 @@ namespace Lighter {
 	{
 	}
 
+    Base::~Base()
+    {
+    }
+
 	std::vector<std::unique_ptr<Render::Job>> Base::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
 	{
 		return std::vector<std::unique_ptr<Render::Job>>();

@@ -9,6 +9,7 @@ HEADERS = \
     Lighter/IndirectCached.hpp \
     Lighter/IrradianceCache.hpp \
     Lighter/RadianceGradient.hpp \
+    Lighter/UniPath.hpp \
     Math/Beam.hpp \
     Math/Bivector.hpp \
     Math/Bivector2D.hpp \
@@ -74,6 +75,7 @@ SOURCES = \
     Lighter/IndirectCached.cpp \
     Lighter/IrradianceCache.cpp \
     Lighter/RadianceGradient.cpp \
+    Lighter/UniPath.cpp \
     Math/Beam.cpp \
     Math/Bivector.cpp \
     Math/Bivector2D.cpp \
