@@ -23,7 +23,7 @@ namespace Lighter
         Object::Radiance transmittedRadiance = lightTransmitted(intersection, sampler);
         Object::Radiance reflectedRadiance = lightReflected(intersection, sampler);
 
-        return emittedRadiance + transmittedRadiance + reflectedRadiance;
+        return (emittedRadiance + transmittedRadiance + reflectedRadiance).clamp();
     }
 
     std::vector<std::unique_ptr<Render::Job>> UniPath::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
