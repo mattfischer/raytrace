@@ -17,7 +17,7 @@ namespace Object {
 			mIor = ior;
 		}
 
-		Object::Radiance TorranceSparrow::reflected(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+        Object::Radiance TorranceSparrow::reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 		{
 			Math::Vector half = (incidentDirection + outgoingDirection).normalize();
 			float alpha = std::acos(std::min(1.0f, normal * half));
@@ -41,10 +41,10 @@ namespace Object {
 			float LN = normal * incidentDirection;
 			float G = std::min(1.0f, std::min(2 * HN * VN / VH, 2 * HN * LN / VH));
 
-			return incidentRadiance * mStrength * D * F * G / (4 * VN * LN);
+            return irradiance * mStrength * D * F * G / (4 * VN * LN);
 		}
 
-		Object::Radiance TorranceSparrow::transmitted(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
+        Object::Radiance TorranceSparrow::transmitted(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
 		{
 			float cosThetaI = incidentDirection * normal;
 			float oneMinusCos = 1 - cosThetaI;
@@ -52,7 +52,7 @@ namespace Object {
 			R0 = R0 * R0;
 
 			float F = R0 + (1 - R0) * oneMinusCos * oneMinusCos * oneMinusCos * oneMinusCos * oneMinusCos;
-			return incidentRadiance * (1.0f - mStrength * F);
+            return irradiance * (1.0f - mStrength * F);
 		}
 
 		Math::Vector TorranceSparrow::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const

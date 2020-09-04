@@ -29,7 +29,7 @@ namespace Lighter
 
         Object::Radiance sampleLight(const Object::Intersection &intersection, const Object::Primitive &light, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdfAngular) const;
         Object::Radiance evaluatePointLight(const Object::Intersection &intersection, const Object::PointLight &pointLight, Math::Vector &incidentDirection) const;
-        Object::Radiance sampleBrdf(const Object::Intersection &intersection, const Object::Brdf::Base &brdf, Render::Sampler &sampler, Math::Vector &incidentDirection, float &lightPdf) const;
+        Object::Radiance sampleBrdf(const Object::Intersection &intersection, const Object::Brdf::Base &brdf, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdfAngularLight) const;
 
         std::unique_ptr<Lighter::IndirectCached> mIndirectCachedLighter;
     };

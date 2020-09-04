@@ -19,7 +19,7 @@ namespace Object {
 			return mStrength;
 		}
 
-		Object::Radiance OrenNayar::reflected(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+        Object::Radiance OrenNayar::reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 		{
 			float cosThetaI = incidentDirection * normal;
 			float sinThetaI = std::sqrt(std::max(0.0f, 1 - cosThetaI * cosThetaI));
@@ -46,7 +46,7 @@ namespace Object {
 			float sinAlpha = std::max(sinThetaI, sinThetaR);
 			float tanBeta = std::min(tanThetaI, tanThetaR);
 
-			return incidentRadiance * albedo * mStrength * (A + B * std::max(0.0f, cosPhi) * sinAlpha * tanBeta) / M_PI;
+            return irradiance * albedo * mStrength * (A + B * std::max(0.0f, cosPhi) * sinAlpha * tanBeta) / M_PI;
 		}
 
         Math::Vector OrenNayar::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const

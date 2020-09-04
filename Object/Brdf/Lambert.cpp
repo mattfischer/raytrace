@@ -19,9 +19,9 @@ namespace Object {
 			return mStrength;
 		}
 
-		Object::Radiance Lambert::reflected(const Object::Radiance &incidentRadiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+        Object::Radiance Lambert::reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
 		{
-			return incidentRadiance * albedo * mStrength / M_PI;
+            return irradiance * albedo * mStrength / M_PI;
 		}
 
         Math::Vector Lambert::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
