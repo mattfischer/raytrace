@@ -51,7 +51,11 @@ namespace Render {
 		mStartTime = GetTickCount();
 
 		if (mSettings.lighting) {
-            mLighter = std::make_unique<Lighter::UniPath>();
+            Lighter::UniPath::Settings settings;
+            settings.irradianceCaching = mSettings.lighterSettings.irradianceCaching;
+            settings.indirectSamples = mSettings.lighterSettings.indirectSamples;
+            settings.irradianceCacheThreshold = mSettings.lighterSettings.irradianceCacheThreshold;
+            mLighter = std::make_unique<Lighter::UniPath>(settings);
 			std::vector<std::unique_ptr<Job>> prerenderJobs = mLighter->createPrerenderJobs(mScene, *mFramebuffer);
 			for (std::unique_ptr<Job> &job : prerenderJobs) {
 				addJob(std::move(job));

@@ -87,6 +87,7 @@ namespace Lighter
                             mean += 1 / intersection2.distance();
                             den++;
                             Object::Radiance incidentRadiance = mLighter->light(intersection2, sampler, 1);
+                            incidentRadiance = incidentRadiance - intersection2.primitive().surface().radiance();
 
                             samples[k * M + j] = incidentRadiance;
                             sampleDistances[k * M + j] = intersection2.distance();

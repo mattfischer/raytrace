@@ -1,9 +1,22 @@
+#define _USE_MATH_DEFINES
 #include "Lighter/UniPath.hpp"
 
 #include "Object/Scene.hpp"
 
+#include <cmath>
+
 namespace Lighter
 {
+    UniPath::UniPath(const Settings &settings)
+    {
+        if(settings.irradianceCaching) {
+            Settings subSettings;
+            subSettings.irradianceCaching = false;
+            std::unique_ptr<UniPath> subLighter = std::make_unique<UniPath>(subSettings);
+            mIndirectCachedLighter = std::make_unique<Lighter::IndirectCached>(std::move(subLighter),settings.indirectSamples, settings.irradianceCacheThreshold);
+        }
+    }
+
     Object::Radiance UniPath::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
         Object::Radiance emittedRadiance = lightRadiant(intersection);
@@ -11,6 +24,17 @@ namespace Lighter
         Object::Radiance reflectedRadiance = lightReflected(intersection, sampler);
 
         return emittedRadiance + transmittedRadiance + reflectedRadiance;
+    }
+
+    std::vector<std::unique_ptr<Render::Job>> UniPath::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
+    {
+        std::vector<std::unique_ptr<Render::Job>> jobs;
+
+        if(mIndirectCachedLighter) {
+            jobs = mIndirectCachedLighter->createPrerenderJobs(scene, framebuffer);
+        }
+
+        return jobs;
     }
 
     Object::Radiance UniPath::lightRadiant(const Object::Intersection &intersection) const
@@ -108,7 +132,11 @@ namespace Lighter
             lightRadiance += evaluatePointLight(intersection, *pointLight, incidentDirection);
         }
 
-        Object::Radiance radiance = specularRadiance + diffuseRadiance + lightRadiance;
+        Object::Radiance indirectCachedRadiance;
+        if(mIndirectCachedLighter) {
+            indirectCachedRadiance = mIndirectCachedLighter->light(intersection, sampler, 0);
+        }
+        Object::Radiance radiance = specularRadiance + diffuseRadiance + lightRadiance + indirectCachedRadiance;
 
         return radiance;
     }
@@ -229,6 +257,14 @@ namespace Lighter
             if (intersection2.valid()) {
                 Object::Radiance incidentRadiance = light(intersection2, sampler, 0) * dot;
                 radiance = surface.brdf().reflected(incidentRadiance, incidentDirection, normal, outgoingDirection, albedo) / pdf;
+
+                if(mIndirectCachedLighter) {
+                    Object::Radiance indirectIncidentRadiance = incidentRadiance - intersection2.primitive().surface().radiance() * dot;
+                    float lambert = surface.brdf().hasDiffuse() ? surface.brdf().diffuse().lambert() : 0;
+                    Object::Radiance indirectRadiance = indirectIncidentRadiance * lambert * albedo / (M_PI * pdf);
+                    radiance = radiance - indirectRadiance;
+                }
+
                 if(intersection2.primitive().surface().radiance().magnitude() > 0) {
                     const Object::Shape::Base::Sampler *shapeSampler = intersection2.primitive().shape().sampler();
                     if (shapeSampler) {
