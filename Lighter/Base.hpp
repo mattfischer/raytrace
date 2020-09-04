@@ -18,7 +18,7 @@ namespace Lighter {
 		Base();
         virtual ~Base();
 
-		virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const = 0;
+        virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler) const = 0;
 		virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
 	};
 }

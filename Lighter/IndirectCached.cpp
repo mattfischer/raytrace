@@ -18,7 +18,7 @@ namespace Lighter
         mIndirectSamples = indirectSamples;
     }
 
-    Object::Radiance IndirectCached::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
+    Object::Radiance IndirectCached::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
     {
         if (!intersection.primitive().surface().brdf().hasDiffuse()) {
             return Object::Radiance();
@@ -86,7 +86,7 @@ namespace Lighter
                         if (intersection2.valid()) {
                             mean += 1 / intersection2.distance();
                             den++;
-                            Object::Radiance incidentRadiance = mLighter->light(intersection2, sampler, 1);
+                            Object::Radiance incidentRadiance = mLighter->light(intersection2, sampler);
                             incidentRadiance = incidentRadiance - intersection2.primitive().surface().radiance();
 
                             samples[k * M + j] = incidentRadiance;

@@ -17,7 +17,7 @@ namespace Lighter
         }
     }
 
-    Object::Radiance UniPath::light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
+    Object::Radiance UniPath::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
     {
         Object::Radiance emittedRadiance = lightRadiant(intersection);
         Object::Radiance transmittedRadiance = lightTransmitted(intersection, sampler);
@@ -79,7 +79,7 @@ namespace Lighter
             Math::Normal incidentNormal = -normal;
             float dot = incidentDirection * incidentNormal;
             if (intersection2.valid()) {
-                Object::Radiance irradiance = light(intersection2, sampler, 0) * dot;
+                Object::Radiance irradiance = light(intersection2, sampler) * dot;
                 Object::Radiance transmittedRadiance = surface.brdf().transmitted(irradiance, incidentDirection, incidentNormal, albedo);
                 radiance += transmittedRadiance / (outgoingDirection * normal);
             }
@@ -134,7 +134,7 @@ namespace Lighter
 
         Object::Radiance indirectCachedRadiance;
         if(mIndirectCachedLighter) {
-            indirectCachedRadiance = mIndirectCachedLighter->light(intersection, sampler, 0);
+            indirectCachedRadiance = mIndirectCachedLighter->light(intersection, sampler);
         }
         Object::Radiance radiance = specularRadiance + diffuseRadiance + lightRadiance + indirectCachedRadiance;
 
@@ -255,7 +255,7 @@ namespace Lighter
             Object::Intersection intersection2 = scene.intersect(beam);
 
             if (intersection2.valid()) {
-                Object::Radiance irradiance = light(intersection2, sampler, 0) * dot;
+                Object::Radiance irradiance = light(intersection2, sampler) * dot;
                 radiance = surface.brdf().reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
 
                 if(mIndirectCachedLighter) {

@@ -66,7 +66,7 @@ namespace Render {
 			if (intersection.valid())
 			{
 				if (mSettings.lighting) {
-					Object::Radiance radiance = mTotalRadiance.get(x, y) + mLighter.light(intersection, sampler, 0);
+                    Object::Radiance radiance = mTotalRadiance.get(x, y) + mLighter.light(intersection, sampler);
 					mTotalRadiance.set(x, y, radiance);
 					color = Engine::toneMap(radiance / numSamples);
 				}

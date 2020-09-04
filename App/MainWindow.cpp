@@ -24,19 +24,9 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::on_lightingIndirect_clicked(bool checked)
-{
-	ui->groupIndirect->setEnabled(checked);
-}
-
 void MainWindow::on_enableLighting_clicked(bool checked)
 {
 	ui->groupLighting->setEnabled(checked);
-}
-
-void MainWindow::on_lightingSpecular_clicked(bool checked)
-{
-	ui->groupSpecular->setEnabled(checked);
 }
 
 void MainWindow::on_indirectIrradianceCaching_clicked(bool checked)
@@ -86,11 +76,6 @@ void MainWindow::refreshSettings()
 	mSettings.minSamples = ui->samplesMin->value();
 	mSettings.maxSamples = ui->samplesMax->value();
 	mSettings.sampleThreshold = ui->samplesThreshold->value();
-	mSettings.lighterSettings.radiantLighting = ui->lightingRadiant->isChecked();
-	mSettings.lighterSettings.specularLighting = ui->lightingSpecular->isChecked();
-	mSettings.lighterSettings.specularMaxGeneration = ui->specularMaxGeneration->value();
-	mSettings.lighterSettings.directLighting = ui->lightingDirect->isChecked();
-	mSettings.lighterSettings.indirectLighting = ui->lightingIndirect->isChecked();
 	mSettings.lighterSettings.irradianceCaching = ui->indirectIrradianceCaching->isChecked();
 	mSettings.lighterSettings.indirectSamples = ui->irradianceCachingSamples->value();
 	mSettings.lighterSettings.irradianceCacheThreshold = ui->irradianceCachingThreshold->value();

@@ -20,9 +20,7 @@ public:
 	~MainWindow();
 
 private slots:
-	void on_lightingIndirect_clicked(bool checked);
 	void on_enableLighting_clicked(bool checked);
-	void on_lightingSpecular_clicked(bool checked);
 	void on_indirectIrradianceCaching_clicked(bool checked);
 	void on_render_clicked();
 	void on_timer();

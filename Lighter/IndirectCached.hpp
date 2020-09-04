@@ -11,7 +11,7 @@ namespace Lighter {
     public:
         IndirectCached(std::unique_ptr<Lighter::Base> lighter, int indirectSamples, float cacheThreshold);
 
-        virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
+        virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler) const;
 
         virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
 
