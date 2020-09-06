@@ -176,23 +176,22 @@ namespace Parse {
 
 	std::unique_ptr<Object::Brdf::Composite> parseBrdfComposite(AST *ast)
 	{
-		std::unique_ptr<Object::Brdf::Base> diffuse;
-		std::unique_ptr<Object::Brdf::Base> specular;
+        std::vector<std::unique_ptr<Object::Brdf::Base>> brdfs;
 		float transmitIor = 0;
 
 		for (int i = 0; i<ast->numChildren; i++) {
 			switch (ast->children[i]->type) {
 			case AstBrdfLambert:
-				diffuse = parseBrdfLambert(ast->children[i]);
+                brdfs.push_back(parseBrdfLambert(ast->children[i]));
 				break;
 			case AstBrdfOrenNayar:
-				diffuse = parseBrdfOrenNayar(ast->children[i]);
+                brdfs.push_back(parseBrdfOrenNayar(ast->children[i]));
 				break;
 			case AstBrdfPhong:
-				specular = parseBrdfPhong(ast->children[i]);
+                brdfs.push_back(parseBrdfPhong(ast->children[i]));
 				break;
 			case AstBrdfTorranceSparrow:
-				specular = parseBrdfTorranceSparrow(ast->children[i]);
+                brdfs.push_back(parseBrdfTorranceSparrow(ast->children[i]));
 				break;
 			case AstBrdfTransmit:
 				transmitIor = ast->children[i]->data._float;
@@ -200,7 +199,7 @@ namespace Parse {
 			}
 		}
 
-		return std::make_unique<Object::Brdf::Composite>(std::move(diffuse), std::move(specular), transmitIor);
+        return std::make_unique<Object::Brdf::Composite>(std::move(brdfs), transmitIor);
 	}
 
 	std::unique_ptr<Object::NormalMap> parseNormalMap(AST *ast)

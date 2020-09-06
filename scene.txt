@@ -7,7 +7,7 @@ model {
 	transform { translate <0,-12.75,0> uniform_scale 50 rotate <0,15,0> }
 	surface {
 		albedo { color <1,0.5,0.25> }
-                brdf { lambert 0.9 torrance_sparrow 0.1 0.05 10 }
+                brdf { torrance_sparrow 0.1 0.05 10 lambert 0.9 }
 	}
 }
 

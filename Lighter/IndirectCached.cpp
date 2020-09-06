@@ -20,14 +20,14 @@ namespace Lighter
 
     Object::Radiance IndirectCached::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
     {
-        if (!intersection.primitive().surface().brdf().hasDiffuse()) {
+        if (intersection.primitive().surface().brdf().lambert() == 0) {
             return Object::Radiance();
         }
 
         const Math::Point &point = intersection.point();
         const Math::Normal &normal = intersection.facingNormal();
         const Object::Color &albedo = intersection.albedo();
-        const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf().diffuse();
+        const Object::Brdf::Composite &brdf = intersection.primitive().surface().brdf();
 
         Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, normal);
         return irradiance * albedo * brdf.lambert() / M_PI;
@@ -54,7 +54,7 @@ namespace Lighter
 
         Object::Intersection intersection = scene.intersect(beam);
 
-        if (intersection.valid() && intersection.primitive().surface().brdf().hasDiffuse()) {
+        if (intersection.valid() && intersection.primitive().surface().brdf().lambert() > 0) {
             const Math::Point &point = intersection.point();
             const Math::Normal &normal = intersection.facingNormal();
 

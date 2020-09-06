@@ -10,24 +10,21 @@ namespace Object {
 		class Composite
 		{
 		public:
-			Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular, float transmitIor);
+            Composite(std::vector<std::unique_ptr<Base>> brdfs, float transmitIor);
 
             virtual Object::Radiance reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
             virtual Object::Radiance transmitted(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const;
 
-			bool hasDiffuse() const;
-			const Base &diffuse() const;
-
-			bool hasSpecular() const;
-			const Base &specular() const;
+            const std::vector<std::unique_ptr<Base>> &brdfs() const;
+            float lambert() const;
 
 			bool hasTransmit() const;
 			float transmitIor() const;
 
 		private:
-			std::unique_ptr<Base> mDiffuse;
-			std::unique_ptr<Base> mSpecular;
-			float mTransmitIor;
+            std::vector<std::unique_ptr<Base>> mBrdfs;
+            float mTransmitIor;
+            float mLambert;
 		};
 	}
 }

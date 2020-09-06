@@ -10,24 +10,28 @@
 
 namespace Object {
 	namespace Brdf {
-		Composite::Composite(std::unique_ptr<Base> diffuse, std::unique_ptr<Base> specular, float transmitIor)
-		: mDiffuse(std::move(diffuse)), mSpecular(std::move(specular))
-		{
-			mTransmitIor = transmitIor;
-		}
+        Composite::Composite(std::vector<std::unique_ptr<Base>> brdfs, float transmitIor)
+            : mBrdfs(std::move(brdfs))
+        {
+            mLambert = 0;
+            for(const std::unique_ptr<Base> &brdf : mBrdfs) {
+                if(brdf->lambert() > 0) {
+                    mLambert = brdf->lambert();
+                    break;
+                }
+            }
+
+            mTransmitIor = transmitIor;
+        }
 
         Object::Radiance Composite::reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
         {
             Object::Radiance radiance;
             Object::Radiance transmittedIrradiance = irradiance;
 
-            if(hasSpecular()) {
-                radiance += specular().reflected(transmittedIrradiance, incidentDirection, normal, outgoingDirection, albedo);
-                transmittedIrradiance = specular().transmitted(transmittedIrradiance, incidentDirection, normal, albedo);
-            }
-
-            if(hasDiffuse()) {
-                radiance += diffuse().reflected(transmittedIrradiance, incidentDirection, normal, outgoingDirection, albedo);
+            for(const std::unique_ptr<Base> &brdf : mBrdfs) {
+                radiance += brdf->reflected(transmittedIrradiance, incidentDirection, normal, outgoingDirection, albedo);
+                transmittedIrradiance = brdf->transmitted(transmittedIrradiance, incidentDirection, normal, albedo);
             }
 
             return radiance;
@@ -37,36 +41,22 @@ namespace Object {
         {
             Object::Radiance transmittedIrradiance = irradiance;
 
-            if(hasSpecular()) {
-                transmittedIrradiance = specular().transmitted(transmittedIrradiance, incidentDirection, normal, albedo);
-            }
-
-            if(hasDiffuse()) {
-                transmittedIrradiance = diffuse().transmitted(transmittedIrradiance, incidentDirection, normal, albedo);
+            for(const std::unique_ptr<Base> &brdf : mBrdfs) {
+                transmittedIrradiance = brdf->transmitted(transmittedIrradiance, incidentDirection, normal, albedo);
             }
 
             return transmittedIrradiance;
         }
 
-		bool Composite::hasDiffuse() const
-		{
-			return mDiffuse.get();
-		}
+        const std::vector<std::unique_ptr<Base>> &Composite::brdfs() const
+        {
+            return mBrdfs;
+        }
 
-		const Base &Composite::diffuse() const
-		{
-			return *mDiffuse;
-		}
-
-		bool Composite::hasSpecular() const
-		{
-			return mSpecular.get();
-		}
-
-		const Base &Composite::specular() const
-		{
-			return *mSpecular;
-		}
+        float Composite::lambert() const
+        {
+            return mLambert;
+        }
 
 		bool Composite::hasTransmit() const
 		{

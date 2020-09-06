@@ -92,53 +92,48 @@ namespace Lighter
     {
         const Math::Normal &normal = intersection.facingNormal();
         const Math::Vector outgoingDirection = -intersection.ray().direction();
-        const Object::Brdf::Composite &brdf = intersection.primitive().surface().brdf();
+        const Object::Surface &surface = intersection.primitive().surface();
+        Object::Radiance radiance;
 
-        Object::Radiance specularRadiance;
-        if(brdf.hasSpecular()) {
+        for(const std::unique_ptr<Object::Brdf::Base> &brdf : surface.brdf().brdfs()) {
             Math::Vector incidentDirection;
             float lightPdf;
-            specularRadiance = sampleBrdf(intersection, brdf.specular(), sampler, incidentDirection, lightPdf);
-            float pdf = brdf.specular().pdf(incidentDirection, normal, outgoingDirection);
-            float diffusePdf = brdf.hasDiffuse() ? brdf.diffuse().pdf(incidentDirection, normal, outgoingDirection) : 0;
-            float weight = pdf / (pdf + diffusePdf + lightPdf);
-            specularRadiance = specularRadiance * weight;
+            Object::Radiance sampledRadiance = sampleBrdf(intersection, *brdf, sampler, incidentDirection, lightPdf);
+            float pdf = brdf->pdf(incidentDirection, normal, outgoingDirection);
+
+            float totalPdf = lightPdf;
+            for(const std::unique_ptr<Object::Brdf::Base> &otherBrdf : surface.brdf().brdfs()) {
+                totalPdf += otherBrdf->pdf(incidentDirection, normal, outgoingDirection);
+            }
+            float weight = pdf / totalPdf;
+
+            radiance += sampledRadiance * weight;
         }
 
-        Object::Radiance diffuseRadiance;
-        if(brdf.hasDiffuse()) {
-            Math::Vector incidentDirection;
-            float lightPdf;
-            diffuseRadiance = sampleBrdf(intersection, brdf.diffuse(), sampler, incidentDirection, lightPdf);
-            float pdf = brdf.diffuse().pdf(incidentDirection, normal, outgoingDirection);
-            float specularPdf = brdf.hasSpecular() ? brdf.specular().pdf(incidentDirection, normal, outgoingDirection) : 0;
-            float weight = pdf / (pdf + specularPdf + lightPdf);
-            diffuseRadiance = diffuseRadiance * weight;
-        }
-
-        Object::Radiance lightRadiance;
         for (const Object::Primitive &light : intersection.scene().areaLights()) {
             Math::Vector incidentDirection;
             float pdf;
-            Object::Radiance radiance = sampleLight(intersection, light, sampler, incidentDirection, pdf);
+            Object::Radiance sampledRadiance = sampleLight(intersection, light, sampler, incidentDirection, pdf);
             if(incidentDirection * normal > 0) {
-                float specularPdf = brdf.hasSpecular() ? brdf.specular().pdf(incidentDirection, normal, outgoingDirection) : 0;
-                float diffusePdf = brdf.hasDiffuse() ? brdf.diffuse().pdf(incidentDirection, normal, outgoingDirection) : 0;
-                float weight = pdf / (pdf + specularPdf + diffusePdf);
-                lightRadiance += radiance * weight;
+                float totalPdf = pdf;
+                for(const std::unique_ptr<Object::Brdf::Base> &brdf : surface.brdf().brdfs()) {
+                    totalPdf += brdf->pdf(incidentDirection, normal, outgoingDirection);
+                }
+                float weight = pdf / (totalPdf);
+
+                radiance += sampledRadiance * weight;
             }
         }
 
         for (const std::unique_ptr<Object::PointLight> &pointLight : intersection.scene().pointLights()) {
             Math::Vector incidentDirection;
-            lightRadiance += evaluatePointLight(intersection, *pointLight, incidentDirection);
+            radiance += evaluatePointLight(intersection, *pointLight, incidentDirection);
         }
 
         Object::Radiance indirectCachedRadiance;
         if(mIndirectCachedLighter) {
-            indirectCachedRadiance = mIndirectCachedLighter->light(intersection, sampler);
+            radiance += mIndirectCachedLighter->light(intersection, sampler);
         }
-        Object::Radiance radiance = specularRadiance + diffuseRadiance + lightRadiance + indirectCachedRadiance;
 
         return radiance;
     }
@@ -257,8 +252,7 @@ namespace Lighter
 
                 if(mIndirectCachedLighter) {
                     Object::Radiance indirectIrradiance = irradiance - intersection2.primitive().surface().radiance() * dot;
-                    float lambert = surface.brdf().hasDiffuse() ? surface.brdf().diffuse().lambert() : 0;
-                    Object::Radiance indirectRadiance = indirectIrradiance * lambert * albedo / M_PI;
+                    Object::Radiance indirectRadiance = indirectIrradiance * surface.brdf().lambert() * albedo / M_PI;
                     radiance = (radiance - indirectRadiance).clamp();
                 }
 
