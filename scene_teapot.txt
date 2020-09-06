@@ -6,7 +6,7 @@ model {
     "teapot.bpt"
 	surface {
 		albedo { texture "bricks.bmp" }
-		brdf { oren_nayar 1 0.5 torrance_sparrow 0.1 0.05 10 }
+                brdf { torrance_sparrow 0.1 0.05 10 oren_nayar 1 0.5 }
 		normal_map "bump.bmp" 0.01
 	}
 	transform {
@@ -21,7 +21,7 @@ sphere {
 	<-5,-6,0>,4
 	surface {
 		albedo { color <1,0.5,0.25> }
-		brdf { oren_nayar 1 0.5 torrance_sparrow 0.1 0.05 10 }
+                brdf { torrance_sparrow 0.1 0.05 10 oren_nayar 1 0.5 }
 	}
 }
 

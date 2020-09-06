@@ -4,6 +4,7 @@
 #include "Parse/Parser.hpp"
 
 #include <QPainter>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -13,13 +14,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QObject::connect(&mTimer, &QTimer::timeout, this, &MainWindow::on_timer);
 
-	mScene = Parse::Parser::parse("scene.txt");
-	mEngine = std::make_unique<Render::Engine>(*mScene);
+    QStringList scenes = QDir::current().entryList(QStringList() << "scene_*.txt");
+    ui->scene->addItems(scenes);
 }
 
 MainWindow::~MainWindow()
 {
-	mEngine->stop();
+    if(mEngine) {
+        mEngine->stop();
+    }
 
 	delete ui;
 }
@@ -36,12 +39,15 @@ void MainWindow::on_indirectIrradianceCaching_clicked(bool checked)
 
 void MainWindow::on_render_clicked()
 {
-	if (mEngine->rendering()) {
+    if (mEngine && mEngine->rendering()) {
 		mEngine->stop();
 		mTimer.stop();
 	}
 	else {
 		refreshSettings();
+
+        mScene = Parse::Parser::parse(ui->scene->currentText().toStdString());
+        mEngine = std::make_unique<Render::Engine>(*mScene);
 		mEngine->setSettings(mSettings);
 
 		updateFramebuffer();
@@ -61,6 +67,7 @@ void MainWindow::on_timer()
 void MainWindow::onRenderDone()
 {
 	ui->render->setText("Render");
+    mEngine.reset();
 }
 
 void MainWindow::onRenderStatus(const char *message)
