@@ -114,8 +114,8 @@ namespace Lighter
                     float maxRadius = 20 * minRadius;
                     newEntry.radius = std::min(std::max(radius, minRadius), maxRadius);
 
-                    RadianceGradient transGrad;
-                    RadianceGradient rotGrad;
+                    IrradianceCache::RadianceGradient transGrad;
+                    IrradianceCache::RadianceGradient rotGrad;
                     for (int k = 0; k < N; k++) {
                         int k1 = (k > 0) ? (k - 1) : N - 1;
                         float phi = 2 * M_PI * k / N;
@@ -130,13 +130,13 @@ namespace Lighter
                                 int j1 = j - 1;
 
                                 Math::Vector c = u * std::sin(thetaMinus) * std::cos(thetaMinus) * std::cos(thetaMinus) * 2 * M_PI / (N * std::min(sampleDistances[k * M + j], sampleDistances[k * M + j1]));
-                                transGrad += RadianceGradient(samples[k * M + j] - samples[k * M + j1], c);
+                                transGrad += IrradianceCache::RadianceGradient(samples[k * M + j] - samples[k * M + j1], c);
                             }
 
                             Math::Vector c = v * (std::sin(thetaPlus) - std::sin(thetaMinus)) / std::min(sampleDistances[k * M + j], sampleDistances[k1 * M + j]);
-                            transGrad += RadianceGradient(samples[k * M + j] - samples[k1 * M + j], c);
+                            transGrad += IrradianceCache::RadianceGradient(samples[k * M + j] - samples[k1 * M + j], c);
 
-                            rotGrad += RadianceGradient(samples[k * M + j], v) * std::tan(thetaMinus) * M_PI / (M * N);
+                            rotGrad += IrradianceCache::RadianceGradient(samples[k * M + j], v) * std::tan(thetaMinus) * M_PI / (M * N);
                         }
                     }
 
