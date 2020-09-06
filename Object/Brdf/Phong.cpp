@@ -6,6 +6,7 @@
 #include "Math/OrthonormalBasis.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 namespace Object {
 	namespace Brdf {
@@ -55,7 +56,8 @@ namespace Object {
 				coeff = std::pow(dot, mPower);
 			}
 
-			return coeff * (mPower + 1) / (2 * M_PI);
+            float pdf = coeff * (mPower + 1) / (2 * M_PI);
+            return std::min(pdf, 1000.0f);
 		}
 	}
 }

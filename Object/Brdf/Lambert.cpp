@@ -6,6 +6,7 @@
 #include "Math/OrthonormalBasis.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 namespace Object {
 	namespace Brdf {
@@ -37,8 +38,10 @@ namespace Object {
 
         float Lambert::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
         {
-            float cosTheta = incidentDirection * Math::Vector(normal);
-            return cosTheta / M_PI;
+            float cosTheta = std::max(incidentDirection * Math::Vector(normal), 0.0f);
+            float pdf = cosTheta / M_PI;
+
+            return pdf;
         }
 	}
 }

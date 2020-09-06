@@ -23,7 +23,7 @@ namespace Lighter
         Object::Radiance transmittedRadiance = lightTransmitted(intersection, sampler);
         Object::Radiance reflectedRadiance = lightReflected(intersection, sampler);
 
-        return (emittedRadiance + transmittedRadiance + reflectedRadiance).clamp();
+        return emittedRadiance + transmittedRadiance + reflectedRadiance;
     }
 
     std::vector<std::unique_ptr<Render::Job>> UniPath::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
@@ -90,7 +90,7 @@ namespace Lighter
 
     Object::Radiance UniPath::lightReflected(const Object::Intersection &intersection, Render::Sampler &sampler) const
     {
-        const Math::Normal &normal = intersection.normal();
+        const Math::Normal &normal = intersection.facingNormal();
         const Math::Vector outgoingDirection = -intersection.ray().direction();
         const Object::Brdf::Composite &brdf = intersection.primitive().surface().brdf();
 
@@ -120,11 +120,13 @@ namespace Lighter
         for (const Object::Primitive &light : intersection.scene().areaLights()) {
             Math::Vector incidentDirection;
             float pdf;
-            lightRadiance += sampleLight(intersection, light, sampler, incidentDirection, pdf);
-            float specularPdf = brdf.hasSpecular() ? brdf.specular().pdf(incidentDirection, normal, outgoingDirection) : 0;
-            float diffusePdf = brdf.hasDiffuse() ? brdf.diffuse().pdf(incidentDirection, normal, outgoingDirection) : 0;
-            float weight = pdf / (pdf + specularPdf + diffusePdf);
-            lightRadiance = lightRadiance * weight;
+            Object::Radiance radiance = sampleLight(intersection, light, sampler, incidentDirection, pdf);
+            if(incidentDirection * normal > 0) {
+                float specularPdf = brdf.hasSpecular() ? brdf.specular().pdf(incidentDirection, normal, outgoingDirection) : 0;
+                float diffusePdf = brdf.hasDiffuse() ? brdf.diffuse().pdf(incidentDirection, normal, outgoingDirection) : 0;
+                float weight = pdf / (pdf + specularPdf + diffusePdf);
+                lightRadiance += radiance * weight;
+            }
         }
 
         for (const std::unique_ptr<Object::PointLight> &pointLight : intersection.scene().pointLights()) {
@@ -146,7 +148,7 @@ namespace Lighter
         Object::Radiance radiance;
 
         const Math::Point &point = intersection.point();
-        const Math::Normal &normal = intersection.normal();
+        const Math::Normal &normal = intersection.facingNormal();
         const Object::Scene &scene = intersection.scene();
         const Object::Brdf::Composite &brdf = intersection.primitive().surface().brdf();
         const Math::Vector &outgoingDirection = -intersection.ray().direction();
@@ -154,8 +156,9 @@ namespace Lighter
 
         const Object::Radiance &objectRadiance = light.surface().radiance();
         const Object::Shape::Base::Sampler *shapeSampler = light.shape().sampler();
+
+        pdfAngular = 0;
         if (!shapeSampler) {
-            pdfAngular = 0;
             return radiance;
         }
 
@@ -171,12 +174,10 @@ namespace Lighter
         float distance = incidentDirection.magnitude();
         incidentDirection = incidentDirection / distance;
         float pdfArea = 1.0f / surfaceArea;
-        float sampleDot = std::max(std::abs(incidentDirection * sampleNormal), 0.01f);
-
-        pdfAngular = (pdfArea * distance * distance) / sampleDot;
+        float sampleDot = std::abs(incidentDirection * sampleNormal);
 
         float dot = incidentDirection * normal;
-        if (dot > 0) {
+        if(dot > 0) {
             Math::Point offsetPoint = point + Math::Vector(normal) * 0.0001f;
             Math::Ray ray(offsetPoint, incidentDirection);
             Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
@@ -186,6 +187,8 @@ namespace Lighter
                 Object::Radiance irradiance = objectRadiance * sampleDot * dot / (distance * distance);
                 radiance += brdf.reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
             }
+
+            pdfAngular = std::min((pdfArea * distance * distance) / sampleDot, 1000.0f);
         }
 
         return radiance / pdfArea;
@@ -196,7 +199,7 @@ namespace Lighter
         Object::Radiance radiance;
 
         const Math::Point &point = intersection.point();
-        const Math::Normal &normal = intersection.normal();
+        const Math::Normal &normal = intersection.facingNormal();
         const Object::Scene &scene = intersection.scene();
         const Object::Brdf::Composite &brdf = intersection.primitive().surface().brdf();
         const Object::Color &albedo = intersection.albedo();
@@ -213,10 +216,8 @@ namespace Lighter
 
         if (!intersection2.valid() || intersection2.distance() >= distance) {
             float dot = incidentDirection * normal;
-            if (dot > 0) {
-                Object::Radiance irradiance = pointLight.radiance() * dot / (distance * distance);
-                radiance += brdf.reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
-            }
+            Object::Radiance irradiance = pointLight.radiance() * dot / (distance * distance);
+            radiance += brdf.reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
         }
 
         return radiance;
@@ -244,12 +245,8 @@ namespace Lighter
         Object::Radiance testRadiance = surface.brdf().reflected(Object::Radiance(1,1,1) / std::sqrt(3.0f), incidentDirection, normal, outgoingDirection, albedo) / pdfAngular;
         float threshold = std::max(std::min(testRadiance.magnitude(), 0.9f), 0.1f);
         float roulette = sampler.getValue();
-        if(roulette > threshold) {
-            return radiance;
-        }
-
         float dot = incidentDirection * normal;
-        if(dot > 0) {
+        if(roulette < threshold && dot > 0) {
             Math::Ray reflectRay(offsetPoint, incidentDirection);
             Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
             Object::Intersection intersection2 = scene.intersect(beam);
@@ -262,15 +259,15 @@ namespace Lighter
                     Object::Radiance indirectIrradiance = irradiance - intersection2.primitive().surface().radiance() * dot;
                     float lambert = surface.brdf().hasDiffuse() ? surface.brdf().diffuse().lambert() : 0;
                     Object::Radiance indirectRadiance = indirectIrradiance * lambert * albedo / M_PI;
-                    radiance = radiance - indirectRadiance;
+                    radiance = (radiance - indirectRadiance).clamp();
                 }
 
                 if(intersection2.primitive().surface().radiance().magnitude() > 0) {
                     const Object::Shape::Base::Sampler *shapeSampler = intersection2.primitive().shape().sampler();
                     if (shapeSampler) {
                         float pdfAreaLight = 1.0f / shapeSampler->surfaceArea();
-                        float lightDot = std::max(std::abs(intersection2.normal() * incidentDirection), 0.01f);
-                        pdfAngularLight = (pdfAreaLight * intersection2.distance() * intersection2.distance()) / lightDot;
+                        float lightDot = -intersection2.facingNormal() * incidentDirection;
+                        pdfAngularLight = std::min((pdfAreaLight * intersection2.distance() * intersection2.distance()) / lightDot, 1000.0f);
                     }
                 }
             }

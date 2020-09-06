@@ -80,8 +80,7 @@ namespace Object {
 			float m2 = mRoughness * mRoughness;
 			float pdf = std::exp(-tanTheta * tanTheta / m2) / (M_PI * m2 * cosTheta * cosTheta * cosTheta * cosTheta);
 			pdf = pdf / (4 * (outgoingDirection * axis));
-
-			return pdf;
+            return std::min(pdf, 1000.0f);
 		}
 	}
 }

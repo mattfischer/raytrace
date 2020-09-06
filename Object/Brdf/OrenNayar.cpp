@@ -62,7 +62,7 @@ namespace Object {
 
         float OrenNayar::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
         {
-            float cosTheta = incidentDirection * Math::Vector(normal);
+            float cosTheta = std::max(incidentDirection * Math::Vector(normal), 0.0f);
             return cosTheta / M_PI;
         }
     }
