@@ -31,6 +31,8 @@ private slots:
 	void onRenderDone();
 	void onRenderStatus(const char *message);
 
+    void on_save_clicked();
+
 private:
 	Ui::MainWindow *ui;
 	std::unique_ptr<Object::Scene> mScene;

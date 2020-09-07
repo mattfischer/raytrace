@@ -5,6 +5,7 @@
 
 #include <QPainter>
 #include <QDir>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -94,4 +95,12 @@ void MainWindow::updateFramebuffer()
 	mImage = QImage(mEngine->framebuffer().bits(), mEngine->framebuffer().width(), mEngine->framebuffer().height(),
 					mEngine->framebuffer().width() * 3, QImage::Format_RGB888);
 	mPixmap = QPixmap(mEngine->framebuffer().width(), mEngine->framebuffer().height());
+}
+
+void MainWindow::on_save_clicked()
+{
+    QString filename = QFileDialog::getSaveFileName(nullptr, QString(), QString(), "PNG Files (*.png)");
+    if(filename != "") {
+        mPixmap.save(filename);
+    }
 }
