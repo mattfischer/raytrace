@@ -4,6 +4,7 @@
 #include "Object/Scene.hpp"
 
 #include <cmath>
+#include <algorithm>
 
 namespace Lighter
 {
@@ -95,16 +96,22 @@ namespace Lighter
         const Object::Surface &surface = intersection.primitive().surface();
         Object::Radiance radiance;
 
-        for(const std::unique_ptr<Object::Brdf::Base> &brdf : surface.brdf().brdfs()) {
+        if(surface.brdf().brdfs().size() > 0) {
+            float sample = sampler.getValue();
+            int idx = std::min((int)std::floor(surface.brdf().brdfs().size() * sample), (int)surface.brdf().brdfs().size() - 1);
+            const Object::Brdf::Base &brdf = *surface.brdf().brdfs()[idx];
             Math::Vector incidentDirection;
             float lightPdf;
-            Object::Radiance sampledRadiance = sampleBrdf(intersection, *brdf, sampler, incidentDirection, lightPdf);
-            float pdf = brdf->pdf(incidentDirection, normal, outgoingDirection);
+            Object::Radiance sampledRadiance = sampleBrdf(intersection, brdf, sampler, incidentDirection, lightPdf);
+            float pdf = brdf.pdf(incidentDirection, normal, outgoingDirection);
 
-            float totalPdf = lightPdf;
+            float totalPdf = 0;
             for(const std::unique_ptr<Object::Brdf::Base> &otherBrdf : surface.brdf().brdfs()) {
                 totalPdf += otherBrdf->pdf(incidentDirection, normal, outgoingDirection);
             }
+            totalPdf /= (float)surface.brdf().brdfs().size();
+
+            totalPdf += lightPdf;
             float weight = pdf / totalPdf;
 
             radiance += sampledRadiance * weight;
@@ -115,10 +122,15 @@ namespace Lighter
             float pdf;
             Object::Radiance sampledRadiance = sampleLight(intersection, light, sampler, incidentDirection, pdf);
             if(incidentDirection * normal > 0) {
-                float totalPdf = pdf;
-                for(const std::unique_ptr<Object::Brdf::Base> &brdf : surface.brdf().brdfs()) {
-                    totalPdf += brdf->pdf(incidentDirection, normal, outgoingDirection);
+                float totalPdf = 0;
+                if(surface.brdf().brdfs().size() > 0) {
+                    for(const std::unique_ptr<Object::Brdf::Base> &brdf : surface.brdf().brdfs()) {
+                        totalPdf += brdf->pdf(incidentDirection, normal, outgoingDirection);
+                    }
+                    totalPdf /= surface.brdf().brdfs().size();
                 }
+
+                totalPdf += pdf;
                 float weight = pdf / (totalPdf);
 
                 radiance += sampledRadiance * weight;
