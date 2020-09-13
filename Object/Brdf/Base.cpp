@@ -4,6 +4,10 @@
 
 namespace Object {
 	namespace Brdf {
+        Base::~Base()
+        {
+        }
+
         Object::Radiance Base::reflected(const Object::Radiance &, const Math::Vector &, const Math::Normal &, const Math::Vector &, const Object::Color &) const
 		{
 			return Object::Radiance(0, 0, 0);
