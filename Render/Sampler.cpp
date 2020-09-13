@@ -12,11 +12,11 @@ namespace Render {
 		mLastSamples.resize(mNumDimensions);
 	}
 
-	void Sampler::startSequence(int index)
+    void Sampler::startSequence(unsigned int index)
 	{
 		mCurrentDimension = 0;
 		int dimension = 0;
-		for (std::tuple<int, int> &sample : mLastSamples) {
+        for (std::tuple<unsigned int, unsigned int> &sample : mLastSamples) {
 			int B = sPrimes[dimension];
 			int D = 1;
 			int N = 0;
@@ -70,7 +70,7 @@ namespace Render {
 
 		mLastSamples[mCurrentDimension] = std::make_tuple(N, D);
 		mCurrentDimension++;
-		return (float)N / (float)D;
+        return static_cast<float>(N) / static_cast<float>(D);
 	}
 
 	Math::Point2D Sampler::getValue2D()

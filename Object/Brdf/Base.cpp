@@ -4,12 +4,12 @@
 
 namespace Object {
 	namespace Brdf {
-        Object::Radiance Base::reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+        Object::Radiance Base::reflected(const Object::Radiance &, const Math::Vector &, const Math::Normal &, const Math::Vector &, const Object::Color &) const
 		{
 			return Object::Radiance(0, 0, 0);
 		}
 
-        Object::Radiance Base::transmitted(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
+        Object::Radiance Base::transmitted(const Object::Radiance &, const Math::Vector &, const Math::Normal &, const Object::Color &) const
 		{
 			return Object::Radiance(0, 0, 0);
 		}
@@ -19,12 +19,12 @@ namespace Object {
 			return 0;
 		}
 
-        Math::Vector Base::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        Math::Vector Base::sample(Render::Sampler &, const Math::Normal &, const Math::Vector &) const
 		{
 			return Math::Vector(0, 0, 0);
 		}
 
-		float Base::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        float Base::pdf(const Math::Vector &, const Math::Normal &, const Math::Vector &) const
 		{
 			return 0;
 		}

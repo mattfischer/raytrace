@@ -8,9 +8,9 @@ namespace Object {
 	{
 	}
 
-	BoundingVolumeHierarchy::BoundingVolumeHierarchy(const std::vector<Math::Point> &points, const std::function<BoundingVolume(int)> &func)
+    BoundingVolumeHierarchy::BoundingVolumeHierarchy(const std::vector<Math::Point> &points, const std::function<BoundingVolume(unsigned int)> &func)
 	{
-		std::vector<int> indices(points.size());
+        std::vector<unsigned int> indices(points.size());
 		for (unsigned int i = 0; i < indices.size(); i++) {
 			indices[i] = i;
 		}
@@ -28,12 +28,12 @@ namespace Object {
 		return mNodes;
 	}
 
-	bool BoundingVolumeHierarchy::intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(int, float&)> &func) const
+    bool BoundingVolumeHierarchy::intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(unsigned int, float&)> &func) const
 	{
 		return intersectNode(rayData, 0, maxDistance, func);
 	}
 
-	bool BoundingVolumeHierarchy::intersectNode(const BoundingVolume::RayData &rayData, int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const
+    bool BoundingVolumeHierarchy::intersectNode(const BoundingVolume::RayData &rayData, unsigned int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const
 	{
 		const Node &node = mNodes[nodeIndex];
 
@@ -45,7 +45,7 @@ namespace Object {
 			}
 		}
 		else {
-			int indices[2] = { nodeIndex + 1, node.index };
+            unsigned int indices[2] = { nodeIndex + 1, static_cast<unsigned int>(node.index) };
 			float distances[2];
 			for (int i = 0; i < 2; i++) {
 				distances[i] = FLT_MAX;
@@ -63,52 +63,52 @@ namespace Object {
 		return ret;
 	}
 
-	int BoundingVolumeHierarchy::buildKdTree(const std::vector<Math::Point> &centroids, std::vector<TreeNode> &tree, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const
+    unsigned int BoundingVolumeHierarchy::buildKdTree(const std::vector<Math::Point> &centroids, std::vector<TreeNode> &tree, std::vector<unsigned int>::iterator indicesBegin, std::vector<unsigned int>::iterator indicesEnd, unsigned int splitIndex) const
 	{
 		tree.push_back(TreeNode());
-		int nodeIndex = tree.size() - 1;
+        unsigned int nodeIndex = static_cast<unsigned int>(tree.size() - 1);
 		TreeNode &node = tree[nodeIndex];
 
-		int numIndices = indicesEnd - indicesBegin;
+        unsigned int numIndices = static_cast<unsigned int>(indicesEnd - indicesBegin);
 		if (numIndices == 1) {
-			int triangleIndex = *indicesBegin;
-			node.index = -triangleIndex;
+            unsigned int triangleIndex = *indicesBegin;
+            node.index = -static_cast<int>(triangleIndex);
 		}
 		else {
 			const Math::Vector &splitPlane = splitPlanes[splitIndex];
 
-			auto cmp = [&](const int &idx0, const int &idx1) {
+            auto cmp = [&](const unsigned int &idx0, const unsigned int &idx1) {
 				return Math::Vector(centroids[idx0]) * splitPlane < Math::Vector(centroids[idx1]) * splitPlane;
 			};
 
-			std::vector<int>::iterator split = indicesBegin + (indicesEnd - indicesBegin) / 2;
+            std::vector<unsigned int>::iterator split = indicesBegin + (indicesEnd - indicesBegin) / 2;
 			std::nth_element(indicesBegin, split, indicesEnd, cmp);
 
 			buildKdTree(centroids, tree, indicesBegin, split, (splitIndex + 1) % 3);
-			node.index = buildKdTree(centroids, tree, split, indicesEnd, (splitIndex + 1) % 3);
+            node.index = static_cast<int>(buildKdTree(centroids, tree, split, indicesEnd, (splitIndex + 1) % 3));
 		}
 
 		return nodeIndex;
 	}
 
-	int BoundingVolumeHierarchy::computeBounds(const std::vector<TreeNode> &tree, const std::function<BoundingVolume(int)> &func, int treeIndex)
+    unsigned int BoundingVolumeHierarchy::computeBounds(const std::vector<TreeNode> &tree, const std::function<BoundingVolume(unsigned int)> &func, unsigned int treeIndex)
 	{
 		const TreeNode &treeNode = tree[treeIndex];
 		mNodes.push_back(Object::BoundingVolumeHierarchy::Node());
-		int nodeIndex = mNodes.size() - 1;
+        unsigned int nodeIndex = static_cast<unsigned int>(mNodes.size() - 1);
 		Object::BoundingVolumeHierarchy::Node &node = mNodes[nodeIndex];
 
 		if (treeNode.index <= 0) {
-			int index = -treeNode.index;
+            unsigned int index = static_cast<unsigned int>(-treeNode.index);
 
-			node.index = -index;
+            node.index = -static_cast<int>(index);
 			node.volume = func(index);
 		}
 		else {
 			computeBounds(tree, func, treeIndex + 1);
 			node.volume.expand(mNodes[nodeIndex + 1].volume);
-			node.index = computeBounds(tree, func, treeNode.index);
-			node.volume.expand(mNodes[node.index].volume);
+            node.index = computeBounds(tree, func, static_cast<unsigned int>(treeNode.index));
+            node.volume.expand(mNodes[static_cast<unsigned int>(node.index)].volume);
 		}
 
 		return nodeIndex;

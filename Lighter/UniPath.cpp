@@ -62,7 +62,7 @@ namespace Lighter
                 return radiance;
             }
 
-            Math::Point offsetPoint = intersection.point() - Math::Vector(normal) * 0.01;
+            Math::Point offsetPoint = intersection.point() - Math::Vector(normal) * 0.01f;
 
             float ratio = 1.0f / surface.brdf().transmitIor();
             if (reverse) {

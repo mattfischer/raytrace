@@ -19,7 +19,7 @@ namespace Object {
 		{
 			BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
 
-			auto callback = [&](int index, float &maxDistance) {
+            auto callback = [&](unsigned int index, float &) {
 				const Triangle &triangle = mTriangles[index];
 				bool ret = false;
 

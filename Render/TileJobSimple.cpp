@@ -1,7 +1,7 @@
 #include "Render/TileJobSimple.hpp"
 
 namespace Render {
-	TileJobSimple::TileJobSimple(Framebuffer &framebuffer, std::function<void(int, int, Framebuffer&, Sampler&)> &&pixelFunc)
+    TileJobSimple::TileJobSimple(Framebuffer &framebuffer, std::function<void(unsigned int, unsigned int, Framebuffer&, Sampler&)> &&pixelFunc)
 		: TileJob(framebuffer), mPixelFunc(std::move(pixelFunc))
 	{
 	}
@@ -11,7 +11,7 @@ namespace Render {
 		return std::make_unique<ThreadLocal>(10);
 	}
 
-	void TileJobSimple::renderPixel(int x, int y, Job::ThreadLocal &threadLocal)
+    void TileJobSimple::renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal)
 	{
 		Sampler &sampler = static_cast<ThreadLocal&>(threadLocal).sampler;
 

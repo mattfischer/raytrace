@@ -36,7 +36,6 @@ namespace Object {
 
 			float HN = half * normal;
 			float VH = half * outgoingDirection;
-			float LH = half * incidentDirection;
 			float VN = normal * outgoingDirection;
 			float LN = normal * incidentDirection;
 			float G = std::min(1.0f, std::min(2 * HN * VN / VH, 2 * HN * LN / VH));
@@ -44,7 +43,7 @@ namespace Object {
             return irradiance * mStrength * D * F * G / (4 * VN * LN);
 		}
 
-        Object::Radiance TorranceSparrow::transmitted(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
+        Object::Radiance TorranceSparrow::transmitted(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &) const
 		{
 			float cosThetaI = incidentDirection * normal;
 			float oneMinusCos = 1 - cosThetaI;

@@ -7,22 +7,22 @@ namespace Render {
 	class TileJobSimple : public TileJob
 	{
 	public:
-		TileJobSimple(Framebuffer &framebuffer, std::function<void(int, int, Framebuffer&, Sampler&)> &&pixelFunc);
+        TileJobSimple(Framebuffer &framebuffer, std::function<void(unsigned int, unsigned int, Framebuffer&, Sampler&)> &&pixelFunc);
 
 		virtual std::unique_ptr<Job::ThreadLocal> createThreadLocal();
 
 	protected:
-		virtual void renderPixel(int x, int y, Job::ThreadLocal &threadLocal);
+        virtual void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal);
 
 	private:
 		struct ThreadLocal : public Job::ThreadLocal
 		{
 			Sampler sampler;
 
-			ThreadLocal(int samplerDimensions) : sampler(samplerDimensions) {}
+            ThreadLocal(unsigned int samplerDimensions) : sampler(samplerDimensions) {}
 		};
 
-		std::function<void(int, int, Framebuffer &, Sampler&)> mPixelFunc;
+        std::function<void(unsigned int, unsigned int, Framebuffer &, Sampler&)> mPixelFunc;
 	};
 }
 #endif

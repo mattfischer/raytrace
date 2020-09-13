@@ -10,7 +10,7 @@
 #include <random>
 
 namespace Render {
-	const int MaxSamplesPerIteration = 100;
+    const unsigned int MaxSamplesPerIteration = 100;
 
     RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Base &lighter, Framebuffer &framebuffer)
 		: TileJob(framebuffer)
@@ -23,8 +23,8 @@ namespace Render {
 	{
 		std::uniform_int_distribution<unsigned int> dist(0, 256);
 		std::default_random_engine engine;
-		for (int x = 0; x < framebuffer.width(); x++) {
-			for (int y = 0; y < framebuffer.height(); y++) {
+        for (unsigned int x = 0; x < framebuffer.width(); x++) {
+            for (unsigned int y = 0; y < framebuffer.height(); y++) {
 				mSamplerOffsets.set(x, y, dist(engine));
 			}
 		}
@@ -38,7 +38,7 @@ namespace Render {
         return std::make_unique<ThreadLocal>(50);
 	}
 
-	void RenderJob::renderPixel(int x, int y, Job::ThreadLocal &threadLocal)
+    void RenderJob::renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal)
 	{
 		if (mPixelsDone.get(x, y)) {
 			return;
@@ -50,29 +50,29 @@ namespace Render {
 		Object::Color totalColor;
 		bool pixelDone = false;
 
-		const int runLength = 10;
+        const unsigned int runLength = 10;
 		Object::Color colors[runLength];
-		int colorIdx = 0;
+        unsigned int colorIdx = 0;
 		sampler.startSequence(mSamplerOffsets.get(x, y) + mNumSamplesCompleted);
-		for (int sample = 0; sample < mNumSamplesThisIteration; sample++) {
+        for (unsigned int sample = 0; sample < mNumSamplesThisIteration; sample++) {
 			Math::Bivector dv;
 			sampler.startSample();
 			Math::Point2D imagePoint = Math::Point2D(x, y) + sampler.getValue2D();
 			Math::Point2D aperturePoint = sampler.getValue2D();
 			Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, framebuffer().width(), framebuffer().height(), aperturePoint);
 			Object::Intersection intersection = mScene.intersect(beam);
-			int numSamples = mNumSamplesCompleted + sample + 1;
+            unsigned int numSamples = mNumSamplesCompleted + sample + 1;
 
 			if (intersection.valid())
 			{
 				if (mSettings.lighting) {
                     Object::Radiance radiance = mTotalRadiance.get(x, y) + mLighter.light(intersection, sampler);
 					mTotalRadiance.set(x, y, radiance);
-					color = Engine::toneMap(radiance / numSamples);
+                    color = Engine::toneMap(radiance / static_cast<float>(numSamples));
 				}
 				else {
 					totalColor += intersection.albedo();
-					color = totalColor / (sample + 1);
+                    color = totalColor / (sample + 1.0f);
 				}
 			}
 

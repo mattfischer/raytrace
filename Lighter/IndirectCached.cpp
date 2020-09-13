@@ -11,14 +11,14 @@
 
 namespace Lighter
 {
-    IndirectCached::IndirectCached(std::unique_ptr<Lighter::Base> lighter, int indirectSamples, float cacheThreshold)
+    IndirectCached::IndirectCached(std::unique_ptr<Lighter::Base> lighter, unsigned int indirectSamples, float cacheThreshold)
         : mLighter(std::move(lighter))
         , mIrradianceCache(cacheThreshold)
     {
         mIndirectSamples = indirectSamples;
     }
 
-    Object::Radiance IndirectCached::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
+    Object::Radiance IndirectCached::light(const Object::Intersection &intersection, Render::Sampler &) const
     {
         if (intersection.primitive().surface().brdf().lambert() == 0) {
             return Object::Radiance();
@@ -37,7 +37,7 @@ namespace Lighter
     {
         std::vector<std::unique_ptr<Render::Job>> jobs;
 
-        auto func = [&](int x, int y, Render::Framebuffer &framebuffer, Render::Sampler &sampler) {
+        auto func = [&](unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, Render::Sampler &sampler) {
             prerenderPixel(x, y, framebuffer, scene, sampler);
         };
 
@@ -46,11 +46,11 @@ namespace Lighter
         return jobs;
     }
 
-    void IndirectCached::prerenderPixel(int x, int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler)
+    void IndirectCached::prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler)
     {
         Object::Color pixelColor;
         sampler.startSequence();
-        Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D(x, y), framebuffer.width(), framebuffer.height(), Math::Point2D());
+        Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D(float(x), float(y)), framebuffer.width(), framebuffer.height(), Math::Point2D());
 
         Object::Intersection intersection = scene.intersect(beam);
 
@@ -64,21 +64,21 @@ namespace Lighter
                 float mean = 0;
                 int den = 0;
                 Object::Radiance radiance;
-                const int M = std::sqrt(mIndirectSamples);
-                const int N = mIndirectSamples / M;
+                const unsigned int M = static_cast<unsigned int>(std::sqrt(mIndirectSamples));
+                const unsigned int N = static_cast<unsigned int>(mIndirectSamples / M);
                 std::vector<Object::Radiance> samples;
                 std::vector<float> sampleDistances;
                 samples.resize(M * N);
                 sampleDistances.resize(M * N);
-                for (int k = 0; k < N; k++) {
-                    for (int j = 0; j < M; j++) {
+                for (unsigned int k = 0; k < N; k++) {
+                    for (unsigned int j = 0; j < M; j++) {
                         sampler.startSample();
 
                         float phi = 2 * M_PI * (k + sampler.getValue()) / N;
                         float theta = std::asin(std::sqrt((j + sampler.getValue()) / M));
                         Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
 
-                        Math::Point offsetPoint = point + Math::Vector(normal) * 0.01;
+                        Math::Point offsetPoint = point + Math::Vector(normal) * 0.01f;
                         Math::Ray ray(offsetPoint, direction);
                         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
                         Object::Intersection intersection2 = scene.intersect(beam);
@@ -95,7 +95,7 @@ namespace Lighter
                             radiance += incidentRadiance * M_PI / (M * N);
                         }
                         else {
-                            sampleDistances[k * M + j] = FLT_MAX;
+                            sampleDistances[k * M + j] = static_cast<float>(FLT_MAX);
                         }
                     }
                 }
@@ -116,18 +116,18 @@ namespace Lighter
 
                     IrradianceCache::RadianceGradient transGrad;
                     IrradianceCache::RadianceGradient rotGrad;
-                    for (int k = 0; k < N; k++) {
-                        int k1 = (k > 0) ? (k - 1) : N - 1;
+                    for (unsigned int k = 0; k < N; k++) {
+                        unsigned int k1 = (k > 0) ? (k - 1) : N - 1;
                         float phi = 2 * M_PI * k / N;
                         Math::Vector u = basis.localToWorld(Math::Vector::fromPolar(phi, 0, 1));
                         Math::Vector v = basis.localToWorld(Math::Vector::fromPolar(phi + M_PI / 2, 0, 1));
 
-                        for (int j = 0; j < M; j++) {
-                            float thetaMinus = std::asin(std::sqrt((float)j / M));
-                            float thetaPlus = std::asin(std::sqrt((float)(j + 1) / M));
+                        for (unsigned int j = 0; j < M; j++) {
+                            float thetaMinus = std::asin(std::sqrt(float(j) / M));
+                            float thetaPlus = std::asin(std::sqrt(float(j + 1) / M));
 
                             if (j > 0) {
-                                int j1 = j - 1;
+                                unsigned int j1 = j - 1;
 
                                 Math::Vector c = u * std::sin(thetaMinus) * std::cos(thetaMinus) * std::cos(thetaMinus) * 2 * M_PI / (N * std::min(sampleDistances[k * M + j], sampleDistances[k * M + j1]));
                                 transGrad += IrradianceCache::RadianceGradient(samples[k * M + j] - samples[k * M + j1], c);

@@ -7,22 +7,22 @@ namespace Render {
 	template <typename T>
 	class Raster {
 	public:
-		Raster(int width, int height)
+        Raster(unsigned int width, unsigned int height)
 		{
 			mWidth = width;
 			mHeight = height;
 			mElements.resize(mWidth * mHeight);
 		}
 
-		int width() const { return mWidth; }
-		int height() const { return mHeight; }
+        unsigned int width() const { return mWidth; }
+        unsigned int height() const { return mHeight; }
 
-		void set(int x, int y, const T &value) { mElements[mWidth * y + x] = value; }
-		const T &get(int x, int y) const { return mElements.at(mWidth * y + x); }
+        void set(unsigned int x, unsigned int y, const T &value) { mElements[mWidth * y + x] = value; }
+        const T &get(unsigned int x,unsigned  int y) const { return mElements.at(mWidth * y + x); }
 
 	private:
-		int mWidth;
-		int mHeight;
+        unsigned int mWidth;
+        unsigned int mHeight;
 		std::vector<T> mElements;
 	};
 }

@@ -13,7 +13,7 @@ namespace Lighter
     public:
         struct Settings {
             bool irradianceCaching;
-            int indirectSamples;
+            unsigned int indirectSamples;
             float irradianceCacheThreshold;
         };
 

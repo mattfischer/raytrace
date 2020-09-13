@@ -20,7 +20,7 @@ namespace Object {
 			};
 
 			struct Triangle {
-				int vertices[3];
+                unsigned int vertices[3];
 				Math::Normal normal;
 			};
 
@@ -33,7 +33,7 @@ namespace Object {
 			const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
 		private:
-			Object::BoundingVolumeHierarchy TriangleMesh::computeBoundingVolumeHierarchy() const;
+            Object::BoundingVolumeHierarchy computeBoundingVolumeHierarchy() const;
 
 			std::vector<Vertex> mVertices;
 			std::vector<Triangle> mTriangles;

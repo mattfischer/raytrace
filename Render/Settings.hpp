@@ -6,11 +6,11 @@
 namespace Render {
 	struct Settings
 	{
-		int width;
-		int height;
+        unsigned int width;
+        unsigned int height;
 		bool lighting;
-		int minSamples;
-		int maxSamples;
+        unsigned int minSamples;
+        unsigned int maxSamples;
 		float sampleThreshold;
         Lighter::UniPath::Settings lighterSettings;
 	};

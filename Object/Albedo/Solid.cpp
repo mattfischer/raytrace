@@ -7,7 +7,7 @@ namespace Object {
 		{
 		}
 
-		Object::Color Solid::color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const
+        Object::Color Solid::color(const Math::Point2D &, const Math::Bivector2D &) const
 		{
 			return mColor;
 		}

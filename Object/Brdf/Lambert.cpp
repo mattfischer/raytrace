@@ -20,12 +20,12 @@ namespace Object {
 			return mStrength;
 		}
 
-        Object::Radiance Lambert::reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+        Object::Radiance Lambert::reflected(const Object::Radiance &irradiance, const Math::Vector &, const Math::Normal &, const Math::Vector &, const Object::Color &albedo) const
 		{
             return irradiance * albedo * mStrength / M_PI;
 		}
 
-        Math::Vector Lambert::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        Math::Vector Lambert::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
             Math::OrthonormalBasis basis(normal);
@@ -37,7 +37,7 @@ namespace Object {
             return incidentDirection;
         }
 
-        float Lambert::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        float Lambert::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &) const
         {
             float cosTheta = std::max(incidentDirection * Math::Vector(normal), 0.0f);
             float pdf = cosTheta / M_PI;

@@ -9,17 +9,17 @@ namespace Render {
 	class Framebuffer
 	{
 	public:
-		Framebuffer(int width, int height);
+        Framebuffer(unsigned int width, unsigned int height);
 
-		int width() const;
-		int height() const;
+        unsigned int width() const;
+        unsigned int height() const;
 		const unsigned char *bits() const;
 
-		void setPixel(int x, int y, const Object::Color &color);
+        void setPixel(unsigned int x, unsigned int y, const Object::Color &color);
 
 	private:
-		int mWidth;
-		int mHeight;
+        unsigned int mWidth;
+        unsigned int mHeight;
 		std::vector<unsigned char> mBits;
 	};
 }

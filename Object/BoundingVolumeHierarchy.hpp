@@ -17,20 +17,20 @@ namespace Object {
 
 		BoundingVolumeHierarchy() = default;
 		BoundingVolumeHierarchy(std::vector<Node> &&nodes);
-		BoundingVolumeHierarchy(const std::vector<Math::Point> &points, const std::function<BoundingVolume(int)> &func);
+        BoundingVolumeHierarchy(const std::vector<Math::Point> &points, const std::function<BoundingVolume(unsigned int)> &func);
 
-		bool intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(int, float&)> &func) const;
+        bool intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(unsigned int, float&)> &func) const;
 
 		const std::vector<Node> &nodes() const;
 
 	private:
-		bool intersectNode(const BoundingVolume::RayData &rayData, int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const;
+        bool intersectNode(const BoundingVolume::RayData &rayData, unsigned int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const;
 
 		struct TreeNode {
 			int index;
 		};
-		int buildKdTree(const std::vector<Math::Point> &points, std::vector<TreeNode> &tree, std::vector<int>::iterator indicesBegin, std::vector<int>::iterator indicesEnd, int splitIndex) const;
-		int computeBounds(const std::vector<TreeNode> &tree, const std::function<BoundingVolume(int)> &func, int index);
+        unsigned int buildKdTree(const std::vector<Math::Point> &points, std::vector<TreeNode> &tree, std::vector<unsigned int>::iterator indicesBegin, std::vector<unsigned int>::iterator indicesEnd, unsigned int splitIndex) const;
+        unsigned int computeBounds(const std::vector<TreeNode> &tree, const std::function<BoundingVolume(unsigned int)> &func, unsigned int index);
 
 		std::vector<Node> mNodes;
 	};

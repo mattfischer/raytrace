@@ -8,7 +8,7 @@ namespace Object {
 	Camera::Camera(const Math::Point &position, const Math::Vector &direction, const Math::Vector &vertical, float fov, float focalLength, float apertureSize)
 	: mPosition(position), mDirection(direction)
 	{
-		mImageSize = tan(fov * 3.14 / (2 * 180));
+        mImageSize = tan(fov * M_PI / (2 * 180));
 		Math::Vector perpVertical = (vertical - mDirection * (vertical * mDirection)).normalize();
 		Math::Vector horizontal = (perpVertical % mDirection);
 		mImagePlane = Math::Bivector(horizontal, perpVertical);
@@ -33,7 +33,7 @@ namespace Object {
 		return Math::Ray(q, direction);
 	}
 
-	Math::Beam Camera::createPixelBeam(const Math::Point2D &imagePoint, int width, int height, const Math::Point2D &aperturePoint) const
+    Math::Beam Camera::createPixelBeam(const Math::Point2D &imagePoint, unsigned int width, unsigned int height, const Math::Point2D &aperturePoint) const
 	{
 		float cx = (2 * imagePoint.u() - width) / width;
 		float cy = (2 * imagePoint.v() - height) / width;

@@ -3,7 +3,7 @@
 #include <algorithm>
 
 namespace Render {
-	const int TILE_SIZE = 64;
+    const unsigned int TILE_SIZE = 64;
 
 	TileJob::TileJob(Framebuffer &framebuffer)
 		: mFramebuffer(framebuffer)
@@ -23,14 +23,14 @@ namespace Render {
 
 		while (!mStop) {
 			if (mNextTile < mWidthInTiles * mHeightInTiles) {
-				int x = (mNextTile % mWidthInTiles) * TILE_SIZE;
-				int y = (mNextTile / mWidthInTiles) * TILE_SIZE;
-				int width = std::min(TILE_SIZE, mFramebuffer.width() - x);
-				int height = std::min(TILE_SIZE, mFramebuffer.height() - y);
+                unsigned int x = (mNextTile % mWidthInTiles) * TILE_SIZE;
+                unsigned int y = (mNextTile / mWidthInTiles) * TILE_SIZE;
+                unsigned int width = std::min(TILE_SIZE, mFramebuffer.width() - x);
+                unsigned int height = std::min(TILE_SIZE, mFramebuffer.height() - y);
 
 				auto func = [=](Job::ThreadLocal &threadLocal) {
-					for (int j = y; j < y + height; j++) {
-						for (int i = x; i < x + width; i++) {
+                    for (unsigned int j = y; j < y + height; j++) {
+                        for (unsigned int i = x; i < x + width; i++) {
 							renderPixel(i, j, threadLocal);
 						}
 					}
@@ -52,7 +52,7 @@ namespace Render {
 
 	void TileJob::stop()
 	{
-		std::unique_lock<std::mutex>(mMutex);
+        std::unique_lock<std::mutex> lock(mMutex);
 		mStop = true;
 		mCondVar.notify_all();
 	}
@@ -64,7 +64,7 @@ namespace Render {
 
 	void TileJob::taskDone()
 	{
-		std::unique_lock<std::mutex>(mMutex);
+        std::unique_lock<std::mutex> lock(mMutex);
 
 		mOutstandingTasks--;
 		if (mOutstandingTasks == 0 && mNextTile >= mWidthInTiles * mHeightInTiles) {

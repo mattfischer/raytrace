@@ -20,21 +20,21 @@ namespace Render {
 		{
 			Sampler sampler;
 
-			ThreadLocal(int samplerDimensions) : sampler(samplerDimensions) {}
+            ThreadLocal(unsigned int samplerDimensions) : sampler(samplerDimensions) {}
 		};
 
-		virtual void renderPixel(int x, int y, Job::ThreadLocal &threadLocal);
+        virtual void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal);
 		virtual bool needRepeat();
 
 		const Object::Scene &mScene;
 		const Settings &mSettings;
         const Lighter::Base &mLighter;
 
-		int mNumSamplesThisIteration;
+        unsigned int mNumSamplesThisIteration;
 		Raster<bool> mPixelsDone;
 		Raster<Object::Radiance> mTotalRadiance;
 		Raster<unsigned int> mSamplerOffsets;
-		int mNumSamplesCompleted;
+        unsigned int mNumSamplesCompleted;
 		bool mNeedRepeat;
 	};
 }

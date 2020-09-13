@@ -21,17 +21,17 @@ namespace Object {
 				Math::Bivector tangent;
 			};
 
-			Grid(int width, int height, std::vector<Vertex> &&vertices);
+            Grid(unsigned int width, unsigned int height, std::vector<Vertex> &&vertices);
 
 			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
 			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 
 		private:
-			int computeBounds(std::vector<Object::BoundingVolumeHierarchy::Node> &nodes, int u, int v, int du, int dv) const;
-			const Vertex &vertex(int u, int v) const;
+            unsigned int computeBounds(std::vector<Object::BoundingVolumeHierarchy::Node> &nodes, unsigned int u, unsigned int v, unsigned int du, unsigned int dv) const;
+            const Vertex &vertex(unsigned int u, unsigned int v) const;
 
-			int mWidth;
-			int mHeight;
+            unsigned int mWidth;
+            unsigned int mHeight;
 			std::vector<Vertex> mVertices;
 			Object::BoundingVolumeHierarchy mBoundingVolumeHierarchy;
 		};

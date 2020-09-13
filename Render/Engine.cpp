@@ -64,11 +64,11 @@ namespace Render {
 
 		SYSTEM_INFO sysinfo;
 		GetSystemInfo(&sysinfo);
-		int numThreads = sysinfo.dwNumberOfProcessors;
+        unsigned int numThreads = static_cast<unsigned int>(sysinfo.dwNumberOfProcessors);
 
 		mNumRunningThreads = 0;
 		mStopThreads = false;
-		for (int i = 0; i < numThreads; i++) {
+        for (unsigned int i = 0; i < numThreads; i++) {
 			mThreads.push_back(std::make_unique<std::thread>([=]() { runThread(); }));
 		}
 	}
@@ -179,16 +179,16 @@ namespace Render {
 	{
 		DWORD endTime = GetTickCount();
 		char buf[256];
-		float seconds = (endTime - mStartTime) / 1000.0f;
+        int seconds = static_cast<int>((endTime - mStartTime) / 1000.0f);
 		int hours = seconds / 3600;
 		seconds -= hours * 3600;
 		int minutes = seconds / 60;
 		seconds -= minutes * 60;
 		if (hours > 0) {
-			sprintf_s(buf, sizeof(buf), "Render time: %ih %im %is", hours, minutes, (int)seconds);
+            sprintf_s(buf, sizeof(buf), "Render time: %ih %im %is", hours, minutes, static_cast<unsigned int>(seconds));
 		}
 		else if (minutes > 0) {
-			sprintf_s(buf, sizeof(buf), "Render time: %im %is", minutes, (int)seconds);
+            sprintf_s(buf, sizeof(buf), "Render time: %im %is", minutes, static_cast<unsigned int>(seconds));
 		}
 		else {
 			sprintf_s(buf, sizeof(buf), "Render time: %.3fs", seconds);

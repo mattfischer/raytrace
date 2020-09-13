@@ -200,9 +200,7 @@ namespace Parse {
 	{
 		std::ofstream file(filename.c_str(), std::ios_base::binary);
 
-		int size;
-
-		size = vertices.size();
+        auto size = vertices.size();
 		file.write((const char *)&size, sizeof(size));
 		file.write((const char*)&vertices[0], vertices.size() * sizeof(Object::Shape::TriangleMesh::Vertex));
 
@@ -235,7 +233,7 @@ namespace Parse {
 		else {
 			std::unique_ptr<Object::Shape::TriangleMesh> mesh = std::make_unique<Object::Shape::TriangleMesh>(std::move(vertices), std::move(triangles));
 			BvhFile::save(bvhFilename, mesh->boundingVolumeHierarchy());
-			return mesh;
+            return std::move(mesh);
 		}
 
 	}

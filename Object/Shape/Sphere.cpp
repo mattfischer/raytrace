@@ -50,7 +50,7 @@ namespace Object {
 			return false;
 		}
 
-		BoundingVolume Sphere::boundingVolume(const Math::Transformation &transformation) const
+        BoundingVolume Sphere::boundingVolume(const Math::Transformation &) const
 		{
 			float mins[BoundingVolume::NUM_VECTORS];
 			float maxes[BoundingVolume::NUM_VECTORS];

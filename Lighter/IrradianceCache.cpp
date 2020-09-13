@@ -89,9 +89,9 @@ namespace Lighter {
 
 	void IrradianceCache::getChildNode(const Math::Point &origin, float size, int idx, Math::Point &childOrigin, float &childSize) const
 	{
-		float x = (idx & 1) ? 1 : -1;
-		float y = (idx & 2) ? 1 : -1;
-		float z = (idx & 4) ? 1 : -1;
+        float x = (idx & 1) ? 1.0f : -1.0f;
+        float y = (idx & 2) ? 1.0f : -1.0f;
+        float z = (idx & 4) ? 1.0f : -1.0f;
 
 		childSize = size / 2;
 		childOrigin = origin + Math::Vector(x, y, z) * childSize;
@@ -215,9 +215,9 @@ namespace Lighter {
 			   std::abs(entry.point.y() - mOctreeOrigin.y()) > mOctreeSize ||
 			   std::abs(entry.point.z() - mOctreeOrigin.z()) > mOctreeSize ||
 			   mOctreeSize < R) {
-			float x = (entry.point.x() > mOctreeOrigin.x()) ? 1 : -1;
-			float y = (entry.point.y() > mOctreeOrigin.y()) ? 1 : -1;
-			float z = (entry.point.z() > mOctreeOrigin.z()) ? 1 : -1;
+            float x = (entry.point.x() > mOctreeOrigin.x()) ? 1.0f : -1.0f;
+            float y = (entry.point.y() > mOctreeOrigin.y()) ? 1.0f : -1.0f;
+            float z = (entry.point.z() > mOctreeOrigin.z()) ? 1.0f : -1.0f;
 
 			int idx = ((x < 0) ? 1 : 0) + ((y < 0) ? 2 : 0) + ((z < 0) ? 4 : 0);
 			std::unique_ptr<OctreeNode> newRoot = std::make_unique<OctreeNode>();
@@ -231,9 +231,9 @@ namespace Lighter {
 		float size = mOctreeSize;
 		OctreeNode *node = mOctreeRoot.get();
 		while (size > R * 2) {
-			float x = (entry.point.x() > origin.x()) ? 1 : -1;
-			float y = (entry.point.y() > origin.y()) ? 1 : -1;
-			float z = (entry.point.z() > origin.z()) ? 1 : -1;
+            float x = (entry.point.x() > origin.x()) ? 1.0f : -1.0f;
+            float y = (entry.point.y() > origin.y()) ? 1.0f : -1.0f;
+            float z = (entry.point.z() > origin.z()) ? 1.0f : -1.0f;
 
 			int idx = ((x > 0) ? 1 : 0) + ((y > 0) ? 2 : 0) + ((z > 0) ? 4 : 0);
 			Math::Point newOrigin = origin + Math::Vector(x, y, z) * size / 2;

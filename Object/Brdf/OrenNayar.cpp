@@ -49,7 +49,7 @@ namespace Object {
             return irradiance * albedo * mStrength * (A + B * std::max(0.0f, cosPhi) * sinAlpha * tanBeta) / M_PI;
 		}
 
-        Math::Vector OrenNayar::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        Math::Vector OrenNayar::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
             Math::OrthonormalBasis basis(normal);
@@ -61,7 +61,7 @@ namespace Object {
             return incidentDirection;
         }
 
-        float OrenNayar::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        float OrenNayar::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &) const
         {
             float cosTheta = std::max(incidentDirection * Math::Vector(normal), 0.0f);
             return cosTheta / M_PI;

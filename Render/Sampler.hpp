@@ -10,12 +10,12 @@ namespace Render {
 	class Sampler {
 	public:
 		struct State {
-			std::vector<std::tuple<int, int>> lastSamples;
+            std::vector<std::tuple<unsigned int, unsigned int>> lastSamples;
 		};
 
 		Sampler(unsigned int numDimensions);
 
-		void startSequence(int index = 0);
+        void startSequence(unsigned int index = 0);
 		void startSequence(const State &state);
 		void startSample();
 
@@ -29,7 +29,7 @@ namespace Render {
 		unsigned int mCurrentDimension;
 		std::default_random_engine mRandomEngine;
 
-		std::vector<std::tuple<int, int>> mLastSamples;
+        std::vector<std::tuple<unsigned int, unsigned int>> mLastSamples;
 	};
 }
 #endif
