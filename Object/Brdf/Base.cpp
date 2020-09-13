@@ -29,9 +29,9 @@ namespace Object {
 			return 0;
 		}
 
-        bool Base::hasTransmit() const
+        bool Base::opaque() const
         {
-            return false;
+            return true;
         }
 
         float Base::transmitIor() const

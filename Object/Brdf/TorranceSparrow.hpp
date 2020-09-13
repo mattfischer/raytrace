@@ -15,6 +15,7 @@ namespace Object {
 
             virtual Math::Vector sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
 			float pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
+            bool opaque() const;
 
 		private:
 			float mStrength;

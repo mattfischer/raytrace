@@ -56,7 +56,7 @@ namespace Lighter
         Object::Radiance radiance;
         float threshold = 0.5f;
 
-        if (surface.brdf().hasTransmit()) {
+        if (!surface.brdf().opaque()) {
             float roulette = sampler.getValue();
             if(roulette > threshold) {
                 return radiance;

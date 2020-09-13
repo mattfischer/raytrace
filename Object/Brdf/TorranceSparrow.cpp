@@ -82,5 +82,10 @@ namespace Object {
 			pdf = pdf / (4 * (outgoingDirection * axis));
             return std::min(pdf, 1000.0f);
 		}
+
+        bool TorranceSparrow::opaque() const
+        {
+            return false;
+        }
 	}
 }

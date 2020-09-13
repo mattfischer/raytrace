@@ -21,13 +21,14 @@ namespace Object {
 
             float lambert() const;
 
-			bool hasTransmit() const;
+            bool opaque() const;
 			float transmitIor() const;
 
 		private:
             std::vector<std::unique_ptr<Base>> mBrdfs;
             float mTransmitIor;
             float mLambert;
+            bool mOpaque;
 		};
 	}
 }

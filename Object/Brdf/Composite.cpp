@@ -14,10 +14,14 @@ namespace Object {
             : mBrdfs(std::move(brdfs))
         {
             mLambert = 0;
+            mOpaque = false;
             for(const std::unique_ptr<Base> &brdf : mBrdfs) {
                 if(brdf->lambert() > 0) {
                     mLambert = brdf->lambert();
                     break;
+                }
+                if(brdf->opaque()) {
+                    mOpaque = true;
                 }
             }
 
@@ -73,9 +77,9 @@ namespace Object {
             return mLambert;
         }
 
-		bool Composite::hasTransmit() const
+        bool Composite::opaque() const
 		{
-			return mTransmitIor != 0;
+            return mOpaque;
 		}
 
 		float Composite::transmitIor() const

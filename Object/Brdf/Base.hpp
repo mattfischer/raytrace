@@ -24,7 +24,7 @@ namespace Object {
             virtual Math::Vector sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
 			virtual float pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
 
-            virtual bool hasTransmit() const;
+            virtual bool opaque() const;
             virtual float transmitIor() const;
         };
 	}
