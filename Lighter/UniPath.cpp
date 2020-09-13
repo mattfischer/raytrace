@@ -20,9 +20,14 @@ namespace Lighter
 
     Object::Radiance UniPath::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
     {
+        return lightInternal(intersection, sampler, 0);
+    }
+
+    Object::Radiance UniPath::lightInternal(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
+    {
         Object::Radiance emittedRadiance = lightRadiant(intersection);
-        Object::Radiance transmittedRadiance = lightTransmitted(intersection, sampler);
-        Object::Radiance reflectedRadiance = lightReflected(intersection, sampler);
+        Object::Radiance transmittedRadiance = lightTransmitted(intersection, sampler, generation);
+        Object::Radiance reflectedRadiance = lightReflected(intersection, sampler, generation);
 
         return emittedRadiance + transmittedRadiance + reflectedRadiance;
     }
@@ -43,7 +48,7 @@ namespace Lighter
         return intersection.primitive().surface().radiance();
     }
 
-    Object::Radiance UniPath::lightTransmitted(const Object::Intersection &intersection, Render::Sampler &sampler) const
+    Object::Radiance UniPath::lightTransmitted(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
         const Object::Scene &scene = intersection.scene();
         const Object::Surface &surface = intersection.primitive().surface();
@@ -80,7 +85,7 @@ namespace Lighter
             Math::Normal incidentNormal = -normal;
             float dot = incidentDirection * incidentNormal;
             if (intersection2.valid()) {
-                Object::Radiance irradiance = light(intersection2, sampler) * dot;
+                Object::Radiance irradiance = lightInternal(intersection2, sampler, generation + 1) * dot;
                 Object::Radiance transmittedRadiance = surface.brdf().transmitted(irradiance, incidentDirection, incidentNormal, albedo);
                 radiance += transmittedRadiance / (outgoingDirection * normal);
             }
@@ -89,7 +94,7 @@ namespace Lighter
         return radiance / threshold;
     }
 
-    Object::Radiance UniPath::lightReflected(const Object::Intersection &intersection, Render::Sampler &sampler) const
+    Object::Radiance UniPath::lightReflected(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
         const Math::Normal &normal = intersection.facingNormal();
         const Math::Vector outgoingDirection = -intersection.ray().direction();
@@ -98,9 +103,9 @@ namespace Lighter
 
         Math::Vector incidentDirection;
         float lightPdf;
-        Object::Radiance sampledRadiance = sampleBrdf(intersection, sampler, incidentDirection, lightPdf);
+        Object::Radiance sampledRadiance = sampleBrdf(intersection, sampler, incidentDirection, lightPdf, generation);
         float pdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
-        float weight = pdf / (pdf + lightPdf);
+        float weight = pdf * pdf / (pdf * pdf + lightPdf * lightPdf);
         radiance += sampledRadiance * weight;
 
         for (const Object::Primitive &light : intersection.scene().areaLights()) {
@@ -109,7 +114,7 @@ namespace Lighter
             Object::Radiance sampledRadiance = sampleLight(intersection, light, sampler, incidentDirection, pdf);
             if(incidentDirection * normal > 0) {
                 float brdfPdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
-                float weight = pdf / (pdf + brdfPdf);
+                float weight = pdf * pdf / (pdf * pdf + brdfPdf * brdfPdf);
                 radiance += sampledRadiance * weight;
             }
         }
@@ -172,7 +177,7 @@ namespace Lighter
                 radiance += brdf.reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
             }
 
-            pdfAngular = std::min((pdfArea * distance * distance) / sampleDot, 1000.0f);
+            pdfAngular = (pdfArea * distance * distance) / sampleDot;
         }
 
         return radiance / pdfArea;
@@ -207,7 +212,7 @@ namespace Lighter
         return radiance;
     }
 
-    Object::Radiance UniPath::sampleBrdf(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdfAngularLight) const
+    Object::Radiance UniPath::sampleBrdf(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdfAngularLight, int generation) const
     {
         const Object::Scene &scene = intersection.scene();
         const Object::Color &albedo = intersection.albedo();
@@ -226,9 +231,16 @@ namespace Lighter
         pdfAngularLight = 0;
         float pdfAngular = brdf.pdf(incidentDirection, normal, outgoingDirection);
 
-        Object::Radiance testRadiance = surface.brdf().reflected(Object::Radiance(1,1,1) / std::sqrt(3.0f), incidentDirection, normal, outgoingDirection, albedo) / pdfAngular;
-        float threshold = std::max(std::min(testRadiance.magnitude(), 0.9f), 0.1f);
-        float roulette = sampler.getValue();
+        float threshold = 1.0f;
+        float roulette = 0.0f;
+        if(generation > 0) {
+            Object::Radiance testRadiance = surface.brdf().reflected(Object::Radiance(1,1,1) / std::sqrt(3.0f), incidentDirection, normal, outgoingDirection, albedo) / pdfAngular;
+            threshold = std::max(std::min(testRadiance.magnitude(), 0.9f), 0.1f);
+            roulette = sampler.getValue();
+        } else if(generation > 10) {
+            return radiance;
+        }
+
         float dot = incidentDirection * normal;
         if(roulette < threshold && dot > 0) {
             Math::Ray reflectRay(offsetPoint, incidentDirection);
@@ -236,7 +248,7 @@ namespace Lighter
             Object::Intersection intersection2 = scene.intersect(beam);
 
             if (intersection2.valid()) {
-                Object::Radiance irradiance = light(intersection2, sampler) * dot;
+                Object::Radiance irradiance = lightInternal(intersection2, sampler, generation + 1) * dot;
                 radiance = surface.brdf().reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
 
                 if(mIndirectCachedLighter) {
@@ -250,7 +262,7 @@ namespace Lighter
                     if (shapeSampler) {
                         float pdfAreaLight = 1.0f / shapeSampler->surfaceArea();
                         float lightDot = -intersection2.facingNormal() * incidentDirection;
-                        pdfAngularLight = std::min((pdfAreaLight * intersection2.distance() * intersection2.distance()) / lightDot, 1000.0f);
+                        pdfAngularLight = (pdfAreaLight * intersection2.distance() * intersection2.distance()) / lightDot;
                     }
                 }
             }
