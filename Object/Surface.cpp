@@ -6,7 +6,7 @@
 #include "Parse/AST.h"
 
 namespace Object {
-	Surface::Surface(std::unique_ptr<Albedo::Base> albedo, std::unique_ptr<Brdf::Composite> brdf, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap)
+    Surface::Surface(std::unique_ptr<Albedo::Base> albedo, std::unique_ptr<Brdf::Base> brdf, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap)
 	{
 		mAlbedo = std::move(albedo);
 		mBrdf = std::move(brdf);
@@ -19,7 +19,7 @@ namespace Object {
 		return *mAlbedo;
 	}
 
-	const Brdf::Composite &Surface::brdf() const
+    const Brdf::Base &Surface::brdf() const
 	{
 		return *mBrdf;
 	}

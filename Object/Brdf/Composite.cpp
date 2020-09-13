@@ -68,11 +68,6 @@ namespace Object {
             return totalPdf;
         }
 
-        const std::vector<std::unique_ptr<Base>> &Composite::brdfs() const
-        {
-            return mBrdfs;
-        }
-
         float Composite::lambert() const
         {
             return mLambert;

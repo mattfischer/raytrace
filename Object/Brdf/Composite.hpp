@@ -7,8 +7,8 @@
 #include <vector>
 
 namespace Object {
-	namespace Brdf {
-        class Composite
+    namespace Brdf {
+        class Composite : public Base
 		{
 		public:
             Composite(std::vector<std::unique_ptr<Base>> brdfs, float transmitIor);
@@ -19,7 +19,6 @@ namespace Object {
             virtual Math::Vector sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
             virtual float pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
 
-            const std::vector<std::unique_ptr<Base>> &brdfs() const;
             float lambert() const;
 
 			bool hasTransmit() const;

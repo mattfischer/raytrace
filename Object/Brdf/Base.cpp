@@ -28,5 +28,15 @@ namespace Object {
 		{
 			return 0;
 		}
+
+        bool Base::hasTransmit() const
+        {
+            return false;
+        }
+
+        float Base::transmitIor() const
+        {
+            return 1;
+        }
 	}
 }

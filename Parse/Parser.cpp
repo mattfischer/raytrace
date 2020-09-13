@@ -11,6 +11,7 @@
 #include "Object/Brdf/Phong.hpp"
 #include "Object/Brdf/OrenNayar.hpp"
 #include "Object/Brdf/TorranceSparrow.hpp"
+#include "Object/Brdf/Composite.hpp"
 
 #include "Object/Shape/Quad.hpp"
 #include "Object/Shape/Sphere.hpp"
@@ -174,7 +175,7 @@ namespace Parse {
 		return std::make_unique<Object::Brdf::TorranceSparrow>(strength, roughness, ior);
 	}
 
-	std::unique_ptr<Object::Brdf::Composite> parseBrdfComposite(AST *ast)
+    std::unique_ptr<Object::Brdf::Base> parseBrdf(AST *ast)
 	{
         std::vector<std::unique_ptr<Object::Brdf::Base>> brdfs;
 		float transmitIor = 0;
@@ -199,8 +200,12 @@ namespace Parse {
 			}
 		}
 
-        return std::make_unique<Object::Brdf::Composite>(std::move(brdfs), transmitIor);
-	}
+        if(brdfs.size() == 1 && transmitIor == 0) {
+            return std::move(brdfs[0]);
+        } else {
+            return std::make_unique<Object::Brdf::Composite>(std::move(brdfs), transmitIor);
+        }
+    }
 
 	std::unique_ptr<Object::NormalMap> parseNormalMap(AST *ast)
 	{
@@ -212,7 +217,7 @@ namespace Parse {
 	std::unique_ptr<Object::Surface> parseSurface(AST *ast)
 	{
 		std::unique_ptr<Object::Albedo::Base> albedo;
-		std::unique_ptr<Object::Brdf::Composite> brdf;
+        std::unique_ptr<Object::Brdf::Base> brdf;
 		Object::Radiance radiance;
 		std::unique_ptr<Object::NormalMap> normalMap;
 
@@ -223,7 +228,7 @@ namespace Parse {
 				break;
 
 			case AstBrdf:
-				brdf = parseBrdfComposite(ast->children[i]);
+                brdf = parseBrdf(ast->children[i]);
 				break;
 
 			case AstRadiance:

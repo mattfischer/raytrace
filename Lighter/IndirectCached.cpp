@@ -27,7 +27,7 @@ namespace Lighter
         const Math::Point &point = intersection.point();
         const Math::Normal &normal = intersection.facingNormal();
         const Object::Color &albedo = intersection.albedo();
-        const Object::Brdf::Composite &brdf = intersection.primitive().surface().brdf();
+        const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf();
 
         Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, normal);
         return irradiance * albedo * brdf.lambert() / M_PI;

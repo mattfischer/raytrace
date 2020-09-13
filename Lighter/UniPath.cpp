@@ -134,7 +134,7 @@ namespace Lighter
         const Math::Point &point = intersection.point();
         const Math::Normal &normal = intersection.facingNormal();
         const Object::Scene &scene = intersection.scene();
-        const Object::Brdf::Composite &brdf = intersection.primitive().surface().brdf();
+        const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf();
         const Math::Vector &outgoingDirection = -intersection.ray().direction();
         const Object::Color &albedo = intersection.albedo();
 
@@ -185,7 +185,7 @@ namespace Lighter
         const Math::Point &point = intersection.point();
         const Math::Normal &normal = intersection.facingNormal();
         const Object::Scene &scene = intersection.scene();
-        const Object::Brdf::Composite &brdf = intersection.primitive().surface().brdf();
+        const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf();
         const Object::Color &albedo = intersection.albedo();
         const Math::Vector &outgoingDirection = -intersection.ray().direction();
 
@@ -212,7 +212,7 @@ namespace Lighter
         const Object::Scene &scene = intersection.scene();
         const Object::Color &albedo = intersection.albedo();
         const Object::Surface &surface = intersection.primitive().surface();
-        const Object::Brdf::Composite &brdf = surface.brdf();
+        const Object::Brdf::Base &brdf = surface.brdf();
         const Math::Ray &ray = intersection.ray();
         const Math::Normal &normal = intersection.facingNormal();
         Math::Vector outgoingDirection = -ray.direction();
