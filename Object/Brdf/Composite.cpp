@@ -48,6 +48,26 @@ namespace Object {
             return transmittedIrradiance;
         }
 
+        Math::Vector Composite::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        {
+            float sample = sampler.getValue();
+            int idx = std::min((int)std::floor(mBrdfs.size() * sample), (int)mBrdfs.size() - 1);
+            const Object::Brdf::Base &brdf = *mBrdfs[idx];
+
+            return brdf.sample(sampler, normal, outgoingDirection);
+        }
+
+        float Composite::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        {
+            float totalPdf = 0;
+            for(const std::unique_ptr<Object::Brdf::Base> &brdf : mBrdfs) {
+                totalPdf += brdf->pdf(incidentDirection, normal, outgoingDirection);
+            }
+            totalPdf /= (float)mBrdfs.size();
+
+            return totalPdf;
+        }
+
         const std::vector<std::unique_ptr<Base>> &Composite::brdfs() const
         {
             return mBrdfs;

@@ -25,8 +25,9 @@ namespace Object {
             return irradiance * albedo * mStrength / M_PI;
 		}
 
-        Math::Vector Lambert::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        Math::Vector Lambert::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
         {
+            Math::Point2D samplePoint = sampler.getValue2D();
             Math::OrthonormalBasis basis(normal);
             float phi = 2 * M_PI * samplePoint.u();
             float theta = std::asin(std::sqrt(samplePoint.v()));

@@ -34,8 +34,9 @@ namespace Object {
             return irradiance * (1.0f - mStrength);
 		}
 
-		Math::Vector Phong::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        Math::Vector Phong::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
 		{
+            Math::Point2D samplePoint = sampler.getValue2D();
 			float phi = 2 * M_PI * samplePoint.u();
 			float theta = std::acos(std::pow(samplePoint.v(), 1.0f / (mPower + 1)));
 

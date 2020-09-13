@@ -55,8 +55,9 @@ namespace Object {
             return irradiance * (1.0f - mStrength * F);
 		}
 
-		Math::Vector TorranceSparrow::sample(const Math::Point2D &samplePoint, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        Math::Vector TorranceSparrow::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
 		{
+            Math::Point2D samplePoint = sampler.getValue2D();
 			float phi = 2 * M_PI * samplePoint.u();
 			float tanTheta = std::sqrt(-mRoughness * mRoughness * std::log(1 - samplePoint.v()));
 			float theta = std::atan(tanTheta);

@@ -96,43 +96,20 @@ namespace Lighter
         const Object::Surface &surface = intersection.primitive().surface();
         Object::Radiance radiance;
 
-        if(surface.brdf().brdfs().size() > 0) {
-            float sample = sampler.getValue();
-            int idx = std::min((int)std::floor(surface.brdf().brdfs().size() * sample), (int)surface.brdf().brdfs().size() - 1);
-            const Object::Brdf::Base &brdf = *surface.brdf().brdfs()[idx];
-            Math::Vector incidentDirection;
-            float lightPdf;
-            Object::Radiance sampledRadiance = sampleBrdf(intersection, brdf, sampler, incidentDirection, lightPdf);
-            float pdf = brdf.pdf(incidentDirection, normal, outgoingDirection);
-
-            float totalPdf = 0;
-            for(const std::unique_ptr<Object::Brdf::Base> &otherBrdf : surface.brdf().brdfs()) {
-                totalPdf += otherBrdf->pdf(incidentDirection, normal, outgoingDirection);
-            }
-            totalPdf /= (float)surface.brdf().brdfs().size();
-
-            totalPdf += lightPdf;
-            float weight = pdf / totalPdf;
-
-            radiance += sampledRadiance * weight;
-        }
+        Math::Vector incidentDirection;
+        float lightPdf;
+        Object::Radiance sampledRadiance = sampleBrdf(intersection, sampler, incidentDirection, lightPdf);
+        float pdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
+        float weight = pdf / (pdf + lightPdf);
+        radiance += sampledRadiance * weight;
 
         for (const Object::Primitive &light : intersection.scene().areaLights()) {
             Math::Vector incidentDirection;
             float pdf;
             Object::Radiance sampledRadiance = sampleLight(intersection, light, sampler, incidentDirection, pdf);
             if(incidentDirection * normal > 0) {
-                float totalPdf = 0;
-                if(surface.brdf().brdfs().size() > 0) {
-                    for(const std::unique_ptr<Object::Brdf::Base> &brdf : surface.brdf().brdfs()) {
-                        totalPdf += brdf->pdf(incidentDirection, normal, outgoingDirection);
-                    }
-                    totalPdf /= surface.brdf().brdfs().size();
-                }
-
-                totalPdf += pdf;
-                float weight = pdf / (totalPdf);
-
+                float brdfPdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
+                float weight = pdf / (pdf + brdfPdf);
                 radiance += sampledRadiance * weight;
             }
         }
@@ -230,11 +207,12 @@ namespace Lighter
         return radiance;
     }
 
-    Object::Radiance UniPath::sampleBrdf(const Object::Intersection &intersection, const Object::Brdf::Base &brdf, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdfAngularLight) const
+    Object::Radiance UniPath::sampleBrdf(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdfAngularLight) const
     {
         const Object::Scene &scene = intersection.scene();
         const Object::Color &albedo = intersection.albedo();
         const Object::Surface &surface = intersection.primitive().surface();
+        const Object::Brdf::Composite &brdf = surface.brdf();
         const Math::Ray &ray = intersection.ray();
         const Math::Normal &normal = intersection.facingNormal();
         Math::Vector outgoingDirection = -ray.direction();
@@ -243,8 +221,7 @@ namespace Lighter
 
         Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
 
-        Math::Point2D samplePoint = sampler.getValue2D();
-        incidentDirection = brdf.sample(samplePoint, normal, outgoingDirection);
+        incidentDirection = brdf.sample(sampler, normal, outgoingDirection);
 
         pdfAngularLight = 0;
         float pdfAngular = brdf.pdf(incidentDirection, normal, outgoingDirection);
