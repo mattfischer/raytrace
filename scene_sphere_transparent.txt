@@ -1,0 +1,84 @@
+camera {
+    <0,0,-30> <0,0,0> 1 0
+}
+
+sphere {
+	<-5,-6,0>,4
+	surface {
+                albedo { color <1,1,1> }
+                brdf { torrance_sparrow 0.1 0.05 10 transmit 1.5 }
+	}
+}
+
+quad {
+	<-4,10,-4> <0,0,8> <8,0,0>
+	surface {
+		brdf { lambert 0 }
+		albedo { color <1,1,1> }
+		radiance <40,40,40>
+	}
+}
+
+quad {
+	<-15,-10,-15> <0,0,30> <30,0,0>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { oren_nayar 1 0.5 }
+	}
+}
+
+quad {
+	<-15,10,-15> <30,0,0> <0,0,11>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { oren_nayar 1 0.5 }
+	}
+}
+
+quad {
+	<-15,10,4> <30,0,0> <0,0,11>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { oren_nayar 1 0.5 }
+	}
+}
+
+quad {
+	<-15,10,-15> <11,0,0> <0,0,30>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { oren_nayar 1 0.5 }
+	}
+}
+
+quad {
+	<4,10,-15> <11,0,0> <0,0,30>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { oren_nayar 1 0.5 }
+	}
+}
+
+quad {
+    <-10,-15,-15> <0,30,0> <0,0,30>
+	surface {
+		albedo { color <1,0,0> }
+		brdf { oren_nayar 1 0.5 }
+	}
+}
+
+quad {
+    <10,-15,-15> <0,0,30> <0,30,0>
+	surface {
+		albedo { color <0,0,1> }
+		brdf { oren_nayar 1 0.5 }
+	}
+}
+
+quad {
+	<-15,-15,10> <30,0,0> <0,30,0>
+	surface {
+		albedo { color <1,1,1> }
+		brdf { oren_nayar 1 0.5 }
+	}
+}
