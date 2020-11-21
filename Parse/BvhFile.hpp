@@ -7,11 +7,11 @@
 #include <string>
 
 namespace Parse {
-	class BvhFile
-	{
-	public:
-		static Object::BoundingVolumeHierarchy load(const std::string &filename);
-		static void save(const std::string &filename, const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy);
-	};
+    class BvhFile
+    {
+    public:
+        static Object::BoundingVolumeHierarchy load(const std::string &filename);
+        static void save(const std::string &filename, const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy);
+    };
 }
 #endif

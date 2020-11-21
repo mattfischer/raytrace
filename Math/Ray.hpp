@@ -5,21 +5,21 @@
 #include "Math/Vector.hpp"
 
 namespace Math {
-	class Ray
-	{
-	public:
-		Ray() = default;
-		Ray(const Point &origin, const Vector &direction);
+    class Ray
+    {
+    public:
+        Ray() = default;
+        Ray(const Point &origin, const Vector &direction);
 
-		const Point &origin() const;
-		const Vector &direction() const;
+        const Point &origin() const;
+        const Vector &direction() const;
 
-	protected:
-		Point mOrigin;
-		Vector mDirection;
-	};
+    protected:
+        Point mOrigin;
+        Vector mDirection;
+    };
 
-	Ray operator*(const BaseTransformation &transformation, const Ray &ray);
+    Ray operator*(const BaseTransformation &transformation, const Ray &ray);
 }
 
 #endif

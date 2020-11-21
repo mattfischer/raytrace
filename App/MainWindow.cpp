@@ -8,12 +8,12 @@
 #include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
-	QMainWindow(parent),
-	ui(new Ui::MainWindow)
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
-	ui->setupUi(this);
+    ui->setupUi(this);
 
-	QObject::connect(&mTimer, &QTimer::timeout, this, &MainWindow::on_timer);
+    QObject::connect(&mTimer, &QTimer::timeout, this, &MainWindow::on_timer);
 
     QStringList scenes = QDir::current().entryList(QStringList() << "scene_*.txt");
     ui->scene->addItems(scenes);
@@ -25,37 +25,37 @@ MainWindow::~MainWindow()
         mEngine->stop();
     }
 
-	delete ui;
+    delete ui;
 }
 
 void MainWindow::on_enableLighting_clicked(bool checked)
 {
-	ui->groupLighting->setEnabled(checked);
+    ui->groupLighting->setEnabled(checked);
 }
 
 void MainWindow::on_indirectIrradianceCaching_clicked(bool checked)
 {
-	ui->groupIrradianceCaching->setEnabled(checked);
+    ui->groupIrradianceCaching->setEnabled(checked);
 }
 
 void MainWindow::on_render_clicked()
 {
     if (mEngine && mEngine->rendering()) {
-		mEngine->stop();
-		mTimer.stop();
-	}
-	else {
-		refreshSettings();
+        mEngine->stop();
+        mTimer.stop();
+    }
+    else {
+        refreshSettings();
 
         mScene = Parse::Parser::parse(ui->scene->currentText().toStdString());
         mEngine = std::make_unique<Render::Engine>(*mScene);
-		mEngine->setSettings(mSettings);
+        mEngine->setSettings(mSettings);
 
-		updateFramebuffer();
-		mEngine->startRender(this);
-		ui->render->setText("Stop Rendering");
-		mTimer.start();
-	}
+        updateFramebuffer();
+        mEngine->startRender(this);
+        ui->render->setText("Stop Rendering");
+        mTimer.start();
+    }
 }
 
 void MainWindow::on_timer()
@@ -71,30 +71,30 @@ void MainWindow::on_timer()
 
 void MainWindow::onRenderDone()
 {
-	ui->render->setText("Render");
+    ui->render->setText("Render");
 }
 
 void MainWindow::onRenderStatus(const char *message)
 {
-	ui->statusbar->showMessage(message);
+    ui->statusbar->showMessage(message);
 }
 
 void MainWindow::refreshSettings()
 {
-	mSettings.width = ui->width->value();
-	mSettings.height = ui->height->value();
-	mSettings.lighting = ui->enableLighting->isChecked();
-	mSettings.minSamples = ui->samplesMin->value();
-	mSettings.maxSamples = ui->samplesMax->value();
-	mSettings.sampleThreshold = ui->samplesThreshold->value();
-	mSettings.lighterSettings.irradianceCaching = ui->indirectIrradianceCaching->isChecked();
-	mSettings.lighterSettings.indirectSamples = ui->irradianceCachingSamples->value();
-	mSettings.lighterSettings.irradianceCacheThreshold = ui->irradianceCachingThreshold->value();
+    mSettings.width = ui->width->value();
+    mSettings.height = ui->height->value();
+    mSettings.lighting = ui->enableLighting->isChecked();
+    mSettings.minSamples = ui->samplesMin->value();
+    mSettings.maxSamples = ui->samplesMax->value();
+    mSettings.sampleThreshold = ui->samplesThreshold->value();
+    mSettings.lighterSettings.irradianceCaching = ui->indirectIrradianceCaching->isChecked();
+    mSettings.lighterSettings.indirectSamples = ui->irradianceCachingSamples->value();
+    mSettings.lighterSettings.irradianceCacheThreshold = ui->irradianceCachingThreshold->value();
 }
 
 void MainWindow::updateFramebuffer()
 {
-	ui->renderView->setMinimumSize(mSettings.width, mSettings.height);
+    ui->renderView->setMinimumSize(mSettings.width, mSettings.height);
     mRenderImage = QImage(mEngine->renderFramebuffer().bits(), mEngine->renderFramebuffer().width(), mEngine->renderFramebuffer().height(),
                     mEngine->renderFramebuffer().width() * 3, QImage::Format_RGB888);
     mRenderPixmap = QPixmap(mEngine->renderFramebuffer().width(), mEngine->renderFramebuffer().height());

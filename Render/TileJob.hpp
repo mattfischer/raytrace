@@ -7,30 +7,30 @@
 #include <mutex>
 
 namespace Render {
-	class TileJob : public Job
-	{
-	public:
-		TileJob(Framebuffer &framebuffer);
+    class TileJob : public Job
+    {
+    public:
+        TileJob(Framebuffer &framebuffer);
 
-		std::unique_ptr<Job::Task> getNextTask();
-		virtual void stop();
+        std::unique_ptr<Job::Task> getNextTask();
+        virtual void stop();
 
-	protected:
+    protected:
         virtual void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal) = 0;
-		virtual bool needRepeat();
-		Framebuffer &framebuffer();
+        virtual bool needRepeat();
+        Framebuffer &framebuffer();
 
-	private:
-		void taskDone();
+    private:
+        void taskDone();
 
-		Framebuffer &mFramebuffer;
+        Framebuffer &mFramebuffer;
         unsigned int mWidthInTiles;
         unsigned int mHeightInTiles;
         unsigned int mNextTile;
         unsigned int mOutstandingTasks;
-		std::mutex mMutex;
-		std::condition_variable mCondVar;
-		bool mStop;
-	};
+        std::mutex mMutex;
+        std::condition_variable mCondVar;
+        bool mStop;
+    };
 }
 #endif

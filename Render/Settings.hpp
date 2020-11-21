@@ -4,15 +4,15 @@
 #include "Lighter/UniPath.hpp"
 
 namespace Render {
-	struct Settings
-	{
+    struct Settings
+    {
         unsigned int width;
         unsigned int height;
-		bool lighting;
+        bool lighting;
         unsigned int minSamples;
         unsigned int maxSamples;
-		float sampleThreshold;
+        float sampleThreshold;
         Lighter::UniPath::Settings lighterSettings;
-	};
+    };
 }
 #endif

@@ -9,8 +9,8 @@
 namespace Object {
     namespace Brdf {
         class Composite : public Base
-		{
-		public:
+        {
+        public:
             Composite(std::vector<std::unique_ptr<Base>> brdfs, float transmitIor);
 
             virtual Object::Radiance reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
@@ -22,15 +22,15 @@ namespace Object {
             float lambert() const;
 
             bool opaque() const;
-			float transmitIor() const;
+            float transmitIor() const;
 
-		private:
+        private:
             std::vector<std::unique_ptr<Base>> mBrdfs;
             float mTransmitIor;
             float mLambert;
             bool mOpaque;
-		};
-	}
+        };
+    }
 }
 
 #endif

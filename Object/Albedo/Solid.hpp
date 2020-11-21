@@ -4,17 +4,17 @@
 #include "Object/Albedo/Base.hpp"
 
 namespace Object {
-	namespace Albedo {
-		class Solid : public Base
-		{
-		public:
-			Solid(const Object::Color &color);
+    namespace Albedo {
+        class Solid : public Base
+        {
+        public:
+            Solid(const Object::Color &color);
 
-			virtual Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const;
+            virtual Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const;
 
-		protected:
-			Object::Color mColor;
-		};
-	}
+        protected:
+            Object::Color mColor;
+        };
+    }
 }
 #endif

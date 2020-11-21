@@ -9,21 +9,21 @@
 #include <algorithm>
 
 namespace Object {
-	namespace Brdf {
-		Lambert::Lambert(float strength)
-		{
-			mStrength = strength;
-		}
+    namespace Brdf {
+        Lambert::Lambert(float strength)
+        {
+            mStrength = strength;
+        }
 
-		float Lambert::lambert() const
-		{
-			return mStrength;
-		}
+        float Lambert::lambert() const
+        {
+            return mStrength;
+        }
 
         Object::Radiance Lambert::reflected(const Object::Radiance &irradiance, const Math::Vector &, const Math::Normal &, const Math::Vector &, const Object::Color &albedo) const
-		{
+        {
             return irradiance * albedo * mStrength / M_PI;
-		}
+        }
 
         Math::Vector Lambert::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &) const
         {
@@ -44,5 +44,5 @@ namespace Object {
 
             return pdf;
         }
-	}
+    }
 }

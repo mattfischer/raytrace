@@ -7,10 +7,10 @@
 #include <string>
 
 namespace Parse {
-	class BmpLoader
-	{
-	public:
-		static std::unique_ptr<Object::Texture<3>> load(const std::string &filename);
-	};
+    class BmpLoader
+    {
+    public:
+        static std::unique_ptr<Object::Texture<3>> load(const std::string &filename);
+    };
 }
 #endif

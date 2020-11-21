@@ -11,34 +11,34 @@
 #include <vector>
 
 namespace Object {
-	namespace Shape {
-		class TriangleMesh : public Base
-		{
-		public:
-			struct Vertex {
-				Math::Point point;
-			};
+    namespace Shape {
+        class TriangleMesh : public Base
+        {
+        public:
+            struct Vertex {
+                Math::Point point;
+            };
 
-			struct Triangle {
+            struct Triangle {
                 unsigned int vertices[3];
-				Math::Normal normal;
-			};
+                Math::Normal normal;
+            };
 
-			TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles);
-			TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles, Object::BoundingVolumeHierarchy &&boundingVolumeHierarchy);
+            TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles);
+            TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles, Object::BoundingVolumeHierarchy &&boundingVolumeHierarchy);
 
-			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
-			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+            virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
+            virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 
-			const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
+            const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
-		private:
+        private:
             Object::BoundingVolumeHierarchy computeBoundingVolumeHierarchy() const;
 
-			std::vector<Vertex> mVertices;
-			std::vector<Triangle> mTriangles;
-			Object::BoundingVolumeHierarchy mBoundingVolumeHierarchy;
-		};
-	}
+            std::vector<Vertex> mVertices;
+            std::vector<Triangle> mTriangles;
+            Object::BoundingVolumeHierarchy mBoundingVolumeHierarchy;
+        };
+    }
 }
 #endif

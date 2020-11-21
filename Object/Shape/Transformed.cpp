@@ -1,27 +1,27 @@
 #include "Object/Shape/Transformed.hpp"
 
 namespace Object {
-	namespace Shape {
-		Transformed::Transformed(std::unique_ptr<Base> shape, const Math::Transformation &transformation)
-			: mShape(std::move(shape)), mTransformation(transformation)
-		{
-		}
+    namespace Shape {
+        Transformed::Transformed(std::unique_ptr<Base> shape, const Math::Transformation &transformation)
+            : mShape(std::move(shape)), mTransformation(transformation)
+        {
+        }
 
-		bool Transformed::intersect(const Math::Ray &ray, Intersection &intersection) const
-		{
-			Math::Ray transformedRay = mTransformation.inverse() * ray;
-			if (mShape->intersect(transformedRay, intersection)) {
-				intersection.normal = (mTransformation * intersection.normal).normalize();
-				intersection.tangent = mTransformation * intersection.tangent;
-				return true;
-			}
+        bool Transformed::intersect(const Math::Ray &ray, Intersection &intersection) const
+        {
+            Math::Ray transformedRay = mTransformation.inverse() * ray;
+            if (mShape->intersect(transformedRay, intersection)) {
+                intersection.normal = (mTransformation * intersection.normal).normalize();
+                intersection.tangent = mTransformation * intersection.tangent;
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		BoundingVolume Transformed::boundingVolume(const Math::Transformation &transformation) const
-		{
-			return mShape->boundingVolume(transformation * mTransformation);
-		}
-	}
+        BoundingVolume Transformed::boundingVolume(const Math::Transformation &transformation) const
+        {
+            return mShape->boundingVolume(transformation * mTransformation);
+        }
+    }
 }

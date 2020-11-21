@@ -6,10 +6,10 @@
 #include <memory>
 
 namespace Parse {
-	class BptLoader
-	{
-	public:
-		static std::unique_ptr<Object::Shape::Base> load(const std::string &filename);
-	};
+    class BptLoader
+    {
+    public:
+        static std::unique_ptr<Object::Shape::Base> load(const std::string &filename);
+    };
 }
 #endif

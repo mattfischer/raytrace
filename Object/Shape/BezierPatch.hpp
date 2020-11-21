@@ -7,18 +7,18 @@
 #include <vector>
 
 namespace Object {
-	namespace Shape {
-		class BezierPatch : public Base {
-		public:
-			BezierPatch(int width, int height, std::vector<Math::Point> &&controlPoints);
+    namespace Shape {
+        class BezierPatch : public Base {
+        public:
+            BezierPatch(int width, int height, std::vector<Math::Point> &&controlPoints);
 
-			virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
-			virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+            virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
+            virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 
-		private:
-			std::unique_ptr<Grid> mGrid;
-		};
-	}
+        private:
+            std::unique_ptr<Grid> mGrid;
+        };
+    }
 }
 
 #endif

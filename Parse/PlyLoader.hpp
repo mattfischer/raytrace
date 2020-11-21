@@ -6,10 +6,10 @@
 #include <memory>
 
 namespace Parse {
-	class PlyLoader
-	{
-	public:
-		static std::unique_ptr<Object::Shape::Base> load(const std::string &filename);
-	};
+    class PlyLoader
+    {
+    public:
+        static std::unique_ptr<Object::Shape::Base> load(const std::string &filename);
+    };
 }
 #endif

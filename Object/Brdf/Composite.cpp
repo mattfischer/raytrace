@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace Object {
-	namespace Brdf {
+    namespace Brdf {
         Composite::Composite(std::vector<std::unique_ptr<Base>> brdfs, float transmitIor)
             : mBrdfs(std::move(brdfs))
         {
@@ -78,13 +78,13 @@ namespace Object {
         }
 
         bool Composite::opaque() const
-		{
+        {
             return mOpaque;
-		}
+        }
 
-		float Composite::transmitIor() const
-		{
-			return mTransmitIor;
-		}
-	}
+        float Composite::transmitIor() const
+        {
+            return mTransmitIor;
+        }
+    }
 }

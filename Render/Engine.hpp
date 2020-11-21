@@ -20,56 +20,56 @@
 #include <windows.h>
 
 namespace Render {
-	class Engine
-	{
-	public:
-		class Listener {
-		public:
-			virtual void onRenderDone() = 0;
-			virtual void onRenderStatus(const char *message) = 0;
-		};
+    class Engine
+    {
+    public:
+        class Listener {
+        public:
+            virtual void onRenderDone() = 0;
+            virtual void onRenderStatus(const char *message) = 0;
+        };
 
-		Engine(const Object::Scene &scene);
+        Engine(const Object::Scene &scene);
         ~Engine();
 
-		void stop();
+        void stop();
 
-		const Object::Scene &scene() const;
+        const Object::Scene &scene() const;
 
-		bool rendering() const;
+        bool rendering() const;
 
-		void startRender(Listener *listener);
-		void setSettings(const Settings &settings);
+        void startRender(Listener *listener);
+        void setSettings(const Settings &settings);
 
-		const Settings &settings() const;
+        const Settings &settings() const;
         Framebuffer &renderFramebuffer();
         Framebuffer &sampleStatusFramebuffer();
 
-		static Object::Color toneMap(const Object::Radiance &radiance);
+        static Object::Color toneMap(const Object::Radiance &radiance);
 
-	private:
-		void addJob(std::unique_ptr<Job> job);
-		void runThread();
+    private:
+        void addJob(std::unique_ptr<Job> job);
+        void runThread();
 
-		void renderDone();
+        void renderDone();
 
-		const Object::Scene &mScene;
-		Settings mSettings;
-		Listener *mListener;
+        const Object::Scene &mScene;
+        Settings mSettings;
+        Listener *mListener;
         std::unique_ptr<Framebuffer> mRenderFramebuffer;
         std::unique_ptr<Framebuffer> mSampleStatusFramebuffer;
-		bool mRendering;
-		DWORD mStartTime;
+        bool mRendering;
+        DWORD mStartTime;
         std::unique_ptr<Lighter::Base> mLighter;
 
-		std::mutex mMutex;
-		std::condition_variable mConditionVariable;
-		std::vector<std::unique_ptr<std::thread>> mThreads;
-		std::unique_ptr<Job> mCurrentJob;
-		std::deque<std::unique_ptr<Job>> mJobs;
-		int mNumRunningThreads;
-		bool mStopThreads;
-	};
+        std::mutex mMutex;
+        std::condition_variable mConditionVariable;
+        std::vector<std::unique_ptr<std::thread>> mThreads;
+        std::unique_ptr<Job> mCurrentJob;
+        std::deque<std::unique_ptr<Job>> mJobs;
+        int mNumRunningThreads;
+        bool mStopThreads;
+    };
 }
 
 #endif

@@ -6,11 +6,11 @@
 #include <memory>
 
 namespace Parse {
-	class Parser
-	{
-	public:
-		static std::unique_ptr<Object::Scene> parse(const std::string &filename);
-	};
+    class Parser
+    {
+    public:
+        static std::unique_ptr<Object::Scene> parse(const std::string &filename);
+    };
 }
 
 #endif

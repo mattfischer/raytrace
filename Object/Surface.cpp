@@ -7,35 +7,35 @@
 
 namespace Object {
     Surface::Surface(std::unique_ptr<Albedo::Base> albedo, std::unique_ptr<Brdf::Base> brdf, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap)
-	{
-		mAlbedo = std::move(albedo);
-		mBrdf = std::move(brdf);
-		mRadiance = radiance;
-		mNormalMap = std::move(normalMap);
-	}
+    {
+        mAlbedo = std::move(albedo);
+        mBrdf = std::move(brdf);
+        mRadiance = radiance;
+        mNormalMap = std::move(normalMap);
+    }
 
-	const Albedo::Base &Surface::albedo() const
-	{
-		return *mAlbedo;
-	}
+    const Albedo::Base &Surface::albedo() const
+    {
+        return *mAlbedo;
+    }
 
     const Brdf::Base &Surface::brdf() const
-	{
-		return *mBrdf;
-	}
+    {
+        return *mBrdf;
+    }
 
-	const Object::Radiance &Surface::radiance() const
-	{
-		return mRadiance;
-	}
+    const Object::Radiance &Surface::radiance() const
+    {
+        return mRadiance;
+    }
 
-	bool Surface::hasNormalMap() const
-	{
-		return mNormalMap.get();
-	}
+    bool Surface::hasNormalMap() const
+    {
+        return mNormalMap.get();
+    }
 
-	const Object::NormalMap &Surface::normalMap() const
-	{
-		return *mNormalMap;
-	}
+    const Object::NormalMap &Surface::normalMap() const
+    {
+        return *mNormalMap;
+    }
 }

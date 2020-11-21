@@ -7,18 +7,18 @@
 #include <memory>
 
 namespace Object {
-	class PointLight
-	{
-	public:
-		PointLight(const Math::Point &position, const Object::Radiance &radiance);
+    class PointLight
+    {
+    public:
+        PointLight(const Math::Point &position, const Object::Radiance &radiance);
 
-		const Math::Point &position() const;
-		const Object::Radiance &radiance() const;
+        const Math::Point &position() const;
+        const Object::Radiance &radiance() const;
 
-	private:
-		Math::Point mPosition;
-		Object::Radiance mRadiance;
-	};
+    private:
+        Math::Point mPosition;
+        Object::Radiance mRadiance;
+    };
 }
 
 #endif

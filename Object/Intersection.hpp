@@ -14,44 +14,44 @@
 #include <vector>
 
 namespace Object {
-	class Scene;
-	class Intersection
-	{
-	public:
-		Intersection();
-		Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection);
+    class Scene;
+    class Intersection
+    {
+    public:
+        Intersection();
+        Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection);
 
-		bool valid() const;
+        bool valid() const;
 
-		const Object::Scene &scene() const;
-		const Object::Primitive &primitive() const;
+        const Object::Scene &scene() const;
+        const Object::Primitive &primitive() const;
 
-		float distance() const;
-		const Math::Ray &ray() const;
-		const Math::Beam &beam() const;
-		const Math::Normal &normal() const;
-		const Math::Normal &facingNormal() const;
-		const Math::Point &point() const;
-		const Object::Color &albedo() const;
-		const Math::Bivector2D &surfaceProjection() const;
+        float distance() const;
+        const Math::Ray &ray() const;
+        const Math::Beam &beam() const;
+        const Math::Normal &normal() const;
+        const Math::Normal &facingNormal() const;
+        const Math::Point &point() const;
+        const Object::Color &albedo() const;
+        const Math::Bivector2D &surfaceProjection() const;
 
-	protected:
-		const Object::Scene &mScene;
-		const Object::Primitive &mPrimitive;
-		const Math::Beam &mBeam;
-		Object::Shape::Base::Intersection mShapeIntersection;
-		Math::Point mPoint;
+    protected:
+        const Object::Scene &mScene;
+        const Object::Primitive &mPrimitive;
+        const Math::Beam &mBeam;
+        Object::Shape::Base::Intersection mShapeIntersection;
+        Math::Point mPoint;
 
-		mutable bool mSurfaceProjectionValid;
-		mutable Math::Bivector2D mSurfaceProjection;
+        mutable bool mSurfaceProjectionValid;
+        mutable Math::Bivector2D mSurfaceProjection;
 
-		mutable bool mNormalValid;
-		mutable Math::Normal mNormal;
-		mutable Math::Normal mFacingNormal;
+        mutable bool mNormalValid;
+        mutable Math::Normal mNormal;
+        mutable Math::Normal mFacingNormal;
 
-		mutable bool mAlbedoValid;
-		mutable Object::Color mAlbedo;
-	};
+        mutable bool mAlbedoValid;
+        mutable Object::Color mAlbedo;
+    };
 }
 
 #endif

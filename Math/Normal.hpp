@@ -2,44 +2,44 @@
 #define MATH_NORMAL_HPP
 
 namespace Math {
-	class Point;
-	class BaseTransformation;
-	class Vector;
-	class Matrix;
-	class Normal
-	{
-	public:
-		Normal();
-		Normal(float x, float y, float z);
-		explicit Normal(const Point &point);
-		explicit Normal(const Vector &vector);
+    class Point;
+    class BaseTransformation;
+    class Vector;
+    class Matrix;
+    class Normal
+    {
+    public:
+        Normal();
+        Normal(float x, float y, float z);
+        explicit Normal(const Point &point);
+        explicit Normal(const Vector &vector);
 
-		float x() const;
-		float y() const;
-		float z() const;
+        float x() const;
+        float y() const;
+        float z() const;
 
-		Normal normalize() const;
-		float magnitude() const;
-		float magnitude2() const;
+        Normal normalize() const;
+        float magnitude() const;
+        float magnitude2() const;
 
-		Normal operator+(const Normal &b) const;
-		Normal operator-(const Normal &b) const;
-		float operator*(const Normal &b) const;
-		float operator*(const Vector &b) const;
-		Normal operator*(float b) const;
-		Normal operator/(float b) const;
-		Normal operator-() const;
-		Normal operator%(const Normal &b) const;
+        Normal operator+(const Normal &b) const;
+        Normal operator-(const Normal &b) const;
+        float operator*(const Normal &b) const;
+        float operator*(const Vector &b) const;
+        Normal operator*(float b) const;
+        Normal operator/(float b) const;
+        Normal operator-() const;
+        Normal operator%(const Normal &b) const;
 
-	private:
-		float mX;
-		float mY;
-		float mZ;
-	};
+    private:
+        float mX;
+        float mY;
+        float mZ;
+    };
 
-	Normal operator*(const BaseTransformation &transformation, const Normal &normal);
-	Normal operator*(const Normal &normal, const Matrix &matrix);
-	float operator*(const Vector &vector, const Normal &normal);
+    Normal operator*(const BaseTransformation &transformation, const Normal &normal);
+    Normal operator*(const Normal &normal, const Matrix &matrix);
+    float operator*(const Vector &vector, const Normal &normal);
 }
 
 #endif

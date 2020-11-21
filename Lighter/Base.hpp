@@ -13,14 +13,14 @@
 #include <memory>
 
 namespace Lighter {
-	class Base {
-	public:
-		Base();
+    class Base {
+    public:
+        Base();
         virtual ~Base();
 
         virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler) const = 0;
-		virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
-	};
+        virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
+    };
 }
 
 #endif

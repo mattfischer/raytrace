@@ -3,46 +3,46 @@
 
 typedef enum
 {
-	AstList,
+    AstList,
 
-	AstPrimitive,
-	AstSphere,
-	AstQuad,
-	AstModel,
+    AstPrimitive,
+    AstSphere,
+    AstQuad,
+    AstModel,
 
-	AstTransform,
-	AstTranslate,
-	AstRotate,
-	AstScale,
-	AstUniformScale,
+    AstTransform,
+    AstTranslate,
+    AstRotate,
+    AstScale,
+    AstUniformScale,
 
-	AstSurface,
-	AstAlbedo,
-	AstAlbedoSolid,
-	AstAlbedoTexture,
-	AstColor,
-	AstRadiance,
-	AstNormalMap,
+    AstSurface,
+    AstAlbedo,
+    AstAlbedoSolid,
+    AstAlbedoTexture,
+    AstColor,
+    AstRadiance,
+    AstNormalMap,
 
-	AstBrdf,
-	AstBrdfLambert,
-	AstBrdfPhong,
-	AstBrdfOrenNayar,
-	AstBrdfTorranceSparrow,
-	AstBrdfTransmit,
+    AstBrdf,
+    AstBrdfLambert,
+    AstBrdfPhong,
+    AstBrdfOrenNayar,
+    AstBrdfTorranceSparrow,
+    AstBrdfTransmit,
 
-	AstCamera,
+    AstCamera,
 
-	AstPointLight,
+    AstPointLight,
 
-	AstConstant
+    AstConstant
 } ASTType;
 
 struct _ASTVector
 {
-	float x;
-	float y;
-	float z;
+    float x;
+    float y;
+    float z;
 };
 typedef struct _ASTVector ASTVector;
 
@@ -51,15 +51,15 @@ typedef struct _AST AST;
 
 struct _AST
 {
-	ASTType type;
-	int numChildren;
-	AST **children;
-	union
-	{
-		ASTVector _vector;
-		float _float;
-		char *_string;
-	} data;
+    ASTType type;
+    int numChildren;
+    AST **children;
+    union
+    {
+        ASTVector _vector;
+        float _float;
+        char *_string;
+    } data;
 };
 
 #endif

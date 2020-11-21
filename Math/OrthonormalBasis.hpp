@@ -6,17 +6,17 @@
 #include "Math/Matrix.hpp"
 
 namespace Math {
-	class OrthonormalBasis
-	{
-	public:
-		OrthonormalBasis(const Math::Vector &z);
-		OrthonormalBasis(const Math::Normal &z);
+    class OrthonormalBasis
+    {
+    public:
+        OrthonormalBasis(const Math::Vector &z);
+        OrthonormalBasis(const Math::Normal &z);
 
-		Math::Vector worldToLocal(const Math::Vector &world) const;
-		Math::Vector localToWorld(const Math::Vector &local) const;
+        Math::Vector worldToLocal(const Math::Vector &world) const;
+        Math::Vector localToWorld(const Math::Vector &local) const;
 
-	private:
-		Math::Matrix mMatrix;
-	};
+    private:
+        Math::Matrix mMatrix;
+    };
 }
 #endif

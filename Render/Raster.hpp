@@ -4,15 +4,15 @@
 #include <vector>
 
 namespace Render {
-	template <typename T>
-	class Raster {
-	public:
+    template <typename T>
+    class Raster {
+    public:
         Raster(unsigned int width, unsigned int height)
-		{
-			mWidth = width;
-			mHeight = height;
-			mElements.resize(mWidth * mHeight);
-		}
+        {
+            mWidth = width;
+            mHeight = height;
+            mElements.resize(mWidth * mHeight);
+        }
 
         unsigned int width() const { return mWidth; }
         unsigned int height() const { return mHeight; }
@@ -20,10 +20,10 @@ namespace Render {
         void set(unsigned int x, unsigned int y, const T &value) { mElements[mWidth * y + x] = value; }
         const T &get(unsigned int x,unsigned  int y) const { return mElements.at(mWidth * y + x); }
 
-	private:
+    private:
         unsigned int mWidth;
         unsigned int mHeight;
-		std::vector<T> mElements;
-	};
+        std::vector<T> mElements;
+    };
 }
 #endif

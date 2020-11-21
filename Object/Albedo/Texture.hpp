@@ -8,18 +8,18 @@
 #include <memory>
 
 namespace Object {
-	namespace Albedo {
-		class Texture : public Base
-		{
-		public:
-			Texture(std::unique_ptr<Object::Texture<3>> texture);
+    namespace Albedo {
+        class Texture : public Base
+        {
+        public:
+            Texture(std::unique_ptr<Object::Texture<3>> texture);
 
-			virtual Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const;
+            virtual Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const;
 
-		protected:
-			std::unique_ptr<Object::Texture<3>> mTexture;
-		};
-	}
+        protected:
+            std::unique_ptr<Object::Texture<3>> mTexture;
+        };
+    }
 }
 
 #endif

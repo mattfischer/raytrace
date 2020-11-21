@@ -5,27 +5,27 @@
 #include "Math/Vector2D.hpp"
 
 namespace Math {
-	class Bivector
-	{
-	public:
-		Bivector() = default;
-		Bivector(const Math::Vector &u, const Math::Vector &v);
+    class Bivector
+    {
+    public:
+        Bivector() = default;
+        Bivector(const Math::Vector &u, const Math::Vector &v);
 
-		const Math::Vector &u() const;
-		const Math::Vector &v() const;
+        const Math::Vector &u() const;
+        const Math::Vector &v() const;
 
-		Bivector operator*(float b) const;
-		Bivector operator+(const Bivector &b) const;
-		Bivector operator-(const Bivector &b) const;
-		Bivector operator/(float b) const;
+        Bivector operator*(float b) const;
+        Bivector operator+(const Bivector &b) const;
+        Bivector operator-(const Bivector &b) const;
+        Bivector operator/(float b) const;
 
-		Math::Vector operator*(const Math::Vector2D &b) const;
+        Math::Vector operator*(const Math::Vector2D &b) const;
 
-	private:
-		Math::Vector mU;
-		Math::Vector mV;
-	};
+    private:
+        Math::Vector mU;
+        Math::Vector mV;
+    };
 
-	Bivector operator*(const BaseTransformation &transformation, const Bivector &bivector);
+    Bivector operator*(const BaseTransformation &transformation, const Bivector &bivector);
 }
 #endif

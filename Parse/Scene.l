@@ -1,15 +1,15 @@
 %option noyywrap
 
 %{
-	#include "Parse/AST.h"
-	#include "Scene_yacc.h"
-	#include <string.h>
-	#include <stdlib.h>
-	#include <io.h>
-	#define isatty _isatty
+    #include "Parse/AST.h"
+    #include "Scene_yacc.h"
+    #include <string.h>
+    #include <stdlib.h>
+    #include <io.h>
+    #define isatty _isatty
 
-	void parseVector(char *text, ASTVector *vector);
-	char *parseString(char *text);
+    void parseVector(char *text, ASTVector *vector);
+    char *parseString(char *text);
 %}
 
 FLOAT -?[[:digit:]]+(\.[[:digit:]]+)?
@@ -19,11 +19,11 @@ STRING \"[^"]*\"
 [[:blank:]]*
 \n*
 
-\<{FLOAT},{FLOAT},{FLOAT}\>	parseVector(Scenetext, &(Scenelval._vector)); return VECTOR;
+\<{FLOAT},{FLOAT},{FLOAT}\>    parseVector(Scenetext, &(Scenelval._vector)); return VECTOR;
 {FLOAT} Scenelval._float = atof(Scenetext); return FLOAT;
 {STRING} Scenelval._string = parseString(Scenetext); return STRING;
 
-sphere	return SPHERE;
+sphere    return SPHERE;
 quad return QUAD;
 model return MODEL;
 
@@ -51,42 +51,42 @@ camera return CAMERA;
 
 point_light return POINT_LIGHT;
 
-\{|\}		return *yytext;
-<<EOF>>	return END;
+\{|\}        return *yytext;
+<<EOF>>    return END;
 %%
 void parseVector(char *text, ASTVector *vector)
 {
-	char *c;
-	char b;
-	
-	text++;
-	
-	c = strchr(text, ',');
-	b = *c;
-	*c = '\0';
-	vector->x = atof(text);
-	*c = b;
-	text = c + 1;
-	
-	c = strchr(text, ',');
-	b = *c;
-	*c = '\0';
-	vector->y = atof(text);
-	*c = b;
-	text = c + 1;
-	
-	c = strchr(text, '>');
-	b = *c;
-	*c = '\0';
-	vector->z = atof(text);
-	*c = b;
+    char *c;
+    char b;
+    
+    text++;
+    
+    c = strchr(text, ',');
+    b = *c;
+    *c = '\0';
+    vector->x = atof(text);
+    *c = b;
+    text = c + 1;
+    
+    c = strchr(text, ',');
+    b = *c;
+    *c = '\0';
+    vector->y = atof(text);
+    *c = b;
+    text = c + 1;
+    
+    c = strchr(text, '>');
+    b = *c;
+    *c = '\0';
+    vector->z = atof(text);
+    *c = b;
 }
 
 char *parseString(char *text)
 {
-	char *c = (char*)malloc(strlen(text) - 1);
-	strcpy(c, text + 1);
-	c[strlen(c) - 1] = '\0';
+    char *c = (char*)malloc(strlen(text) - 1);
+    strcpy(c, text + 1);
+    c[strlen(c) - 1] = '\0';
 
-	return c;
+    return c;
 }
