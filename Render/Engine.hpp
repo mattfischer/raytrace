@@ -30,6 +30,7 @@ namespace Render {
 		};
 
 		Engine(const Object::Scene &scene);
+        ~Engine();
 
 		void stop();
 
@@ -41,7 +42,8 @@ namespace Render {
 		void setSettings(const Settings &settings);
 
 		const Settings &settings() const;
-		Framebuffer &framebuffer();
+        Framebuffer &renderFramebuffer();
+        Framebuffer &sampleStatusFramebuffer();
 
 		static Object::Color toneMap(const Object::Radiance &radiance);
 
@@ -54,7 +56,8 @@ namespace Render {
 		const Object::Scene &mScene;
 		Settings mSettings;
 		Listener *mListener;
-		std::unique_ptr<Framebuffer> mFramebuffer;
+        std::unique_ptr<Framebuffer> mRenderFramebuffer;
+        std::unique_ptr<Framebuffer> mSampleStatusFramebuffer;
 		bool mRendering;
 		DWORD mStartTime;
         std::unique_ptr<Lighter::Base> mLighter;

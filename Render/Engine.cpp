@@ -13,8 +13,14 @@ namespace Render {
 		: mScene(scene)
 	{
 		mRendering = false;
-		mFramebuffer = std::make_unique<Framebuffer>(0, 0);
-	}
+        mRenderFramebuffer = std::make_unique<Framebuffer>(0, 0);
+        mSampleStatusFramebuffer = std::make_unique<Framebuffer>(0, 0);
+    }
+
+    Engine::~Engine()
+    {
+        stop();
+    }
 
 	void Engine::stop()
 	{
@@ -34,8 +40,10 @@ namespace Render {
 		mCurrentJob.reset();
 		mJobs.clear();
 
-		renderDone();
-	}
+        if(mRendering) {
+            renderDone();
+        }
+    }
 
 	const Object::Scene &Engine::scene() const
 	{
@@ -52,13 +60,13 @@ namespace Render {
 
 		if (mSettings.lighting) {
             mLighter = std::make_unique<Lighter::UniPath>(mSettings.lighterSettings);
-			std::vector<std::unique_ptr<Job>> prerenderJobs = mLighter->createPrerenderJobs(mScene, *mFramebuffer);
+            std::vector<std::unique_ptr<Job>> prerenderJobs = mLighter->createPrerenderJobs(mScene, *mRenderFramebuffer);
 			for (std::unique_ptr<Job> &job : prerenderJobs) {
 				addJob(std::move(job));
 			}
 		}
 
-		std::unique_ptr<Job> renderJob = std::make_unique<RenderJob>(mScene, mSettings, *mLighter, *mFramebuffer);
+        std::unique_ptr<Job> renderJob = std::make_unique<RenderJob>(mScene, mSettings, *mLighter, *mRenderFramebuffer, *mSampleStatusFramebuffer);
 		renderJob->setDoneHandler([=]() { renderDone(); } );
 		addJob(std::move(renderJob));
 
@@ -86,15 +94,21 @@ namespace Render {
 	void Engine::setSettings(const Settings &settings)
 	{
 		if (settings.width != mSettings.width || settings.height != mSettings.height) {
-			mFramebuffer = std::make_unique<Framebuffer>(settings.width, settings.height);
-		}
+            mRenderFramebuffer = std::make_unique<Framebuffer>(settings.width, settings.height);
+            mSampleStatusFramebuffer = std::make_unique<Framebuffer>(settings.width, settings.height);
+        }
 		mSettings = settings;
 	}
 
-	Framebuffer &Engine::framebuffer()
+    Framebuffer &Engine::renderFramebuffer()
 	{
-		return *mFramebuffer;
+        return *mRenderFramebuffer;
 	}
+
+    Framebuffer &Engine::sampleStatusFramebuffer()
+    {
+        return *mSampleStatusFramebuffer;
+    }
 
 	Object::Color Engine::toneMap(const Object::Radiance &radiance)
 	{
@@ -179,10 +193,10 @@ namespace Render {
 	{
 		DWORD endTime = GetTickCount();
 		char buf[256];
-        int seconds = static_cast<int>((endTime - mStartTime) / 1000.0f);
-		int hours = seconds / 3600;
+        double seconds = static_cast<float>((endTime - mStartTime) / 1000.0f);
+        int hours = static_cast<unsigned int>(seconds) / 3600;
 		seconds -= hours * 3600;
-		int minutes = seconds / 60;
+        int minutes = static_cast<unsigned int>(seconds) / 60;
 		seconds -= minutes * 60;
 		if (hours > 0) {
             sprintf_s(buf, sizeof(buf), "Render time: %ih %im %is", hours, minutes, static_cast<unsigned int>(seconds));
@@ -191,7 +205,7 @@ namespace Render {
             sprintf_s(buf, sizeof(buf), "Render time: %im %is", minutes, static_cast<unsigned int>(seconds));
 		}
 		else {
-			sprintf_s(buf, sizeof(buf), "Render time: %.3fs", seconds);
+            sprintf_s(buf, sizeof(buf), "Render time: %.3fs", seconds);
 		}
 		mRendering = false;
 		mLighter.reset();

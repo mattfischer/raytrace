@@ -38,9 +38,11 @@ private:
 	std::unique_ptr<Object::Scene> mScene;
 	std::unique_ptr<Render::Engine> mEngine;
 	Render::Settings mSettings;
-	QImage mImage;
-	QPixmap mPixmap;
-	QTimer mTimer;
+    QImage mRenderImage;
+    QPixmap mRenderPixmap;
+    QImage mSampleStatusImage;
+    QPixmap mSampleStatusPixmap;
+    QTimer mTimer;
 };
 
 #endif // MAINWINDOW_HPP

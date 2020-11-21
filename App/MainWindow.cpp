@@ -60,15 +60,18 @@ void MainWindow::on_render_clicked()
 
 void MainWindow::on_timer()
 {
-	QPainter painter(&mPixmap);
-	painter.drawImage(0, 0, mImage);
-	ui->renderView->setPixmap(mPixmap);
+    QPainter renderPainter(&mRenderPixmap);
+    renderPainter.drawImage(0, 0, mRenderImage);
+    ui->renderView->setPixmap(mRenderPixmap);
+
+    QPainter sampleStatusPainter(&mSampleStatusPixmap);
+    sampleStatusPainter.drawImage(0, 0, mSampleStatusImage);
+    ui->sampleStatusView->setPixmap(mSampleStatusPixmap);
 }
 
 void MainWindow::onRenderDone()
 {
 	ui->render->setText("Render");
-    mEngine.reset();
 }
 
 void MainWindow::onRenderStatus(const char *message)
@@ -92,15 +95,20 @@ void MainWindow::refreshSettings()
 void MainWindow::updateFramebuffer()
 {
 	ui->renderView->setMinimumSize(mSettings.width, mSettings.height);
-	mImage = QImage(mEngine->framebuffer().bits(), mEngine->framebuffer().width(), mEngine->framebuffer().height(),
-					mEngine->framebuffer().width() * 3, QImage::Format_RGB888);
-	mPixmap = QPixmap(mEngine->framebuffer().width(), mEngine->framebuffer().height());
+    mRenderImage = QImage(mEngine->renderFramebuffer().bits(), mEngine->renderFramebuffer().width(), mEngine->renderFramebuffer().height(),
+                    mEngine->renderFramebuffer().width() * 3, QImage::Format_RGB888);
+    mRenderPixmap = QPixmap(mEngine->renderFramebuffer().width(), mEngine->renderFramebuffer().height());
+
+    ui->sampleStatusView->setMinimumSize(mSettings.width, mSettings.height);
+    mSampleStatusImage = QImage(mEngine->sampleStatusFramebuffer().bits(), mEngine->sampleStatusFramebuffer().width(), mEngine->sampleStatusFramebuffer().height(),
+                    mEngine->sampleStatusFramebuffer().width() * 3, QImage::Format_RGB888);
+    mSampleStatusPixmap = QPixmap(mEngine->sampleStatusFramebuffer().width(), mEngine->sampleStatusFramebuffer().height());
 }
 
 void MainWindow::on_save_clicked()
 {
     QString filename = QFileDialog::getSaveFileName(nullptr, QString(), QString(), "PNG Files (*.png)");
     if(filename != "") {
-        mPixmap.save(filename);
+        mRenderPixmap.save(filename);
     }
 }

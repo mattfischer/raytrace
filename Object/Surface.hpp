@@ -16,7 +16,7 @@ namespace Object {
 	public:
         Surface(std::unique_ptr<Albedo::Base> albedo, std::unique_ptr<Brdf::Base> brdf, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap);
 
-		const Albedo::Base &albedo() const;
+        const Albedo::Base &albedo() const;
         const Brdf::Base &brdf() const;
 		const Object::Radiance &radiance() const;
 		bool hasNormalMap() const;

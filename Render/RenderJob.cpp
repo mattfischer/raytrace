@@ -12,20 +12,22 @@
 namespace Render {
     const unsigned int MaxSamplesPerIteration = 100;
 
-    RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Base &lighter, Framebuffer &framebuffer)
-		: TileJob(framebuffer)
+    RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Base &lighter, Framebuffer &renderFramebuffer, Framebuffer &sampleStatusFramebuffer)
+        : TileJob(renderFramebuffer)
 		, mScene(scene)
 		, mSettings(settings)
 		, mLighter(lighter)
-		, mPixelsDone(framebuffer.width(), framebuffer.height())
-		, mTotalRadiance(framebuffer.width(), framebuffer.height())
-		, mSamplerOffsets(framebuffer.width(), framebuffer.height())
+        , mSampleStatusFramebuffer(sampleStatusFramebuffer)
+        , mPixelsDone(renderFramebuffer.width(), renderFramebuffer.height())
+        , mTotalRadiance(renderFramebuffer.width(), renderFramebuffer.height())
+        , mSamplerOffsets(renderFramebuffer.width(), renderFramebuffer.height())
 	{
 		std::uniform_int_distribution<unsigned int> dist(0, 256);
 		std::default_random_engine engine;
-        for (unsigned int x = 0; x < framebuffer.width(); x++) {
-            for (unsigned int y = 0; y < framebuffer.height(); y++) {
+        for (unsigned int x = 0; x < renderFramebuffer.width(); x++) {
+            for (unsigned int y = 0; y < renderFramebuffer.height(); y++) {
 				mSamplerOffsets.set(x, y, dist(engine));
+                sampleStatusFramebuffer.setPixel(x, y, Object::Color(0.25f, 0.25f, 0.25f));
 			}
 		}
 		mNeedRepeat = false;
@@ -84,7 +86,7 @@ namespace Render {
 				break;
 			}
 
-			/*if (numSamples > mSettings.minSamples) {
+            if (numSamples > mSettings.minSamples) {
 				float variance = 0;
 				int numVarianceSamples = std::min(runLength, numSamples);
 				for (int i = 0; i < numVarianceSamples; i++) {
@@ -94,13 +96,15 @@ namespace Render {
 					pixelDone = true;
 					break;
 				}
-			}*/
+            }
 		}
 
 		framebuffer().setPixel(x, y, color);
 
 		if (pixelDone) {
 			mPixelsDone.set(x, y, true);
+            float m = mNumSamplesCompleted / (mNumSamplesCompleted + 9.0f * mSettings.minSamples);
+            mSampleStatusFramebuffer.setPixel(x, y, Object::Color(m, 0, 0));
 		}
 		else {
 			mNeedRepeat = true;
