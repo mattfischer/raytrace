@@ -51,10 +51,16 @@ namespace Object {
 		return sVectors;
 	}
 
-	bool BoundingVolume::intersectRay(const RayData &rayData, float &distance) const
+    bool BoundingVolume::intersectRay(const RayData &rayData, float &distance) const
+    {
+        float maxDistance;
+        return intersectRay(rayData, distance, maxDistance);
+    }
+
+    bool BoundingVolume::intersectRay(const RayData &rayData, float &minDistance, float &maxDistance) const
 	{
-		float minDist = -FLT_MAX;
-		float maxDist = FLT_MAX;
+        float currentMinDist = -FLT_MAX;
+        float currentMaxDist = FLT_MAX;
 
 		for (int i = 0; i < NUM_VECTORS; i++) {
 			float offset = rayData.offsets[i];
@@ -80,19 +86,20 @@ namespace Object {
 				max = (mMaxes[i] - offset) / dot;
 			}
 
-			minDist = std::max(minDist, min);
-			maxDist = std::min(maxDist, max);
+            currentMinDist = std::max(currentMinDist, min);
+            currentMaxDist = std::min(currentMaxDist, max);
 
-			if (minDist > maxDist || maxDist < 0) {
+            if (currentMinDist > currentMaxDist || currentMaxDist < 0) {
 				return false;
 			}
 		}
 
-		if (minDist > maxDist || maxDist < 0) {
+        if (currentMinDist > currentMaxDist || currentMaxDist < 0) {
 			return false;
 		}
 
-		distance = minDist;
+        minDistance = currentMinDist;
+        maxDistance = currentMaxDist;
 		return true;
 	}
 

@@ -19,7 +19,8 @@ namespace Object {
 		BoundingVolume();
 		BoundingVolume(const float mins[NUM_VECTORS], const float maxes[NUM_VECTORS]);
 
-		bool intersectRay(const RayData &rayData, float &distance) const;
+        bool intersectRay(const RayData &rayData, float &distance) const;
+        bool intersectRay(const RayData &rayData, float &minDistance, float &maxDistance) const;
 		void expand(const Math::Point &point);
 		void expand(const BoundingVolume &volume);
 

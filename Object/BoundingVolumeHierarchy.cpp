@@ -46,15 +46,17 @@ namespace Object {
 		}
 		else {
             unsigned int indices[2] = { nodeIndex + 1, static_cast<unsigned int>(node.index) };
-			float distances[2];
+            float minDistances[2];
+            float maxDistances[2];
 			for (int i = 0; i < 2; i++) {
-				distances[i] = FLT_MAX;
-				mNodes[indices[i]].volume.intersectRay(rayData, distances[i]);
+                minDistances[i] = FLT_MAX;
+                maxDistances[i] = FLT_MIN;
+                mNodes[indices[i]].volume.intersectRay(rayData, minDistances[i], maxDistances[i]);
 			}
 
 			for (int i = 0; i < 2; i++) {
-				int j = (distances[0] < distances[1]) ? i : 1 - i;
-				if (distances[j] < maxDistance && intersectNode(rayData, indices[j], maxDistance, func)) {
+                int j = (minDistances[0] < minDistances[1]) ? i : 1 - i;
+                if (minDistances[j] < maxDistance && maxDistances[j] > 0 && intersectNode(rayData, indices[j], maxDistance, func)) {
 					ret = true;
 				}
 			}
