@@ -85,8 +85,14 @@
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
-            <item>
+            <item alignment="Qt::AlignLeft|Qt::AlignTop">
              <widget class="QLabel" name="sampleStatusView">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="text">
                <string/>
               </property>
