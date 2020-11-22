@@ -28,10 +28,6 @@ namespace Lighter
         Object::Radiance lightTransmitted(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
         Object::Radiance lightReflected(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
 
-        Object::Radiance sampleLight(const Object::Intersection &intersection, const Object::Primitive &light, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdfAngular) const;
-        Object::Radiance evaluatePointLight(const Object::Intersection &intersection, const Object::PointLight &pointLight, Math::Vector &incidentDirection) const;
-        Object::Radiance sampleBrdf(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdfAngularLight, int generation) const;
-
         std::unique_ptr<Lighter::IndirectCached> mIndirectCachedLighter;
     };
 }
