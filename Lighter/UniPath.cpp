@@ -134,7 +134,7 @@ namespace Lighter
                         lightPdf = 1.0f / shapeSampler->surfaceArea();
                     }
                 }
-                radiance += sampleRadiance / (threshold * (pdf + lightPdf));
+                radiance += sampleRadiance * pdf / (threshold * (pdf * pdf + lightPdf * lightPdf));
 
                 if(mIndirectCachedLighter) {
                     Object::Radiance indirectIrradiance = irradiance - intersection2.primitive().surface().radiance() * dot;
@@ -177,7 +177,7 @@ namespace Lighter
                     Object::Radiance sampleRadiance = surface.brdf().reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
                     float brdfPdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection) * sampleDot / (intersection2.distance() * intersection2.distance());
 
-                    radiance += sampleRadiance / (pdf + brdfPdf);
+                    radiance += sampleRadiance * pdf / (pdf * pdf + brdfPdf * brdfPdf);
                 }
             }
         }
