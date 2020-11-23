@@ -42,7 +42,6 @@ void MainWindow::on_render_clicked()
 {
     if (mEngine && mEngine->rendering()) {
         mEngine->stop();
-        mTimer.stop();
     }
     else {
         refreshSettings();
@@ -54,7 +53,7 @@ void MainWindow::on_render_clicked()
         updateFramebuffer();
         mEngine->startRender(this);
         ui->render->setText("Stop Rendering");
-        mTimer.start();
+        mTimer.start(100);
     }
 }
 
@@ -67,6 +66,10 @@ void MainWindow::on_timer()
     QPainter sampleStatusPainter(&mSampleStatusPixmap);
     sampleStatusPainter.drawImage(0, 0, mSampleStatusImage);
     ui->sampleStatusView->setPixmap(mSampleStatusPixmap);
+
+    if(mEngine && !mEngine->rendering()) {
+        mTimer.stop();
+    }
 }
 
 void MainWindow::onRenderDone()
