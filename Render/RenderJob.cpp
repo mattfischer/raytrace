@@ -103,8 +103,11 @@ namespace Render {
 
         if (pixelDone) {
             mPixelsDone.set(x, y, true);
-            float m = mNumSamplesCompleted / (mNumSamplesCompleted + 9.0f * mSettings.minSamples);
-            mSampleStatusFramebuffer.setPixel(x, y, Object::Color(m, 0, 0));
+            float m = 3 * mNumSamplesCompleted / (mNumSamplesCompleted + 9.0f * mSettings.minSamples);
+            float r = std::min(m, 1.0f);
+            float g = std::max(std::min(m - 1, 1.0f), 0.0f);
+            float b = std::max(m - 2.0f, 0.0f);
+            mSampleStatusFramebuffer.setPixel(x, y, Object::Color(r, g, b));
         }
         else {
             mNeedRepeat = true;
