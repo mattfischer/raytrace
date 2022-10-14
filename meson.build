@@ -1,0 +1,75 @@
+project('raytrace', 'c', 'cpp')
+
+flex = find_program('flex')
+bison = find_program('bison')
+
+flex_gen = generator(flex,
+                    output : '@BASENAME@_lex.c',
+                    arguments : ['-o', '@OUTPUT@', '-P', '@BASENAME@', '--nounistd', '@INPUT@'])
+bison_gen = generator(bison,
+                    output : ['@BASENAME@_yacc.c', '@BASENAME@_yacc.h'],
+                    arguments : ['-o', '@OUTPUT0@', '-p', '@BASENAME@', '--defines=@OUTPUT1@', '@INPUT@'])
+flex_c = flex_gen.process('Parse/Scene.l')
+bison_c = bison_gen.process('Parse/Scene.y')
+
+raytrace = static_library('raytrace', 
+    'Lighter/Base.cpp',
+    'Lighter/IndirectCached.cpp',
+    'Lighter/IrradianceCache.cpp',
+    'Lighter/UniPath.cpp',
+    'Math/Beam.cpp',
+    'Math/Bivector.cpp',
+    'Math/Bivector2D.cpp',
+    'Math/Matrix.cpp',
+    'Math/Normal.cpp',
+    'Math/OrthonormalBasis.cpp',
+    'Math/Point.cpp',
+    'Math/Point2D.cpp',
+    'Math/Ray.cpp',
+    'Math/Transformation.cpp',
+    'Math/Vector.cpp',
+    'Math/Vector2D.cpp',
+    'Object/Albedo/Solid.cpp',
+    'Object/Albedo/Texture.cpp',
+    'Object/Brdf/Base.cpp',
+    'Object/Brdf/Composite.cpp',
+    'Object/Brdf/Lambert.cpp',
+    'Object/Brdf/OrenNayar.cpp',
+    'Object/Brdf/Phong.cpp',
+    'Object/Brdf/TorranceSparrow.cpp',
+    'Object/Shape/BezierPatch.cpp',
+    'Object/Shape/Grid.cpp',
+    'Object/Shape/Group.cpp',
+    'Object/Shape/Quad.cpp',
+    'Object/Shape/Sphere.cpp',
+    'Object/Shape/Transformed.cpp',
+    'Object/Shape/Triangle.cpp',
+    'Object/Shape/TriangleMesh.cpp',
+    'Object/BoundingVolume.cpp',
+    'Object/BoundingVolumeHierarchy.cpp',
+    'Object/Camera.cpp',
+    'Object/Color.cpp',
+    'Object/Intersection.cpp',
+    'Object/NormalMap.cpp',
+    'Object/PointLight.cpp',
+    'Object/Primitive.cpp',
+    'Object/Radiance.cpp',
+    'Object/Scene.cpp',
+    'Object/Surface.cpp',
+    'Object/Texture.cpp',
+    'Parse/BmpLoader.cpp',
+    'Parse/BptLoader.cpp',
+    'Parse/BvhFile.cpp',
+    'Parse/Parser.cpp',
+    'Parse/PlyLoader.cpp',
+    'Render/Engine.cpp',
+    'Render/Framebuffer.cpp',
+    'Render/Job.cpp',
+    'Render/RenderJob.cpp',
+    'Render/Sampler.cpp',
+    'Render/TileJob.cpp',
+    'Render/TileJobSimple.cpp',
+    flex_c, bison_c)
+
+python = dependency('python3')
+shared_library('pyray', 'python.cpp', link_with : raytrace, dependencies : python, name_suffix : 'pyd')

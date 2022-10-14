@@ -1,5 +1,7 @@
 #include "Object/BoundingVolumeHierarchy.hpp"
 
+#include <algorithm>
+
 namespace Object {
     const Math::Vector splitPlanes[3] = { Math::Vector(1, 0, 0), Math::Vector(0, 1, 0), Math::Vector(0, 0, 1) };
 
