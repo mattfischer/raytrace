@@ -1,6 +1,8 @@
 #include "BoundingVolume.hpp"
 
 #include <algorithm>
+#include <cmath>
+#include <cfloat>
 
 namespace Object {
     const float root33 = std::sqrt(3) / 3.0f;

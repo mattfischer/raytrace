@@ -15,7 +15,7 @@ namespace Object {
             virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
             virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
 
-            virtual const Sampler *sampler() const;
+            virtual const Base::Sampler *sampler() const;
             float surfaceArea() const;
             virtual bool sample(const Math::Point2D &surfacePoint, Math::Point &point, Math::Normal &normal) const;
 

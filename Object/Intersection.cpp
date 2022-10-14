@@ -1,4 +1,5 @@
 #include "Object/Intersection.hpp"
+#include <cfloat>
 
 namespace Object {
     Intersection::Intersection()

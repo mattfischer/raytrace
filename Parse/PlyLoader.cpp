@@ -185,7 +185,7 @@ namespace Parse {
     {
         std::ifstream file(filename.c_str(), std::ios_base::binary);
 
-        int size;
+        std::size_t size;
 
         file.read((char*)&size, sizeof(size));
         vertices.resize(size);
@@ -200,7 +200,7 @@ namespace Parse {
     {
         std::ofstream file(filename.c_str(), std::ios_base::binary);
 
-        auto size = vertices.size();
+        std::size_t size = vertices.size();
         file.write((const char *)&size, sizeof(size));
         file.write((const char*)&vertices[0], vertices.size() * sizeof(Object::Shape::TriangleMesh::Vertex));
 

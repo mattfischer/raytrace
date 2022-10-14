@@ -4,6 +4,7 @@
 #include "Object/Shape/Base.hpp"
 
 #include <memory>
+#include <string>
 
 namespace Parse {
     class BptLoader

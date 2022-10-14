@@ -8,6 +8,7 @@
 #include "Math/OrthonormalBasis.hpp"
 
 #include <cmath>
+#include <cfloat>
 
 namespace Lighter
 {

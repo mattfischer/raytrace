@@ -9,6 +9,7 @@
 #include <vector>
 #include <mutex>
 #include <functional>
+#include <memory>
 
 namespace Lighter {
     class IrradianceCache

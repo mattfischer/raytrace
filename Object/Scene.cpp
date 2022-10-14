@@ -9,6 +9,8 @@
 #include "Object/Brdf/Lambert.hpp"
 #include "Object/Brdf/Phong.hpp"
 
+#include <cfloat>
+
 namespace Object {
     Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<PointLight>> &&pointLights)
         : mCamera(std::move(camera))

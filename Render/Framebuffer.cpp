@@ -1,5 +1,7 @@
 #include "Framebuffer.hpp"
 
+#include <cstring>
+
 namespace Render {
     Framebuffer::Framebuffer(unsigned int width, unsigned int height)
         : mWidth(width), mHeight(height)

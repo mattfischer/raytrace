@@ -5,6 +5,7 @@
 #include "Render/Framebuffer.hpp"
 
 #include <mutex>
+#include <condition_variable>
 
 namespace Render {
     class TileJob : public Job
