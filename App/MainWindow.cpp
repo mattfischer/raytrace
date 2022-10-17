@@ -97,15 +97,20 @@ void MainWindow::refreshSettings()
 
 void MainWindow::updateFramebuffer()
 {
-    ui->renderView->setMinimumSize(mSettings.width, mSettings.height);
+    qreal dpr = ui->renderView->devicePixelRatio();
+    ui->renderView->setMinimumSize(mSettings.width / dpr, mSettings.height / dpr);
     mRenderImage = QImage(mEngine->renderFramebuffer().bits(), mEngine->renderFramebuffer().width(), mEngine->renderFramebuffer().height(),
                     mEngine->renderFramebuffer().width() * 3, QImage::Format_RGB888);
+    mRenderImage.setDevicePixelRatio(dpr);
     mRenderPixmap = QPixmap(mEngine->renderFramebuffer().width(), mEngine->renderFramebuffer().height());
+    mRenderPixmap.setDevicePixelRatio(dpr);
 
-    ui->sampleStatusView->setMinimumSize(mSettings.width, mSettings.height);
+    ui->sampleStatusView->setMinimumSize(mSettings.width / dpr, mSettings.height / dpr);
     mSampleStatusImage = QImage(mEngine->sampleStatusFramebuffer().bits(), mEngine->sampleStatusFramebuffer().width(), mEngine->sampleStatusFramebuffer().height(),
                     mEngine->sampleStatusFramebuffer().width() * 3, QImage::Format_RGB888);
+    mSampleStatusImage.setDevicePixelRatio(dpr);
     mSampleStatusPixmap = QPixmap(mEngine->sampleStatusFramebuffer().width(), mEngine->sampleStatusFramebuffer().height());
+    mSampleStatusPixmap.setDevicePixelRatio(dpr);
 }
 
 void MainWindow::on_save_clicked()
