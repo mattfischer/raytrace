@@ -142,7 +142,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="width">
+         <widget class="QSpinBox" name="widthBox">
           <property name="maximum">
            <number>10000</number>
           </property>
@@ -159,7 +159,7 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QSpinBox" name="height">
+         <widget class="QSpinBox" name="heightBox">
           <property name="maximum">
            <number>10000</number>
           </property>
@@ -181,7 +181,7 @@
         <item row="3" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
-           <widget class="QSpinBox" name="samplesMin">
+           <widget class="QSpinBox" name="samplesMinBox">
             <property name="maximum">
              <number>1000000</number>
             </property>
@@ -204,7 +204,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="samplesMax">
+           <widget class="QSpinBox" name="samplesMaxBox">
             <property name="maximum">
              <number>1000000</number>
             </property>
@@ -217,7 +217,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDoubleSpinBox" name="samplesThreshold">
+           <widget class="QDoubleSpinBox" name="samplesThresholdBox">
             <property name="decimals">
              <number>4</number>
             </property>
@@ -248,7 +248,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="enableLighting">
+      <widget class="QCheckBox" name="enableLightingBox">
        <property name="text">
         <string>Enable Lighting</string>
        </property>
@@ -325,14 +325,14 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QPushButton" name="render">
+        <widget class="QPushButton" name="renderButton">
          <property name="text">
           <string>Render</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="save">
+        <widget class="QPushButton" name="saveButton">
          <property name="text">
           <string>Save...</string>
          </property>

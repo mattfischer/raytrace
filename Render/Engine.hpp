@@ -26,6 +26,8 @@ namespace Render {
     public:
         class Listener {
         public:
+            virtual ~Listener() {}
+
             virtual void onRenderDone() = 0;
             virtual void onRenderStatus(const char *message) = 0;
         };

@@ -2,6 +2,8 @@
     #include "Parse/AST.h"
     #include <stdarg.h>
     #include <stdio.h>
+    #include <stdlib.h>
+    #include <malloc.h>
 
     int Scenelex();
     int Sceneerror(const char *s);

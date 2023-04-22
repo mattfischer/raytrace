@@ -1,4 +1,4 @@
-*.user
-*.aps
+.vscode/
+build/
 *.bvh
 *.bin
