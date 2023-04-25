@@ -73,11 +73,16 @@ namespace App {
 
         void onRenderDone()
         {
+            PyGILState_STATE state = PyGILState_Ensure();
             PyObject_CallMethod(mListenerObject, "on_render_done", NULL);
+            PyGILState_Release(state);
         }
+
         void onRenderStatus(const char *message)
         {
+            PyGILState_STATE state = PyGILState_Ensure();
             PyObject_CallMethod(mListenerObject, "on_render_status", "s", message);
+            PyGILState_Release(state);
         }
 
     private:
