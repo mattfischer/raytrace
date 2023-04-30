@@ -44,10 +44,10 @@ namespace Render {
 
     float Sampler::getValue()
     {
-        if (mCurrentDimension >= mNumDimensions) {
+        //if (mCurrentDimension >= mNumDimensions) {
             std::uniform_real_distribution<float> dist(0, 1);
             return dist(mRandomEngine);
-        }
+        //}
 
         int b = sPrimes[mCurrentDimension];
 

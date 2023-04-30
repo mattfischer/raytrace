@@ -16,12 +16,13 @@ namespace Object {
             mLambert = 0;
             mOpaque = false;
             for(const std::unique_ptr<Base> &brdf : mBrdfs) {
+                if(brdf->opaque()) {
+                    mOpaque = true;
+                }
+
                 if(brdf->lambert() > 0) {
                     mLambert = brdf->lambert();
                     break;
-                }
-                if(brdf->opaque()) {
-                    mOpaque = true;
                 }
             }
 

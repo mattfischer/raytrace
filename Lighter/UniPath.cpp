@@ -107,46 +107,34 @@ namespace Lighter
         Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
 
         Math::Vector incidentDirection = surface.brdf().sample(sampler, normal, outgoingDirection);
-
-        float threshold = 0.5f;
-        float roulette = 0.0f;
-        if(generation > 0) {
-            roulette = sampler.getValue();
-        } else if(generation > 10) {
-            roulette = 1.0f;
-        }
-
         float dot = incidentDirection * normal;
-        if(roulette < threshold && dot > 0) {
-            Math::Ray reflectRay(offsetPoint, incidentDirection);
-            Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
-            Object::Intersection intersection2 = scene.intersect(beam);
+        
+        if(dot > 0) {
+            float threshold = 0.5f;
+            float roulette = 0.0f;
+            if(generation > 0) {
+                roulette = sampler.getValue();
+            } else if(generation > 10) {
+                roulette = 1.0f;
+            }
 
-            if (intersection2.valid()) {
-                float sampleDot = -intersection2.facingNormal() * incidentDirection;
-                Object::Radiance irradiance = lightInternal(intersection2, sampler, generation + 1) * dot * sampleDot / (intersection2.distance() * intersection2.distance());
-                Object::Radiance sampleRadiance = surface.brdf().reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
-                float pdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection) * sampleDot / (intersection2.distance() * intersection2.distance());
-                float lightPdf = 0;
-                if(intersection2.primitive().surface().radiance().magnitude() > 0) {
-                    const Object::Shape::Base::Sampler *shapeSampler = intersection2.primitive().shape().sampler();
-                    if (shapeSampler) {
-                        lightPdf = 1.0f / shapeSampler->surfaceArea();
-                    }
-                }
-                radiance += sampleRadiance * pdf / (threshold * (pdf * pdf + lightPdf * lightPdf));
+            if(roulette < threshold) {
+                Math::Ray reflectRay(offsetPoint, incidentDirection);
+                Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
+                Object::Intersection intersection2 = scene.intersect(beam);
 
-                if(mIndirectCachedLighter) {
-                    Object::Radiance indirectIrradiance = irradiance - intersection2.primitive().surface().radiance() * dot;
-                    Object::Radiance indirectRadiance = indirectIrradiance * surface.brdf().lambert() * albedo / M_PI;
-                    radiance = (radiance - indirectRadiance).clamp();
-                    radiance += mIndirectCachedLighter->light(intersection, sampler);
+                if (intersection2.valid() && intersection2.primitive().surface().radiance().magnitude() == 0) {
+                    Object::Radiance radiance2 = lightInternal(intersection2, sampler, generation + 1);
+                    Object::Radiance irradiance = radiance2 * dot;
+                    Object::Radiance sampleRadiance = surface.brdf().reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
+                    float pdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
+                    radiance += sampleRadiance / (threshold * pdf);
                 }
             }
         }
 
-    for (const Object::Primitive &light : intersection.scene().areaLights()) {
-        const Object::Radiance &objectRadiance = light.surface().radiance();
+        for (const Object::Primitive &light : intersection.scene().areaLights()) {
+            const Object::Radiance &objectRadiance = light.surface().radiance();
             const Object::Shape::Base::Sampler *shapeSampler = light.shape().sampler();
 
             if (!shapeSampler) {
@@ -160,7 +148,7 @@ namespace Lighter
 
             shapeSampler->sample(surfacePoint, samplePoint, sampleNormal);
 
-            incidentDirection = samplePoint - offsetPoint;
+            Math::Vector incidentDirection = samplePoint - offsetPoint;
             float distance = incidentDirection.magnitude();
             incidentDirection = incidentDirection / distance;
             float pdf = 1.0f / shapeSampler->surfaceArea();
@@ -175,15 +163,14 @@ namespace Lighter
                 if (intersection2.valid() && &(intersection2.primitive()) == &light) {
                     Object::Radiance irradiance = objectRadiance * sampleDot * dot / (distance * distance);
                     Object::Radiance sampleRadiance = surface.brdf().reflected(irradiance, incidentDirection, normal, outgoingDirection, albedo);
-                    float brdfPdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection) * sampleDot / (intersection2.distance() * intersection2.distance());
-
-                    radiance += sampleRadiance * pdf / (pdf * pdf + brdfPdf * brdfPdf);
-                 }
+                    
+                    radiance += sampleRadiance / pdf;
+                }
             }
         }
 
         for (const std::unique_ptr<Object::PointLight> &pointLight : intersection.scene().pointLights()) {
-            incidentDirection = pointLight->position() - offsetPoint;
+            Math::Vector incidentDirection = pointLight->position() - offsetPoint;
             float distance = incidentDirection.magnitude();
             incidentDirection = incidentDirection / distance;
 
