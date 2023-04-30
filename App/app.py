@@ -1,6 +1,7 @@
 import raytrace
 
 import sys
+import math
 from PySide2 import QtCore, QtGui, QtWidgets, QtUiTools
 from PySide2.QtCore import Slot
 
@@ -32,6 +33,9 @@ class App(QtWidgets.QApplication):
         self.mainwindow.indirectIrradianceCaching.clicked.connect(self.on_indirectIrradianceCaching_clicked)
         self.mainwindow.renderButton.clicked.connect(self.on_renderButton_clicked)
         self.mainwindow.saveButton.clicked.connect(self.on_saveButton_clicked)
+        self.mainwindow.renderView.installEventFilter(self)
+
+        self.lightprobe = LightProbeDialog(self.mainwindow)
 
         self.mainwindow.show()
 
@@ -78,6 +82,15 @@ class App(QtWidgets.QApplication):
         if filename != '':
             self.renderPixmap.save(filename)
 
+    @Slot()
+    def eventFilter(self, watched, event):
+        if event.type() == QtCore.QEvent.MouseButtonRelease:
+            self.lightprobe.show()
+            dpr = self.mainwindow.renderView.devicePixelRatio()
+            self.lightprobe.renderProbe(self.engine, event.x() * dpr, event.y() * dpr)
+            
+        return False
+
     def refreshSettings(self):
         self.settings.width = self.mainwindow.widthBox.value()
         self.settings.height = self.mainwindow.heightBox.value()
@@ -110,6 +123,29 @@ class App(QtWidgets.QApplication):
 
     def on_render_status(self, message):
         self.mainwindow.statusbar.showMessage(message)
+
+class LightProbeDialog(QtWidgets.QDialog):
+    def __init__(self, parent):
+        super(LightProbeDialog, self).__init__(parent, QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        self.setWindowTitle('Light Probe')
+        self.setFixedSize(200, 200)
+        self.samples = []
+
+    def paintEvent(self, event):
+        size = self.width() - 10
+        painter = QtGui.QPainter(self)
+        for sample in self.samples:
+            (color, azimuth, elevation) = sample
+            radius = math.cos(elevation) * size / 2
+            x = math.cos(azimuth) * radius + size / 2 + 5
+            y = math.sin(azimuth) * radius + size / 2 + 5
+            painter.setBrush(QtGui.QColor(color[0] * 255, color[1] * 255, color[2] * 255))
+            painter.drawEllipse(x, y, 10, 10)
+        painter.end()
+
+    def renderProbe(self, engine, x, y):
+        self.samples = engine.renderProbe(x, y)
+        self.update()
 
 if __name__ == "__main__":
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)

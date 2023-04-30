@@ -28,7 +28,7 @@ namespace Lighter
         Object::Radiance emittedRadiance = lightRadiant(intersection);
         Object::Radiance transmittedRadiance = lightTransmitted(intersection, sampler, generation);
         Object::Radiance reflectedRadiance = lightReflected(intersection, sampler, generation);
-
+        
         return emittedRadiance + transmittedRadiance + reflectedRadiance;
     }
 
@@ -145,8 +145,8 @@ namespace Lighter
             }
         }
 
-        for (const Object::Primitive &light : intersection.scene().areaLights()) {
-            const Object::Radiance &objectRadiance = light.surface().radiance();
+    for (const Object::Primitive &light : intersection.scene().areaLights()) {
+        const Object::Radiance &objectRadiance = light.surface().radiance();
             const Object::Shape::Base::Sampler *shapeSampler = light.shape().sampler();
 
             if (!shapeSampler) {
@@ -178,7 +178,7 @@ namespace Lighter
                     float brdfPdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection) * sampleDot / (intersection2.distance() * intersection2.distance());
 
                     radiance += sampleRadiance * pdf / (pdf * pdf + brdfPdf * brdfPdf);
-                }
+                 }
             }
         }
 
@@ -199,5 +199,26 @@ namespace Lighter
         }
 
         return radiance;
+    }
+
+    Object::Radiance UniPath::sampleIrradiance(const Object::Intersection &intersection, const Math::OrthonormalBasis &basis, Render::Sampler &sampler, Math::Vector &localIncidentDirection) const
+    {
+        const Math::Normal &normal = intersection.facingNormal();
+
+		float phi = 2 * M_PI * sampler.getValue();
+		float theta = std::asin(std::sqrt(sampler.getValue()));
+		Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
+		Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
+		Math::Ray ray(offsetPoint, direction);
+		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+		Object::Intersection intersection2 = intersection.scene().intersect(beam);
+
+		localIncidentDirection = Math::Vector::fromPolar(phi, theta, 1);
+		Object::Radiance irradiance;
+		if (intersection2.valid()) {
+			irradiance = lightInternal(intersection2, sampler, 0) * std::cos(theta);
+		}
+
+		return irradiance;
     }
 }

@@ -185,11 +185,45 @@ namespace App {
         return PyBool_FromLong(engineObject->engine->rendering());
     }
 
+    static PyObject *Engine_renderProbe(PyObject *self, PyObject *args)
+    {
+        EngineObject *engineObject = (EngineObject*)self;
+        Render::Engine &engine = *engineObject->engine;
+
+        int x, y;
+        if (!PyArg_ParseTuple(args, "II", &x, &y))
+            return NULL;
+
+        Render::Sampler sampler(0);
+        Math::Beam beam = engine.scene().camera().createPixelBeam(Math::Point2D(x, y), engine.settings().width, engine.settings().height, Math::Point2D());
+
+        Object::Intersection intersection = engine.scene().intersect(beam);
+
+        if (intersection.valid()) {
+            Math::OrthonormalBasis basis(intersection.facingNormal());
+            PyObject *ret = PyList_New(1000);
+            for(int i=0; i<1000; i++) {
+                Math::Vector localIncidentDirection;
+                Object::Radiance irradiance = engine.lighter().sampleIrradiance(intersection, basis, sampler, localIncidentDirection);
+                Object::Color color = engine.toneMap(irradiance);
+                float azimuth = std::atan2(localIncidentDirection.y(), localIncidentDirection.x());
+                float elevation = std::asin(localIncidentDirection.z());
+                PyObject *colorTuple = Py_BuildValue("(fff)", color.red(), color.green(), color.blue());
+                PyObject *sampleTuple = Py_BuildValue("(Off)", colorTuple, azimuth, elevation);
+                PyList_SetItem(ret, i, sampleTuple);
+            }
+            return ret;
+        } else {
+            Py_RETURN_NONE;
+        }
+    }
+
     static PyMethodDef Engine_methods[] = {
         {"start_render", (PyCFunction) Engine_startRender, METH_VARARGS, ""},
         {"stop", (PyCFunction) Engine_stop, METH_NOARGS, ""},
         {"set_settings", (PyCFunction) Engine_setSettings, METH_VARARGS, ""},
         {"rendering", (PyCFunction) Engine_rendering, METH_NOARGS, ""},
+        {"renderProbe", (PyCFunction) Engine_renderProbe, METH_VARARGS, ""},
         {NULL}
     };
 

@@ -119,6 +119,11 @@ namespace Render {
         return Object::Color(red, green, blue);
     }
 
+    Lighter::Base &Engine::lighter()
+    {
+        return *mLighter;
+    }
+
     void Engine::addJob(std::unique_ptr<Job> job)
     {
         std::unique_lock<std::mutex> lock(mMutex);
@@ -208,7 +213,6 @@ namespace Render {
             sprintf_s(buf, sizeof(buf), "Render time: %.3fs", seconds);
         }
         mRendering = false;
-        mLighter.reset();
 
         mListener->onRenderStatus(buf);
         mListener->onRenderDone();

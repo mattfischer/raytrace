@@ -50,6 +50,8 @@ namespace Render {
 
         static Object::Color toneMap(const Object::Radiance &radiance);
 
+        Lighter::Base &lighter();
+
     private:
         void addJob(std::unique_ptr<Job> job);
         void runThread();
