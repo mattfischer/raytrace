@@ -11,6 +11,7 @@
 #include <memory>
 
 namespace Object {
+    class Intersection;
     class Surface
     {
     public:
@@ -21,6 +22,9 @@ namespace Object {
         const Object::Radiance &radiance() const;
         bool hasNormalMap() const;
         const Object::NormalMap &normalMap() const;
+
+        Object::Color reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
+        Object::Color transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
 
     private:
         std::unique_ptr<Albedo::Base> mAlbedo;

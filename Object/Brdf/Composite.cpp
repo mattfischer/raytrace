@@ -29,28 +29,28 @@ namespace Object {
             mTransmitIor = transmitIor;
         }
 
-        Object::Radiance Composite::reflected(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+        Object::Color Composite::reflected(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
         {
-            Object::Radiance radiance;
-            Object::Radiance transmittedIrradiance = irradiance;
+            Object::Color color;
+            Object::Color transmittedColor(1, 1, 1);
 
             for(const std::unique_ptr<Base> &brdf : mBrdfs) {
-                radiance += brdf->reflected(transmittedIrradiance, incidentDirection, normal, outgoingDirection, albedo);
-                transmittedIrradiance = brdf->transmitted(transmittedIrradiance, incidentDirection, normal, albedo);
+                color = color + transmittedColor * brdf->reflected(incidentDirection, normal, outgoingDirection, albedo);
+                transmittedColor = transmittedColor * brdf->transmitted(incidentDirection, normal, albedo);
             }
 
-            return radiance;
+            return color;
         }
 
-        Object::Radiance Composite::transmitted(const Object::Radiance &irradiance, const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
+        Object::Color Composite::transmitted(const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const
         {
-            Object::Radiance transmittedIrradiance = irradiance;
+            Object::Color transmittedColor(1, 1, 1);
 
             for(const std::unique_ptr<Base> &brdf : mBrdfs) {
-                transmittedIrradiance = brdf->transmitted(transmittedIrradiance, incidentDirection, normal, albedo);
+                transmittedColor = transmittedColor * brdf->transmitted(incidentDirection, normal, albedo);
             }
 
-            return transmittedIrradiance;
+            return transmittedColor;
         }
 
         Math::Vector Composite::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const

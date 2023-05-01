@@ -8,14 +8,14 @@ namespace Object {
         {
         }
 
-        Object::Radiance Base::reflected(const Object::Radiance &, const Math::Vector &, const Math::Normal &, const Math::Vector &, const Object::Color &) const
+        Object::Color Base::reflected(const Math::Vector &, const Math::Normal &, const Math::Vector &, const Object::Color &) const
         {
-            return Object::Radiance(0, 0, 0);
+            return Object::Color(0, 0, 0);
         }
 
-        Object::Radiance Base::transmitted(const Object::Radiance &, const Math::Vector &, const Math::Normal &, const Object::Color &) const
+        Object::Color Base::transmitted(const Math::Vector &, const Math::Normal &, const Object::Color &) const
         {
-            return Object::Radiance(0, 0, 0);
+            return Object::Color(0, 0, 0);
         }
 
         float Base::lambert() const

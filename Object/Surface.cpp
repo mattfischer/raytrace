@@ -2,6 +2,7 @@
 
 #include "Object/Albedo/Base.hpp"
 #include "Object/Brdf/Base.hpp"
+#include "Object/Intersection.hpp"
 
 #include "Parse/AST.h"
 
@@ -37,5 +38,15 @@ namespace Object {
     const Object::NormalMap &Surface::normalMap() const
     {
         return *mNormalMap;
+    }
+
+    Object::Color Surface::reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
+    {
+        return mBrdf->reflected(incidentDirection, intersection.facingNormal(), -intersection.ray().direction(), intersection.albedo());
+    }
+
+    Object::Color Surface::transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
+    {
+        return mBrdf->transmitted(incidentDirection, intersection.facingNormal(), intersection.albedo());
     }
 }
