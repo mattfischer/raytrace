@@ -21,14 +21,16 @@ namespace Lighter
 
     Object::Radiance IndirectCached::light(const Object::Intersection &intersection, Render::Sampler &) const
     {
-        if (intersection.primitive().surface().brdf().lambert() == 0) {
+        const Object::Surface &surface = intersection.primitive().surface();
+
+        if (surface.brdf().lambert() == 0) {
             return Object::Radiance();
         }
 
         const Math::Point &point = intersection.point();
-        const Math::Normal &normal = intersection.facingNormal();
-        const Object::Color &albedo = intersection.albedo();
-        const Object::Brdf::Base &brdf = intersection.primitive().surface().brdf();
+        const Math::Normal &normal = surface.facingNormal(intersection);
+        const Object::Color &albedo = surface.albedo(intersection);
+        const Object::Brdf::Base &brdf = surface.brdf();
 
         Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, normal);
         return irradiance * albedo * brdf.lambert() / M_PI;
@@ -55,9 +57,11 @@ namespace Lighter
 
         Object::Intersection intersection = scene.intersect(beam);
 
-        if (intersection.valid() && intersection.primitive().surface().brdf().lambert() > 0) {
+        const Object::Surface &surface = intersection.primitive().surface();
+
+        if (intersection.valid() && surface.brdf().lambert() > 0) {
             const Math::Point &point = intersection.point();
-            const Math::Normal &normal = intersection.facingNormal();
+            const Math::Normal &normal = surface.facingNormal(intersection);
 
             if (!mIrradianceCache.test(point, normal)) {
                 Math::OrthonormalBasis basis(normal);

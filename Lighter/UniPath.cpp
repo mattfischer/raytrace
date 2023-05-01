@@ -53,9 +53,9 @@ namespace Lighter
         const Object::Scene &scene = intersection.scene();
         const Object::Surface &surface = intersection.primitive().surface();
         const Math::Ray &ray = intersection.ray();
-        const Math::Normal &normal = intersection.facingNormal();
+        const Math::Normal &normal = surface.facingNormal(intersection);
         Math::Vector outgoingDirection = -ray.direction();
-        bool reverse = (intersection.normal() * outgoingDirection < 0);
+        bool reverse = (surface.normal(intersection) * outgoingDirection < 0);
 
         Object::Radiance radiance;
         float threshold = 0.5f;
@@ -95,11 +95,11 @@ namespace Lighter
 
     Object::Radiance UniPath::lightReflected(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
-        const Object::Scene &scene = intersection.scene();
-        const Math::Normal &normal = intersection.facingNormal();
-        const Math::Vector outgoingDirection = -intersection.ray().direction();
         const Object::Surface &surface = intersection.primitive().surface();
-
+        const Object::Scene &scene = intersection.scene();
+        const Math::Normal &normal = surface.facingNormal(intersection);
+        const Math::Vector outgoingDirection = -intersection.ray().direction();
+        
         Object::Radiance radiance;
 
         Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
@@ -191,12 +191,13 @@ namespace Lighter
 
     Object::Radiance UniPath::sampleIrradiance(const Object::Intersection &intersection, const Math::OrthonormalBasis &basis, Render::Sampler &sampler, Math::Vector &localIncidentDirection) const
     {
-        const Math::Normal &normal = intersection.facingNormal();
+        const Object::Surface &surface = intersection.primitive().surface();
+        const Math::Normal &normal = surface.facingNormal(intersection);
 
 		float phi = 2 * M_PI * sampler.getValue();
 		float theta = std::asin(std::sqrt(sampler.getValue()));
 		Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
-		Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01;
+		Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
 		Math::Ray ray(offsetPoint, direction);
 		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
 		Object::Intersection intersection2 = intersection.scene().intersect(beam);

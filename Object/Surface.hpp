@@ -26,7 +26,26 @@ namespace Object {
         Object::Color reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
         Object::Color transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
 
+        Object::Color albedo(const Object::Intersection &intersection) const;
+        const Math::Bivector2D &surfaceProjection(const Object::Intersection &intersection) const;
+        const Math::Normal &normal(const Object::Intersection &intersection) const;
+        const Math::Normal &facingNormal(const Object::Intersection &intersection) const;
+        
     private:
+        friend class Intersection;
+        struct IntersectionCache {
+            bool surfaceProjectionValid;
+            Math::Bivector2D surfaceProjection;
+
+            bool albedoValid;
+            Object::Color albedo;
+
+            bool normalValid;
+            Math::Normal normal;
+            Math::Normal facingNormal;
+        };
+        static void initIntersectionCache(IntersectionCache &intersectionCache);
+
         std::unique_ptr<Albedo::Base> mAlbedo;
         std::unique_ptr<Brdf::Base> mBrdf;
         Object::Radiance mRadiance;

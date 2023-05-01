@@ -73,7 +73,7 @@ namespace Render {
                     color = Engine::toneMap(radiance / static_cast<float>(numSamples));
                 }
                 else {
-                    totalColor += intersection.albedo();
+                    totalColor += intersection.primitive().surface().albedo(intersection);
                     color = totalColor / (sample + 1.0f);
                 }
             }

@@ -198,9 +198,10 @@ namespace App {
         Math::Beam beam = engine.scene().camera().createPixelBeam(Math::Point2D(x, y), engine.settings().width, engine.settings().height, Math::Point2D());
 
         Object::Intersection intersection = engine.scene().intersect(beam);
+        const Object::Surface &surface = intersection.primitive().surface();
 
         if (intersection.valid()) {
-            Math::OrthonormalBasis basis(intersection.facingNormal());
+            Math::OrthonormalBasis basis(surface.facingNormal(intersection));
             PyObject *ret = PyList_New(1000);
             for(int i=0; i<1000; i++) {
                 Math::Vector localIncidentDirection;
