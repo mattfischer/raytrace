@@ -108,12 +108,18 @@ namespace Lighter
         float dot = incidentDirection * normal;
         
         if(dot > 0) {
-            float threshold = 0.5f;
-            float roulette = 0.0f;
+            float pdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
+            Object::Color reflected = surface.reflected(intersection, incidentDirection) * dot / pdf;
+            float throughput = std::max(reflected.red(), std::max(reflected.green(), reflected.blue()));
+
+            float threshold = 1.0f;
+            float roulette = sampler.getValue();
             if(generation > 0) {
-                roulette = sampler.getValue();
-            } else if(generation > 10) {
-                roulette = 1.0f;
+                threshold = std::min(1.0f, 0.5f * throughput);
+            }
+
+            if(generation > 10) {
+                threshold = 0;
             }
 
             if(roulette < threshold) {
@@ -123,10 +129,7 @@ namespace Lighter
 
                 if (intersection2.valid() && intersection2.primitive().surface().radiance().magnitude() == 0) {
                     Object::Radiance radiance2 = lightInternal(intersection2, sampler, generation + 1);
-                    Object::Radiance irradiance = radiance2 * dot;
-                    Object::Radiance sampleRadiance = irradiance * surface.reflected(intersection, incidentDirection);
-                    float pdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
-                    radiance += sampleRadiance / (threshold * pdf);
+                    radiance += radiance2 * reflected / threshold;
                 }
             }
         }
