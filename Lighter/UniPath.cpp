@@ -212,21 +212,21 @@ namespace Lighter
     {
         const Object::Surface &surface = intersection.primitive().surface();
         const Math::Normal &normal = surface.facingNormal(intersection);
-
-		float phi = 2 * M_PI * sampler.getValue();
-		float theta = std::asin(std::sqrt(sampler.getValue()));
-		Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
-		Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
-		Math::Ray ray(offsetPoint, direction);
+        const Math::Vector outgoingDirection = -intersection.ray().direction();
+        
+        Math::Vector incidentDirection = surface.brdf().sample(sampler, normal, outgoingDirection);
+        float dot = incidentDirection * normal;
+        Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
+		Math::Ray ray(offsetPoint, incidentDirection);
 		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+		
 		Object::Intersection intersection2 = intersection.scene().intersect(beam);
-
-		localIncidentDirection = Math::Vector::fromPolar(phi, theta, 1);
-		Object::Radiance irradiance;
+        Object::Radiance irradiance;
 		if (intersection2.valid()) {
-			irradiance = lightInternal(intersection2, sampler, 0) * std::sin(theta);
+			irradiance = lightInternal(intersection2, sampler, 0) * dot;
 		}
 
-		return irradiance;
+        localIncidentDirection = basis.worldToLocal(incidentDirection);
+        return irradiance;
     }
 }
