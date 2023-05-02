@@ -224,7 +224,7 @@ namespace Lighter
 		localIncidentDirection = Math::Vector::fromPolar(phi, theta, 1);
 		Object::Radiance irradiance;
 		if (intersection2.valid()) {
-			irradiance = lightInternal(intersection2, sampler, 0) * std::cos(theta);
+			irradiance = lightInternal(intersection2, sampler, 0) * std::sin(theta);
 		}
 
 		return irradiance;
