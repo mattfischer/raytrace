@@ -119,6 +119,27 @@ namespace Render {
         return Object::Color(red, green, blue);
     }
 
+    Object::Radiance Engine::sampleIrradiance(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection) const
+    {
+        const Object::Surface &surface = intersection.primitive().surface();
+        const Math::Normal &normal = surface.facingNormal(intersection);
+        const Math::Vector outgoingDirection = -intersection.ray().direction();
+        
+        incidentDirection = surface.brdf().sample(sampler, normal, outgoingDirection);
+        float dot = incidentDirection * normal;
+        Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
+		Math::Ray ray(offsetPoint, incidentDirection);
+		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+		
+		Object::Intersection intersection2 = intersection.scene().intersect(beam);
+        Object::Radiance irradiance;
+		if (intersection2.valid()) {
+			irradiance = mLighter->light(intersection2, sampler) * dot;
+		}
+
+        return irradiance;
+    }
+
     Lighter::Base &Engine::lighter()
     {
         return *mLighter;

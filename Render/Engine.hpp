@@ -49,6 +49,7 @@ namespace Render {
         Framebuffer &sampleStatusFramebuffer();
 
         static Object::Color toneMap(const Object::Radiance &radiance);
+        Object::Radiance sampleIrradiance(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection) const;
 
         Lighter::Base &lighter();
 

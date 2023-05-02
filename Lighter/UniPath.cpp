@@ -207,26 +207,4 @@ namespace Lighter
 
         return radiance;
     }
-
-    Object::Radiance UniPath::sampleIrradiance(const Object::Intersection &intersection, const Math::OrthonormalBasis &basis, Render::Sampler &sampler, Math::Vector &localIncidentDirection) const
-    {
-        const Object::Surface &surface = intersection.primitive().surface();
-        const Math::Normal &normal = surface.facingNormal(intersection);
-        const Math::Vector outgoingDirection = -intersection.ray().direction();
-        
-        Math::Vector incidentDirection = surface.brdf().sample(sampler, normal, outgoingDirection);
-        float dot = incidentDirection * normal;
-        Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
-		Math::Ray ray(offsetPoint, incidentDirection);
-		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-		
-		Object::Intersection intersection2 = intersection.scene().intersect(beam);
-        Object::Radiance irradiance;
-		if (intersection2.valid()) {
-			irradiance = lightInternal(intersection2, sampler, 0) * dot;
-		}
-
-        localIncidentDirection = basis.worldToLocal(incidentDirection);
-        return irradiance;
-    }
 }

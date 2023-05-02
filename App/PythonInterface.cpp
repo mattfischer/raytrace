@@ -195,7 +195,7 @@ namespace App {
             return NULL;
 
         Render::Sampler sampler(0);
-        Math::Beam beam = engine.scene().camera().createPixelBeam(Math::Point2D(x, y), engine.settings().width, engine.settings().height, Math::Point2D());
+        Math::Beam beam = engine.scene().camera().createPixelBeam(Math::Point2D((float)x, (float)y), engine.settings().width, engine.settings().height, Math::Point2D());
 
         Object::Intersection intersection = engine.scene().intersect(beam);
         const Object::Surface &surface = intersection.primitive().surface();
@@ -204,9 +204,10 @@ namespace App {
             Math::OrthonormalBasis basis(surface.facingNormal(intersection));
             PyObject *ret = PyList_New(1000);
             for(int i=0; i<1000; i++) {
-                Math::Vector localIncidentDirection;
-                Object::Radiance irradiance = engine.lighter().sampleIrradiance(intersection, basis, sampler, localIncidentDirection);
+                Math::Vector incidentDirection;
+                Object::Radiance irradiance = engine.sampleIrradiance(intersection, sampler, incidentDirection);
                 Object::Color color = engine.toneMap(irradiance);
+                Math::Vector localIncidentDirection = basis.worldToLocal(incidentDirection);
                 float azimuth = std::atan2(localIncidentDirection.y(), localIncidentDirection.x());
                 float elevation = std::asin(localIncidentDirection.z());
                 PyObject *colorTuple = Py_BuildValue("(fff)", color.red(), color.green(), color.blue());
