@@ -107,7 +107,7 @@ namespace Lighter
         Math::Vector incidentDirection = surface.brdf().sample(sampler, normal, outgoingDirection);
         float dot = incidentDirection * normal;
         
-        if(dot > 0) {
+        if(dot > 0) {            
             float pdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
             Object::Color reflected = surface.reflected(intersection, incidentDirection) * dot / pdf;
             float throughput = std::max(reflected.red(), std::max(reflected.green(), reflected.blue()));
@@ -127,9 +127,20 @@ namespace Lighter
                 Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
                 Object::Intersection intersection2 = scene.intersect(beam);
 
-                if (intersection2.valid() && intersection2.primitive().surface().radiance().magnitude() == 0) {
+                if (intersection2.valid()) {
                     Object::Radiance radiance2 = lightInternal(intersection2, sampler, generation + 1);
-                    radiance += radiance2 * reflected / threshold;
+                    float misWeight = 1.0f;
+                    if(intersection2.primitive().surface().radiance().magnitude() > 0) {
+                        float sampleDot = -intersection2.primitive().surface().facingNormal(intersection2) * incidentDirection;
+                        float pdfArea = pdf * sampleDot / (intersection2.distance() * intersection2.distance());
+                        float pdfLight = 0.0f;
+                        const Object::Shape::Base::Sampler *shapeSampler = intersection2.primitive().shape().sampler();
+                        if (shapeSampler) {
+                            pdfLight = 1.0f / shapeSampler->surfaceArea();
+                        }
+                        misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
+                    }
+                    radiance += radiance2 * reflected * misWeight / threshold;
                 }
             }
         }
@@ -164,8 +175,9 @@ namespace Lighter
                 if (intersection2.valid() && &(intersection2.primitive()) == &light) {
                     Object::Radiance irradiance = objectRadiance * sampleDot * dot / (distance * distance);
                     Object::Radiance sampleRadiance = irradiance * surface.reflected(intersection, incidentDirection);
-                    
-                    radiance += sampleRadiance / pdf;
+                    float pdfBrdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection) * sampleDot / (intersection2.distance() * intersection2.distance());
+                    float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
+                    radiance += sampleRadiance * misWeight / pdf;
                 }
             }
         }
