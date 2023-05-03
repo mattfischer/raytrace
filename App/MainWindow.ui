@@ -147,7 +147,7 @@
            <number>10000</number>
           </property>
           <property name="value">
-           <number>800</number>
+           <number>1280</number>
           </property>
          </widget>
         </item>
@@ -164,7 +164,7 @@
            <number>10000</number>
           </property>
           <property name="value">
-           <number>600</number>
+           <number>960</number>
           </property>
           <property name="displayIntegerBase">
            <number>10</number>
