@@ -27,7 +27,7 @@ namespace Object {
 
             float D = std::exp(-tanAlpha * tanAlpha / m2) / (M_PI * m2 * cosAlpha * cosAlpha * cosAlpha * cosAlpha);
             
-            float cosThetaI = incidentDirection * half;
+            float cosThetaI = incidentDirection * normal;
             float oneMinusCos = 1 - cosThetaI;
             float R0 = (1 - mIor) / (1 + mIor);
             R0 = R0 * R0;

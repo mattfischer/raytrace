@@ -54,7 +54,7 @@ namespace Object {
 
     Object::Color Surface::transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
     {
-        return mBrdf->transmitted(incidentDirection, facingNormal(intersection), albedo(intersection));
+        return mBrdf->transmitted(incidentDirection, -facingNormal(intersection), albedo(intersection));
     }
 
     Object::Color Surface::albedo(const Object::Intersection &intersection) const
