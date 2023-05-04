@@ -26,7 +26,7 @@ namespace Object {
                 coeff = std::pow(dot, mPower);
             }
 
-            return Color(1, 1, 1) * mStrength * coeff * (mPower + 1) / (2 * M_PI);
+            return Color(1, 1, 1) * mStrength * coeff * (mPower + 1) / (2 * (float)M_PI);
         }
 
         Object::Color Phong::transmitted(const Math::Vector &, const Math::Normal &, const Object::Color &) const

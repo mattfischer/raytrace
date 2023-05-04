@@ -143,7 +143,7 @@ namespace Lighter
                     Object::Radiance sampleRadiance = radiance2 * reflected;
                     if(mIndirectCachedLighter) {
                         Object::Radiance indirectIrradiance = (radiance2 - intersection2.primitive().surface().radiance()) * dot;
-                        Object::Radiance indirectRadiance = indirectIrradiance * surface.brdf().lambert() * surface.albedo(intersection) / M_PI;
+                        Object::Radiance indirectRadiance = indirectIrradiance * surface.brdf().lambert() * surface.albedo(intersection) / (float)M_PI;
                         sampleRadiance = (sampleRadiance - indirectRadiance).clamp();
                         sampleRadiance += mIndirectCachedLighter->light(intersection, sampler);
                     }

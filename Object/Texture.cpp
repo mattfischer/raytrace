@@ -51,7 +51,7 @@ namespace Object {
     void TextureBase::doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const
     {
         float lf = selectMipMap(sampleProjection);
-        int l = std::floor(lf);
+        int l = (int)std::floor(lf);
         const std::unique_ptr<MipMap> &level0 = mMipMaps[l];
         const std::unique_ptr<MipMap> &level1 = mMipMaps[std::min(l + 1, (int)mMipMaps.size() - 1)];
         float dl = lf - l;
@@ -134,7 +134,7 @@ namespace Object {
                     newMipMap->at(x, y, c) = 0;
                 }
 
-                for (int ii = std::ceil(si) - A; ii <= std::floor(si) + A; ii++) {
+                for (int ii = (int)std::ceil(si) - A; ii <= (int)std::floor(si) + A; ii++) {
                     float u = si - ii;
                     float lanczos = 0;
                     if (u == 0) {
@@ -195,8 +195,8 @@ namespace Object {
     {
         float fx = samplePoint.u() * mWidth;
         float fy = samplePoint.v() * mHeight;
-        int x = std::floor(fx);
-        int y = std::floor(fy);
+        int x = (int)std::floor(fx);
+        int y = (int)std::floor(fy);
         int x1 = (x == mWidth - 1) ? 0 : x + 1;
         int y1 = (y == mHeight - 1) ? 0 : y + 1;
         float dx = fx - x;

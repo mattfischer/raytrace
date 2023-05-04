@@ -59,7 +59,7 @@ namespace Render {
         for (unsigned int sample = 0; sample < mNumSamplesThisIteration; sample++) {
             Math::Bivector dv;
             sampler.startSample();
-            Math::Point2D imagePoint = Math::Point2D(x, y) + sampler.getValue2D();
+            Math::Point2D imagePoint = Math::Point2D((float)x, (float)y) + sampler.getValue2D();
             Math::Point2D aperturePoint = sampler.getValue2D();
             Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, framebuffer().width(), framebuffer().height(), aperturePoint);
             Object::Intersection intersection = mScene.intersect(beam);

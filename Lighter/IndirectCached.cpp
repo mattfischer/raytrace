@@ -33,7 +33,7 @@ namespace Lighter
         const Object::Brdf::Base &brdf = surface.brdf();
 
         Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, normal);
-        return irradiance * albedo * brdf.lambert() / M_PI;
+        return irradiance * albedo * brdf.lambert() / (float)M_PI;
     }
 
     std::vector<std::unique_ptr<Render::Job>> IndirectCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
@@ -97,7 +97,7 @@ namespace Lighter
                             samples[k * M + j] = incidentRadiance;
                             sampleDistances[k * M + j] = intersection2.distance();
 
-                            radiance += incidentRadiance * M_PI / (M * N);
+                            radiance += incidentRadiance * (float)M_PI / (float)(M * N);
                         }
                         else {
                             sampleDistances[k * M + j] = static_cast<float>(FLT_MAX);
@@ -134,14 +134,14 @@ namespace Lighter
                             if (j > 0) {
                                 unsigned int j1 = j - 1;
 
-                                Math::Vector c = u * std::sin(thetaMinus) * std::cos(thetaMinus) * std::cos(thetaMinus) * 2 * M_PI / (N * std::min(sampleDistances[k * M + j], sampleDistances[k * M + j1]));
+                                Math::Vector c = u * std::sin(thetaMinus) * std::cos(thetaMinus) * std::cos(thetaMinus) * 2 * (float)M_PI / (N * std::min(sampleDistances[k * M + j], sampleDistances[k * M + j1]));
                                 transGrad += IrradianceCache::RadianceGradient(samples[k * M + j] - samples[k * M + j1], c);
                             }
 
                             Math::Vector c = v * (std::sin(thetaPlus) - std::sin(thetaMinus)) / std::min(sampleDistances[k * M + j], sampleDistances[k1 * M + j]);
                             transGrad += IrradianceCache::RadianceGradient(samples[k * M + j] - samples[k1 * M + j], c);
 
-                            rotGrad += IrradianceCache::RadianceGradient(samples[k * M + j], v) * std::tan(thetaMinus) * M_PI / (M * N);
+                            rotGrad += IrradianceCache::RadianceGradient(samples[k * M + j], v) * std::tan(thetaMinus) * (float)M_PI / (float)(M * N);
                         }
                     }
 

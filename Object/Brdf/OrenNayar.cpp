@@ -46,7 +46,7 @@ namespace Object {
             float sinAlpha = std::max(sinThetaI, sinThetaR);
             float tanBeta = std::min(tanThetaI, tanThetaR);
 
-            return albedo * mStrength * (A + B * std::max(0.0f, cosPhi) * sinAlpha * tanBeta) / M_PI;
+            return albedo * mStrength * (A + B * std::max(0.0f, cosPhi) * sinAlpha * tanBeta) / (float)M_PI;
         }
 
         Math::Vector OrenNayar::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &) const
