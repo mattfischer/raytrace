@@ -20,6 +20,7 @@ namespace Object {
         Color operator*(float b) const;
 
         float magnitude2() const;
+        float maximum() const;
 
     protected:
         float mRed;

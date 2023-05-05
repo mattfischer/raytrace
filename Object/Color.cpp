@@ -1,5 +1,7 @@
 #include "Object/Color.hpp"
 
+#include <algorithm>
+
 namespace Object {
     Color::Color()
     {
@@ -67,5 +69,10 @@ namespace Object {
     float Color::magnitude2() const
     {
         return mRed * mRed + mGreen * mGreen + mBlue * mBlue;
+    }
+
+    float Color::maximum() const
+    {
+        return std::max(std::max(mRed, mGreen), mBlue);
     }
 }

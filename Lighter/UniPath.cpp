@@ -110,16 +110,13 @@ namespace Lighter
         if(dot > 0) {            
             float pdf = surface.brdf().pdf(incidentDirection, normal, outgoingDirection);
             Object::Color reflected = surface.reflected(intersection, incidentDirection) * dot / pdf;
-            float throughput = std::max(reflected.red(), std::max(reflected.green(), reflected.blue()));
 
-            float threshold = 1.0f;
+            float threshold = 0.0f;
             float roulette = sampler.getValue();
-            if(generation > 0) {
-                threshold = std::min(1.0f, 0.5f * throughput);
-            }
-
-            if(generation > 10) {
-                threshold = 0;
+            if(generation == 0) {
+                threshold = 1.0f;
+            } else if(generation < 10) {
+                threshold = std::min(1.0f, reflected.maximum());
             }
 
             if(roulette < threshold) {
