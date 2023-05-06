@@ -30,7 +30,13 @@ namespace Object {
         const Math::Bivector2D &surfaceProjection(const Object::Intersection &intersection) const;
         const Math::Normal &normal(const Object::Intersection &intersection) const;
         const Math::Normal &facingNormal(const Object::Intersection &intersection) const;
-        
+
+        Object::Color sample(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf) const;
+        float pdf(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
+        bool opaque() const;
+        float lambert() const;
+        float transmitIor() const;
+
     private:
         friend class Intersection;
         struct IntersectionCache {

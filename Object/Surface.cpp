@@ -109,4 +109,36 @@ namespace Object {
         normal(intersection);
         return intersection.surfaceCache().facingNormal;
     }
+
+    Object::Color Surface::sample(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf) const
+    {
+        const Math::Vector outgoingDirection = -intersection.ray().direction();
+        const Math::Normal &normal = this->normal(intersection);
+        incidentDirection = mBrdf->sample(sampler, normal, outgoingDirection);
+        pdf = mBrdf->pdf(incidentDirection, normal, outgoingDirection);
+        return reflected(intersection, incidentDirection);
+    }
+
+    float Surface::pdf(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
+    {
+        const Math::Vector outgoingDirection = -intersection.ray().direction();
+        const Math::Normal &normal = this->normal(intersection);
+        
+        return mBrdf->pdf(incidentDirection, normal, outgoingDirection);
+    }
+
+    bool Surface::opaque() const
+    {
+        return mBrdf->opaque();
+    }
+
+    float Surface::lambert() const
+    {
+        return mBrdf->lambert();
+    }
+
+    float Surface::transmitIor() const
+    {
+        return mBrdf->transmitIor();
+    }
 }

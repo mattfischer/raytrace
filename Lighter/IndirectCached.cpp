@@ -23,17 +23,16 @@ namespace Lighter
     {
         const Object::Surface &surface = intersection.primitive().surface();
 
-        if (surface.brdf().lambert() == 0) {
+        if (surface.lambert() == 0) {
             return Object::Radiance();
         }
 
         const Math::Point &point = intersection.point();
         const Math::Normal &normal = surface.facingNormal(intersection);
         const Object::Color &albedo = surface.albedo(intersection);
-        const Object::Brdf::Base &brdf = surface.brdf();
 
         Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, normal);
-        return irradiance * albedo * brdf.lambert() / (float)M_PI;
+        return irradiance * albedo * surface.lambert() / (float)M_PI;
     }
 
     std::vector<std::unique_ptr<Render::Job>> IndirectCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
@@ -59,7 +58,7 @@ namespace Lighter
 
         const Object::Surface &surface = intersection.primitive().surface();
 
-        if (intersection.valid() && surface.brdf().lambert() > 0) {
+        if (intersection.valid() && surface.lambert() > 0) {
             const Math::Point &point = intersection.point();
             const Math::Normal &normal = surface.facingNormal(intersection);
 
