@@ -137,7 +137,6 @@ namespace Object {
     Object::Color Surface::sample(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf, bool &pdfDelta) const
     {
         const Math::Vector outgoingDirection = -intersection.ray().direction();
-        const Math::Normal &normal = Surface::normal(intersection);
         const Math::Normal &facingNormal = Surface::facingNormal(intersection);
 
         float transmitThreshold = opaque() ? 0 : 0.5f;
@@ -145,7 +144,7 @@ namespace Object {
             float roulette = sampler.getValue();
             if(roulette < transmitThreshold) {
                 pdfDelta = true;
-                bool reverse = (normal * outgoingDirection < 0);
+                bool reverse = (Surface::normal(intersection) * outgoingDirection < 0);
 
                 float ratio = 1.0f / mTransmitIor;
                 if (reverse) {
@@ -169,7 +168,7 @@ namespace Object {
         }
         const Object::Brdf::Base &brdf = *mBrdfs[idx];
        
-        incidentDirection = brdf.sample(sampler, normal, outgoingDirection);
+        incidentDirection = brdf.sample(sampler, facingNormal, outgoingDirection);
         pdf = Surface::pdf(intersection, incidentDirection);
         pdfDelta = false;
         return reflected(intersection, incidentDirection) / (1 - transmitThreshold);
@@ -178,11 +177,11 @@ namespace Object {
     float Surface::pdf(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
     {
         const Math::Vector outgoingDirection = -intersection.ray().direction();
-        const Math::Normal &normal = Surface::normal(intersection);
+        const Math::Normal &facingNormal = Surface::facingNormal(intersection);
         
         float totalPdf = 0;
         for(const std::unique_ptr<Object::Brdf::Base> &brdf : mBrdfs) {
-            totalPdf += brdf->pdf(incidentDirection, normal, outgoingDirection);
+            totalPdf += brdf->pdf(incidentDirection, facingNormal, outgoingDirection);
         }
         totalPdf /= (float)mBrdfs.size();
 

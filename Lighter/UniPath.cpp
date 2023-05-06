@@ -38,7 +38,7 @@ namespace Lighter
     {
         const Object::Surface &surface = intersection.primitive().surface();
         const Object::Scene &scene = intersection.scene();
-        const Math::Normal &normal = surface.facingNormal(intersection);
+        const Math::Normal &facingNormal = surface.facingNormal(intersection);
         const Math::Vector outgoingDirection = -intersection.ray().direction();
         
         Object::Radiance radiance = intersection.primitive().surface().radiance();
@@ -47,10 +47,10 @@ namespace Lighter
         float pdf;
         bool pdfDelta;
         Object::Color reflected = surface.sample(intersection, sampler, incidentDirection, pdf, pdfDelta);
-        float reverse = (incidentDirection * normal > 0) ? 1.0f : -1.0f;
-        float dot = incidentDirection * normal * reverse;
+        float reverse = (incidentDirection * facingNormal > 0) ? 1.0f : -1.0f;
+        float dot = incidentDirection * facingNormal * reverse;
 
-        Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f * reverse;
+        Math::Point offsetPoint = intersection.point() + Math::Vector(facingNormal) * 0.01f * reverse;
 
         if(dot > 0) {            
             Object::Color throughput = reflected * dot / pdf;
@@ -108,7 +108,7 @@ namespace Lighter
             float pdf = 1.0f / shapeSampler->surfaceArea();
             float sampleDot = std::abs(incidentDirection * sampleNormal);
 
-            float dot = incidentDirection * normal;
+            float dot = incidentDirection * facingNormal;
             if(dot > 0) {
                 Math::Ray ray(offsetPoint, incidentDirection);
                 Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
@@ -129,14 +129,16 @@ namespace Lighter
             float distance = incidentDirection.magnitude();
             incidentDirection = incidentDirection / distance;
 
-            Math::Ray ray(offsetPoint, incidentDirection);
-            Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-            Object::Intersection intersection2 = scene.intersect(beam);
+            float dot = incidentDirection * facingNormal;
+            if(dot > 0) {
+                Math::Ray ray(offsetPoint, incidentDirection);
+                Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+                Object::Intersection intersection2 = scene.intersect(beam);
 
-            if (!intersection2.valid() || intersection2.distance() >= distance) {
-                float dot = incidentDirection * normal;
-                Object::Radiance irradiance = pointLight->radiance() * dot / (distance * distance);
-                radiance += irradiance * surface.reflected(intersection, incidentDirection);
+                if (!intersection2.valid() || intersection2.distance() >= distance) {
+                    Object::Radiance irradiance = pointLight->radiance() * dot / (distance * distance);
+                    radiance += irradiance * surface.reflected(intersection, incidentDirection);
+                }
             }
         }
 
