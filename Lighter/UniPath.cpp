@@ -52,10 +52,8 @@ namespace Lighter
     {
         const Object::Scene &scene = intersection.scene();
         const Object::Surface &surface = intersection.primitive().surface();
-        const Math::Ray &ray = intersection.ray();
-        const Math::Normal &normal = surface.facingNormal(intersection);
-        Math::Vector outgoingDirection = -ray.direction();
-        bool reverse = (surface.normal(intersection) * outgoingDirection < 0);
+        const Math::Normal &facingNormal = surface.facingNormal(intersection);
+        Math::Vector outgoingDirection = -intersection.ray().direction();
 
         Object::Radiance radiance;
         float threshold = 0.5f;
@@ -66,27 +64,21 @@ namespace Lighter
                 return radiance;
             }
 
-            Math::Point offsetPoint = intersection.point() - Math::Vector(normal) * 0.01f;
+            Math::Point offsetPoint = intersection.point() - Math::Vector(facingNormal) * 0.01f;
 
-            float ratio = 1.0f / surface.transmitIor();
-            if (reverse) {
-                ratio = 1.0f / ratio;
-            }
-
-            float c1 = outgoingDirection * normal;
-            float c2 = std::sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
-
-            Math::Vector incidentDirection = Math::Vector(normal) * (ratio * c1 - c2) - outgoingDirection * ratio;
+            Math::Vector incidentDirection;
+            float pdf;
+            Object::Color transmitted = surface.sampleTransmitted(intersection, sampler, incidentDirection, pdf);
             Math::Ray transmitRay(offsetPoint, incidentDirection);
             Math::Beam beam(transmitRay, Math::Bivector(), Math::Bivector());
             Object::Intersection intersection2 = scene.intersect(beam);
 
-            Math::Normal incidentNormal = -normal;
+            Math::Normal incidentNormal = -facingNormal;
             float dot = incidentDirection * incidentNormal;
             if (intersection2.valid()) {
                 Object::Radiance irradiance = lightInternal(intersection2, sampler, generation + 1) * dot;
-                Object::Radiance transmittedRadiance = irradiance * surface.transmitted(intersection, incidentDirection);
-                radiance += transmittedRadiance / (outgoingDirection * normal);
+                Object::Radiance transmittedRadiance = irradiance * transmitted;
+                radiance += transmittedRadiance;
             }
         }
 

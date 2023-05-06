@@ -31,6 +31,8 @@ namespace Object {
         const Math::Normal &facingNormal(const Object::Intersection &intersection) const;
 
         Object::Color sample(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf) const;
+        Object::Color sampleTransmitted(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf) const;
+
         float pdf(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
         bool opaque() const;
         float lambert() const;
