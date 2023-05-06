@@ -11,7 +11,6 @@
 #include "Object/Brdf/Phong.hpp"
 #include "Object/Brdf/OrenNayar.hpp"
 #include "Object/Brdf/TorranceSparrow.hpp"
-#include "Object/Brdf/Composite.hpp"
 
 #include "Object/Shape/Quad.hpp"
 #include "Object/Shape/Sphere.hpp"
@@ -177,10 +176,10 @@ namespace Parse {
         return std::make_unique<Object::Brdf::TorranceSparrow>(strength, roughness, ior);
     }
 
-    std::unique_ptr<Object::Brdf::Base> parseBrdf(AST *ast)
+    std::tuple<std::vector<std::unique_ptr<Object::Brdf::Base>>, float> parseBrdfs(AST *ast)
     {
         std::vector<std::unique_ptr<Object::Brdf::Base>> brdfs;
-        float transmitIor = 0;
+        float transmitIor;
 
         for (int i = 0; i<ast->numChildren; i++) {
             switch (ast->children[i]->type) {
@@ -202,11 +201,7 @@ namespace Parse {
             }
         }
 
-        if(brdfs.size() == 1 && transmitIor == 0) {
-            return std::move(brdfs[0]);
-        } else {
-            return std::make_unique<Object::Brdf::Composite>(std::move(brdfs), transmitIor);
-        }
+        return std::make_tuple(std::move(brdfs), transmitIor);
     }
 
     std::unique_ptr<Object::NormalMap> parseNormalMap(AST *ast)
@@ -219,9 +214,10 @@ namespace Parse {
     std::unique_ptr<Object::Surface> parseSurface(AST *ast)
     {
         std::unique_ptr<Object::Albedo::Base> albedo;
-        std::unique_ptr<Object::Brdf::Base> brdf;
+        std::vector<std::unique_ptr<Object::Brdf::Base>> brdfs;
         Object::Radiance radiance;
         std::unique_ptr<Object::NormalMap> normalMap;
+        float transmitIor = 0;
 
         for (int i = 0; i < ast->numChildren; i++) {
             switch (ast->children[i]->type) {
@@ -230,7 +226,7 @@ namespace Parse {
                 break;
 
             case AstBrdf:
-                brdf = parseBrdf(ast->children[i]);
+                std::tie(brdfs, transmitIor) = parseBrdfs(ast->children[i]);
                 break;
 
             case AstRadiance:
@@ -243,7 +239,7 @@ namespace Parse {
             }
         }
 
-        return std::make_unique<Object::Surface>(std::move(albedo), std::move(brdf), radiance, std::move(normalMap));
+        return std::make_unique<Object::Surface>(std::move(albedo), std::move(brdfs), transmitIor, radiance, std::move(normalMap));
     }
 
     Math::Transformation parseTransformation(AST *ast)

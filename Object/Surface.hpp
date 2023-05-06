@@ -15,10 +15,9 @@ namespace Object {
     class Surface
     {
     public:
-        Surface(std::unique_ptr<Albedo::Base> albedo, std::unique_ptr<Brdf::Base> brdf, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap);
+        Surface(std::unique_ptr<Albedo::Base> albedo, std::vector<std::unique_ptr<Brdf::Base>> brdfs, float transmitIor, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap);
 
         const Albedo::Base &albedo() const;
-        const Brdf::Base &brdf() const;
         const Object::Radiance &radiance() const;
         bool hasNormalMap() const;
         const Object::NormalMap &normalMap() const;
@@ -53,9 +52,13 @@ namespace Object {
         static void initIntersectionCache(IntersectionCache &intersectionCache);
 
         std::unique_ptr<Albedo::Base> mAlbedo;
-        std::unique_ptr<Brdf::Base> mBrdf;
+        std::vector<std::unique_ptr<Brdf::Base>> mBrdfs;
+        float mTransmitIor;
         Object::Radiance mRadiance;
         std::unique_ptr<Object::NormalMap> mNormalMap;
+
+        float mLambert;
+        bool mOpaque;
     };
 }
 
