@@ -24,9 +24,6 @@ namespace Lighter
 
     private:
         Object::Radiance lightInternal(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
-        Object::Radiance lightRadiant(const Object::Intersection &intersection) const;
-        Object::Radiance lightTransmitted(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
-        Object::Radiance lightReflected(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const;
 
         std::unique_ptr<Lighter::IndirectCached> mIndirectCachedLighter;
     };

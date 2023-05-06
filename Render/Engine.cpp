@@ -126,7 +126,8 @@ namespace Render {
         const Math::Vector outgoingDirection = -intersection.ray().direction();
         
         float pdf;
-        surface.sample(intersection, sampler, incidentDirection, pdf);
+        bool pdfDelta;
+        surface.sample(intersection, sampler, incidentDirection, pdf, pdfDelta);
         float dot = incidentDirection * normal;
         Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
 		Math::Ray ray(offsetPoint, incidentDirection);

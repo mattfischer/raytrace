@@ -23,15 +23,6 @@ namespace Lighter
         return lightInternal(intersection, sampler, 0);
     }
 
-    Object::Radiance UniPath::lightInternal(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
-    {
-        Object::Radiance emittedRadiance = lightRadiant(intersection);
-        Object::Radiance transmittedRadiance = lightTransmitted(intersection, sampler, generation);
-        Object::Radiance reflectedRadiance = lightReflected(intersection, sampler, generation);
-        
-        return emittedRadiance + transmittedRadiance + reflectedRadiance;
-    }
-
     std::vector<std::unique_ptr<Render::Job>> UniPath::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
     {
         std::vector<std::unique_ptr<Render::Job>> jobs;
@@ -43,64 +34,24 @@ namespace Lighter
         return jobs;
     }
 
-    Object::Radiance UniPath::lightRadiant(const Object::Intersection &intersection) const
-    {
-        return intersection.primitive().surface().radiance();
-    }
-
-    Object::Radiance UniPath::lightTransmitted(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
-    {
-        const Object::Scene &scene = intersection.scene();
-        const Object::Surface &surface = intersection.primitive().surface();
-        const Math::Normal &facingNormal = surface.facingNormal(intersection);
-        Math::Vector outgoingDirection = -intersection.ray().direction();
-
-        Object::Radiance radiance;
-        float threshold = 0.5f;
-
-        if (!surface.opaque()) {
-            float roulette = sampler.getValue();
-            if(roulette > threshold) {
-                return radiance;
-            }
-
-            Math::Point offsetPoint = intersection.point() - Math::Vector(facingNormal) * 0.01f;
-
-            Math::Vector incidentDirection;
-            float pdf;
-            Object::Color transmitted = surface.sampleTransmitted(intersection, sampler, incidentDirection, pdf);
-            Math::Ray transmitRay(offsetPoint, incidentDirection);
-            Math::Beam beam(transmitRay, Math::Bivector(), Math::Bivector());
-            Object::Intersection intersection2 = scene.intersect(beam);
-
-            Math::Normal incidentNormal = -facingNormal;
-            float dot = incidentDirection * incidentNormal;
-            if (intersection2.valid()) {
-                Object::Radiance irradiance = lightInternal(intersection2, sampler, generation + 1) * dot;
-                Object::Radiance transmittedRadiance = irradiance * transmitted;
-                radiance += transmittedRadiance;
-            }
-        }
-
-        return radiance / threshold;
-    }
-
-    Object::Radiance UniPath::lightReflected(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
+    Object::Radiance UniPath::lightInternal(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const
     {
         const Object::Surface &surface = intersection.primitive().surface();
         const Object::Scene &scene = intersection.scene();
         const Math::Normal &normal = surface.facingNormal(intersection);
         const Math::Vector outgoingDirection = -intersection.ray().direction();
         
-        Object::Radiance radiance;
-
-        Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
+        Object::Radiance radiance = intersection.primitive().surface().radiance();
 
         Math::Vector incidentDirection;
         float pdf;
-        Object::Color reflected = surface.sample(intersection, sampler, incidentDirection, pdf);
-        float dot = incidentDirection * normal;
-        
+        bool pdfDelta;
+        Object::Color reflected = surface.sample(intersection, sampler, incidentDirection, pdf, pdfDelta);
+        float reverse = (incidentDirection * normal > 0) ? 1.0f : -1.0f;
+        float dot = incidentDirection * normal * reverse;
+
+        Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f * reverse;
+
         if(dot > 0) {            
             Object::Color throughput = reflected * dot / pdf;
 
@@ -120,7 +71,7 @@ namespace Lighter
                 if (intersection2.valid()) {
                     Object::Radiance radiance2 = lightInternal(intersection2, sampler, generation + 1);
                     float misWeight = 1.0f;
-                    if(intersection2.primitive().surface().radiance().magnitude() > 0) {
+                    if(intersection2.primitive().surface().radiance().magnitude() > 0 && !pdfDelta) {
                         float sampleDot = -intersection2.primitive().surface().facingNormal(intersection2) * incidentDirection;
                         float pdfArea = pdf * sampleDot / (intersection2.distance() * intersection2.distance());
                         float pdfLight = 0.0f;
@@ -131,12 +82,6 @@ namespace Lighter
                         misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
                     }
                     Object::Radiance sampleRadiance = radiance2 * throughput;
-                    if(mIndirectCachedLighter) {
-                        Object::Radiance indirectIrradiance = (radiance2 - intersection2.primitive().surface().radiance()) * dot;
-                        Object::Radiance indirectRadiance = indirectIrradiance * surface.lambert() * surface.albedo(intersection) / (float)M_PI;
-                        sampleRadiance = (sampleRadiance - indirectRadiance).clamp();
-                        sampleRadiance += mIndirectCachedLighter->light(intersection, sampler);
-                    }
                     radiance += sampleRadiance * misWeight / threshold;
                 }
             }

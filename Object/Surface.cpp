@@ -134,10 +134,34 @@ namespace Object {
         return intersection.surfaceCache().facingNormal;
     }
 
-    Object::Color Surface::sample(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf) const
+    Object::Color Surface::sample(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf, bool &pdfDelta) const
     {
         const Math::Vector outgoingDirection = -intersection.ray().direction();
         const Math::Normal &normal = Surface::normal(intersection);
+        const Math::Normal &facingNormal = Surface::facingNormal(intersection);
+
+        float transmitThreshold = opaque() ? 0 : 0.5f;
+        if(transmitThreshold > 0) {
+            float roulette = sampler.getValue();
+            if(roulette < transmitThreshold) {
+                pdfDelta = true;
+                bool reverse = (normal * outgoingDirection < 0);
+
+                float ratio = 1.0f / mTransmitIor;
+                if (reverse) {
+                    ratio = 1.0f / ratio;
+                }
+
+                float c1 = outgoingDirection * facingNormal;
+                float c2 = std::sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
+
+                incidentDirection = Math::Vector(facingNormal) * (ratio * c1 - c2) - outgoingDirection * ratio;
+                pdf = 1.0f;
+
+                return transmitted(intersection, incidentDirection) / (outgoingDirection * facingNormal * transmitThreshold);
+            }
+        }
+
         int idx = 0;
         if(mBrdfs.size() > 1) {
             float sample = sampler.getValue();
@@ -147,28 +171,8 @@ namespace Object {
        
         incidentDirection = brdf.sample(sampler, normal, outgoingDirection);
         pdf = Surface::pdf(intersection, incidentDirection);
-        return reflected(intersection, incidentDirection);
-    }
-
-    Object::Color Surface::sampleTransmitted(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf) const
-    {
-        const Math::Normal &normal = Surface::normal(intersection);
-        const Math::Normal &facingNormal = Surface::facingNormal(intersection);
-        Math::Vector outgoingDirection = -intersection.ray().direction();
-        bool reverse = (normal * outgoingDirection < 0);
-
-        float ratio = 1.0f / mTransmitIor;
-        if (reverse) {
-            ratio = 1.0f / ratio;
-        }
-
-        float c1 = outgoingDirection * facingNormal;
-        float c2 = std::sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
-
-        incidentDirection = Math::Vector(facingNormal) * (ratio * c1 - c2) - outgoingDirection * ratio;
-        pdf = 1.0f;
-
-        return transmitted(intersection, incidentDirection) / (outgoingDirection * facingNormal);
+        pdfDelta = false;
+        return reflected(intersection, incidentDirection) / (1 - transmitThreshold);
     }
 
     float Surface::pdf(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
