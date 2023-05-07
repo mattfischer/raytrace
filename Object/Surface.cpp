@@ -139,23 +139,26 @@ namespace Object {
         const Math::Vector outgoingDirection = -intersection.ray().direction();
         const Math::Normal &facingNormal = Surface::facingNormal(intersection);
 
-        float transmitThreshold = opaque() ? 0 : 0.5f;
-        if(transmitThreshold > 0) {
+        float transmitThreshold = 0;
+        if(!opaque()) {
+            bool reverse = (Surface::normal(intersection) * outgoingDirection < 0);
+
+            float ratio = 1.0f / mTransmitIor;
+            if (reverse) {
+                ratio = 1.0f / ratio;
+            }
+
+            float c1 = outgoingDirection * facingNormal;
+            float c2 = std::sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
+
+            incidentDirection = Math::Vector(facingNormal) * (ratio * c1 - c2) - outgoingDirection * ratio;
+            Object::Color throughput = transmitted(intersection, -outgoingDirection);
+            transmitThreshold = std::min(1.0f, throughput.maximum());
             float roulette = sampler.getValue();
+
             if(roulette < transmitThreshold) {
-                pdfDelta = true;
-                bool reverse = (Surface::normal(intersection) * outgoingDirection < 0);
-
-                float ratio = 1.0f / mTransmitIor;
-                if (reverse) {
-                    ratio = 1.0f / ratio;
-                }
-
-                float c1 = outgoingDirection * facingNormal;
-                float c2 = std::sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
-
-                incidentDirection = Math::Vector(facingNormal) * (ratio * c1 - c2) - outgoingDirection * ratio;
                 pdf = 1.0f;
+                pdfDelta = true;
 
                 return transmitted(intersection, incidentDirection) / (outgoingDirection * facingNormal * transmitThreshold);
             }
