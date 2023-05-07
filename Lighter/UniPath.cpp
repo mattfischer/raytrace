@@ -52,7 +52,7 @@ namespace Lighter
 
         Math::Point offsetPoint = intersection.point() + Math::Vector(facingNormal) * 0.01f * reverse;
 
-        if(dot > 0) {            
+        if(dot > 0) {
             Object::Color throughput = reflected * dot / pdf;
 
             float threshold = 0.0f;
@@ -86,6 +86,8 @@ namespace Lighter
                 }
             }
         }
+
+        offsetPoint = intersection.point() + Math::Vector(facingNormal) * 0.01f;
 
         for (const Object::Primitive &light : intersection.scene().areaLights()) {
             const Object::Radiance &objectRadiance = light.surface().radiance();
