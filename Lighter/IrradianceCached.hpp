@@ -5,7 +5,6 @@
 
 #include "Lighter/Direct.hpp"
 #include "Lighter/UniPath.hpp"
-#include "Lighter/IrradianceCache.hpp"
 
 #include <memory>
 
@@ -27,9 +26,11 @@ namespace Lighter {
     private:
         void prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler);
 
+        class Cache;
+
         std::unique_ptr<Lighter::UniPath> mUniPathLighter;
         std::unique_ptr<Lighter::Direct> mDirectLighter;
-        IrradianceCache mIrradianceCache;
+        std::unique_ptr<Cache> mCache;
         Settings mSettings;
     };
 }
