@@ -41,8 +41,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>796</width>
-             <height>552</height>
+             <width>776</width>
+             <height>549</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -80,8 +80,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>796</width>
-             <height>552</height>
+             <width>776</width>
+             <height>549</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -248,23 +248,49 @@
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="enableLightingBox">
-       <property name="text">
-        <string>Enable Lighting</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QGroupBox" name="groupLighting">
        <property name="title">
         <string>Lighting</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <property name="leftMargin">
+         <number>9</number>
+        </property>
+        <property name="topMargin">
+         <number>9</number>
+        </property>
+        <property name="rightMargin">
+         <number>9</number>
+        </property>
+        <property name="bottomMargin">
+         <number>9</number>
+        </property>
         <item>
-         <widget class="QCheckBox" name="indirectIrradianceCaching">
+         <widget class="QRadioButton" name="lightingNone">
+          <property name="text">
+           <string>None</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="lightingDirect">
+          <property name="text">
+           <string>Direct</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="lightingPathTracing">
+          <property name="text">
+           <string>Path Tracing</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="lightingIrradianceCaching">
           <property name="text">
            <string>Irradiance Caching</string>
           </property>
@@ -279,6 +305,9 @@
            <string>Irradiance Cache Settings</string>
           </property>
           <layout class="QFormLayout" name="formLayout_3">
+           <property name="leftMargin">
+            <number>9</number>
+           </property>
            <item row="0" column="0">
             <widget class="QLabel" name="label_5">
              <property name="text">

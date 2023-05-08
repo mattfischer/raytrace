@@ -2,6 +2,10 @@
 #include "Object/Scene.hpp"
 #include "Parse/Parser.hpp"
 
+#include "Lighter/Direct.hpp"
+#include "Lighter/UniPath.hpp"
+#include "Lighter/IrradianceCached.hpp"
+
 #include "App/PythonInterface.hpp"
 
 #include <structmember.h>
@@ -32,12 +36,11 @@ namespace App {
         PyObject_HEAD
         unsigned int width;
         unsigned int height;
-        bool lighting;
+        PyObject *lighting;
         unsigned int minSamples;
         unsigned int maxSamples;
         float sampleThreshold;
-        bool irradianceCaching;
-        unsigned int indirectSamples;
+        unsigned int irradianceCacheSamples;
         float irradianceCacheThreshold;
     };
 
@@ -159,15 +162,28 @@ namespace App {
 
         settings.width = settingsObject->width;
         settings.height = settingsObject->height;
-        settings.lighting = settingsObject->lighting;
         settings.minSamples = settingsObject->minSamples;
         settings.maxSamples = settingsObject->maxSamples;
         settings.sampleThreshold = settingsObject->sampleThreshold;
-        settings.lighterSettings.irradianceCaching = settingsObject->irradianceCaching;
-        settings.lighterSettings.indirectSamples = settingsObject->indirectSamples;
-        settings.lighterSettings.irradianceCacheThreshold = settingsObject->irradianceCacheThreshold;
 
         engineObject->engine->setSettings(settings);
+
+        std::unique_ptr<Lighter::Base> lighter;
+        wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
+        if(!wcscmp(lighting, L"none")) {
+        } else if(!wcscmp(lighting, L"direct")) {
+            lighter = std::make_unique<Lighter::Direct>();
+        } else if(!wcscmp(lighting, L"pathTracing")) {
+            lighter = std::make_unique<Lighter::UniPath>();
+        } else if(!wcscmp(lighting, L"irradianceCaching")) {
+            Lighter::IrradianceCached::Settings lighterSettings;
+
+            lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
+            lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
+
+            lighter = std::make_unique<Lighter::IrradianceCached>(lighterSettings);
+        }
+        engineObject->engine->setLighter(std::move(lighter));
 
         Py_XDECREF(engineObject->renderFramebufferObject);
         engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->engine->renderFramebuffer());
@@ -238,12 +254,11 @@ namespace App {
     static PyMemberDef Settings_members[] = {
         {"width", T_UINT, offsetof(SettingsObject, width), 0},
         {"height", T_UINT, offsetof(SettingsObject, height), 0},
-        {"lighting", T_BOOL, offsetof(SettingsObject, lighting), 0},
+        {"lighting", T_OBJECT, offsetof(SettingsObject, lighting), 0},
         {"min_samples", T_UINT, offsetof(SettingsObject, minSamples), 0},
         {"max_samples", T_UINT, offsetof(SettingsObject, maxSamples), 0},
         {"sample_threshold", T_FLOAT, offsetof(SettingsObject, sampleThreshold), 0},
-        {"irradiance_caching", T_BOOL, offsetof(SettingsObject, irradianceCaching), 0},
-        {"indirect_samples", T_UINT, offsetof(SettingsObject, indirectSamples), 0},
+        {"irradiance_cache_samples", T_UINT, offsetof(SettingsObject, irradianceCacheSamples), 0},
         {"irradiance_cache_threshold", T_FLOAT, offsetof(SettingsObject, irradianceCacheThreshold), 0},
         {NULL}
     };

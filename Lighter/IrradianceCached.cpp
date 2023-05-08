@@ -1,5 +1,5 @@
 #define _USE_MATH_DEFINES
-#include "Lighter/IndirectCached.hpp"
+#include "Lighter/IrradianceCached.hpp"
 
 #include "Render/TileJobSimple.hpp"
 
@@ -12,30 +12,32 @@
 
 namespace Lighter
 {
-    IndirectCached::IndirectCached(std::unique_ptr<Lighter::Base> lighter, unsigned int indirectSamples, float cacheThreshold)
-        : mLighter(std::move(lighter))
-        , mIrradianceCache(cacheThreshold)
+    IrradianceCached::IrradianceCached(const Settings &settings)
+        : mSettings(settings)
+        , mIrradianceCache(settings.cacheThreshold)
     {
-        mIndirectSamples = indirectSamples;
+        mDirectLighter = std::make_unique<Lighter::Direct>();
+        mUniPathLighter = std::make_unique<Lighter::UniPath>();
     }
 
-    Object::Radiance IndirectCached::light(const Object::Intersection &intersection, Render::Sampler &) const
+    Object::Radiance IrradianceCached::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
     {
         const Object::Surface &surface = intersection.primitive().surface();
-
-        if (surface.lambert() == 0) {
-            return Object::Radiance();
-        }
-
         const Math::Point &point = intersection.point();
-        const Math::Normal &normal = surface.facingNormal(intersection);
+        const Math::Normal &facingNormal = surface.facingNormal(intersection);
         const Object::Color &albedo = surface.albedo(intersection);
 
-        Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, normal);
-        return irradiance * albedo * surface.lambert() / (float)M_PI;
+        Object::Radiance radiance = mDirectLighter->light(intersection, sampler);
+
+        if(surface.lambert() > 0) {
+            Object::Radiance irradiance = mIrradianceCache.interpolateUnlocked(point, facingNormal);
+            radiance += irradiance * albedo * surface.lambert() / (float)M_PI;
+        }
+
+        return radiance;
     }
 
-    std::vector<std::unique_ptr<Render::Job>> IndirectCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
+    std::vector<std::unique_ptr<Render::Job>> IrradianceCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
     {
         std::vector<std::unique_ptr<Render::Job>> jobs;
 
@@ -48,7 +50,7 @@ namespace Lighter
         return jobs;
     }
 
-    void IndirectCached::prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler)
+    void IrradianceCached::prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler)
     {
         Object::Color pixelColor;
         sampler.startSequence();
@@ -68,8 +70,8 @@ namespace Lighter
                 float mean = 0;
                 int den = 0;
                 Object::Radiance radiance;
-                const unsigned int M = static_cast<unsigned int>(std::sqrt(mIndirectSamples));
-                const unsigned int N = static_cast<unsigned int>(mIndirectSamples / M);
+                const unsigned int M = static_cast<unsigned int>(std::sqrt(mSettings.indirectSamples));
+                const unsigned int N = static_cast<unsigned int>(mSettings.indirectSamples / M);
                 std::vector<Object::Radiance> samples;
                 std::vector<float> sampleDistances;
                 samples.resize(M * N);
@@ -90,7 +92,7 @@ namespace Lighter
                         if (intersection2.valid()) {
                             mean += 1 / intersection2.distance();
                             den++;
-                            Object::Radiance incidentRadiance = mLighter->light(intersection2, sampler);
+                            Object::Radiance incidentRadiance = mUniPathLighter->light(intersection2, sampler);
                             incidentRadiance = incidentRadiance - intersection2.primitive().surface().radiance();
 
                             samples[k * M + j] = incidentRadiance;

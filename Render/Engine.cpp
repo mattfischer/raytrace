@@ -3,8 +3,6 @@
 
 #include "Render/RenderJob.hpp"
 
-#include "Lighter/UniPath.hpp"
-
 #include <algorithm>
 #include <memory>
 
@@ -58,15 +56,14 @@ namespace Render {
 
         mStartTime = GetTickCount();
 
-        if (mSettings.lighting) {
-            mLighter = std::make_unique<Lighter::UniPath>(mSettings.lighterSettings);
+        if(mLighter) {
             std::vector<std::unique_ptr<Job>> prerenderJobs = mLighter->createPrerenderJobs(mScene, *mRenderFramebuffer);
             for (std::unique_ptr<Job> &job : prerenderJobs) {
                 addJob(std::move(job));
             }
         }
 
-        std::unique_ptr<Job> renderJob = std::make_unique<RenderJob>(mScene, mSettings, *mLighter, *mRenderFramebuffer, *mSampleStatusFramebuffer);
+        std::unique_ptr<Job> renderJob = std::make_unique<RenderJob>(mScene, mSettings, mLighter.get(), *mRenderFramebuffer, *mSampleStatusFramebuffer);
         renderJob->setDoneHandler([=]() { renderDone(); } );
         addJob(std::move(renderJob));
 
@@ -98,6 +95,11 @@ namespace Render {
             mSampleStatusFramebuffer = std::make_unique<Framebuffer>(settings.width, settings.height);
         }
         mSettings = settings;
+    }
+
+    void Engine::setLighter(std::unique_ptr<Lighter::Base> lighter)
+    {
+        mLighter = std::move(lighter);
     }
 
     Framebuffer &Engine::renderFramebuffer()
@@ -140,11 +142,6 @@ namespace Render {
 		}
 
         return irradiance;
-    }
-
-    Lighter::Base &Engine::lighter()
-    {
-        return *mLighter;
     }
 
     void Engine::addJob(std::unique_ptr<Job> job)

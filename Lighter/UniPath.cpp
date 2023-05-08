@@ -8,30 +8,9 @@
 
 namespace Lighter
 {
-    UniPath::UniPath(const Settings &settings)
-    {
-        if(settings.irradianceCaching) {
-            Settings subSettings;
-            subSettings.irradianceCaching = false;
-            std::unique_ptr<UniPath> subLighter = std::make_unique<UniPath>(subSettings);
-            mIndirectCachedLighter = std::make_unique<Lighter::IndirectCached>(std::move(subLighter),settings.indirectSamples, settings.irradianceCacheThreshold);
-        }
-    }
-
     Object::Radiance UniPath::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
     {
         return lightInternal(intersection, sampler, 0);
-    }
-
-    std::vector<std::unique_ptr<Render::Job>> UniPath::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
-    {
-        std::vector<std::unique_ptr<Render::Job>> jobs;
-
-        if(mIndirectCachedLighter) {
-            jobs = mIndirectCachedLighter->createPrerenderJobs(scene, framebuffer);
-        }
-
-        return jobs;
     }
 
     Object::Radiance UniPath::lightInternal(const Object::Intersection &intersection, Render::Sampler &sampler, int generation) const

@@ -12,7 +12,7 @@
 namespace Render {
     const unsigned int MaxSamplesPerIteration = 100;
 
-    RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Base &lighter, Framebuffer &renderFramebuffer, Framebuffer &sampleStatusFramebuffer)
+    RenderJob::RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Base *lighter, Framebuffer &renderFramebuffer, Framebuffer &sampleStatusFramebuffer)
         : TileJob(renderFramebuffer)
         , mScene(scene)
         , mSettings(settings)
@@ -67,8 +67,8 @@ namespace Render {
 
             if (intersection.valid())
             {
-                if (mSettings.lighting) {
-                    Object::Radiance radiance = mTotalRadiance.get(x, y) + mLighter.light(intersection, sampler);
+                if(mLighter) {
+                    Object::Radiance radiance = mTotalRadiance.get(x, y) + mLighter->light(intersection, sampler);
                     mTotalRadiance.set(x, y, radiance);
                     color = Engine::toneMap(radiance / static_cast<float>(numSamples));
                 }

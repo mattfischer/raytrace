@@ -29,8 +29,7 @@ class App(QtWidgets.QApplication):
         self.sampleStatusImage = None
         self.sampleStatusPixmap = None
 
-        self.mainwindow.enableLightingBox.clicked.connect(self.on_enableLighting_clicked)
-        self.mainwindow.indirectIrradianceCaching.clicked.connect(self.on_indirectIrradianceCaching_clicked)
+        self.mainwindow.lightingIrradianceCaching.toggled.connect(self.on_lightingIrradianceCaching_toggled)
         self.mainwindow.renderButton.clicked.connect(self.on_renderButton_clicked)
         self.mainwindow.saveButton.clicked.connect(self.on_saveButton_clicked)
         self.mainwindow.renderView.installEventFilter(self)
@@ -53,11 +52,7 @@ class App(QtWidgets.QApplication):
             self.timer.stop()
 
     @Slot()
-    def on_enableLighting_clicked(self, checked):
-        self.mainwindow.groupLighting.setEnabled(checked)
-
-    @Slot()
-    def on_indirectIrradianceCaching_clicked(self, checked):
+    def on_lightingIrradianceCaching_toggled(self, checked):
         self.mainwindow.groupIrradianceCaching.setEnabled(checked)
 
     @Slot()
@@ -94,12 +89,22 @@ class App(QtWidgets.QApplication):
     def refreshSettings(self):
         self.settings.width = self.mainwindow.widthBox.value()
         self.settings.height = self.mainwindow.heightBox.value()
-        self.settings.lighting = self.mainwindow.enableLightingBox.isChecked()
         self.settings.min_samples = self.mainwindow.samplesMinBox.value()
         self.settings.max_samples = self.mainwindow.samplesMaxBox.value()
         self.settings.sample_threshold = self.mainwindow.samplesThresholdBox.value()
-        self.settings.irradiance_caching = self.mainwindow.indirectIrradianceCaching.isChecked()
-        self.settings.indirect_samples = self.mainwindow.irradianceCachingSamples.value()
+
+        lighting = [
+            (self.mainwindow.lightingNone, 'none'),
+            (self.mainwindow.lightingDirect, 'direct'),
+            (self.mainwindow.lightingPathTracing, 'pathTracing'),
+            (self.mainwindow.lightingIrradianceCaching, 'irradianceCaching')
+        ]
+        for (widget, name) in lighting:
+            if widget.isChecked():
+                self.settings.lighting = name
+                break
+
+        self.settings.irradiance_cache_samples = self.mainwindow.irradianceCachingSamples.value()
         self.settings.irradiance_cache_threshold = self.mainwindow.irradianceCachingThreshold.value()
 
     def updateFramebuffer(self):

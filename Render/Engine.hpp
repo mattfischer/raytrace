@@ -43,6 +43,7 @@ namespace Render {
 
         void startRender(Listener *listener);
         void setSettings(const Settings &settings);
+        void setLighter(std::unique_ptr<Lighter::Base> lighter);
 
         const Settings &settings() const;
         Framebuffer &renderFramebuffer();
@@ -50,8 +51,6 @@ namespace Render {
 
         static Object::Color toneMap(const Object::Radiance &radiance);
         Object::Radiance sampleIrradiance(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection) const;
-
-        Lighter::Base &lighter();
 
     private:
         void addJob(std::unique_ptr<Job> job);
