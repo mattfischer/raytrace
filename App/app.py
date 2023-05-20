@@ -133,19 +133,19 @@ class LightProbeDialog(QtWidgets.QDialog):
     def __init__(self, parent):
         super(LightProbeDialog, self).__init__(parent, QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
         self.setWindowTitle('Light Probe')
-        self.setFixedSize(200, 200)
+        self.setFixedSize(400, 400)
         self.samples = []
 
     def paintEvent(self, event):
-        size = self.width() - 10
+        size = self.width() - 20
         painter = QtGui.QPainter(self)
         for sample in self.samples:
             (color, azimuth, elevation) = sample
             radius = math.cos(elevation) * size / 2
-            x = math.cos(azimuth) * radius + size / 2 + 5
-            y = math.sin(azimuth) * radius + size / 2 + 5
+            x = math.cos(azimuth) * radius + size / 2 + 10
+            y = math.sin(azimuth) * radius + size / 2 + 10
             painter.setBrush(QtGui.QColor(color[0] * 255, color[1] * 255, color[2] * 255))
-            painter.drawEllipse(x, y, 10, 10)
+            painter.drawEllipse(x, y, 20, 20)
         painter.end()
 
     def renderProbe(self, engine, x, y):
@@ -153,7 +153,5 @@ class LightProbeDialog(QtWidgets.QDialog):
         self.update()
 
 if __name__ == "__main__":
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-
     app = App(sys.argv)
     app.exec_()
