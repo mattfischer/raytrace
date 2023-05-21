@@ -68,6 +68,11 @@ namespace Parse {
         return pointLight;
     }
 
+    Object::Radiance parseSky(AST *ast)
+    {
+        return parseRadiance(ast->children[0]->data._vector);
+    }
+
     std::unique_ptr<Object::Shape::Base> parseShapeModel(AST *ast)
     {
         std::string filename(ast->children[0]->data._string);
@@ -305,6 +310,7 @@ namespace Parse {
         std::unique_ptr<Object::Camera> camera;
         std::vector<std::unique_ptr<Object::Primitive>> primitives;
         std::vector<std::unique_ptr<Object::PointLight>> pointLights;
+        Object::Radiance radSky;
 
         for (int i = 0; i<ast->numChildren; i++)
         {
@@ -321,10 +327,13 @@ namespace Parse {
             case AstPointLight:
                 pointLights.push_back(parsePointLight(child));
                 break;
+            case AstSky:
+                radSky = parseSky(child);
+                break;
             }
         }
 
-        std::unique_ptr<Object::Scene> scene = std::make_unique<Object::Scene>(std::move(camera), std::move(primitives), std::move(pointLights));
+        std::unique_ptr<Object::Scene> scene = std::make_unique<Object::Scene>(std::move(camera), std::move(primitives), std::move(pointLights), radSky);
 
         return scene;
     }

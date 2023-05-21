@@ -12,10 +12,11 @@
 #include <cfloat>
 
 namespace Object {
-    Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<PointLight>> &&pointLights)
+    Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<PointLight>> &&pointLights, const Object::Radiance &skyRadiance)
         : mCamera(std::move(camera))
         , mPrimitives(std::move(primitives))
         , mPointLights(std::move(pointLights))
+        , mSkyRadiance(skyRadiance)
     {
         std::vector<Math::Point> centroids;
         centroids.reserve(mPrimitives.size());
@@ -53,6 +54,11 @@ namespace Object {
     const std::vector<std::unique_ptr<PointLight>> &Scene::pointLights() const
     {
         return mPointLights;
+    }
+
+    const Object::Radiance &Scene::skyRadiance() const
+    {
+        return mSkyRadiance;
     }
 
     const Object::BoundingVolumeHierarchy &Scene::boundingVolumeHierarchy() const

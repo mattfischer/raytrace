@@ -50,6 +50,7 @@
 %token CAMERA
 %token RADIANCE
 %token POINT_LIGHT
+%token SKY
 
 %token END
 %token <_vector> VECTOR
@@ -184,7 +185,12 @@ cameradef: CAMERA '{' VECTOR VECTOR FLOAT FLOAT '}'
 lightdef: POINT_LIGHT '{' VECTOR VECTOR '}'
     { $$ = newAst(AstPointLight, 1, newAst(AstList, 2, newAst(AstConstant, 0), newAst(AstConstant, 0))); 
       $$->children[0]->children[0]->data._vector = $3;
-      $$->children[0]->children[1]->data._vector = $4; }
+      $$->children[0]->children[1]->data._vector = $4;
+    }
+         | SKY '{' VECTOR '}'
+    { $$ = newAst(AstSky, 1, newAst(AstConstant, 0));
+      $$->children[0]->data._vector = $3;
+    }
 
 %%
 

@@ -65,17 +65,22 @@ namespace Render {
             Object::Intersection isect = mScene.intersect(beam);
             unsigned int numSamples = mNumSamplesCompleted + sample + 1;
 
-            if (isect.valid())
-            {
-                if(mLighter) {
-                    Object::Radiance rad = mTotalRadiance.get(x, y) + mLighter->light(isect, sampler);
-                    mTotalRadiance.set(x, y, rad);
-                    color = Engine::toneMap(rad / static_cast<float>(numSamples));
+            if(mLighter) {
+                Object::Radiance rad;
+                if (isect.valid()) {
+                    rad = mLighter->light(isect, sampler);
+                } else {
+                    rad = mScene.skyRadiance();
                 }
-                else {
+
+                Object::Radiance radTotal = mTotalRadiance.get(x, y) + rad;
+                mTotalRadiance.set(x, y, radTotal);
+                color = Engine::toneMap(radTotal / static_cast<float>(numSamples));
+            } else {
+                if(isect.valid()) {
                     totalColor += isect.primitive().surface().albedo(isect);
-                    color = totalColor / (sample + 1.0f);
                 }
+                color = totalColor / (sample + 1.0f);
             }
 
             colors[colorIdx] = color;

@@ -50,6 +50,7 @@ transmit return TRANSMIT;
 camera return CAMERA;
 
 point_light return POINT_LIGHT;
+sky return SKY;
 
 \{|\}        return *yytext;
 <<EOF>>    return END;

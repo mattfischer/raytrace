@@ -47,9 +47,10 @@ namespace Lighter
                 Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
                 Object::Intersection isect2 = scene.intersect(beam);
 
+                Object::Radiance rad2;
+                float misWeight = 1.0f;
                 if (isect2.valid()) {
-                    Object::Radiance rad2 = lightInternal(isect2, sampler, generation + 1);
-                    float misWeight = 1.0f;
+                    rad2 = lightInternal(isect2, sampler, generation + 1);
                     if(isect2.primitive().surface().radiance().magnitude() > 0 && !pdfDelta) {
                         float dot2 = -isect2.primitive().surface().facingNormal(isect2) * dirIn;
                         float pdfArea = pdf * dot2 / (isect2.distance() * isect2.distance());
@@ -60,9 +61,11 @@ namespace Lighter
                         }
                         misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
                     }
-                    Object::Radiance radNew = rad2 * throughput / threshold;
-                    rad += radNew * misWeight;
+                } else {
+                    rad2 = scene.skyRadiance();
                 }
+
+                rad += rad2 * throughput * misWeight / threshold;
             }
         }
 
@@ -76,16 +79,16 @@ namespace Lighter
                 continue;
             }
 
-            Math::Point pntSample;
-            Math::Normal nrmSample;
+            Math::Point pnt2;
+            Math::Normal nrm2;
 
-            shapeSampler->sample(sampler.getValue2D(), pntSample, nrmSample);
+            shapeSampler->sample(sampler.getValue2D(), pnt2, nrm2);
 
-            Math::Vector dirIn = pntSample - pntOffset;
+            Math::Vector dirIn = pnt2 - pntOffset;
             float d = dirIn.magnitude();
             dirIn = dirIn / d;
             float pdf = 1.0f / shapeSampler->surfaceArea();
-            float dotSample = std::abs(dirIn * nrmSample);
+            float dot2 = std::abs(dirIn * nrm2);
 
             float dot = dirIn * nrmFacing;
             if(dot > 0) {
@@ -94,11 +97,10 @@ namespace Lighter
                 Object::Intersection isect2 = scene.intersect(beam);
 
                 if (isect2.valid() && &(isect2.primitive()) == &light) {
-                    Object::Radiance irad = rad2 * dotSample * dot / (d * d);
-                    Object::Radiance radNew = irad * surface.reflected(isect, dirIn) / pdf;
-                    float pdfBrdf = surface.pdf(isect, dirIn) * dotSample / (d * d);
+                    Object::Radiance irad = rad2 * dot2 * dot / (d * d);
+                    float pdfBrdf = surface.pdf(isect, dirIn) * dot2 / (d * d);
                     float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
-                    rad += radNew * misWeight;
+                    rad += irad * surface.reflected(isect, dirIn) * misWeight / pdf;
                 }
             }
         }
