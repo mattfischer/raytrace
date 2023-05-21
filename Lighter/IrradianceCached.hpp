@@ -19,7 +19,7 @@ namespace Lighter {
 
         IrradianceCached(const Settings &settings);
 
-        virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler) const;
+        virtual Object::Radiance light(const Object::Intersection &isect, Render::Sampler &sampler) const;
 
         virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
 

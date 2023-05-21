@@ -7,21 +7,21 @@ namespace Object {
         {
         }
 
-        bool Transformed::intersect(const Math::Ray &ray, Intersection &intersection) const
+        bool Transformed::intersect(const Math::Ray &ray, Intersection &isect) const
         {
             Math::Ray transformedRay = mTransformation.inverse() * ray;
-            if (mShape->intersect(transformedRay, intersection)) {
-                intersection.normal = (mTransformation * intersection.normal).normalize();
-                intersection.tangent = mTransformation * intersection.tangent;
+            if (mShape->intersect(transformedRay, isect)) {
+                isect.normal = (mTransformation * isect.normal).normalize();
+                isect.tangent = mTransformation * isect.tangent;
                 return true;
             }
 
             return false;
         }
 
-        BoundingVolume Transformed::boundingVolume(const Math::Transformation &transformation) const
+        BoundingVolume Transformed::boundingVolume(const Math::Transformation &trans) const
         {
-            return mShape->boundingVolume(transformation * mTransformation);
+            return mShape->boundingVolume(trans * mTransformation);
         }
     }
 }

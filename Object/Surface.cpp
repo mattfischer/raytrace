@@ -57,102 +57,102 @@ namespace Object {
         return *mNormalMap;
     }
 
-    Object::Color Surface::reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
+    Object::Color Surface::reflected(const Object::Intersection &isect, const Math::Vector &dirIn) const
     {
-        Object::Color color;
-        Object::Color transmittedColor(1, 1, 1);
+        Object::Color col;
+        Object::Color colTransmit(1, 1, 1);
 
         for(const auto &brdf : mBrdfs) {
-            color = color + transmittedColor * brdf->reflected(incidentDirection, facingNormal(intersection), -intersection.ray().direction(), albedo(intersection));
-            transmittedColor = transmittedColor * brdf->transmitted(incidentDirection, facingNormal(intersection), albedo(intersection));
+            col = col + colTransmit * brdf->reflected(dirIn, facingNormal(isect), -isect.ray().direction(), albedo(isect));
+            colTransmit = colTransmit * brdf->transmitted(dirIn, facingNormal(isect), albedo(isect));
         }
 
-        return color;
+        return col;
     }
 
-    Object::Color Surface::transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
+    Object::Color Surface::transmitted(const Object::Intersection &isect, const Math::Vector &dirIn) const
     {
-        Object::Color transmittedColor(1, 1, 1);
+        Object::Color colTransmit(1, 1, 1);
 
         for(const auto &brdf : mBrdfs) {
-            transmittedColor = transmittedColor * brdf->transmitted(incidentDirection, -facingNormal(intersection), albedo(intersection));
+            colTransmit = colTransmit * brdf->transmitted(dirIn, -facingNormal(isect), albedo(isect));
         }
 
-        return transmittedColor;
+        return colTransmit;
     }
 
-    Object::Color Surface::albedo(const Object::Intersection &intersection) const
+    Object::Color Surface::albedo(const Object::Intersection &isect) const
     {
-        IntersectionCache &intersectionCache = intersection.surfaceCache();
+        IntersectionCache &isectCache = isect.surfaceCache();
 
-        if (!intersectionCache.albedoValid) {
-            intersectionCache.albedo = mAlbedo->color(intersection.shapeIntersection().surfacePoint, surfaceProjection(intersection));
-            intersectionCache.albedoValid = true;
+        if (!isectCache.albedoValid) {
+            isectCache.albedo = mAlbedo->color(isect.shapeIntersection().surfacePoint, surfaceProjection(isect));
+            isectCache.albedoValid = true;
         }
 
-        return intersectionCache.albedo;
+        return isectCache.albedo;
     }
 
-    const Math::Bivector2D &Surface::surfaceProjection(const Object::Intersection &intersection) const
+    const Math::Bivector2D &Surface::surfaceProjection(const Object::Intersection &isect) const
     {
-        IntersectionCache &intersectionCache = intersection.surfaceCache();
+        IntersectionCache &isectCache = isect.surfaceCache();
 
-        if (!intersectionCache.surfaceProjectionValid) {
-            Math::Bivector projection = intersection.beam().project(intersection.shapeIntersection().distance, intersection.shapeIntersection().normal);
-            Math::Vector v = intersection.shapeIntersection().tangent.u() % intersection.shapeIntersection().tangent.v();
+        if (!isectCache.surfaceProjectionValid) {
+            Math::Bivector projection = isect.beam().project(isect.shapeIntersection().distance, isect.shapeIntersection().normal);
+            Math::Vector v = isect.shapeIntersection().tangent.u() % isect.shapeIntersection().tangent.v();
             v = v / v.magnitude2();
-            Math::Vector2D du((projection.u() % intersection.shapeIntersection().tangent.v()) * v, (intersection.shapeIntersection().tangent.u() % projection.u()) * v);
-            Math::Vector2D dv((projection.v() % intersection.shapeIntersection().tangent.v()) * v, (intersection.shapeIntersection().tangent.u() % projection.v()) * v);
-            intersectionCache.surfaceProjection = Math::Bivector2D(du, dv);
-            intersectionCache.surfaceProjectionValid = true;
+            Math::Vector2D du((projection.u() % isect.shapeIntersection().tangent.v()) * v, (isect.shapeIntersection().tangent.u() % projection.u()) * v);
+            Math::Vector2D dv((projection.v() % isect.shapeIntersection().tangent.v()) * v, (isect.shapeIntersection().tangent.u() % projection.v()) * v);
+            isectCache.surfaceProjection = Math::Bivector2D(du, dv);
+            isectCache.surfaceProjectionValid = true;
         }
 
-        return intersectionCache.surfaceProjection;
+        return isectCache.surfaceProjection;
     }
 
-    const Math::Normal &Surface::normal(const Object::Intersection &intersection) const
+    const Math::Normal &Surface::normal(const Object::Intersection &isect) const
     {
-        IntersectionCache &intersectionCache = intersection.surfaceCache();
+        IntersectionCache &isectCache = isect.surfaceCache();
 
-        if (!intersectionCache.normalValid) {
-            intersectionCache.normal = intersection.shapeIntersection().normal;
+        if (!isectCache.normalValid) {
+            isectCache.normal = isect.shapeIntersection().normal;
             if(hasNormalMap()) {
-                intersectionCache.normal = normalMap().perturbNormal(intersection.shapeIntersection().surfacePoint, surfaceProjection(intersection), intersection.shapeIntersection().normal, intersection.shapeIntersection().tangent);
+                isectCache.normal = normalMap().perturbNormal(isect.shapeIntersection().surfacePoint, surfaceProjection(isect), isect.shapeIntersection().normal, isect.shapeIntersection().tangent);
             }
-            Math::Vector outgoingDirection = -intersection.beam().ray().direction();
-            float dot = intersectionCache.normal * outgoingDirection;
-            intersectionCache.facingNormal = (dot > 0) ? intersectionCache.normal : -intersectionCache.normal;
-            intersectionCache.normalValid = true;
+            Math::Vector outgoingDirection = -isect.beam().ray().direction();
+            float dot = isectCache.normal * outgoingDirection;
+            isectCache.facingNormal = (dot > 0) ? isectCache.normal : -isectCache.normal;
+            isectCache.normalValid = true;
         }
 
-        return intersectionCache.normal;
+        return isectCache.normal;
     }
 
-    const Math::Normal &Surface::facingNormal(const Object::Intersection &intersection) const
+    const Math::Normal &Surface::facingNormal(const Object::Intersection &isect) const
     {
-        normal(intersection);
-        return intersection.surfaceCache().facingNormal;
+        normal(isect);
+        return isect.surfaceCache().facingNormal;
     }
 
-    Object::Color Surface::sample(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf, bool &pdfDelta) const
+    Object::Color Surface::sample(const Object::Intersection &isect, Render::Sampler &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
     {
-        const Math::Vector outgoingDirection = -intersection.ray().direction();
-        const Math::Normal &facingNormal = Surface::facingNormal(intersection);
+        const Math::Vector dirOut = -isect.ray().direction();
+        const Math::Normal &nrmFacing = Surface::facingNormal(isect);
 
         float transmitThreshold = 0;
         if(!opaque()) {
-            bool reverse = (Surface::normal(intersection) * outgoingDirection < 0);
+            bool reverse = (Surface::normal(isect) * dirOut < 0);
 
             float ratio = 1.0f / mTransmitIor;
             if (reverse) {
                 ratio = 1.0f / ratio;
             }
 
-            float c1 = outgoingDirection * facingNormal;
+            float c1 = dirOut * nrmFacing;
             float c2 = std::sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
 
-            incidentDirection = Math::Vector(facingNormal) * (ratio * c1 - c2) - outgoingDirection * ratio;
-            Object::Color throughput = transmitted(intersection, -outgoingDirection);
+            dirIn = Math::Vector(nrmFacing) * (ratio * c1 - c2) - dirOut * ratio;
+            Object::Color throughput = transmitted(isect, -dirOut);
             transmitThreshold = std::min(1.0f, throughput.maximum());
             float roulette = sampler.getValue();
 
@@ -160,7 +160,7 @@ namespace Object {
                 pdf = 1.0f;
                 pdfDelta = true;
 
-                return transmitted(intersection, incidentDirection) / (outgoingDirection * facingNormal * transmitThreshold);
+                return transmitted(isect, dirIn) / (dirOut * nrmFacing * transmitThreshold);
             }
         }
 
@@ -171,20 +171,20 @@ namespace Object {
         }
         const Object::Brdf::Base &brdf = *mBrdfs[idx];
        
-        incidentDirection = brdf.sample(sampler, facingNormal, outgoingDirection);
-        pdf = Surface::pdf(intersection, incidentDirection);
+        dirIn = brdf.sample(sampler, nrmFacing, dirOut);
+        pdf = Surface::pdf(isect, dirIn);
         pdfDelta = false;
-        return reflected(intersection, incidentDirection) / (1 - transmitThreshold);
+        return reflected(isect, dirIn) / (1 - transmitThreshold);
     }
 
-    float Surface::pdf(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const
+    float Surface::pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const
     {
-        const Math::Vector outgoingDirection = -intersection.ray().direction();
-        const Math::Normal &facingNormal = Surface::facingNormal(intersection);
+        const Math::Vector dirOut = -isect.ray().direction();
+        const Math::Normal &nrmFacing = Surface::facingNormal(isect);
         
         float totalPdf = 0;
         for(const std::unique_ptr<Object::Brdf::Base> &brdf : mBrdfs) {
-            totalPdf += brdf->pdf(incidentDirection, facingNormal, outgoingDirection);
+            totalPdf += brdf->pdf(dirIn, nrmFacing, dirOut);
         }
         totalPdf /= (float)mBrdfs.size();
 

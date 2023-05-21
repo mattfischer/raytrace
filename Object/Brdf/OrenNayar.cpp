@@ -19,13 +19,13 @@ namespace Object {
             return mStrength;
         }
 
-        Object::Color OrenNayar::reflected(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const
+        Object::Color OrenNayar::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const
         {
-            float cosThetaI = incidentDirection * normal;
+            float cosThetaI = dirIn * nrm;
             float sinThetaI = std::sqrt(std::max(0.0f, 1 - cosThetaI * cosThetaI));
             float tanThetaI = sinThetaI / cosThetaI;
 
-            float cosThetaR = outgoingDirection * normal;
+            float cosThetaR = dirOut * nrm;
             float sinThetaR = std::sqrt(std::max(0.0f, 1 - cosThetaR * cosThetaR));
             float tanThetaR = sinThetaR / cosThetaR;
 
@@ -33,8 +33,8 @@ namespace Object {
             if (sinThetaI < 0.001 || sinThetaR < 0.001) {
                 cosPhi = 1;
             } else {
-                Math::Vector projectedIncident = (incidentDirection - Math::Vector(normal) * (incidentDirection * normal)) / sinThetaI;
-                Math::Vector projectedOutgoing = (outgoingDirection - Math::Vector(normal) * (outgoingDirection * normal)) / sinThetaR;
+                Math::Vector projectedIncident = (dirIn - Math::Vector(nrm) * (dirIn * nrm)) / sinThetaI;
+                Math::Vector projectedOutgoing = (dirOut - Math::Vector(nrm) * (dirOut * nrm)) / sinThetaR;
                 cosPhi = projectedIncident * projectedOutgoing;
             }
 
@@ -49,21 +49,21 @@ namespace Object {
             return albedo * mStrength * (A + B * std::max(0.0f, cosPhi) * sinAlpha * tanBeta) / (float)M_PI;
         }
 
-        Math::Vector OrenNayar::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &) const
+        Math::Vector OrenNayar::sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
-            Math::OrthonormalBasis basis(normal);
+            Math::OrthonormalBasis basis(nrm);
             float phi = 2 * M_PI * samplePoint.u();
             float theta = std::asin(std::sqrt(samplePoint.v()));
 
-            Math::Vector incidentDirection = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
+            Math::Vector dirIn = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
 
-            return incidentDirection;
+            return dirIn;
         }
 
-        float OrenNayar::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &) const
+        float OrenNayar::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &) const
         {
-            float cosTheta = std::max(incidentDirection * Math::Vector(normal), 0.0f);
+            float cosTheta = std::max(dirIn * Math::Vector(nrm), 0.0f);
             return cosTheta / M_PI;
         }
     }

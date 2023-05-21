@@ -51,7 +51,7 @@ namespace Object {
             return mVertices[v * mWidth + u];
         }
 
-        bool Grid::intersect(const Math::Ray &ray, Intersection &intersection) const
+        bool Grid::intersect(const Math::Ray &ray, Intersection &isect) const
         {
             BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
 
@@ -69,30 +69,30 @@ namespace Object {
                 Math::Point2D surfacePoint3(static_cast<float>(u + 1) / mWidth, static_cast<float>(v + 1) / mHeight);
 
                 float tu, tv;
-                if (Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, intersection.distance, tu, tv)) {
-                    intersection.normal = vertex0.normal * (1 - tu - tv) + vertex1.normal * tu + vertex2.normal * tv;
-                    intersection.tangent = vertex0.tangent * (1 - tu - tv) + vertex1.tangent * tu + vertex2.tangent * tv;
-                    intersection.surfacePoint = surfacePoint0 * (1 - tu - tv) + surfacePoint1 * tu + surfacePoint2 * tv;
+                if (Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, isect.distance, tu, tv)) {
+                    isect.normal = vertex0.normal * (1 - tu - tv) + vertex1.normal * tu + vertex2.normal * tv;
+                    isect.tangent = vertex0.tangent * (1 - tu - tv) + vertex1.tangent * tu + vertex2.tangent * tv;
+                    isect.surfacePoint = surfacePoint0 * (1 - tu - tv) + surfacePoint1 * tu + surfacePoint2 * tv;
                     ret = true;
                 }
-                if (Triangle::intersect(ray, vertex3.point, vertex2.point, vertex1.point, intersection.distance, tu, tv)) {
-                    intersection.normal = vertex3.normal * (1 - tu - tv) + vertex2.normal * tu + vertex1.normal * tv;
-                    intersection.tangent = vertex3.tangent * (1 - tu - tv) + vertex2.tangent * tu + vertex1.tangent * tv;
-                    intersection.surfacePoint = surfacePoint3 * (1 - tu - tv) + surfacePoint2 * tu + surfacePoint1 * tv;
+                if (Triangle::intersect(ray, vertex3.point, vertex2.point, vertex1.point, isect.distance, tu, tv)) {
+                    isect.normal = vertex3.normal * (1 - tu - tv) + vertex2.normal * tu + vertex1.normal * tv;
+                    isect.tangent = vertex3.tangent * (1 - tu - tv) + vertex2.tangent * tu + vertex1.tangent * tv;
+                    isect.surfacePoint = surfacePoint3 * (1 - tu - tv) + surfacePoint2 * tu + surfacePoint1 * tv;
                     ret = true;
                 }
 
                 return ret;
             };
 
-            return mBoundingVolumeHierarchy.intersect(rayData, intersection.distance, std::ref(callback));
+            return mBoundingVolumeHierarchy.intersect(rayData, isect.distance, std::ref(callback));
         }
 
-        BoundingVolume Grid::boundingVolume(const Math::Transformation &transformation) const
+        BoundingVolume Grid::boundingVolume(const Math::Transformation &trans) const
         {
             BoundingVolume volume;
             for (const Vertex &vertex : mVertices) {
-                volume.expand(transformation * vertex.point);
+                volume.expand(trans * vertex.point);
             }
 
             return volume;

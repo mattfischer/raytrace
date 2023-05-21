@@ -8,70 +8,67 @@
 
 namespace Lighter
 {
-    Object::Radiance Direct::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
+    Object::Radiance Direct::light(const Object::Intersection &isect, Render::Sampler &sampler) const
     {
-        const Object::Scene &scene = intersection.scene();
-        const Object::Surface &surface = intersection.primitive().surface();
-        const Math::Point &point = intersection.point();
-        const Math::Normal &facingNormal = surface.facingNormal(intersection);
-        const Object::Color &albedo = surface.albedo(intersection);
+        const Object::Scene &scene = isect.scene();
+        const Object::Surface &surface = isect.primitive().surface();
+        const Math::Point &point = isect.point();
+        const Math::Normal &nrmFacing = surface.facingNormal(isect);
 
-        Object::Radiance radiance = surface.radiance();
-        Math::Point offsetPoint = intersection.point() + Math::Vector(facingNormal) * 0.01f;
+        Object::Radiance rad = surface.radiance();
+        Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
-        for (const Object::Primitive &light : intersection.scene().areaLights()) {
-            const Object::Radiance &objectRadiance = light.surface().radiance();
+        for (const Object::Primitive &light : scene.areaLights()) {
+            const Object::Radiance &rad2 = light.surface().radiance();
             const Object::Shape::Base::Sampler *shapeSampler = light.shape().sampler();
 
             if (!shapeSampler) {
                 continue;
             }
 
-            Math::Point2D surfacePoint = sampler.getValue2D();
+            Math::Point pntSample;
+            Math::Normal nrmSample;
 
-            Math::Point samplePoint;
-            Math::Normal sampleNormal;
+            shapeSampler->sample(sampler.getValue2D(), pntSample, nrmSample);
 
-            shapeSampler->sample(surfacePoint, samplePoint, sampleNormal);
-
-            Math::Vector incidentDirection = samplePoint - offsetPoint;
-            float distance = incidentDirection.magnitude();
-            incidentDirection = incidentDirection / distance;
+            Math::Vector dirIn = pntSample - pntOffset;
+            float d = dirIn.magnitude();
+            dirIn = dirIn / d;
             float pdf = 1.0f / shapeSampler->surfaceArea();
-            float sampleDot = std::abs(incidentDirection * sampleNormal);
+            float dotSample = std::abs(dirIn * nrmSample);
 
-            float dot = incidentDirection * facingNormal;
+            float dot = dirIn * nrmFacing;
             if(dot > 0) {
-                Math::Ray ray(offsetPoint, incidentDirection);
+                Math::Ray ray(pntOffset, dirIn);
                 Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                Object::Intersection intersection2 = scene.intersect(beam);
+                Object::Intersection isect2 = scene.intersect(beam);
 
-                if (intersection2.valid() && &(intersection2.primitive()) == &light) {
-                    Object::Radiance irradiance = objectRadiance * sampleDot * dot / (distance * distance);
-                    radiance += irradiance * surface.reflected(intersection, incidentDirection) / pdf;
+                if (isect2.valid() && &(isect2.primitive()) == &light) {
+                    Object::Radiance irad = rad2 * dotSample * dot / (d * d);
+                    rad += irad * surface.reflected(isect, dirIn) / pdf;
                 }
             }
         }
 
-        for (const std::unique_ptr<Object::PointLight> &pointLight : intersection.scene().pointLights()) {
-            Math::Vector incidentDirection = pointLight->position() - offsetPoint;
-            float distance = incidentDirection.magnitude();
-            incidentDirection = incidentDirection / distance;
+        for (const std::unique_ptr<Object::PointLight> &pointLight : scene.pointLights()) {
+            Math::Vector dirIn = pointLight->position() - pntOffset;
+            float d = dirIn.magnitude();
+            dirIn = dirIn / d;
 
-            float dot = incidentDirection * facingNormal;
+            float dot = dirIn * nrmFacing;
             if(dot > 0) {
-                Math::Ray ray(offsetPoint, incidentDirection);
+                Math::Ray ray(pntOffset, dirIn);
                 Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                Object::Intersection intersection2 = scene.intersect(beam);
+                Object::Intersection isect2 = scene.intersect(beam);
 
-                if (!intersection2.valid() || intersection2.distance() >= distance) {
-                    Object::Radiance irradiance = pointLight->radiance() * dot / (distance * distance);
-                    radiance += irradiance * surface.reflected(intersection, incidentDirection);
+                if (!isect2.valid() || isect2.distance() >= d) {
+                    Object::Radiance irad = pointLight->radiance() * dot / (d * d);
+                    rad += irad * surface.reflected(isect, dirIn);
                 }
             }
         }
 
-        return radiance;
+        return rad;
     }
 }
 

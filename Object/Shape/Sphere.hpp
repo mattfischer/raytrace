@@ -10,8 +10,8 @@ namespace Object {
         public:
             Sphere(const Math::Point &position, float radius);
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
+            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
 
         private:
             Math::Point mPosition;

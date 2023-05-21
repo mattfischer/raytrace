@@ -57,14 +57,14 @@ namespace Object {
             mGrid = std::make_unique<Grid>(width, height, std::move(vertices));
         }
 
-        bool BezierPatch::intersect(const Math::Ray &ray, Intersection &intersection) const
+        bool BezierPatch::intersect(const Math::Ray &ray, Intersection &isect) const
         {
-            return mGrid->intersect(ray, intersection);
+            return mGrid->intersect(ray, isect);
         }
 
-        BoundingVolume BezierPatch::boundingVolume(const Math::Transformation &transformation) const
+        BoundingVolume BezierPatch::boundingVolume(const Math::Transformation &trans) const
         {
-            return mGrid->boundingVolume(transformation);
+            return mGrid->boundingVolume(trans);
         }
     }
 }

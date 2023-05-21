@@ -16,11 +16,11 @@ namespace Object {
             mPower = power;
         }
 
-        Object::Color Phong::reflected(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &) const
+        Object::Color Phong::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &) const
         {
-            Math::Vector reflectDirection = -(incidentDirection - Math::Vector(normal) * (2 * (normal * incidentDirection)));
+            Math::Vector dirReflect = -(dirIn - Math::Vector(nrm) * (2 * (nrm * dirIn)));
 
-            float dot = reflectDirection * outgoingDirection;
+            float dot = dirReflect * dirOut;
             float coeff = 0;
             if(dot > 0) {
                 coeff = std::pow(dot, mPower);
@@ -34,25 +34,25 @@ namespace Object {
             return Color(1, 1, 1) * (1.0f - mStrength);
         }
 
-        Math::Vector Phong::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        Math::Vector Phong::sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
             float phi = 2 * M_PI * samplePoint.u();
             float theta = std::acos(std::pow(samplePoint.v(), 1.0f / (mPower + 1)));
 
-            Math::OrthonormalBasis basis(outgoingDirection);
+            Math::OrthonormalBasis basis(dirOut);
 
-            Math::Vector reflectDirection = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
-            Math::Vector incidentDirection = -(reflectDirection - Math::Vector(normal) * (reflectDirection * normal * 2));
+            Math::Vector dirReflect = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
+            Math::Vector dirIn = -(dirReflect - Math::Vector(nrm) * (dirReflect * nrm * 2));
 
-            return incidentDirection;
+            return dirIn;
         }
 
-        float Phong::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const
+        float Phong::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const
         {
             float coeff = 0;
-            Math::Vector reflectDirection = -(incidentDirection - Math::Vector(normal) * (incidentDirection * normal * 2));
-            float dot = reflectDirection * outgoingDirection;
+            Math::Vector dirReflect = -(dirIn - Math::Vector(nrm) * (dirIn * nrm * 2));
+            float dot = dirReflect * dirOut;
             if (dot > 0) {
                 coeff = std::pow(dot, mPower);
             }

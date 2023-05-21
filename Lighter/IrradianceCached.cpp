@@ -323,21 +323,21 @@ namespace Lighter
         mCache = std::make_unique<Cache>(settings.cacheThreshold);
     }
 
-    Object::Radiance IrradianceCached::light(const Object::Intersection &intersection, Render::Sampler &sampler) const
+    Object::Radiance IrradianceCached::light(const Object::Intersection &isect, Render::Sampler &sampler) const
     {
-        const Object::Surface &surface = intersection.primitive().surface();
-        const Math::Point &point = intersection.point();
-        const Math::Normal &facingNormal = surface.facingNormal(intersection);
-        const Object::Color &albedo = surface.albedo(intersection);
+        const Object::Surface &surface = isect.primitive().surface();
+        const Math::Point &pnt = isect.point();
+        const Math::Normal &nrmFacing = surface.facingNormal(isect);
+        const Object::Color &albedo = surface.albedo(isect);
 
-        Object::Radiance radiance = mDirectLighter->light(intersection, sampler);
+        Object::Radiance rad = mDirectLighter->light(isect, sampler);
 
         if(surface.lambert() > 0) {
-            Object::Radiance irradiance = mCache->interpolateUnlocked(point, facingNormal);
-            radiance += irradiance * albedo * surface.lambert() / (float)M_PI;
+            Object::Radiance irad = mCache->interpolateUnlocked(pnt, nrmFacing);
+            rad += irad * albedo * surface.lambert() / (float)M_PI;
         }
 
-        return radiance;
+        return rad;
     }
 
     std::vector<std::unique_ptr<Render::Job>> IrradianceCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
@@ -359,20 +359,20 @@ namespace Lighter
         sampler.startSequence();
         Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D(float(x), float(y)), framebuffer.width(), framebuffer.height(), Math::Point2D());
 
-        Object::Intersection intersection = scene.intersect(beam);
+        Object::Intersection isect = scene.intersect(beam);
 
-        const Object::Surface &surface = intersection.primitive().surface();
+        const Object::Surface &surface = isect.primitive().surface();
 
-        if (intersection.valid() && surface.lambert() > 0) {
-            const Math::Point &point = intersection.point();
-            const Math::Normal &normal = surface.facingNormal(intersection);
+        if (isect.valid() && surface.lambert() > 0) {
+            const Math::Point &pnt = isect.point();
+            const Math::Normal &nrmFacing = surface.facingNormal(isect);
 
-            if (!mCache->test(point, normal)) {
-                Math::OrthonormalBasis basis(normal);
+            if (!mCache->test(pnt, nrmFacing)) {
+                Math::OrthonormalBasis basis(nrmFacing);
 
                 float mean = 0;
                 int den = 0;
-                Object::Radiance radiance;
+                Object::Radiance rad;
                 const unsigned int M = static_cast<unsigned int>(std::sqrt(mSettings.indirectSamples));
                 const unsigned int N = static_cast<unsigned int>(mSettings.indirectSamples / M);
                 std::vector<Object::Radiance> samples;
@@ -385,23 +385,23 @@ namespace Lighter
 
                         float phi = 2 * M_PI * (k + sampler.getValue()) / N;
                         float theta = std::asin(std::sqrt((j + sampler.getValue()) / M));
-                        Math::Vector direction = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
+                        Math::Vector dirIn = basis.localToWorld(Math::Vector::fromPolar(phi, theta, 1));
 
-                        Math::Point offsetPoint = point + Math::Vector(normal) * 0.01f;
-                        Math::Ray ray(offsetPoint, direction);
+                        Math::Point pntOffset = pnt + Math::Vector(nrmFacing) * 0.01f;
+                        Math::Ray ray(pntOffset, dirIn);
                         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                        Object::Intersection intersection2 = scene.intersect(beam);
+                        Object::Intersection isect2 = scene.intersect(beam);
 
-                        if (intersection2.valid()) {
-                            mean += 1 / intersection2.distance();
+                        if (isect2.valid()) {
+                            mean += 1 / isect2.distance();
                             den++;
-                            Object::Radiance incidentRadiance = mUniPathLighter->light(intersection2, sampler);
-                            incidentRadiance = incidentRadiance - intersection2.primitive().surface().radiance();
+                            Object::Radiance rad2 = mUniPathLighter->light(isect2, sampler);
+                            rad2 = rad2 - isect2.primitive().surface().radiance();
 
-                            samples[k * M + j] = incidentRadiance;
-                            sampleDistances[k * M + j] = intersection2.distance();
+                            samples[k * M + j] = rad2;
+                            sampleDistances[k * M + j] = isect2.distance();
 
-                            radiance += incidentRadiance * (float)M_PI / (float)(M * N);
+                            rad += rad2 * (float)M_PI / (float)(M * N);
                         }
                         else {
                             sampleDistances[k * M + j] = static_cast<float>(FLT_MAX);
@@ -413,12 +413,12 @@ namespace Lighter
                     mean = den / mean;
 
                     Cache::Entry newEntry;
-                    newEntry.point = point;
-                    newEntry.normal = normal;
-                    newEntry.radiance = radiance;
+                    newEntry.point = pnt;
+                    newEntry.normal = nrmFacing;
+                    newEntry.radiance = rad;
 
                     float radius = mean;
-                    float projectedPixelSize = scene.camera().projectSize(2.0f / framebuffer.width(), intersection.distance());
+                    float projectedPixelSize = scene.camera().projectSize(2.0f / framebuffer.width(), isect.distance());
                     float minRadius = 3 * projectedPixelSize / mCache->threshold();
                     float maxRadius = 20 * minRadius;
                     newEntry.radius = std::min(std::max(radius, minRadius), maxRadius);

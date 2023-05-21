@@ -18,13 +18,13 @@ namespace Object {
         public:
             virtual ~Base();
 
-            virtual Object::Color reflected(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
-            virtual Object::Color transmitted(const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const;
+            virtual Object::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const;
+            virtual Object::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Object::Color &albedo) const;
 
             virtual float lambert() const;
 
-            virtual Math::Vector sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
-            virtual float pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
+            virtual Math::Vector sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const;
+            virtual float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const;
 
             virtual bool opaque() const;
             virtual float transmitIor() const;

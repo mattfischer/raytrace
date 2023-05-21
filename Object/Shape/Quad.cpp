@@ -12,19 +12,19 @@ namespace Object {
             mTangent = Math::Bivector(mSide1, mSide2);
         }
 
-        bool Quad::intersect(const Math::Ray &ray, Intersection &intersection) const
+        bool Quad::intersect(const Math::Ray &ray, Intersection &isect) const
         {
             float distance = ((ray.origin() - mPosition) * mNormal) / (ray.direction() * -mNormal);
-            if (distance >= 0 && distance < intersection.distance) {
+            if (distance >= 0 && distance < isect.distance) {
                 Math::Point point = ray.origin() + ray.direction() * distance;
                 float u = (point - mPosition) * mSide1 / mSide1.magnitude2();
                 float v = (point - mPosition) * mSide2 / mSide2.magnitude2();
                 if (u >= 0 && u <= 1 && v >= 0 && v <= 1)
                 {
-                    intersection.distance = distance;
-                    intersection.normal = mNormal;
-                    intersection.tangent = mTangent;
-                    intersection.surfacePoint = Math::Point2D(u, v);
+                    isect.distance = distance;
+                    isect.normal = mNormal;
+                    isect.tangent = mTangent;
+                    isect.surfacePoint = Math::Point2D(u, v);
                     return true;
                 }
             }
@@ -42,21 +42,21 @@ namespace Object {
             return (mSide1 % mSide2).magnitude();
         }
 
-        bool Quad::sample(const Math::Point2D &surfacePoint, Math::Point &point, Math::Normal &normal) const
+        bool Quad::sample(const Math::Point2D &pntSurface, Math::Point &pnt, Math::Normal &nrm) const
         {
-            point = mPosition + mSide1 * surfacePoint.u() + mSide2 * surfacePoint.v();
-            normal = mNormal;
+            pnt = mPosition + mSide1 * pntSurface.u() + mSide2 * pntSurface.v();
+            nrm = mNormal;
 
             return true;
         }
 
-        BoundingVolume Quad::boundingVolume(const Math::Transformation &transformation) const
+        BoundingVolume Quad::boundingVolume(const Math::Transformation &trans) const
         {
             Math::Point points[] = { mPosition, mPosition + mSide1, mPosition + mSide2, mPosition + mSide1 + mSide2 };
 
             BoundingVolume volume;
             for (const Math::Point &point : points) {
-                volume.expand(transformation * point);
+                volume.expand(trans * point);
             }
 
             return volume;

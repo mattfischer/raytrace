@@ -10,11 +10,11 @@ namespace Object {
         public:
             OrenNayar(float strength, float roughness);
 
-            virtual Object::Color reflected(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
+            virtual Object::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const;
             virtual float lambert() const;
 
-            Math::Vector sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
-            float pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
+            Math::Vector sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const;
+            float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const;
 
         private:
             float mStrength;

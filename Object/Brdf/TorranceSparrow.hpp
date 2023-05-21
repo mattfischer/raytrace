@@ -10,11 +10,11 @@ namespace Object {
         public:
             TorranceSparrow(float strength, float roughness, float ior);
 
-            virtual Object::Color reflected(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection, const Object::Color &albedo) const;
-            virtual Object::Color transmitted(const Math::Vector &incidentDirection, const Math::Normal &normal, const Object::Color &albedo) const;
+            virtual Object::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const;
+            virtual Object::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Object::Color &albedo) const;
 
-            virtual Math::Vector sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
-            float pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &outgoingDirection) const;
+            virtual Math::Vector sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const;
+            float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const;
             bool opaque() const;
 
         private:

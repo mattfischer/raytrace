@@ -10,8 +10,8 @@ namespace Object {
         public:
             Group(std::vector<std::unique_ptr<Base>> &&shapes);
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
+            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
 
         private:
             std::vector<std::unique_ptr<Base>> mShapes;

@@ -10,7 +10,7 @@ namespace Object {
         {
         }
 
-        bool Sphere::intersect(const Math::Ray &ray, Intersection &intersection) const
+        bool Sphere::intersect(const Math::Ray &ray, Intersection &isect) const
         {
             float a, b, c;
             float disc;
@@ -24,25 +24,25 @@ namespace Object {
             {
                 float distance = (-b - sqrt(disc)) / (2 * a);
 
-                if(distance >= 0 && distance < intersection.distance)
+                if(distance >= 0 && distance < isect.distance)
                 {
-                    intersection.distance = distance;
+                    isect.distance = distance;
                     Math::Point point = ray.origin() + ray.direction() * distance;
-                    intersection.normal = Math::Normal(point - mPosition) / mRadius;
-                    intersection.surfacePoint = Math::Point2D();
-                    intersection.tangent = Math::Bivector(Math::Vector(), Math::Vector());
+                    isect.normal = Math::Normal(point - mPosition) / mRadius;
+                    isect.surfacePoint = Math::Point2D();
+                    isect.tangent = Math::Bivector(Math::Vector(), Math::Vector());
                     return true;
                 }
 
                 distance = (-b + sqrt(disc)) / (2 * a);
 
-                if(distance >= 0 && distance < intersection.distance)
+                if(distance >= 0 && distance < isect.distance)
                 {
-                    intersection.distance = distance;
+                    isect.distance = distance;
                     Math::Point point = ray.origin() + ray.direction() * distance;
-                    intersection.normal = Math::Normal(point - mPosition) / mRadius;
-                    intersection.surfacePoint = Math::Point2D();
-                    intersection.tangent = Math::Bivector(Math::Vector(), Math::Vector());
+                    isect.normal = Math::Normal(point - mPosition) / mRadius;
+                    isect.surfacePoint = Math::Point2D();
+                    isect.tangent = Math::Bivector(Math::Vector(), Math::Vector());
                     return true;
                 }
             }

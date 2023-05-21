@@ -25,14 +25,14 @@ namespace Object {
         Object::Color reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
         Object::Color transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
 
-        Object::Color albedo(const Object::Intersection &intersection) const;
-        const Math::Bivector2D &surfaceProjection(const Object::Intersection &intersection) const;
-        const Math::Normal &normal(const Object::Intersection &intersection) const;
-        const Math::Normal &facingNormal(const Object::Intersection &intersection) const;
+        Object::Color albedo(const Object::Intersection &isect) const;
+        const Math::Bivector2D &surfaceProjection(const Object::Intersection &isect) const;
+        const Math::Normal &normal(const Object::Intersection &isect) const;
+        const Math::Normal &facingNormal(const Object::Intersection &isect) const;
 
-        Object::Color sample(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection, float &pdf, bool &pdfDelta) const;
+        Object::Color sample(const Object::Intersection &isect, Render::Sampler &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const;
 
-        float pdf(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
+        float pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const;
         bool opaque() const;
         float lambert() const;
         float transmitIor() const;

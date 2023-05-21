@@ -62,18 +62,18 @@ namespace Render {
             Math::Point2D imagePoint = Math::Point2D((float)x, (float)y) + sampler.getValue2D();
             Math::Point2D aperturePoint = sampler.getValue2D();
             Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, framebuffer().width(), framebuffer().height(), aperturePoint);
-            Object::Intersection intersection = mScene.intersect(beam);
+            Object::Intersection isect = mScene.intersect(beam);
             unsigned int numSamples = mNumSamplesCompleted + sample + 1;
 
-            if (intersection.valid())
+            if (isect.valid())
             {
                 if(mLighter) {
-                    Object::Radiance radiance = mTotalRadiance.get(x, y) + mLighter->light(intersection, sampler);
-                    mTotalRadiance.set(x, y, radiance);
-                    color = Engine::toneMap(radiance / static_cast<float>(numSamples));
+                    Object::Radiance rad = mTotalRadiance.get(x, y) + mLighter->light(isect, sampler);
+                    mTotalRadiance.set(x, y, rad);
+                    color = Engine::toneMap(rad / static_cast<float>(numSamples));
                 }
                 else {
-                    totalColor += intersection.primitive().surface().albedo(intersection);
+                    totalColor += isect.primitive().surface().albedo(isect);
                     color = totalColor / (sample + 1.0f);
                 }
             }

@@ -12,12 +12,12 @@ namespace Object {
         public:
             Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
+            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
 
             virtual const Base::Sampler *sampler() const;
             float surfaceArea() const;
-            virtual bool sample(const Math::Point2D &surfacePoint, Math::Point &point, Math::Normal &normal) const;
+            virtual bool sample(const Math::Point2D &pntSurface, Math::Point &pnt, Math::Normal &nrm) const;
 
         private:
             Math::Point mPosition;

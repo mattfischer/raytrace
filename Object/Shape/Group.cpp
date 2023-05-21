@@ -12,15 +12,15 @@ namespace Object {
             }
         }
 
-        bool Group::intersect(const Math::Ray &ray, Intersection &intersection) const
+        bool Group::intersect(const Math::Ray &ray, Intersection &isect) const
         {
             bool ret = false;
 
             BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
             for(int i=0; i<mShapes.size(); i++) {
                 float distance;
-                if (mVolumes[i].intersectRay(rayData, distance) && distance < intersection.distance) {
-                    if (mShapes[i]->intersect(ray, intersection)) {
+                if (mVolumes[i].intersectRay(rayData, distance) && distance < isect.distance) {
+                    if (mShapes[i]->intersect(ray, isect)) {
                         ret = true;
                     }
                 }
@@ -29,12 +29,12 @@ namespace Object {
             return ret;
         }
 
-        BoundingVolume Group::boundingVolume(const Math::Transformation &transformation) const
+        BoundingVolume Group::boundingVolume(const Math::Transformation &trans) const
         {
             BoundingVolume volume;
 
             for (const std::unique_ptr<Base> &shape : mShapes) {
-                volume.expand(shape->boundingVolume(transformation));
+                volume.expand(shape->boundingVolume(trans));
             }
 
             return volume;

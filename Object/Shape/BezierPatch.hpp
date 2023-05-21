@@ -12,8 +12,8 @@ namespace Object {
         public:
             BezierPatch(int width, int height, std::vector<Math::Point> &&controlPoints);
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
+            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
 
         private:
             std::unique_ptr<Grid> mGrid;

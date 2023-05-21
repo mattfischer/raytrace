@@ -23,8 +23,8 @@ namespace Object {
 
             Grid(unsigned int width, unsigned int height, std::vector<Vertex> &&vertices);
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &intersection) const;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &transformation) const;
+            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
+            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
 
         private:
             unsigned int computeBounds(std::vector<Object::BoundingVolumeHierarchy::Node> &nodes, unsigned int u, unsigned int v, unsigned int du, unsigned int dv) const;

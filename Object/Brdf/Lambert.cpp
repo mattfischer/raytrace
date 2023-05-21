@@ -25,21 +25,21 @@ namespace Object {
             return albedo * mStrength / (float)M_PI;
         }
 
-        Math::Vector Lambert::sample(Render::Sampler &sampler, const Math::Normal &normal, const Math::Vector &) const
+        Math::Vector Lambert::sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
-            Math::OrthonormalBasis basis(normal);
+            Math::OrthonormalBasis basis(nrm);
             float phi = 2 * M_PI * samplePoint.u();
             float theta = std::asin(std::sqrt(samplePoint.v()));
 
-            Math::Vector incidentDirection = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
+            Math::Vector dirIn = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
 
-            return incidentDirection;
+            return dirIn;
         }
 
-        float Lambert::pdf(const Math::Vector &incidentDirection, const Math::Normal &normal, const Math::Vector &) const
+        float Lambert::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &) const
         {
-            float cosTheta = std::max(incidentDirection * Math::Vector(normal), 0.0f);
+            float cosTheta = std::max(dirIn * Math::Vector(nrm), 0.0f);
             float pdf = cosTheta / M_PI;
 
             return pdf;

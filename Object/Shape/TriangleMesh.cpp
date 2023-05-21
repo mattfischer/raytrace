@@ -15,7 +15,7 @@ namespace Object {
         {
         }
 
-        bool TriangleMesh::intersect(const Math::Ray &ray, Intersection &intersection) const
+        bool TriangleMesh::intersect(const Math::Ray &ray, Intersection &isect) const
         {
             BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
 
@@ -28,23 +28,23 @@ namespace Object {
                 const Vertex &vertex2 = mVertices[triangle.vertices[2]];
 
                 float tu, tv;
-                if (Object::Shape::Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, intersection.distance, tu, tv)) {
-                    intersection.normal = triangle.normal;
-                    intersection.tangent = Math::Bivector(Math::Vector(), Math::Vector());
-                    intersection.surfacePoint = Math::Point2D();
+                if (Object::Shape::Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, isect.distance, tu, tv)) {
+                    isect.normal = triangle.normal;
+                    isect.tangent = Math::Bivector(Math::Vector(), Math::Vector());
+                    isect.surfacePoint = Math::Point2D();
                     ret = true;
                 }
                 return ret;
             };
 
-            return mBoundingVolumeHierarchy.intersect(rayData, intersection.distance, std::ref(callback));
+            return mBoundingVolumeHierarchy.intersect(rayData, isect.distance, std::ref(callback));
         }
 
-        BoundingVolume TriangleMesh::boundingVolume(const Math::Transformation &transformation) const
+        BoundingVolume TriangleMesh::boundingVolume(const Math::Transformation &trans) const
         {
             BoundingVolume volume;
             for (const Vertex &vertex : mVertices) {
-                volume.expand(transformation * vertex.point);
+                volume.expand(trans * vertex.point);
             }
 
             return volume;

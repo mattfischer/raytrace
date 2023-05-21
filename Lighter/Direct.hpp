@@ -7,7 +7,7 @@ namespace Lighter {
     class Direct : public Base
     {
     public:
-        virtual Object::Radiance light(const Object::Intersection &intersection, Render::Sampler &sampler) const;
+        virtual Object::Radiance light(const Object::Intersection &isect, Render::Sampler &sampler) const;
     };
 }
 
