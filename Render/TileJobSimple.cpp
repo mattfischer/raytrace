@@ -1,6 +1,6 @@
 #include "Render/TileJobSimple.hpp"
 
-#include "Math/Sampler/Halton.hpp"
+#include "Math/Sampler/Random.hpp"
 
 namespace Render {
     TileJobSimple::TileJobSimple(Framebuffer &framebuffer, std::function<void(unsigned int, unsigned int, Framebuffer&, Math::Sampler::Base&)> &&pixelFunc)
@@ -11,7 +11,7 @@ namespace Render {
     std::unique_ptr<Job::ThreadLocal> TileJobSimple::createThreadLocal()
     {
         std::unique_ptr<ThreadLocal> threadLocal = std::make_unique<ThreadLocal>();
-        threadLocal->sampler = std::make_unique<Math::Sampler::Halton>(10);
+        threadLocal->sampler = std::make_unique<Math::Sampler::Random>();
 
         return threadLocal;
     }

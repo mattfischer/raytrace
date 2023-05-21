@@ -6,7 +6,7 @@
 #include "Math/Bivector.hpp"
 #include "Render/Engine.hpp"
 
-#include "Math/Sampler/Halton.hpp"
+#include "Math/Sampler/Random.hpp"
 
 #include <algorithm>
 #include <random>
@@ -40,7 +40,7 @@ namespace Render {
     std::unique_ptr<Job::ThreadLocal> RenderJob::createThreadLocal()
     {
         std::unique_ptr<ThreadLocal> threadLocal = std::make_unique<ThreadLocal>();
-        threadLocal->sampler = std::make_unique<Math::Sampler::Halton>(50);
+        threadLocal->sampler = std::make_unique<Math::Sampler::Random>();
 
         return threadLocal;
     }
