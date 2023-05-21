@@ -29,7 +29,7 @@ namespace Lighter
             Math::Point pntSample;
             Math::Normal nrmSample;
 
-            shapeSampler->sample(sampler.getValue2D(), pntSample, nrmSample);
+            shapeSampler->sample(sampler, pntSample, nrmSample);
 
             Math::Vector dirIn = pntSample - pntOffset;
             float d = dirIn.magnitude();

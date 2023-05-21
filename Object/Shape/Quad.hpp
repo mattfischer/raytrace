@@ -17,7 +17,7 @@ namespace Object {
 
             virtual const Base::Sampler *sampler() const;
             float surfaceArea() const;
-            virtual bool sample(const Math::Point2D &pntSurface, Math::Point &pnt, Math::Normal &nrm) const;
+            virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm) const;
 
         private:
             Math::Point mPosition;

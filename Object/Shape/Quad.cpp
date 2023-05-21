@@ -42,8 +42,9 @@ namespace Object {
             return (mSide1 % mSide2).magnitude();
         }
 
-        bool Quad::sample(const Math::Point2D &pntSurface, Math::Point &pnt, Math::Normal &nrm) const
+        bool Quad::sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm) const
         {
+            Math::Point2D pntSurface = sampler.getValue2D();
             pnt = mPosition + mSide1 * pntSurface.u() + mSide2 * pntSurface.v();
             nrm = mNormal;
 

@@ -6,6 +6,7 @@
 #include "Math/Point2D.hpp"
 #include "Math/Bivector.hpp"
 #include "Math/Transformation.hpp"
+#include "Math/Sampler/Base.hpp"
 
 #include "Object/BoundingVolume.hpp"
 
@@ -27,7 +28,7 @@ namespace Object {
             class Sampler {
             public:
                 virtual float surfaceArea() const = 0;
-                virtual bool sample(const Math::Point2D &pntSurface, Math::Point &pnt, Math::Normal &nrm) const = 0;
+                virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm) const = 0;
             };
 
             virtual bool intersect(const Math::Ray &ray, Intersection &isect) const = 0;
