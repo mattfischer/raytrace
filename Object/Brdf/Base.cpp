@@ -23,7 +23,7 @@ namespace Object {
             return 0;
         }
 
-        Math::Vector Base::sample(Render::Sampler &, const Math::Normal &, const Math::Vector &) const
+        Math::Vector Base::sample(Math::Sampler::Base &, const Math::Normal &, const Math::Vector &) const
         {
             return Math::Vector(0, 0, 0);
         }

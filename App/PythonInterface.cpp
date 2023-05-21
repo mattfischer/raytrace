@@ -6,6 +6,8 @@
 #include "Lighter/UniPath.hpp"
 #include "Lighter/IrradianceCached.hpp"
 
+#include "Math/Sampler/Halton.hpp"
+
 #include "App/PythonInterface.hpp"
 
 #include <structmember.h>
@@ -210,7 +212,7 @@ namespace App {
         if (!PyArg_ParseTuple(args, "II", &x, &y))
             return NULL;
 
-        Render::Sampler sampler(0);
+        Math::Sampler::Halton sampler(0);
         Math::Beam beam = engine.scene().camera().createPixelBeam(Math::Point2D((float)x, (float)y), engine.settings().width, engine.settings().height, Math::Point2D());
 
         Object::Intersection isect = engine.scene().intersect(beam);

@@ -1,8 +1,6 @@
 #ifndef RENDER_JOB_HPP
 #define RENDER_JOB_HPP
 
-#include "Render/Sampler.hpp"
-
 #include <memory>
 #include <functional>
 

@@ -13,7 +13,7 @@ namespace Object {
             virtual Object::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const;
             virtual float lambert() const;
 
-            Math::Vector sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const;
+            Math::Vector sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const;
             float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const;
 
         private:

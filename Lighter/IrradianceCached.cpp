@@ -323,7 +323,7 @@ namespace Lighter
         mCache = std::make_unique<Cache>(settings.cacheThreshold);
     }
 
-    Object::Radiance IrradianceCached::light(const Object::Intersection &isect, Render::Sampler &sampler) const
+    Object::Radiance IrradianceCached::light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const
     {
         const Object::Surface &surface = isect.primitive().surface();
         const Math::Point &pnt = isect.point();
@@ -344,7 +344,7 @@ namespace Lighter
     {
         std::vector<std::unique_ptr<Render::Job>> jobs;
 
-        auto func = [&](unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, Render::Sampler &sampler) {
+        auto func = [&](unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, Math::Sampler::Base &sampler) {
             prerenderPixel(x, y, framebuffer, scene, sampler);
         };
 
@@ -353,7 +353,7 @@ namespace Lighter
         return jobs;
     }
 
-    void IrradianceCached::prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Render::Sampler &sampler)
+    void IrradianceCached::prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Math::Sampler::Base &sampler)
     {
         Object::Color pixelColor;
         sampler.startSequence();

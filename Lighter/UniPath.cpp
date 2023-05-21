@@ -8,12 +8,12 @@
 
 namespace Lighter
 {
-    Object::Radiance UniPath::light(const Object::Intersection &isect, Render::Sampler &sampler) const
+    Object::Radiance UniPath::light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const
     {
         return lightInternal(isect, sampler, 0);
     }
 
-    Object::Radiance UniPath::lightInternal(const Object::Intersection &isect, Render::Sampler &sampler, int generation) const
+    Object::Radiance UniPath::lightInternal(const Object::Intersection &isect, Math::Sampler::Base &sampler, int generation) const
     {
         const Object::Surface &surface = isect.primitive().surface();
         const Object::Scene &scene = isect.scene();

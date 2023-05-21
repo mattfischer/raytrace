@@ -8,10 +8,10 @@ namespace Lighter
     class UniPath : public Base
     {
     public:
-        virtual Object::Radiance light(const Object::Intersection &isect, Render::Sampler &sampler) const;
+        virtual Object::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const;
 
     private:
-        Object::Radiance lightInternal(const Object::Intersection &isect, Render::Sampler &sampler, int generation) const;
+        Object::Radiance lightInternal(const Object::Intersection &isect, Math::Sampler::Base &sampler, int generation) const;
     };
 }
 #endif // UNIPATH_HPP

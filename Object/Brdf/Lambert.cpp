@@ -25,7 +25,7 @@ namespace Object {
             return albedo * mStrength / (float)M_PI;
         }
 
-        Math::Vector Lambert::sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &) const
+        Math::Vector Lambert::sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
             Math::OrthonormalBasis basis(nrm);

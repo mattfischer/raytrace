@@ -4,6 +4,7 @@
 #include "Object/Scene.hpp"
 
 #include <memory>
+#include <string>
 
 namespace Parse {
     class Parser

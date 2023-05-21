@@ -9,6 +9,8 @@
 
 #include "Lighter/Base.hpp"
 
+#include "Math/Sampler/Base.hpp"
+
 namespace Render {
     class RenderJob : public TileJob
     {
@@ -20,9 +22,7 @@ namespace Render {
     private:
         struct ThreadLocal : public Job::ThreadLocal
         {
-            Sampler sampler;
-
-            ThreadLocal(unsigned int samplerDimensions) : sampler(samplerDimensions) {}
+            std::unique_ptr<Math::Sampler::Base> sampler;
         };
 
         virtual void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal);

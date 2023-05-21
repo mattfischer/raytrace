@@ -30,7 +30,7 @@ namespace Object {
         const Math::Normal &normal(const Object::Intersection &isect) const;
         const Math::Normal &facingNormal(const Object::Intersection &isect) const;
 
-        Object::Color sample(const Object::Intersection &isect, Render::Sampler &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const;
+        Object::Color sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const;
 
         float pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const;
         bool opaque() const;

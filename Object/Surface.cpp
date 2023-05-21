@@ -6,6 +6,8 @@
 
 #include "Parse/AST.h"
 
+#include <cmath>
+
 namespace Object {
     void Surface::initIntersectionCache(IntersectionCache &intersectionCache)
     {
@@ -134,7 +136,7 @@ namespace Object {
         return isect.surfaceCache().facingNormal;
     }
 
-    Object::Color Surface::sample(const Object::Intersection &isect, Render::Sampler &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
+    Object::Color Surface::sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
         const Math::Normal &nrmFacing = Surface::facingNormal(isect);

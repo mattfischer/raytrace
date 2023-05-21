@@ -11,6 +11,8 @@
 
 #include "Lighter/Base.hpp"
 
+#include "Math/Sampler/Base.hpp"
+
 #include <set>
 #include <thread>
 #include <mutex>
@@ -50,7 +52,7 @@ namespace Render {
         Framebuffer &sampleStatusFramebuffer();
 
         static Object::Color toneMap(const Object::Radiance &radiance);
-        Object::Radiance sampleIrradiance(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection) const;
+        Object::Radiance sampleIrradiance(const Object::Intersection &intersection, Math::Sampler::Base &sampler, Math::Vector &incidentDirection) const;
 
     private:
         void addJob(std::unique_ptr<Job> job);

@@ -8,7 +8,7 @@
 
 namespace Lighter
 {
-    Object::Radiance Direct::light(const Object::Intersection &isect, Render::Sampler &sampler) const
+    Object::Radiance Direct::light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const
     {
         const Object::Scene &scene = isect.scene();
         const Object::Surface &surface = isect.primitive().surface();

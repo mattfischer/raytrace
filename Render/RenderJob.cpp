@@ -6,6 +6,8 @@
 #include "Math/Bivector.hpp"
 #include "Render/Engine.hpp"
 
+#include "Math/Sampler/Halton.hpp"
+
 #include <algorithm>
 #include <random>
 
@@ -37,7 +39,10 @@ namespace Render {
 
     std::unique_ptr<Job::ThreadLocal> RenderJob::createThreadLocal()
     {
-        return std::make_unique<ThreadLocal>(50);
+        std::unique_ptr<ThreadLocal> threadLocal = std::make_unique<ThreadLocal>();
+        threadLocal->sampler = std::make_unique<Math::Sampler::Halton>(50);
+
+        return threadLocal;
     }
 
     void RenderJob::renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal)
@@ -46,7 +51,7 @@ namespace Render {
             return;
         }
 
-        Sampler &sampler = static_cast<ThreadLocal&>(threadLocal).sampler;
+        Math::Sampler::Base &sampler = *static_cast<ThreadLocal&>(threadLocal).sampler;
 
         Object::Color color;
         Object::Color totalColor;

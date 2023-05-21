@@ -49,7 +49,7 @@ namespace Object {
             return albedo * mStrength * (A + B * std::max(0.0f, cosPhi) * sinAlpha * tanBeta) / (float)M_PI;
         }
 
-        Math::Vector OrenNayar::sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &) const
+        Math::Vector OrenNayar::sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
             Math::OrthonormalBasis basis(nrm);

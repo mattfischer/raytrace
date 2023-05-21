@@ -54,7 +54,7 @@ namespace Object {
             return Color(1, 1, 1) * (1.0f - mStrength * F);
         }
 
-        Math::Vector TorranceSparrow::sample(Render::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const
+        Math::Vector TorranceSparrow::sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
             float phi = 2 * M_PI * samplePoint.u();

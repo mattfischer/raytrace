@@ -121,7 +121,7 @@ namespace Render {
         return Object::Color(red, green, blue);
     }
 
-    Object::Radiance Engine::sampleIrradiance(const Object::Intersection &intersection, Render::Sampler &sampler, Math::Vector &incidentDirection) const
+    Object::Radiance Engine::sampleIrradiance(const Object::Intersection &intersection, Math::Sampler::Base &sampler, Math::Vector &incidentDirection) const
     {
         const Object::Surface &surface = intersection.primitive().surface();
         const Math::Normal &normal = surface.facingNormal(intersection);
