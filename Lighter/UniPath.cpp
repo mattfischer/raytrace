@@ -54,11 +54,7 @@ namespace Lighter
                     if(isect2.primitive().surface().radiance().magnitude() > 0 && !pdfDelta) {
                         float dot2 = -isect2.primitive().surface().facingNormal(isect2) * dirIn;
                         float pdfArea = pdf * dot2 / (isect2.distance() * isect2.distance());
-                        float pdfLight = 0.0f;
-                        const Object::Shape::Base::Sampler *shapeSampler = isect2.primitive().shape().sampler();
-                        if (shapeSampler) {
-                            pdfLight = 1.0f / shapeSampler->surfaceArea();
-                        }
+                        float pdfLight = isect2.primitive().shape().samplePdf(isect2.point());
                         misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
                     }
                 } else {
@@ -73,21 +69,17 @@ namespace Lighter
 
         for (const Object::Primitive &light : scene.areaLights()) {
             const Object::Radiance &rad2 = light.surface().radiance();
-            const Object::Shape::Base::Sampler *shapeSampler = light.shape().sampler();
-
-            if (!shapeSampler) {
-                continue;
-            }
-
+            
             Math::Point pnt2;
             Math::Normal nrm2;
-
-            shapeSampler->sample(sampler, pnt2, nrm2);
+            float pdf;
+            if(!light.shape().sample(sampler, pnt2, nrm2, pdf)) {
+                continue;
+            }
 
             Math::Vector dirIn = pnt2 - pntOffset;
             float d = dirIn.magnitude();
             dirIn = dirIn / d;
-            float pdf = 1.0f / shapeSampler->surfaceArea();
             float dot2 = std::abs(dirIn * nrm2);
 
             float dot = dirIn * nrmFacing;

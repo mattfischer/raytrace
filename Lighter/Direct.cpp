@@ -20,21 +20,18 @@ namespace Lighter
 
         for (const Object::Primitive &light : scene.areaLights()) {
             const Object::Radiance &rad2 = light.surface().radiance();
-            const Object::Shape::Base::Sampler *shapeSampler = light.shape().sampler();
-
-            if (!shapeSampler) {
-                continue;
-            }
 
             Math::Point pntSample;
             Math::Normal nrmSample;
+            float pdf;
 
-            shapeSampler->sample(sampler, pntSample, nrmSample);
+            if(!light.shape().sample(sampler, pntSample, nrmSample, pdf)) {
+                continue;
+            }
 
             Math::Vector dirIn = pntSample - pntOffset;
             float d = dirIn.magnitude();
             dirIn = dirIn / d;
-            float pdf = 1.0f / shapeSampler->surfaceArea();
             float dotSample = std::abs(dirIn * nrmSample);
 
             float dot = dirIn * nrmFacing;

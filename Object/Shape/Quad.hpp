@@ -7,7 +7,7 @@
 
 namespace Object {
     namespace Shape {
-        class Quad : public Base, public Base::Sampler
+        class Quad : public Base
         {
         public:
             Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
@@ -15,9 +15,8 @@ namespace Object {
             virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
             virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
 
-            virtual const Base::Sampler *sampler() const;
-            float surfaceArea() const;
-            virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm) const;
+            virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const;
+            virtual float samplePdf(const Math::Point &pnt) const;
 
         private:
             Math::Point mPosition;

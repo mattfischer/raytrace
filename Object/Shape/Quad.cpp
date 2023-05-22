@@ -32,23 +32,22 @@ namespace Object {
             return false;
         }
 
-        const Base::Sampler *Quad::sampler() const
-        {
-            return this;
-        }
-
-        float Quad::surfaceArea() const
-        {
-            return (mSide1 % mSide2).magnitude();
-        }
-
-        bool Quad::sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm) const
+        bool Quad::sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const
         {
             Math::Point2D pntSurface = sampler.getValue2D();
             pnt = mPosition + mSide1 * pntSurface.u() + mSide2 * pntSurface.v();
             nrm = mNormal;
+            
+            float surfaceArea = (mSide1 % mSide2).magnitude();
+            pdf = 1.0f / surfaceArea;
 
             return true;
+        }
+
+        float Quad::samplePdf(const Math::Point &) const
+        {
+            float surfaceArea = (mSide1 % mSide2).magnitude();
+            return 1.0f / surfaceArea;
         }
 
         BoundingVolume Quad::boundingVolume(const Math::Transformation &trans) const
