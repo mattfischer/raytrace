@@ -14,8 +14,8 @@ namespace Object {
         public:
             Transformed(std::unique_ptr<Base> shape, const Math::Transformation &transformation);
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
+            bool intersect(const Math::Ray &ray, Intersection &isect) const override;
+            BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
         private:
             std::unique_ptr<Base> mShape;

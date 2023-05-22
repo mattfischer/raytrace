@@ -27,8 +27,8 @@ namespace Object {
             TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles);
             TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles, Object::BoundingVolumeHierarchy &&boundingVolumeHierarchy);
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
+            bool intersect(const Math::Ray &ray, Intersection &isect) const override;
+            BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
             const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 

@@ -19,9 +19,9 @@ namespace Lighter {
 
         IrradianceCached(const Settings &settings);
 
-        virtual Object::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const;
+        Object::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const override;
 
-        virtual std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
+        std::vector<std::unique_ptr<Render::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer) override;
 
     private:
         void prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Math::Sampler::Base &sampler);

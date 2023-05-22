@@ -17,7 +17,7 @@ namespace Render {
     public:
         RenderJob(const Object::Scene &scene, const Settings &settings, const Lighter::Base *lighter, Framebuffer &renderFramebuffer, Framebuffer &sampleStatusFramebuffer);
 
-        virtual std::unique_ptr<Job::ThreadLocal> createThreadLocal();
+        std::unique_ptr<Job::ThreadLocal> createThreadLocal() override;
 
     private:
         struct ThreadLocal : public Job::ThreadLocal
@@ -25,8 +25,8 @@ namespace Render {
             std::unique_ptr<Math::Sampler::Base> sampler;
         };
 
-        virtual void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal);
-        virtual bool needRepeat();
+        void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal) override;
+        bool needRepeat() override;
 
         const Object::Scene &mScene;
         const Settings &mSettings;

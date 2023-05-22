@@ -10,10 +10,10 @@ namespace Render {
     public:
         TileJobSimple(Framebuffer &framebuffer, std::function<void(unsigned int, unsigned int, Framebuffer&, Math::Sampler::Base&)> &&pixelFunc);
 
-        virtual std::unique_ptr<Job::ThreadLocal> createThreadLocal();
+        std::unique_ptr<Job::ThreadLocal> createThreadLocal() override;
 
     protected:
-        virtual void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal);
+        void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal) override;
 
     private:
         struct ThreadLocal : public Job::ThreadLocal

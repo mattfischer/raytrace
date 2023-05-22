@@ -13,8 +13,8 @@ namespace Render {
     public:
         TileJob(Framebuffer &framebuffer);
 
-        std::unique_ptr<Job::Task> getNextTask();
-        virtual void stop();
+        std::unique_ptr<Job::Task> getNextTask() override;
+        void stop() override;
 
     protected:
         virtual void renderPixel(unsigned int x, unsigned int y, Job::ThreadLocal &threadLocal) = 0;

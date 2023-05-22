@@ -10,7 +10,7 @@ namespace Object {
         public:
             Solid(const Object::Color &color);
 
-            virtual Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const;
+            Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const override;
 
         protected:
             Object::Color mColor;

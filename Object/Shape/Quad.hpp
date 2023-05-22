@@ -12,11 +12,11 @@ namespace Object {
         public:
             Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const;
+            bool intersect(const Math::Ray &ray, Intersection &isect) const override;
+            BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
-            virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const;
-            virtual float samplePdf(const Math::Point &pnt) const;
+            bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const override;
+            float samplePdf(const Math::Point &pnt) const override;
 
         private:
             Math::Point mPosition;
