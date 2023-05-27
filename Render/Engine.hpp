@@ -45,7 +45,7 @@ namespace Render {
 
         void startRender(Listener *listener);
         void setSettings(const Settings &settings);
-        void setLighter(std::unique_ptr<Lighter::Base> lighter);
+        void setLighter(std::unique_ptr<Render::Lighter::Base> lighter);
 
         const Settings &settings() const;
         Framebuffer &renderFramebuffer();
@@ -67,7 +67,7 @@ namespace Render {
         std::unique_ptr<Framebuffer> mSampleStatusFramebuffer;
         bool mRendering;
         DWORD mStartTime;
-        std::unique_ptr<Lighter::Base> mLighter;
+        std::unique_ptr<Render::Lighter::Base> mLighter;
 
         std::mutex mMutex;
         std::condition_variable mConditionVariable;

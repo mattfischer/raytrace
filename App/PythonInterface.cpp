@@ -2,9 +2,9 @@
 #include "Object/Scene.hpp"
 #include "Parse/Parser.hpp"
 
-#include "Lighter/Direct.hpp"
-#include "Lighter/UniPath.hpp"
-#include "Lighter/IrradianceCached.hpp"
+#include "Render/Lighter/Direct.hpp"
+#include "Render/Lighter/UniPath.hpp"
+#include "Render/Lighter/IrradianceCached.hpp"
 
 #include "Math/Sampler/Random.hpp"
 
@@ -170,20 +170,20 @@ namespace App {
 
         engineObject->engine->setSettings(settings);
 
-        std::unique_ptr<Lighter::Base> lighter;
+        std::unique_ptr<Render::Lighter::Base> lighter;
         wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
         if(!wcscmp(lighting, L"none")) {
         } else if(!wcscmp(lighting, L"direct")) {
-            lighter = std::make_unique<Lighter::Direct>();
+            lighter = std::make_unique<Render::Lighter::Direct>();
         } else if(!wcscmp(lighting, L"pathTracing")) {
-            lighter = std::make_unique<Lighter::UniPath>();
+            lighter = std::make_unique<Render::Lighter::UniPath>();
         } else if(!wcscmp(lighting, L"irradianceCaching")) {
-            Lighter::IrradianceCached::Settings lighterSettings;
+            Render::Lighter::IrradianceCached::Settings lighterSettings;
 
             lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
             lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
 
-            lighter = std::make_unique<Lighter::IrradianceCached>(lighterSettings);
+            lighter = std::make_unique<Render::Lighter::IrradianceCached>(lighterSettings);
         }
         engineObject->engine->setLighter(std::move(lighter));
 
