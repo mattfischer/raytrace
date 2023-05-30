@@ -35,9 +35,9 @@ namespace Object {
         Surface::IntersectionCache &surfaceCache() const;
 
     protected:
-        const Object::Scene &mScene;
-        const Object::Primitive &mPrimitive;
-        const Math::Beam &mBeam;
+        const Object::Scene *mScene;
+        const Object::Primitive *mPrimitive;
+        const Math::Beam *mBeam;
         Object::Shape::Base::Intersection mShapeIntersection;
         Math::Point mPoint;
 

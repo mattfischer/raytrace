@@ -1,10 +1,6 @@
-#include "Render/Engine.hpp"
+#include "Render/UniPathRenderer.hpp"
 #include "Object/Scene.hpp"
 #include "Parse/Parser.hpp"
-
-#include "Render/Lighter/Direct.hpp"
-#include "Render/Lighter/UniPath.hpp"
-#include "Render/Lighter/IrradianceCached.hpp"
 
 #include "Math/Sampler/Random.hpp"
 
@@ -31,7 +27,10 @@ namespace App {
         FramebufferObject *renderFramebufferObject;
         FramebufferObject *sampleStatusFramebufferObject;
         Listener *listener;
-        Render::Engine *engine;
+        Render::UniPathRenderer::Settings settings;
+        Render::Framebuffer *renderFramebuffer;
+        Render::Framebuffer *sampleStatusFramebuffer;
+        Render::UniPathRenderer *renderer;
     };
 
     struct SettingsObject {
@@ -63,7 +62,7 @@ namespace App {
         return framebufferObject;
     }
 
-    class Listener : public Render::Engine::Listener
+    class Listener : public Render::Executor::Listener
     {
     public:
         Listener(PyObject *listenerObject)
@@ -76,17 +75,29 @@ namespace App {
             Py_XDECREF(mListenerObject);
         }
 
-        void onRenderDone()
+        void onExecutorDone(int totalTimeSeconds) override
         {
             PyGILState_STATE state = PyGILState_Ensure();
+            
+            char buf[256];
+            int seconds = totalTimeSeconds;
+            int hours = seconds / 3600;
+            seconds -= hours * 3600;
+            int minutes = seconds / 60;
+            seconds -= minutes * 60;
+            if (hours > 0) {
+                sprintf_s(buf, sizeof(buf), "Render time: %ih %im %is", hours, minutes, static_cast<unsigned int>(seconds));
+            }
+            else if (minutes > 0) {
+                sprintf_s(buf, sizeof(buf), "Render time: %im %is", minutes, static_cast<unsigned int>(seconds));
+            }
+            else {
+                sprintf_s(buf, sizeof(buf), "Render time: %is", seconds);
+            }
+            
+            PyObject_CallMethod(mListenerObject, "on_render_status", "s", buf);
+            
             PyObject_CallMethod(mListenerObject, "on_render_done", NULL);
-            PyGILState_Release(state);
-        }
-
-        void onRenderStatus(const char *message)
-        {
-            PyGILState_STATE state = PyGILState_Ensure();
-            PyObject_CallMethod(mListenerObject, "on_render_status", "s", message);
             PyGILState_Release(state);
         }
 
@@ -104,8 +115,6 @@ namespace App {
 
         Py_INCREF(engineObject->sceneObject);
 
-        engineObject->engine = new Render::Engine(*engineObject->sceneObject->scene);
-
         return 0;
     }
 
@@ -119,8 +128,16 @@ namespace App {
             delete engineObject->listener;
         }
 
-        if(engineObject->engine) {
-            delete engineObject->engine;
+        if(engineObject->renderer) {
+            delete engineObject->renderer;
+        }
+
+        if(engineObject->renderFramebuffer) {
+            delete engineObject->renderFramebuffer;
+        }
+
+        if(engineObject->sampleStatusFramebuffer) {
+            delete engineObject->sampleStatusFramebuffer;
         }
     }
 
@@ -138,7 +155,8 @@ namespace App {
         }
         engineObject->listener = new Listener(listenerObject);
 
-        engineObject->engine->startRender(engineObject->listener);
+        engineObject->renderer = new Render::UniPathRenderer(*engineObject->sceneObject->scene, engineObject->settings, *engineObject->renderFramebuffer);
+        engineObject->renderer->executor().start(engineObject->listener);
 
         Py_RETURN_NONE;
     }
@@ -147,7 +165,7 @@ namespace App {
     {
         EngineObject *engineObject = (EngineObject*)self;
 
-        engineObject->engine->stop();
+        engineObject->renderer->executor().stop();
 
         Py_RETURN_NONE;
     }
@@ -160,38 +178,27 @@ namespace App {
         if (!PyArg_ParseTuple(args, "O", &settingsObject))
             return NULL;
 
-        Render::Settings settings;
+        engineObject->settings.width = settingsObject->width;
+        engineObject->settings.height = settingsObject->height;
+        engineObject->settings.minSamples = settingsObject->minSamples;
+        engineObject->settings.maxSamples = settingsObject->maxSamples;
+        engineObject->settings.sampleThreshold = settingsObject->sampleThreshold;
 
-        settings.width = settingsObject->width;
-        settings.height = settingsObject->height;
-        settings.minSamples = settingsObject->minSamples;
-        settings.maxSamples = settingsObject->maxSamples;
-        settings.sampleThreshold = settingsObject->sampleThreshold;
-
-        engineObject->engine->setSettings(settings);
-
-        std::unique_ptr<Render::Lighter::Base> lighter;
-        wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
-        if(!wcscmp(lighting, L"none")) {
-        } else if(!wcscmp(lighting, L"direct")) {
-            lighter = std::make_unique<Render::Lighter::Direct>();
-        } else if(!wcscmp(lighting, L"pathTracing")) {
-            lighter = std::make_unique<Render::Lighter::UniPath>();
-        } else if(!wcscmp(lighting, L"irradianceCaching")) {
-            Render::Lighter::IrradianceCached::Settings lighterSettings;
-
-            lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
-            lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
-
-            lighter = std::make_unique<Render::Lighter::IrradianceCached>(lighterSettings);
+        if(engineObject->renderFramebuffer) {
+            Py_XDECREF(engineObject->renderFramebufferObject);
+            delete engineObject->renderFramebuffer;
         }
-        engineObject->engine->setLighter(std::move(lighter));
 
-        Py_XDECREF(engineObject->renderFramebufferObject);
-        engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->engine->renderFramebuffer());
+        engineObject->renderFramebuffer = new Render::Framebuffer(engineObject->settings.width, engineObject->settings.height);
+        engineObject->renderFramebufferObject = wrapFramebuffer(*engineObject->renderFramebuffer);
 
-        Py_XDECREF(engineObject->sampleStatusFramebufferObject);
-        engineObject->sampleStatusFramebufferObject = wrapFramebuffer(engineObject->engine->sampleStatusFramebuffer());
+        if(engineObject->sampleStatusFramebuffer) {
+            Py_XDECREF(engineObject->sampleStatusFramebufferObject);
+            delete engineObject->sampleStatusFramebuffer;
+        }
+
+        engineObject->sampleStatusFramebuffer = new Render::Framebuffer(engineObject->settings.width, engineObject->settings.height);
+        engineObject->sampleStatusFramebufferObject = wrapFramebuffer(*engineObject->sampleStatusFramebuffer);
 
         Py_RETURN_NONE;
     }
@@ -200,42 +207,12 @@ namespace App {
     {
         EngineObject *engineObject = (EngineObject*)self;
 
-        return PyBool_FromLong(engineObject->engine->rendering());
+        return PyBool_FromLong(engineObject->renderer->executor().running());
     }
 
     static PyObject *Engine_renderProbe(PyObject *self, PyObject *args)
     {
-        EngineObject *engineObject = (EngineObject*)self;
-        Render::Engine &engine = *engineObject->engine;
-
-        int x, y;
-        if (!PyArg_ParseTuple(args, "II", &x, &y))
-            return NULL;
-
-        Math::Sampler::Random sampler;
-        Math::Beam beam = engine.scene().camera().createPixelBeam(Math::Point2D((float)x, (float)y), engine.settings().width, engine.settings().height, Math::Point2D());
-
-        Object::Intersection isect = engine.scene().intersect(beam);
-        const Object::Surface &surface = isect.primitive().surface();
-
-        if (isect.valid()) {
-            Math::OrthonormalBasis basis(surface.facingNormal(isect));
-            PyObject *ret = PyList_New(1000);
-            for(int i=0; i<1000; i++) {
-                Math::Vector dirIn;
-                Object::Radiance irad = engine.sampleIrradiance(isect, sampler, dirIn);
-                Object::Color color = engine.toneMap(irad);
-                Math::Vector dirInLocal = basis.worldToLocal(dirIn);
-                float azimuth = std::atan2(dirInLocal.y(), dirInLocal.x());
-                float elevation = std::asin(dirInLocal.z());
-                PyObject *colorTuple = Py_BuildValue("(fff)", color.red(), color.green(), color.blue());
-                PyObject *sampleTuple = Py_BuildValue("(Off)", colorTuple, azimuth, elevation);
-                PyList_SetItem(ret, i, sampleTuple);
-            }
-            return ret;
-        } else {
-            Py_RETURN_NONE;
-        }
+        Py_RETURN_NONE;
     }
 
     static PyMethodDef Engine_methods[] = {
