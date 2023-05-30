@@ -1,18 +1,27 @@
 #include "Render/WorkQueue.hpp"
 
+#include <windows.h>
+
 namespace Render {
+    struct WorkQueue::priv {
+        CRITICAL_SECTION criticalSection;
+    };
+
     WorkQueue::WorkQueue(size_t size, WorkerFunction workerFunction)
     : mQueue(size), mWorkerFunction(std::move(workerFunction))
     {
         mHead = -1;
         mTail = 0;
+        mPriv = new priv;
+        InitializeCriticalSection(&mPriv->criticalSection);
     }
 
     bool WorkQueue::executeNext(ThreadLocal &threadLocal)
     {
-        std::unique_lock<std::mutex> lock(mMutex);
+        EnterCriticalSection(&mPriv->criticalSection);
 
         if(mHead == -1) {
+            LeaveCriticalSection(&mPriv->criticalSection);
             return false;
         } else {
             Key key = mQueue[mHead];
@@ -24,7 +33,7 @@ namespace Render {
                 mHead = -1;
             }
             
-            lock.unlock();
+            LeaveCriticalSection(&mPriv->criticalSection);
 
             mWorkerFunction(key, threadLocal);
             return true;
@@ -33,9 +42,10 @@ namespace Render {
 
     bool WorkQueue::addItem(Key key)
     {
-        std::unique_lock<std::mutex> lock(mMutex);
+        EnterCriticalSection(&mPriv->criticalSection);
 
         if(mTail == -1) {
+            LeaveCriticalSection(&mPriv->criticalSection);
             return false;
         } else {
             mQueue[mTail] = key;
@@ -46,6 +56,7 @@ namespace Render {
             if(mTail == mHead) {
                 mTail = -1;
             }
+            LeaveCriticalSection(&mPriv->criticalSection);
             return true;
         }
     }

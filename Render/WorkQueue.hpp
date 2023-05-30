@@ -20,7 +20,8 @@ namespace Render {
     private:
         WorkerFunction mWorkerFunction;
         std::vector<Key> mQueue;
-        std::mutex mMutex;
+        struct priv;
+        priv *mPriv;
         size_t mHead;
         size_t mTail;
     };
