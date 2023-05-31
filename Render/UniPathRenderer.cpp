@@ -21,7 +21,6 @@ namespace Render {
     , mTotalSamples(framebuffer.width(), framebuffer.height())
     {
         mCurrentPixel = 0;
-        mCurrentSample = 0;
 
         mGenerateCameraRayQueue = std::make_unique<Render::WorkQueue>(kSize, std::bind(&UniPathRenderer::generateCameraRay, this, _1, _2));
         mExecutor.addWorkQueue(*mGenerateCameraRayQueue);
@@ -41,7 +40,7 @@ namespace Render {
         mCommitRadianceQueue = std::make_unique<Render::WorkQueue>(kSize, std::bind(&UniPathRenderer::commitRadiance, this, _1, _2));
         mExecutor.addWorkQueue(*mCommitRadianceQueue);
 
-        for(WorkQueue::Key key = 0; key < kSize; key++) {
+        for(WorkQueue::Key key = 0; key < kSize-1; key++) {
             mGenerateCameraRayQueue->addItem(key);
         }
     }
@@ -61,21 +60,17 @@ namespace Render {
         Item &item = mItems[key];
         ThreadLocal &threadLocal = static_cast<ThreadLocal&>(threadLocalBase);
 
-        {
-            std::lock_guard<std::mutex> lock(mPixelMutex);
+        unsigned int currentPixel = mCurrentPixel++;
 
-            if(mCurrentSample >= mSettings.minSamples) {
-                return;
-            }
-            
-            item.x = mCurrentPixel % mSettings.width;
-            item.y = mCurrentPixel / mSettings.width;
-            mCurrentPixel = (mCurrentPixel + 1) % (mSettings.width * mSettings.height);
-            if(mCurrentPixel == 0) {
-                mCurrentSample++;
-            }
+        int sample = currentPixel / (mSettings.width * mSettings.height);
+    
+        if(sample >= mSettings.minSamples) {
+            return;
         }
-        
+
+        item.y = (currentPixel / mSettings.width) % mSettings.height;
+        item.x = currentPixel % mSettings.width;
+
         Math::Bivector dv;
 
         threadLocal.sampler.startSample();
@@ -99,11 +94,10 @@ namespace Render {
         item.isect = mScene.intersect(item.beam);
 
         Object::Intersection &isect = item.isect;
-        Object::Radiance rad2;
-        float misWeight = 1.0f;
         if(isect.valid()) {
             const Object::Primitive &primitive = isect.primitive();
-            rad2 = primitive.surface().radiance();
+            Object::Radiance rad2 = primitive.surface().radiance();
+            float misWeight = 1.0f;
             if(rad2.magnitude() > 0 && !item.specularBounce && item.generation > 0) {
                 float dot2 = -primitive.surface().facingNormal(isect) * isect.ray().direction();
                 float pdfArea = item.pdf * dot2 / (isect.distance() * isect.distance());
@@ -114,6 +108,8 @@ namespace Render {
             int totalLights = mScene.areaLights().size() + mScene.pointLights().size();
             int lightIndex = (int)std::floor(threadLocal.sampler.getValue() * totalLights);
 
+            item.radiance += rad2 * item.throughput * misWeight;
+
             if(lightIndex < mScene.areaLights().size()) {
                 item.lightIndex = lightIndex;
                 mDirectLightAreaQueue->addItem(key);
@@ -122,11 +118,11 @@ namespace Render {
                 mDirectLightPointQueue->addItem(key);
             }
         } else {
-            rad2 = mScene.skyRadiance();
+            Object::Radiance rad2 = mScene.skyRadiance();
+            item.radiance += rad2 * item.throughput;
+
             mCommitRadianceQueue->addItem(key);
         }
-
-        item.radiance += rad2 * item.throughput * misWeight;
     }
 
     void UniPathRenderer::directLightArea(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocalBase)
@@ -246,6 +242,8 @@ namespace Render {
             } else {
                 mCommitRadianceQueue->addItem(key);
             }
+        } else {
+            mCommitRadianceQueue->addItem(key);
         }
     }
 

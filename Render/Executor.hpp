@@ -7,6 +7,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <mutex>
 
 namespace Render {
     class Executor {

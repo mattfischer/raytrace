@@ -1,63 +1,56 @@
 #include "Render/WorkQueue.hpp"
 
-#include <windows.h>
+#include <thread>
 
 namespace Render {
-    struct WorkQueue::priv {
-        CRITICAL_SECTION criticalSection;
-    };
-
     WorkQueue::WorkQueue(size_t size, WorkerFunction workerFunction)
     : mQueue(size), mWorkerFunction(std::move(workerFunction))
     {
-        mHead = -1;
-        mTail = 0;
-        mPriv = new priv;
-        InitializeCriticalSection(&mPriv->criticalSection);
+        mRead = 0;
+        mWrite = 0;
+        mCommitted = 0;
     }
 
     bool WorkQueue::executeNext(ThreadLocal &threadLocal)
     {
-        EnterCriticalSection(&mPriv->criticalSection);
-
-        if(mHead == -1) {
-            LeaveCriticalSection(&mPriv->criticalSection);
-            return false;
-        } else {
-            Key key = mQueue[mHead];
-            if(mTail == -1) {
-                mTail = mHead;
+        while(true) {
+            int read = mRead;
+            int newRead = (read + 1) % mQueue.size();
+            if(read == mCommitted) {
+                return false;
             }
-            mHead = (mHead + 1) % mQueue.size();
-            if(mHead == mTail) {
-                mHead = -1;
-            }
-            
-            LeaveCriticalSection(&mPriv->criticalSection);
 
-            mWorkerFunction(key, threadLocal);
-            return true;
+            Key key = mQueue[read];    
+            if(mRead.compare_exchange_weak(read, newRead)) {
+                mWorkerFunction(key, threadLocal);
+                return true;
+            }
         }
     }
 
     bool WorkQueue::addItem(Key key)
     {
-        EnterCriticalSection(&mPriv->criticalSection);
+        while(true) {
+            int write = mWrite;
+            int newWrite = (write + 1) % mQueue.size();
+            if(newWrite == mRead) {
+                std::this_thread::yield();
+                continue;
+            }
 
-        if(mTail == -1) {
-            LeaveCriticalSection(&mPriv->criticalSection);
-            return false;
-        } else {
-            mQueue[mTail] = key;
-            if(mHead == -1) {
-                mHead = mTail;
+            if(mWrite.compare_exchange_weak(write, newWrite)) {                
+                mQueue[write] = key;
+
+                while(true) {
+                    int expected = write;
+                    if(mCommitted.compare_exchange_weak(expected, newWrite)) {
+                        break;
+                    } else {
+                        std::this_thread::yield();
+                    }
+                }
+                return true;
             }
-            mTail = (mTail + 1) % mQueue.size();
-            if(mTail == mHead) {
-                mTail = -1;
-            }
-            LeaveCriticalSection(&mPriv->criticalSection);
-            return true;
         }
     }
 }

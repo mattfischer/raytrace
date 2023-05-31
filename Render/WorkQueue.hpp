@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <functional>
-#include <mutex>
+#include <atomic>
 
 namespace Render {
     class WorkQueue {
@@ -20,10 +20,9 @@ namespace Render {
     private:
         WorkerFunction mWorkerFunction;
         std::vector<Key> mQueue;
-        struct priv;
-        priv *mPriv;
-        size_t mHead;
-        size_t mTail;
+        std::atomic_int mRead;
+        std::atomic_int mWrite;
+        std::atomic_int mCommitted;
     };
 }
 

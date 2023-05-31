@@ -10,6 +10,7 @@
 #include "Math/Sampler/Random.hpp"
 
 #include <vector>
+#include <mutex>
 
 namespace Render {
     class UniPathRenderer {
@@ -72,9 +73,7 @@ namespace Render {
         std::unique_ptr<WorkQueue> mExtendPathQueue;
         std::unique_ptr<WorkQueue> mCommitRadianceQueue;
 
-        std::mutex mPixelMutex;
-        int mCurrentPixel;
-        int mCurrentSample;
+        std::atomic_uint64_t mCurrentPixel;
 
         std::mutex mFramebufferMutex;
         Raster<Object::Radiance> mTotalRadiance;
