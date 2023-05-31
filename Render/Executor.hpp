@@ -7,7 +7,6 @@
 #include <vector>
 #include <thread>
 #include <chrono>
-#include <mutex>
 
 namespace Render {
     class Executor {
@@ -21,6 +20,7 @@ namespace Render {
         typedef std::function<std::unique_ptr<WorkQueue::ThreadLocal>()> ThreadLocalCreator;
 
         Executor(ThreadLocalCreator threadLocalCreator);
+        ~Executor();
 
         void addWorkQueue(WorkQueue &workQueue);
 
@@ -34,9 +34,8 @@ namespace Render {
         std::vector<std::reference_wrapper<WorkQueue>> mWorkQueues;
         std::vector<std::unique_ptr<std::thread>> mThreads;
 
-        bool mRunThreads;
-        std::mutex mMutex;
-        int mNumRunningThreads;
+        std::atomic_bool mRunThreads;
+        std::atomic_int mNumRunningThreads;
         Listener *mListener;
         ThreadLocalCreator mThreadLocalCreator;
         std::chrono::time_point<std::chrono::steady_clock> mStartTime;

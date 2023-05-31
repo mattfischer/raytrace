@@ -101,6 +101,10 @@ namespace App {
             PyGILState_Release(state);
         }
 
+        void clearStatus()
+        {
+            PyObject_CallMethod(mListenerObject, "on_render_status", "s", "");
+        }
     private:
         PyObject *mListenerObject;
     };
@@ -155,9 +159,14 @@ namespace App {
         }
         engineObject->listener = new Listener(listenerObject);
 
+        if(engineObject->renderer) {
+            delete engineObject->renderer;
+        }
         engineObject->renderer = new Render::UniPathRenderer(*engineObject->sceneObject->scene, engineObject->settings, *engineObject->renderFramebuffer);
-        engineObject->renderer->executor().start(engineObject->listener);
 
+        engineObject->renderer->executor().start(engineObject->listener);
+        engineObject->listener->clearStatus();
+    
         Py_RETURN_NONE;
     }
 

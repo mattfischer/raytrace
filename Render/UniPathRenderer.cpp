@@ -22,25 +22,25 @@ namespace Render {
     {
         mCurrentPixel = 0;
 
-        mGenerateCameraRayQueue = std::make_unique<Render::WorkQueue>(kSize, std::bind(&UniPathRenderer::generateCameraRay, this, _1, _2));
+        mGenerateCameraRayQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { generateCameraRay(k, l); });
         mExecutor.addWorkQueue(*mGenerateCameraRayQueue);
 
-        mIntersectRayQueue = std::make_unique<Render::WorkQueue>(kSize, std::bind(&UniPathRenderer::intersectRay, this, _1, _2));
+        mIntersectRayQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { intersectRay(k, l); });
         mExecutor.addWorkQueue(*mIntersectRayQueue);
 
-        mDirectLightAreaQueue = std::make_unique<Render::WorkQueue>(kSize, std::bind(&UniPathRenderer::directLightArea, this, _1, _2));
+        mDirectLightAreaQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { directLightArea(k, l); });
         mExecutor.addWorkQueue(*mDirectLightAreaQueue);
 
-        mDirectLightPointQueue = std::make_unique<Render::WorkQueue>(kSize, std::bind(&UniPathRenderer::directLightPoint, this, _1, _2));
+        mDirectLightPointQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { directLightPoint(k, l); });
         mExecutor.addWorkQueue(*mDirectLightPointQueue);
 
-        mExtendPathQueue = std::make_unique<Render::WorkQueue>(kSize, std::bind(&UniPathRenderer::extendPath, this, _1, _2));
+        mExtendPathQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { extendPath(k, l); });
         mExecutor.addWorkQueue(*mExtendPathQueue);
 
-        mCommitRadianceQueue = std::make_unique<Render::WorkQueue>(kSize, std::bind(&UniPathRenderer::commitRadiance, this, _1, _2));
+        mCommitRadianceQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { commitRadiance(k, l); });
         mExecutor.addWorkQueue(*mCommitRadianceQueue);
 
-        for(WorkQueue::Key key = 0; key < kSize-1; key++) {
+        for(WorkQueue::Key key = 0; key < kSize; key++) {
             mGenerateCameraRayQueue->addItem(key);
         }
     }

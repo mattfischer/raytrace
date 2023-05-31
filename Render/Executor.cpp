@@ -11,6 +11,15 @@ namespace Render {
         mListener = nullptr;
     }
 
+    Executor::~Executor()
+    {
+        mRunThreads = false;
+        for(std::unique_ptr<std::thread> &thread : mThreads) {
+            thread->join();
+        }
+        mThreads.clear();
+    }
+
     void Executor::addWorkQueue(WorkQueue &workQueue)
     {
         mWorkQueues.push_back(workQueue);
@@ -57,11 +66,8 @@ namespace Render {
         std::unique_ptr<WorkQueue::ThreadLocal> threadLocal = mThreadLocalCreator();
 
         while(true) {
-            {
-                std::lock_guard<std::mutex> lock(mMutex);
-                if(!mRunThreads) {
-                    break;
-                }
+            if(!mRunThreads) {
+                break;
             }
 
             WorkQueue &workQueue = mWorkQueues[queueIndex];
@@ -78,15 +84,10 @@ namespace Render {
             }
         }
 
-        {
-            std::lock_guard<std::mutex> lock(mMutex);
-            mNumRunningThreads--;
-
-            if(mNumRunningThreads == 0) {
-                auto endTime = std::chrono::steady_clock::now();
-                std::chrono::duration<double> duration = endTime - mStartTime;
-                mListener->onExecutorDone((int)duration.count());
-            }
-        }      
+        if(--mNumRunningThreads == 0) {
+            auto endTime = std::chrono::steady_clock::now();
+            std::chrono::duration<double> duration = endTime - mStartTime;
+            mListener->onExecutorDone((int)duration.count());
+        }
     }
 }
