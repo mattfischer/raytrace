@@ -1,7 +1,5 @@
 #include "Render/WorkQueue.hpp"
 
-#include <thread>
-
 namespace Render {
     WorkQueue::WorkQueue(size_t size, WorkerFunction workerFunction)
     : mQueue(size), mWorkerFunction(std::move(workerFunction))
@@ -14,14 +12,14 @@ namespace Render {
     bool WorkQueue::executeNext(ThreadLocal &threadLocal)
     {
         while(true) {
-            int read = mRead;
+            int read = mRead.load(std::memory_order_acquire);
             int newRead = (read + 1) % mQueue.size();
-            if(read == mCommitted) {
+            if(read == mCommitted.load(std::memory_order_acquire)) {
                 return false;
             }
 
             Key key = mQueue[read];    
-            if(mRead.compare_exchange_weak(read, newRead)) {
+            if(mRead.compare_exchange_weak(read, newRead, std::memory_order_acq_rel)) {
                 mWorkerFunction(key, threadLocal);
                 return true;
             }
@@ -31,22 +29,19 @@ namespace Render {
     bool WorkQueue::addItem(Key key)
     {
         while(true) {
-            int write = mWrite;
+            int write = mWrite.load(std::memory_order_acquire);
             int newWrite = (write + 1) % mQueue.size();
-            if(newWrite == mRead) {
-                std::this_thread::yield();
+            if(newWrite == mRead.load(std::memory_order_acquire)) {
                 continue;
             }
 
-            if(mWrite.compare_exchange_weak(write, newWrite)) {                
+            if(mWrite.compare_exchange_weak(write, newWrite, std::memory_order_acq_rel)) {                
                 mQueue[write] = key;
 
                 while(true) {
                     int expected = write;
-                    if(mCommitted.compare_exchange_weak(expected, newWrite)) {
+                    if(mCommitted.compare_exchange_weak(expected, newWrite, std::memory_order_acq_rel)) {
                         break;
-                    } else {
-                        std::this_thread::yield();
                     }
                 }
                 return true;
