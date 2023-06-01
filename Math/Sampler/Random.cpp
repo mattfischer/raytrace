@@ -20,7 +20,12 @@ namespace Math {
         float Random::getValue()
         {
             std::uniform_real_distribution<float> dist(0, 1);
-            return dist(mRandomEngine);
+            float value = dist(mRandomEngine);
+            if(value == 1.0f) {
+                value = 0.0f;
+            }
+
+            return value;
         }
 
         Math::Point2D Random::getValue2D()
