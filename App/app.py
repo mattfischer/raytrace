@@ -63,11 +63,11 @@ class App(QtWidgets.QApplication):
             self.refreshSettings()
 
             scene = raytrace.Scene(self.mainwindow.scene.currentText())
-            self.engine = raytrace.Engine(scene)
-            self.engine.set_settings(self.settings)
+            self.engine = raytrace.Engine(scene, self.settings)
 
             self.updateFramebuffer()
             self.engine.start_render(self)
+            self.mainwindow.statusbar.showMessage('')
             self.mainwindow.renderButton.setText('Stop Rendering')
             self.timer.start(100)
 
@@ -123,7 +123,20 @@ class App(QtWidgets.QApplication):
         self.sampleStatusPixmap = QtGui.QPixmap(self.engine.sample_status_framebuffer.width, self.engine.sample_status_framebuffer.height)
         self.sampleStatusPixmap.setDevicePixelRatio(dpr)
 
-    def on_render_done(self):
+    def on_render_done(self, total_time_seconds):
+        seconds = total_time_seconds
+        hours = int(seconds / 3600)
+        seconds -= hours * 3600
+        minutes = int(seconds / 60)
+        seconds -= minutes * 60
+        if hours > 0:
+            message = 'Render time: %ih %im %is' % (hours, minutes, seconds)
+        elif minutes > 0:
+            message = 'Render time: %im %is' % (minutes, seconds)
+        else:
+            message = 'Render time: %.03fs' % seconds
+        self.mainwindow.statusbar.showMessage(message)
+
         self.mainwindow.renderButton.setText('Render')
 
     def on_render_status(self, message):

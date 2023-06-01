@@ -1,4 +1,4 @@
-#include "Render/Engine.hpp"
+#include "Render/Renderer.hpp"
 #include "Object/Scene.hpp"
 #include "Parse/Parser.hpp"
 
@@ -31,7 +31,7 @@ namespace App {
         FramebufferObject *renderFramebufferObject;
         FramebufferObject *sampleStatusFramebufferObject;
         Listener *listener;
-        Render::Engine *engine;
+        Render::Renderer *renderer;
     };
 
     struct SettingsObject {
@@ -63,7 +63,7 @@ namespace App {
         return framebufferObject;
     }
 
-    class Listener : public Render::Engine::Listener
+    class Listener : public Render::Executor::Listener
     {
     public:
         Listener(PyObject *listenerObject)
@@ -76,17 +76,10 @@ namespace App {
             Py_XDECREF(mListenerObject);
         }
 
-        void onRenderDone()
+        void onExecutorDone(float totalTimeSeconds)
         {
             PyGILState_STATE state = PyGILState_Ensure();
-            PyObject_CallMethod(mListenerObject, "on_render_done", NULL);
-            PyGILState_Release(state);
-        }
-
-        void onRenderStatus(const char *message)
-        {
-            PyGILState_STATE state = PyGILState_Ensure();
-            PyObject_CallMethod(mListenerObject, "on_render_status", "s", message);
+            PyObject_CallMethod(mListenerObject, "on_render_done", "f", totalTimeSeconds);            
             PyGILState_Release(state);
         }
 
@@ -97,14 +90,42 @@ namespace App {
     static int Engine_init(PyObject *self, PyObject *args, PyObject *kwds)
     {
         EngineObject *engineObject = (EngineObject*)self;
+        SettingsObject *settingsObject;
 
-        if (!PyArg_ParseTuple(args, "O", &engineObject->sceneObject)) {
+        if (!PyArg_ParseTuple(args, "OO", &engineObject->sceneObject, &settingsObject)) {
             return -1;
         }
 
         Py_INCREF(engineObject->sceneObject);
 
-        engineObject->engine = new Render::Engine(*engineObject->sceneObject->scene);
+        Render::Renderer::Settings settings;
+        settings.width = settingsObject->width;
+        settings.height = settingsObject->height;
+        settings.minSamples = settingsObject->minSamples;
+        settings.maxSamples = settingsObject->maxSamples;
+        settings.sampleThreshold = settingsObject->sampleThreshold;
+
+        wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
+        std::unique_ptr<Render::Lighter::Base> lighter;
+        if(!wcscmp(lighting, L"none")) {
+            lighter = nullptr;
+        } else if(!wcscmp(lighting, L"direct")) {
+            lighter = std::make_unique<Render::Lighter::Direct>();
+        } else if(!wcscmp(lighting, L"pathTracing")) {
+            lighter = std::make_unique<Render::Lighter::UniPath>();
+        } else if(!wcscmp(lighting, L"irradianceCaching")) {
+            Render::Lighter::IrradianceCached::Settings lighterSettings;
+
+            lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
+            lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
+
+            lighter = std::make_unique<Render::Lighter::IrradianceCached>(lighterSettings);
+        }
+
+        engineObject->renderer = new Render::Renderer(*engineObject->sceneObject->scene, settings, std::move(lighter));
+
+        engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->renderer->renderFramebuffer());
+        engineObject->sampleStatusFramebufferObject = wrapFramebuffer(engineObject->renderer->sampleStatusFramebuffer());
 
         return 0;
     }
@@ -119,9 +140,7 @@ namespace App {
             delete engineObject->listener;
         }
 
-        if(engineObject->engine) {
-            delete engineObject->engine;
-        }
+        delete engineObject->renderer;
     }
 
     static PyObject *Engine_startRender(PyObject *self, PyObject *args)
@@ -137,8 +156,7 @@ namespace App {
             delete engineObject->listener;
         }
         engineObject->listener = new Listener(listenerObject);
-
-        engineObject->engine->startRender(engineObject->listener);
+        engineObject->renderer->executor().start(engineObject->listener);
 
         Py_RETURN_NONE;
     }
@@ -147,51 +165,7 @@ namespace App {
     {
         EngineObject *engineObject = (EngineObject*)self;
 
-        engineObject->engine->stop();
-
-        Py_RETURN_NONE;
-    }
-
-    static PyObject *Engine_setSettings(PyObject *self, PyObject *args)
-    {
-        EngineObject *engineObject = (EngineObject*)self;
-        SettingsObject *settingsObject;
-
-        if (!PyArg_ParseTuple(args, "O", &settingsObject))
-            return NULL;
-
-        Render::Settings settings;
-
-        settings.width = settingsObject->width;
-        settings.height = settingsObject->height;
-        settings.minSamples = settingsObject->minSamples;
-        settings.maxSamples = settingsObject->maxSamples;
-        settings.sampleThreshold = settingsObject->sampleThreshold;
-
-        engineObject->engine->setSettings(settings);
-
-        std::unique_ptr<Render::Lighter::Base> lighter;
-        wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
-        if(!wcscmp(lighting, L"none")) {
-        } else if(!wcscmp(lighting, L"direct")) {
-            lighter = std::make_unique<Render::Lighter::Direct>();
-        } else if(!wcscmp(lighting, L"pathTracing")) {
-            lighter = std::make_unique<Render::Lighter::UniPath>();
-        } else if(!wcscmp(lighting, L"irradianceCaching")) {
-            Render::Lighter::IrradianceCached::Settings lighterSettings;
-
-            lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
-            lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
-
-            lighter = std::make_unique<Render::Lighter::IrradianceCached>(lighterSettings);
-        }
-        engineObject->engine->setLighter(std::move(lighter));
-
-        Py_XDECREF(engineObject->renderFramebufferObject);
-        engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->engine->renderFramebuffer());
-
-        Py_XDECREF(engineObject->sampleStatusFramebufferObject);
-        engineObject->sampleStatusFramebufferObject = wrapFramebuffer(engineObject->engine->sampleStatusFramebuffer());
+        engineObject->renderer->executor().stop();
 
         Py_RETURN_NONE;
     }
@@ -200,22 +174,23 @@ namespace App {
     {
         EngineObject *engineObject = (EngineObject*)self;
 
-        return PyBool_FromLong(engineObject->engine->rendering());
+        return PyBool_FromLong(engineObject->renderer->executor().running());
     }
 
     static PyObject *Engine_renderProbe(PyObject *self, PyObject *args)
     {
         EngineObject *engineObject = (EngineObject*)self;
-        Render::Engine &engine = *engineObject->engine;
+        Render::Renderer &renderer = *engineObject->renderer;
 
         int x, y;
         if (!PyArg_ParseTuple(args, "II", &x, &y))
             return NULL;
 
+        Object::Scene &scene = *engineObject->sceneObject->scene;
         Math::Sampler::Random sampler;
-        Math::Beam beam = engine.scene().camera().createPixelBeam(Math::Point2D((float)x, (float)y), engine.settings().width, engine.settings().height, Math::Point2D());
+        Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D((float)x, (float)y), renderer.renderFramebuffer().width(), renderer.renderFramebuffer().height(), Math::Point2D());
 
-        Object::Intersection isect = engine.scene().intersect(beam);
+        Object::Intersection isect = scene.intersect(beam);
         const Object::Surface &surface = isect.primitive().surface();
 
         if (isect.valid()) {
@@ -223,8 +198,8 @@ namespace App {
             PyObject *ret = PyList_New(1000);
             for(int i=0; i<1000; i++) {
                 Math::Vector dirIn;
-                Object::Radiance irad = engine.sampleIrradiance(isect, sampler, dirIn);
-                Object::Color color = engine.toneMap(irad);
+                Object::Radiance irad = renderer.sampleIrradiance(isect, sampler, dirIn);
+                Object::Color color = renderer.toneMap(irad);
                 Math::Vector dirInLocal = basis.worldToLocal(dirIn);
                 float azimuth = std::atan2(dirInLocal.y(), dirInLocal.x());
                 float elevation = std::asin(dirInLocal.z());
@@ -241,7 +216,6 @@ namespace App {
     static PyMethodDef Engine_methods[] = {
         {"start_render", (PyCFunction) Engine_startRender, METH_VARARGS, ""},
         {"stop", (PyCFunction) Engine_stop, METH_NOARGS, ""},
-        {"set_settings", (PyCFunction) Engine_setSettings, METH_VARARGS, ""},
         {"rendering", (PyCFunction) Engine_rendering, METH_NOARGS, ""},
         {"renderProbe", (PyCFunction) Engine_renderProbe, METH_VARARGS, ""},
         {NULL}

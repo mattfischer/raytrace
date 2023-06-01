@@ -1,14 +1,16 @@
 #define _USE_MATH_DEFINES
 #include "Render/Lighter/IrradianceCached.hpp"
-
-#include "Render/TileJobSimple.hpp"
+#include "Render/RasterJob.hpp"
 
 #include "Object/Scene.hpp"
 
 #include "Math/OrthonormalBasis.hpp"
+#include "Math/Sampler/Random.hpp"
 
 #include <cmath>
 #include <cfloat>
+#include <functional>
+#include <mutex>
 
 namespace Render {
     namespace Lighter
@@ -341,16 +343,25 @@ namespace Render {
             return rad;
         }
 
-        std::vector<std::unique_ptr<Render::Job>> IrradianceCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
+        struct ThreadLocal : public Executor::Job::ThreadLocal {
+            Math::Sampler::Random sampler;
+        };
+
+        std::vector<std::unique_ptr<Render::Executor::Job>> IrradianceCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
         {
-            std::vector<std::unique_ptr<Render::Job>> jobs;
+            std::unique_ptr<Executor::Job> job = std::make_unique<Render::RasterJob>(
+                framebuffer.width(),
+                framebuffer.height(),
+                1,
+                [&]() { return std::make_unique<ThreadLocal>(); },
+                [&](int x, int y, int sample, Executor::Job::ThreadLocal &threadLocalBase)
+                    {
+                        prerenderPixel(x, y, framebuffer, scene, static_cast<ThreadLocal&>(threadLocalBase).sampler);
+                    }
+            );
 
-            auto func = [&](unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, Math::Sampler::Base &sampler) {
-                prerenderPixel(x, y, framebuffer, scene, sampler);
-            };
-
-            jobs.push_back(std::make_unique<Render::TileJobSimple>(framebuffer, std::move(func)));
-
+            std::vector<std::unique_ptr<Render::Executor::Job>> jobs;
+            jobs.push_back(std::move(job));
             return jobs;
         }
 

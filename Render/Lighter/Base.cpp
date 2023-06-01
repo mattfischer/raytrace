@@ -10,9 +10,9 @@ namespace Render {
         {
         }
 
-        std::vector<std::unique_ptr<Render::Job>> Base::createPrerenderJobs(const Object::Scene &, Render::Framebuffer &)
+        std::vector<std::unique_ptr<Render::Executor::Job>> Base::createPrerenderJobs(const Object::Scene &, Render::Framebuffer &)
         {
-            return std::vector<std::unique_ptr<Render::Job>>();
+            return std::vector<std::unique_ptr<Render::Executor::Job>>();
         }
     }
 }
