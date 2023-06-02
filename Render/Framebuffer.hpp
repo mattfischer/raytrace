@@ -2,6 +2,7 @@
 #define RENDER_FRAMEBUFFER_HPP
 
 #include "Object/Color.hpp"
+#include "Object/Radiance.hpp"
 
 #include <vector>
 
@@ -16,6 +17,8 @@ namespace Render {
         const unsigned char *bits() const;
 
         void setPixel(unsigned int x, unsigned int y, const Object::Color &color);
+
+        static Object::Color toneMap(const Object::Radiance &rad);
 
     private:
         unsigned int mWidth;

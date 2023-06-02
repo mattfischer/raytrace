@@ -33,4 +33,13 @@ namespace Render {
         mBits[(mWidth * y + x) * 3 + 1] = static_cast<unsigned char>(color.green() * 0xff);
         mBits[(mWidth * y + x) * 3 + 2] = static_cast<unsigned char>(color.blue() * 0xff);
     }
+
+    Object::Color Framebuffer::toneMap(const Object::Radiance &rad)
+    {
+        float red = rad.red() / (rad.red() + 1);
+        float green = rad.green() / (rad.green() + 1);
+        float blue = rad.blue() / (rad.blue() + 1);
+
+        return Object::Color(red, green, blue);
+    }
 }

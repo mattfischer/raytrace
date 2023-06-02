@@ -56,38 +56,6 @@ namespace Render {
         return *mSampleStatusFramebuffer;
     }
 
-    Object::Color Renderer::toneMap(const Object::Radiance &rad)
-    {
-        float red = rad.red() / (rad.red() + 1);
-        float green = rad.green() / (rad.green() + 1);
-        float blue = rad.blue() / (rad.blue() + 1);
-
-        return Object::Color(red, green, blue);
-    }
-
-    Object::Radiance Renderer::sampleIrradiance(const Object::Intersection &intersection, Math::Sampler::Base &sampler, Math::Vector &incidentDirection) const
-    {
-        const Object::Surface &surface = intersection.primitive().surface();
-        const Math::Normal &normal = surface.facingNormal(intersection);
-        const Math::Vector outgoingDirection = -intersection.ray().direction();
-        
-        float pdf;
-        bool pdfDelta;
-        surface.sample(intersection, sampler, incidentDirection, pdf, pdfDelta);
-        float dot = incidentDirection * normal;
-        Math::Point offsetPoint = intersection.point() + Math::Vector(normal) * 0.01f;
-		Math::Ray ray(offsetPoint, incidentDirection);
-		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-		
-		Object::Intersection intersection2 = intersection.scene().intersect(beam);
-        Object::Radiance irradiance;
-		if (intersection2.valid()) {
-			irradiance = mLighter->light(intersection2, sampler) * dot;
-		}
-
-        return irradiance;
-    }
-
     void Renderer::renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler)
     {
         Math::Bivector dv;
@@ -108,7 +76,7 @@ namespace Render {
     
             Object::Radiance radTotal = mTotalRadiance.get(x, y) + rad;
             mTotalRadiance.set(x, y, radTotal);
-            Object::Color color = Renderer::toneMap(radTotal / static_cast<float>(sample + 1));
+            Object::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
             mRenderFramebuffer->setPixel(x, y, color);
         } else {
             if(isect.valid()) {

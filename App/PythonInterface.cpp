@@ -5,6 +5,7 @@
 #include "Render/Lighter/Direct.hpp"
 #include "Render/Lighter/UniPath.hpp"
 #include "Render/Lighter/IrradianceCached.hpp"
+#include "Render/LightProbe.hpp"
 
 #include "Math/Sampler/Random.hpp"
 
@@ -187,22 +188,17 @@ namespace App {
             return NULL;
 
         Object::Scene &scene = *engineObject->sceneObject->scene;
-        Math::Sampler::Random sampler;
         Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D((float)x, (float)y), renderer.renderFramebuffer().width(), renderer.renderFramebuffer().height(), Math::Point2D());
-
         Object::Intersection isect = scene.intersect(beam);
-        const Object::Surface &surface = isect.primitive().surface();
 
         if (isect.valid()) {
-            Math::OrthonormalBasis basis(surface.facingNormal(isect));
+            Render::LightProbe probe(isect);
             PyObject *ret = PyList_New(1000);
             for(int i=0; i<1000; i++) {
-                Math::Vector dirIn;
-                Object::Radiance irad = renderer.sampleIrradiance(isect, sampler, dirIn);
-                Object::Color color = renderer.toneMap(irad);
-                Math::Vector dirInLocal = basis.worldToLocal(dirIn);
-                float azimuth = std::atan2(dirInLocal.y(), dirInLocal.x());
-                float elevation = std::asin(dirInLocal.z());
+                Object::Color color;
+                float azimuth;
+                float elevation;
+                probe.getSample(azimuth, elevation, color);
                 PyObject *colorTuple = Py_BuildValue("(fff)", color.red(), color.green(), color.blue());
                 PyObject *sampleTuple = Py_BuildValue("(Off)", colorTuple, azimuth, elevation);
                 PyList_SetItem(ret, i, sampleTuple);

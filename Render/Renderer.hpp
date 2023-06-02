@@ -27,9 +27,6 @@ namespace Render {
         Render::Framebuffer &renderFramebuffer();
         Render::Framebuffer &sampleStatusFramebuffer();
 
-        static Object::Color Renderer::toneMap(const Object::Radiance &rad);
-        Object::Radiance sampleIrradiance(const Object::Intersection &intersection, Math::Sampler::Base &sampler, Math::Vector &incidentDirection) const;
-
     private:
         void renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
 
