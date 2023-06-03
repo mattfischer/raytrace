@@ -4,6 +4,8 @@
 #include "Object/Brdf/Base.hpp"
 #include "Object/Intersection.hpp"
 
+#include "Math/OrthonormalBasis.hpp"
+
 #include "Parse/AST.h"
 
 #include <cmath>
@@ -57,9 +59,12 @@ namespace Object {
         Object::Color col;
         Object::Color colTransmit(1, 1, 1);
 
+        Math::Vector dirInLocal = isect.basis().worldToLocal(dirIn);
+        Math::Vector dirOutLocal = isect.basis().worldToLocal(-isect.ray().direction());
+    
         for(const auto &brdf : mBrdfs) {
-            col = col + colTransmit * brdf->reflected(dirIn, isect.facingNormal(), -isect.ray().direction(), isect.albedo());
-            colTransmit = colTransmit * brdf->transmitted(dirIn, isect.facingNormal(), isect.albedo());
+            col = col + colTransmit * brdf->reflected(dirInLocal, dirOutLocal, isect.albedo());
+            colTransmit = colTransmit * brdf->transmitted(dirInLocal, isect.albedo());
         }
 
         return col;
@@ -69,17 +74,21 @@ namespace Object {
     {
         Object::Color colTransmit(1, 1, 1);
 
+        Math::Vector dirInLocal = isect.basis().worldToLocal(-dirIn);
+
         for(const auto &brdf : mBrdfs) {
-            colTransmit = colTransmit * brdf->transmitted(dirIn, -isect.facingNormal(), isect.albedo());
+            colTransmit = colTransmit * brdf->transmitted(dirInLocal, isect.albedo());
         }
 
         return colTransmit;
     }
 
+
     Object::Color Surface::sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
-        const Math::Normal &nrmFacing = isect.facingNormal();
+        Math::Vector dirOutLocal = isect.basis().worldToLocal(dirOut);
+        Math::Vector dirInLocal;
 
         float transmitThreshold = 0;
         if(!opaque()) {
@@ -90,10 +99,11 @@ namespace Object {
                 ratio = 1.0f / ratio;
             }
 
-            float c1 = dirOut * nrmFacing;
+            float c1 = dirOutLocal.z();
             float c2 = std::sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
 
-            dirIn = Math::Vector(nrmFacing) * (ratio * c1 - c2) - dirOut * ratio;
+            dirInLocal = Math::Vector(0, 0, ratio * c1 - c2) - dirOutLocal * ratio;
+            dirIn = isect.basis().localToWorld(dirInLocal);
             Object::Color throughput = transmitted(isect, -dirOut);
             transmitThreshold = std::min(1.0f, throughput.maximum());
             float roulette = sampler.getValue();
@@ -102,7 +112,7 @@ namespace Object {
                 pdf = 1.0f;
                 pdfDelta = true;
 
-                return transmitted(isect, dirIn) / (dirOut * nrmFacing * transmitThreshold);
+                return transmitted(isect, dirIn) / (dirOutLocal.z() * transmitThreshold);
             }
         }
 
@@ -113,7 +123,8 @@ namespace Object {
         }
         const Object::Brdf::Base &brdf = *mBrdfs[idx];
        
-        dirIn = brdf.sample(sampler, nrmFacing, dirOut);
+        dirInLocal = brdf.sample(sampler, dirOutLocal);
+        dirIn = isect.basis().localToWorld(dirInLocal);
         pdf = Surface::pdf(isect, dirIn);
         pdfDelta = false;
         return reflected(isect, dirIn) / (1 - transmitThreshold);
@@ -122,11 +133,12 @@ namespace Object {
     float Surface::pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
-        const Math::Normal &nrmFacing = isect.facingNormal();
-        
+        Math::Vector dirOutLocal = isect.basis().worldToLocal(dirOut);
+        Math::Vector dirInLocal = isect.basis().worldToLocal(dirIn);
+
         float totalPdf = 0;
         for(const std::unique_ptr<Object::Brdf::Base> &brdf : mBrdfs) {
-            totalPdf += brdf->pdf(dirIn, nrmFacing, dirOut);
+            totalPdf += brdf->pdf(dirInLocal, dirOutLocal);
         }
         totalPdf /= (float)mBrdfs.size();
 

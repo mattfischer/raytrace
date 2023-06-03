@@ -9,8 +9,10 @@ namespace Math {
     class OrthonormalBasis
     {
     public:
+        OrthonormalBasis() = default;
         OrthonormalBasis(const Math::Vector &z);
         OrthonormalBasis(const Math::Normal &z);
+        OrthonormalBasis(const Math::Vector &x, const Math::Vector &y, const Math::Vector &z);
 
         Math::Vector worldToLocal(const Math::Vector &world) const;
         Math::Vector localToWorld(const Math::Vector &local) const;

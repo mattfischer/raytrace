@@ -21,6 +21,8 @@ namespace Math {
 
         Math::Vector operator*(const Math::Vector2D &b) const;
 
+        Bivector normalize() const;
+
     private:
         Math::Vector mU;
         Math::Vector mV;

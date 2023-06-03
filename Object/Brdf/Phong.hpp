@@ -10,11 +10,11 @@ namespace Object {
         public:
             Phong(float strength, float power);
 
-            Object::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const override;
-            Object::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Object::Color &albedo) const override;
+            Object::Color reflected(const Math::Vector &dirIn, const Math::Vector &dirOut, const Object::Color &albedo) const override;
+            Object::Color transmitted(const Math::Vector &dirIn, const Object::Color &albedo) const override;
 
-            Math::Vector sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
-            float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
+            Math::Vector sample(Math::Sampler::Base &sampler, const Math::Vector &dirOut) const override;
+            float pdf(const Math::Vector &dirIn, const Math::Vector &dirOut) const override;
 
         private:
             float mStrength;

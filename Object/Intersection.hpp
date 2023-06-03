@@ -39,6 +39,8 @@ namespace Object {
 
         const Math::Bivector2D &surfaceProjection() const;
 
+        const Math::OrthonormalBasis &basis() const;
+
     protected:
         const Object::Scene *mScene;
         const Object::Primitive *mPrimitive;
@@ -49,7 +51,9 @@ namespace Object {
         mutable bool mNormalValid;
         mutable Math::Normal mNormal;
         mutable Math::Normal mFacingNormal;
-
+        mutable Math::Bivector mConormals;
+        mutable Math::OrthonormalBasis mBasis;
+        
         mutable bool mAlbedoValid;
         mutable Object::Color mAlbedo;
 

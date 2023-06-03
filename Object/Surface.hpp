@@ -8,6 +8,8 @@
 #include "Object/Radiance.hpp"
 #include "Object/NormalMap.hpp"
 
+#include "Math/OrthonormalBasis.hpp"
+
 #include <memory>
 
 namespace Object {

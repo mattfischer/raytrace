@@ -70,6 +70,11 @@ namespace Object {
             Math::Vector outgoingDirection = -mBeam->ray().direction();
             float dot = mNormal * outgoingDirection;
             mFacingNormal = (dot > 0) ? mNormal : -mNormal;
+            Math::Vector u = mShapeIntersection.tangent.u().normalize();
+            Math::Vector v = Math::Vector(mFacingNormal) % u;
+            mConormals = Math::Bivector(u, v);
+            mBasis = Math::OrthonormalBasis(u, v, Math::Vector(mFacingNormal));
+
             mNormalValid = true;
         }
 
@@ -80,6 +85,12 @@ namespace Object {
     {
         normal();
         return mFacingNormal;
+    }
+
+    const Math::OrthonormalBasis &Intersection::basis() const
+    {
+        normal();
+        return mBasis;
     }
 
     Object::Color Intersection::albedo() const

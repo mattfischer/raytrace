@@ -22,6 +22,7 @@ namespace Object {
             struct Triangle {
                 unsigned int vertices[3];
                 Math::Normal normal;
+                Math::Bivector tangent;
             };
 
             TriangleMesh(std::vector<Vertex> &&vertices, std::vector<Triangle> &&triangles);

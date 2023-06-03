@@ -159,6 +159,7 @@ namespace Parse {
                                     Math::Vector u = vertices[triangle.vertices[1]].point - vertices[triangle.vertices[0]].point;
                                     Math::Vector v = vertices[triangle.vertices[2]].point - vertices[triangle.vertices[0]].point;
                                     triangle.normal = Math::Normal(u % v).normalize();
+                                    triangle.tangent = Math::Bivector(u, v);
                                     triangles.push_back(triangle);
                                     triangle.vertices[1] = triangle.vertices[2];
                                     file >> triangle.vertices[2];
@@ -167,6 +168,7 @@ namespace Parse {
                             Math::Vector u = vertices[triangle.vertices[1]].point - vertices[triangle.vertices[0]].point;
                             Math::Vector v = vertices[triangle.vertices[2]].point - vertices[triangle.vertices[0]].point;
                             triangle.normal = Math::Normal(u % v).normalize();
+                            triangle.tangent = Math::Bivector(u, v);
                             triangles.push_back(triangle);
                         }
                         else {

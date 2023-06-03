@@ -8,12 +8,12 @@ namespace Object {
         {
         }
 
-        Object::Color Base::reflected(const Math::Vector &, const Math::Normal &, const Math::Vector &, const Object::Color &) const
+        Object::Color Base::reflected(const Math::Vector &, const Math::Vector &, const Object::Color &) const
         {
             return Object::Color(0, 0, 0);
         }
 
-        Object::Color Base::transmitted(const Math::Vector &, const Math::Normal &, const Object::Color &) const
+        Object::Color Base::transmitted(const Math::Vector &, const Object::Color &) const
         {
             return Object::Color(0, 0, 0);
         }
@@ -23,12 +23,12 @@ namespace Object {
             return 0;
         }
 
-        Math::Vector Base::sample(Math::Sampler::Base &, const Math::Normal &, const Math::Vector &) const
+        Math::Vector Base::sample(Math::Sampler::Base &, const Math::Vector &) const
         {
             return Math::Vector(0, 0, 0);
         }
 
-        float Base::pdf(const Math::Vector &, const Math::Normal &, const Math::Vector &) const
+        float Base::pdf(const Math::Vector &, const Math::Vector &) const
         {
             return 0;
         }

@@ -22,6 +22,14 @@ namespace Math {
     {
     }
 
+    OrthonormalBasis::OrthonormalBasis(const Math::Vector &x, const Math::Vector &y, const Math::Vector &z)
+    {
+        mMatrix = Math::Matrix(x.x(), y.x(), z.x(), 0,
+                               x.y(), y.y(), z.y(), 0,
+                               x.z(), y.z(), z.z(), 0,
+                               0,     0,     0,     1);
+    }
+
     Math::Vector OrthonormalBasis::worldToLocal(const Math::Vector &world) const
     {
         return Math::Vector(world * mMatrix);

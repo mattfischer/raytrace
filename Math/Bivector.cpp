@@ -45,4 +45,9 @@ namespace Math {
     {
         return Bivector(transformation * bivector.u(), transformation * bivector.v());
     }
+
+    Bivector Bivector::normalize() const
+    {
+        return Bivector(mU.normalize(), mV.normalize());
+    }
 }

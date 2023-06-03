@@ -17,35 +17,35 @@ namespace Object {
             mIor = ior;
         }
 
-        Object::Color TorranceSparrow::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const
+        Object::Color TorranceSparrow::reflected(const Math::Vector &dirIn, const Math::Vector &dirOut, const Object::Color &albedo) const
         {
             Math::Vector dirHalf = (dirIn + dirOut).normalize();
-            float alpha = std::acos(std::min(1.0f, nrm * dirHalf));
+            float alpha = std::acos(std::min(1.0f, dirHalf.z()));
             float cosAlpha = std::cos(alpha);
             float tanAlpha = std::tan(alpha);
             float m2 = mRoughness * mRoughness;
 
             float D = std::exp(-tanAlpha * tanAlpha / m2) / (M_PI * m2 * cosAlpha * cosAlpha * cosAlpha * cosAlpha);
             
-            float cosThetaI = dirIn * nrm;
+            float cosThetaI = dirIn.z();
             float oneMinusCos = 1 - cosThetaI;
             float R0 = (1 - mIor) / (1 + mIor);
             R0 = R0 * R0;
 
             float F = R0 + (1 - R0) * oneMinusCos * oneMinusCos * oneMinusCos * oneMinusCos * oneMinusCos;
 
-            float HN = dirHalf * nrm;
+            float HN = dirHalf.z();
             float VH = dirHalf * dirOut;
-            float VN = nrm * dirOut;
-            float LN = nrm * dirIn;
+            float VN = dirOut.z();
+            float LN = dirIn.z();
             float G = std::min(1.0f, std::min(2 * HN * VN / VH, 2 * HN * LN / VH));
 
             return Object::Color(1, 1, 1) * mStrength * D * F * G / (4 * VN * LN);
         }
 
-        Object::Color TorranceSparrow::transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Object::Color &) const
+        Object::Color TorranceSparrow::transmitted(const Math::Vector &dirIn, const Object::Color &) const
         {
-            float cosThetaI = dirIn * nrm;
+            float cosThetaI = dirIn.z();
             float oneMinusCos = 1 - cosThetaI;
             float R0 = (1 - mIor) / (1 + mIor);
             R0 = R0 * R0;
@@ -54,26 +54,24 @@ namespace Object {
             return Color(1, 1, 1) * (1.0f - mStrength * F);
         }
 
-        Math::Vector TorranceSparrow::sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const
+        Math::Vector TorranceSparrow::sample(Math::Sampler::Base &sampler, const Math::Vector &dirOut) const
         {
             Math::Point2D samplePoint = sampler.getValue2D();
             float phi = 2 * M_PI * samplePoint.u();
             float tanTheta = std::sqrt(-mRoughness * mRoughness * std::log(1 - samplePoint.v()));
             float theta = std::atan(tanTheta);
 
-            Math::OrthonormalBasis basis(nrm);
-
-            Math::Vector axis = basis.localToWorld(Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1));
+            Math::Vector axis = Math::Vector::fromPolar(phi, M_PI / 2 - theta, 1);
             Math::Vector dirIn = -(dirOut - axis * (dirOut * axis * 2));
 
             return dirIn;
         }
 
-        float TorranceSparrow::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const
+        float TorranceSparrow::pdf(const Math::Vector &dirIn, const Math::Vector &dirOut) const
         {
             Math::Vector axis = (dirIn + dirOut).normalize();
 
-            float cosTheta = axis * Math::Vector(nrm);
+            float cosTheta = axis.z();
             float sinTheta = std::sqrt(std::max(0.0f, 1 - cosTheta * cosTheta));
             float tanTheta = sinTheta / cosTheta;
 

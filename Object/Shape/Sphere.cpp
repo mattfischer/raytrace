@@ -30,7 +30,11 @@ namespace Object {
                     Math::Point point = ray.origin() + ray.direction() * distance;
                     isect.normal = Math::Normal(point - mPosition) / mRadius;
                     isect.surfacePoint = Math::Point2D();
-                    isect.tangent = Math::Bivector(Math::Vector(), Math::Vector());
+                    Math::Vector u = Math::Vector(1, 0, 0);
+                    Math::Vector v = Math::Vector(0, 1, 0);
+                    u = u - Math::Vector(isect.normal) * (isect.normal * u);
+                    v = v - Math::Vector(isect.normal) * (isect.normal * v);
+                    isect.tangent = Math::Bivector(u, v);
                     return true;
                 }
 
@@ -42,7 +46,11 @@ namespace Object {
                     Math::Point point = ray.origin() + ray.direction() * distance;
                     isect.normal = Math::Normal(point - mPosition) / mRadius;
                     isect.surfacePoint = Math::Point2D();
-                    isect.tangent = Math::Bivector(Math::Vector(), Math::Vector());
+                    Math::Vector u = Math::Vector(1, 0, 0);
+                    Math::Vector v = Math::Vector(0, 1, 0);
+                    u = u - Math::Vector(isect.normal) * (isect.normal * u);
+                    v = v - Math::Vector(isect.normal) * (isect.normal * v);
+                    isect.tangent = Math::Bivector(u, v);
                     return true;
                 }
             }

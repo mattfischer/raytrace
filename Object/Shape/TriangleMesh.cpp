@@ -30,7 +30,7 @@ namespace Object {
                 float tu, tv;
                 if (Object::Shape::Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, isect.distance, tu, tv)) {
                     isect.normal = triangle.normal;
-                    isect.tangent = Math::Bivector(Math::Vector(), Math::Vector());
+                    isect.tangent = triangle.tangent;
                     isect.surfacePoint = Math::Point2D();
                     ret = true;
                 }
