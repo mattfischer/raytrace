@@ -64,9 +64,9 @@ executable('raytrace',
     'Parse/PlyLoader.cpp',
     'Render/Executor.cpp',
     'Render/Framebuffer.cpp',
-    'Render/UniPathRenderer.cpp',
-    'Render/WorkQueue.cpp',
-    'Render/WorkQueueJob.cpp',
+    'Render/Queued/Renderer.cpp',
+    'Render/Queued/WorkQueue.cpp',
+    'Render/Queued/WorkQueueJob.cpp',
     flex_c, bison_c,
     dependencies: python
 )

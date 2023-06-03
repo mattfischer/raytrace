@@ -1,4 +1,4 @@
-#include "Render/UniPathRenderer.hpp"
+#include "Render/Queued/Renderer.hpp"
 #include "Object/Scene.hpp"
 #include "Parse/Parser.hpp"
 
@@ -27,10 +27,7 @@ namespace App {
         FramebufferObject *renderFramebufferObject;
         FramebufferObject *sampleStatusFramebufferObject;
         Listener *listener;
-        Render::UniPathRenderer::Settings settings;
-        Render::Framebuffer *renderFramebuffer;
-        Render::Framebuffer *sampleStatusFramebuffer;
-        Render::UniPathRenderer *renderer;
+        Render::Queued::Renderer *renderer;
     };
 
     struct SettingsObject {
@@ -97,7 +94,7 @@ namespace App {
 
         Py_INCREF(engineObject->sceneObject);
 
-        Render::UniPathRenderer::Settings settings;
+        Render::Queued::Renderer::Settings settings;
 
         settings.width = settingsObject->width;
         settings.height = settingsObject->height;
@@ -105,7 +102,7 @@ namespace App {
         settings.maxSamples = settingsObject->maxSamples;
         settings.sampleThreshold = settingsObject->sampleThreshold;
 
-        engineObject->renderer = new Render::UniPathRenderer(*engineObject->sceneObject->scene, settings);
+        engineObject->renderer = new Render::Queued::Renderer(*engineObject->sceneObject->scene, settings);
 
         engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->renderer->renderFramebuffer());
         engineObject->sampleStatusFramebufferObject = wrapFramebuffer(engineObject->renderer->sampleStatusFramebuffer());
@@ -125,14 +122,6 @@ namespace App {
 
         if(engineObject->renderer) {
             delete engineObject->renderer;
-        }
-
-        if(engineObject->renderFramebuffer) {
-            delete engineObject->renderFramebuffer;
-        }
-
-        if(engineObject->sampleStatusFramebuffer) {
-            delete engineObject->sampleStatusFramebuffer;
         }
     }
 
