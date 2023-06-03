@@ -5,6 +5,7 @@
 #include "Render/Framebuffer.hpp"
 #include "Render/Executor.hpp"
 #include "Render/Raster.hpp"
+#include "Render/WorkQueue.hpp"
 
 #include "Math/Beam.hpp"
 #include "Math/Sampler/Random.hpp"
@@ -24,9 +25,11 @@ namespace Render {
             float sampleThreshold;
         };
 
-        UniPathRenderer(const Object::Scene &scene, const Settings &settings, Render::Framebuffer &framebuffer);
+        UniPathRenderer(const Object::Scene &scene, const Settings &settings);
     
         Render::Executor &executor();
+        Render::Framebuffer &renderFramebuffer();
+        Render::Framebuffer &sampleStatusFramebuffer();
 
     private:
         struct Item {
@@ -60,8 +63,9 @@ namespace Render {
         void commitRadiance(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
         
         const Object::Scene &mScene;
-        const Settings &mSettings;
-        Render::Framebuffer &mFramebuffer;
+        const Settings mSettings;
+        std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
+        std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
         Render::Executor mExecutor;
         std::vector<Item> mItems;

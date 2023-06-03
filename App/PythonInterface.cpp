@@ -75,36 +75,13 @@ namespace App {
             Py_XDECREF(mListenerObject);
         }
 
-        void onExecutorDone(int totalTimeSeconds) override
+        void onExecutorDone(float totalTimeSeconds) override
         {
-            PyGILState_STATE state = PyGILState_Ensure();
-            
-            char buf[256];
-            int seconds = totalTimeSeconds;
-            int hours = seconds / 3600;
-            seconds -= hours * 3600;
-            int minutes = seconds / 60;
-            seconds -= minutes * 60;
-            if (hours > 0) {
-                sprintf_s(buf, sizeof(buf), "Render time: %ih %im %is", hours, minutes, static_cast<unsigned int>(seconds));
-            }
-            else if (minutes > 0) {
-                sprintf_s(buf, sizeof(buf), "Render time: %im %is", minutes, static_cast<unsigned int>(seconds));
-            }
-            else {
-                sprintf_s(buf, sizeof(buf), "Render time: %is", seconds);
-            }
-            
-            PyObject_CallMethod(mListenerObject, "on_render_status", "s", buf);
-            
-            PyObject_CallMethod(mListenerObject, "on_render_done", NULL);
+            PyGILState_STATE state = PyGILState_Ensure();            
+            PyObject_CallMethod(mListenerObject, "on_render_done", "f", totalTimeSeconds);
             PyGILState_Release(state);
         }
 
-        void clearStatus()
-        {
-            PyObject_CallMethod(mListenerObject, "on_render_status", "s", "");
-        }
     private:
         PyObject *mListenerObject;
     };
@@ -112,12 +89,26 @@ namespace App {
     static int Engine_init(PyObject *self, PyObject *args, PyObject *kwds)
     {
         EngineObject *engineObject = (EngineObject*)self;
+        SettingsObject *settingsObject;
 
-        if (!PyArg_ParseTuple(args, "O", &engineObject->sceneObject)) {
+        if (!PyArg_ParseTuple(args, "OO", &engineObject->sceneObject, &settingsObject)) {
             return -1;
         }
 
         Py_INCREF(engineObject->sceneObject);
+
+        Render::UniPathRenderer::Settings settings;
+
+        settings.width = settingsObject->width;
+        settings.height = settingsObject->height;
+        settings.minSamples = settingsObject->minSamples;
+        settings.maxSamples = settingsObject->maxSamples;
+        settings.sampleThreshold = settingsObject->sampleThreshold;
+
+        engineObject->renderer = new Render::UniPathRenderer(*engineObject->sceneObject->scene, settings);
+
+        engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->renderer->renderFramebuffer());
+        engineObject->sampleStatusFramebufferObject = wrapFramebuffer(engineObject->renderer->sampleStatusFramebuffer());
 
         return 0;
     }
@@ -159,13 +150,7 @@ namespace App {
         }
         engineObject->listener = new Listener(listenerObject);
 
-        if(engineObject->renderer) {
-            delete engineObject->renderer;
-        }
-        engineObject->renderer = new Render::UniPathRenderer(*engineObject->sceneObject->scene, engineObject->settings, *engineObject->renderFramebuffer);
-
         engineObject->renderer->executor().start(engineObject->listener);
-        engineObject->listener->clearStatus();
     
         Py_RETURN_NONE;
     }
@@ -186,28 +171,6 @@ namespace App {
 
         if (!PyArg_ParseTuple(args, "O", &settingsObject))
             return NULL;
-
-        engineObject->settings.width = settingsObject->width;
-        engineObject->settings.height = settingsObject->height;
-        engineObject->settings.minSamples = settingsObject->minSamples;
-        engineObject->settings.maxSamples = settingsObject->maxSamples;
-        engineObject->settings.sampleThreshold = settingsObject->sampleThreshold;
-
-        if(engineObject->renderFramebuffer) {
-            Py_XDECREF(engineObject->renderFramebufferObject);
-            delete engineObject->renderFramebuffer;
-        }
-
-        engineObject->renderFramebuffer = new Render::Framebuffer(engineObject->settings.width, engineObject->settings.height);
-        engineObject->renderFramebufferObject = wrapFramebuffer(*engineObject->renderFramebuffer);
-
-        if(engineObject->sampleStatusFramebuffer) {
-            Py_XDECREF(engineObject->sampleStatusFramebufferObject);
-            delete engineObject->sampleStatusFramebuffer;
-        }
-
-        engineObject->sampleStatusFramebuffer = new Render::Framebuffer(engineObject->settings.width, engineObject->settings.height);
-        engineObject->sampleStatusFramebufferObject = wrapFramebuffer(*engineObject->sampleStatusFramebuffer);
 
         Py_RETURN_NONE;
     }

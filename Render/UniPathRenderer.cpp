@@ -1,48 +1,53 @@
 #include "Render/UniPathRenderer.hpp"
 
 #include "Render/WorkQueue.hpp"
+#include "Render/WorkQueueJob.hpp"
 
 #include "Math/Sampler/Random.hpp"
 #include <memory>
-#include <functional>
 
 using namespace std::placeholders;
 
 namespace Render {
     static const int kSize = 10000;
 
-    UniPathRenderer::UniPathRenderer(const Object::Scene &scene, const Settings &settings, Render::Framebuffer &framebuffer)
+    UniPathRenderer::UniPathRenderer(const Object::Scene &scene, const Settings &settings)
     : mScene(scene)
     , mSettings(settings)
-    , mFramebuffer(framebuffer)
-    , mExecutor(std::bind(&UniPathRenderer::createThreadLocal, this))
     , mItems(kSize)
-    , mTotalRadiance(framebuffer.width(), framebuffer.height())
-    , mTotalSamples(framebuffer.width(), framebuffer.height())
+    , mTotalRadiance(settings.width, settings.height)
+    , mTotalSamples(settings.width, settings.height)
     {
         mCurrentPixel = 0;
 
+        mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
+        mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
+        
+        std::unique_ptr<Render::WorkQueueJob> workQueueJob = std::make_unique<Render::WorkQueueJob>([]() { return std::make_unique<ThreadLocal>(); });
+
         mGenerateCameraRayQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { generateCameraRay(k, l); });
-        mExecutor.addWorkQueue(*mGenerateCameraRayQueue);
+        workQueueJob->addWorkQueue(*mGenerateCameraRayQueue);
 
         mIntersectRayQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { intersectRay(k, l); });
-        mExecutor.addWorkQueue(*mIntersectRayQueue);
+        workQueueJob->addWorkQueue(*mIntersectRayQueue);
 
         mDirectLightAreaQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { directLightArea(k, l); });
-        mExecutor.addWorkQueue(*mDirectLightAreaQueue);
+        workQueueJob->addWorkQueue(*mDirectLightAreaQueue);
 
         mDirectLightPointQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { directLightPoint(k, l); });
-        mExecutor.addWorkQueue(*mDirectLightPointQueue);
+        workQueueJob->addWorkQueue(*mDirectLightPointQueue);
 
         mExtendPathQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { extendPath(k, l); });
-        mExecutor.addWorkQueue(*mExtendPathQueue);
+        workQueueJob->addWorkQueue(*mExtendPathQueue);
 
         mCommitRadianceQueue = std::make_unique<Render::WorkQueue>(kSize + 1, [&](auto k, auto &l) { commitRadiance(k, l); });
-        mExecutor.addWorkQueue(*mCommitRadianceQueue);
+        workQueueJob->addWorkQueue(*mCommitRadianceQueue);
 
         for(WorkQueue::Key key = 0; key < kSize; key++) {
             mGenerateCameraRayQueue->addItem(key);
         }
+
+        mExecutor.addJob(std::move(workQueueJob));
     }
 
     Render::Executor &UniPathRenderer::executor()
@@ -50,6 +55,16 @@ namespace Render {
         return mExecutor;
     }
 
+    Render::Framebuffer &UniPathRenderer::renderFramebuffer()
+    {
+        return *mRenderFramebuffer;
+    }
+
+    Render::Framebuffer &UniPathRenderer::sampleStatusFramebuffer()
+    {
+        return *mSampleStatusFramebuffer;
+    }
+    
     std::unique_ptr<UniPathRenderer::ThreadLocal> UniPathRenderer::createThreadLocal()
     {
         return std::make_unique<ThreadLocal>();
@@ -267,7 +282,7 @@ namespace Render {
 
         int numSamples = mTotalSamples.get(item.x, item.y) + 1;
         Object::Color color = toneMap(radTotal / static_cast<float>(numSamples));
-        mFramebuffer.setPixel(item.x, item.y, color);
+        mRenderFramebuffer->setPixel(item.x, item.y, color);
 
         mTotalSamples.set(item.x, item.y, numSamples);
 

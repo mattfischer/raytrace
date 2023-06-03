@@ -66,6 +66,7 @@ executable('raytrace',
     'Render/Framebuffer.cpp',
     'Render/UniPathRenderer.cpp',
     'Render/WorkQueue.cpp',
+    'Render/WorkQueueJob.cpp',
     flex_c, bison_c,
     dependencies: python
 )
