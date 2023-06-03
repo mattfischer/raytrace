@@ -41,8 +41,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>549</height>
+             <width>1921</width>
+             <height>1209</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -80,8 +80,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>549</height>
+             <width>1921</width>
+             <height>1209</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -113,7 +113,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1145</width>
+     <width>2290</width>
      <height>21</height>
     </rect>
    </property>
@@ -241,6 +241,32 @@
          <widget class="QLabel" name="label_4">
           <property name="text">
            <string>Scene</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupRenderer">
+       <property name="title">
+        <string>Renderer</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QRadioButton" name="rendererCpu">
+          <property name="text">
+           <string>CPU</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rendererQueued">
+          <property name="text">
+           <string>Queued</string>
           </property>
          </widget>
         </item>

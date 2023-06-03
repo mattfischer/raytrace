@@ -104,6 +104,15 @@ class App(QtWidgets.QApplication):
                 self.settings.lighting = name
                 break
 
+        renderer = [
+            (self.mainwindow.rendererCpu, 'cpu'),
+            (self.mainwindow.rendererQueued, 'queued')
+        ]
+        for(widget, name) in renderer:
+            if widget.isChecked():
+                self.settings.renderer = name
+                break
+
         self.settings.irradiance_cache_samples = self.mainwindow.irradianceCachingSamples.value()
         self.settings.irradiance_cache_threshold = self.mainwindow.irradianceCachingThreshold.value()
 

@@ -5,6 +5,9 @@
 #include "Render/Cpu/Lighter/Direct.hpp"
 #include "Render/Cpu/Lighter/UniPath.hpp"
 #include "Render/Cpu/Lighter/IrradianceCached.hpp"
+
+#include "Render/Queued/Renderer.hpp"
+
 #include "Render/LightProbe.hpp"
 
 #include "Math/Sampler/Random.hpp"
@@ -32,7 +35,7 @@ namespace App {
         FramebufferObject *renderFramebufferObject;
         FramebufferObject *sampleStatusFramebufferObject;
         Listener *listener;
-        Render::Cpu::Renderer *renderer;
+        Render::Renderer *renderer;
     };
 
     struct SettingsObject {
@@ -45,6 +48,7 @@ namespace App {
         float sampleThreshold;
         unsigned int irradianceCacheSamples;
         float irradianceCacheThreshold;
+        PyObject *renderer;
     };
 
     struct FramebufferObject {
@@ -99,31 +103,43 @@ namespace App {
 
         Py_INCREF(engineObject->sceneObject);
 
-        Render::Cpu::Renderer::Settings settings;
-        settings.width = settingsObject->width;
-        settings.height = settingsObject->height;
-        settings.minSamples = settingsObject->minSamples;
-        settings.maxSamples = settingsObject->maxSamples;
-        settings.sampleThreshold = settingsObject->sampleThreshold;
+        wchar_t *renderer = PyUnicode_AsWideCharString(settingsObject->renderer, NULL);
+        if(!wcscmp(renderer, L"cpu")) {
+            Render::Cpu::Renderer::Settings settings;
+            settings.width = settingsObject->width;
+            settings.height = settingsObject->height;
+            settings.minSamples = settingsObject->minSamples;
+            settings.maxSamples = settingsObject->maxSamples;
+            settings.sampleThreshold = settingsObject->sampleThreshold;
 
-        wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
-        std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
-        if(!wcscmp(lighting, L"none")) {
-            lighter = nullptr;
-        } else if(!wcscmp(lighting, L"direct")) {
-            lighter = std::make_unique<Render::Cpu::Lighter::Direct>();
-        } else if(!wcscmp(lighting, L"pathTracing")) {
-            lighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
-        } else if(!wcscmp(lighting, L"irradianceCaching")) {
-            Render::Cpu::Lighter::IrradianceCached::Settings lighterSettings;
+            wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
+            std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
+            if(!wcscmp(lighting, L"none")) {
+                lighter = nullptr;
+            } else if(!wcscmp(lighting, L"direct")) {
+                lighter = std::make_unique<Render::Cpu::Lighter::Direct>();
+            } else if(!wcscmp(lighting, L"pathTracing")) {
+                lighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
+            } else if(!wcscmp(lighting, L"irradianceCaching")) {
+                Render::Cpu::Lighter::IrradianceCached::Settings lighterSettings;
 
-            lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
-            lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
+                lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
+                lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
 
-            lighter = std::make_unique<Render::Cpu::Lighter::IrradianceCached>(lighterSettings);
+                lighter = std::make_unique<Render::Cpu::Lighter::IrradianceCached>(lighterSettings);
+            }
+            
+            engineObject->renderer = new Render::Cpu::Renderer(*engineObject->sceneObject->scene, settings, std::move(lighter));
+        } else if(!wcscmp(renderer, L"queued")) {
+            Render::Queued::Renderer::Settings settings;
+            settings.width = settingsObject->width;
+            settings.height = settingsObject->height;
+            settings.minSamples = settingsObject->minSamples;
+            settings.maxSamples = settingsObject->maxSamples;
+            settings.sampleThreshold = settingsObject->sampleThreshold;
+
+            engineObject->renderer = new Render::Queued::Renderer(*engineObject->sceneObject->scene, settings);
         }
-
-        engineObject->renderer = new Render::Cpu::Renderer(*engineObject->sceneObject->scene, settings, std::move(lighter));
 
         engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->renderer->renderFramebuffer());
         engineObject->sampleStatusFramebufferObject = wrapFramebuffer(engineObject->renderer->sampleStatusFramebuffer());
@@ -181,7 +197,7 @@ namespace App {
     static PyObject *Engine_renderProbe(PyObject *self, PyObject *args)
     {
         EngineObject *engineObject = (EngineObject*)self;
-        Render::Cpu::Renderer &renderer = *engineObject->renderer;
+        Render::Renderer &renderer = *engineObject->renderer;
 
         int x, y;
         if (!PyArg_ParseTuple(args, "II", &x, &y))
@@ -232,6 +248,7 @@ namespace App {
         {"sample_threshold", T_FLOAT, offsetof(SettingsObject, sampleThreshold), 0},
         {"irradiance_cache_samples", T_UINT, offsetof(SettingsObject, irradianceCacheSamples), 0},
         {"irradiance_cache_threshold", T_FLOAT, offsetof(SettingsObject, irradianceCacheThreshold), 0},
+        {"renderer", T_OBJECT, offsetof(SettingsObject, renderer), 0},
         {NULL}
     };
 

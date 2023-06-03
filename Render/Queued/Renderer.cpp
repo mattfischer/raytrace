@@ -50,21 +50,6 @@ namespace Render {
 
             mExecutor.addJob(std::move(workQueueJob));
         }
-
-        Render::Executor &Renderer::executor()
-        {
-            return mExecutor;
-        }
-
-        Render::Framebuffer &Renderer::renderFramebuffer()
-        {
-            return *mRenderFramebuffer;
-        }
-
-        Render::Framebuffer &Renderer::sampleStatusFramebuffer()
-        {
-            return *mSampleStatusFramebuffer;
-        }
         
         std::unique_ptr<Renderer::ThreadLocal> Renderer::createThreadLocal()
         {

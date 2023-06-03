@@ -2,6 +2,9 @@
 #define RENDER_QUEUED_RENDERER_HPP
 
 #include "Object/Scene.hpp"
+
+#include "Render/Renderer.hpp"
+
 #include "Render/Framebuffer.hpp"
 #include "Render/Executor.hpp"
 #include "Render/Raster.hpp"
@@ -15,7 +18,7 @@
 
 namespace Render {
     namespace Queued {
-        class Renderer {
+        class Renderer : public Render::Renderer {
         public:
             struct Settings
             {
@@ -28,10 +31,6 @@ namespace Render {
 
             Renderer(const Object::Scene &scene, const Settings &settings);
         
-            Render::Executor &executor();
-            Render::Framebuffer &renderFramebuffer();
-            Render::Framebuffer &sampleStatusFramebuffer();
-
         private:
             struct Item {
                 int x;
@@ -65,10 +64,7 @@ namespace Render {
             
             const Object::Scene &mScene;
             const Settings mSettings;
-            std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
-            std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
-            Render::Executor mExecutor;
             std::vector<Item> mItems;
 
             std::unique_ptr<WorkQueue> mGenerateCameraRayQueue;

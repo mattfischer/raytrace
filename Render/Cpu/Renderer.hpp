@@ -1,6 +1,8 @@
 #ifndef RENDER_CPU_RENDERER_HPP
 #define RENDER_CPU_RENDERER_HPP
 
+#include "Render/Renderer.hpp"
+
 #include "Render/Executor.hpp"
 #include "Render/Framebuffer.hpp"
 #include "Render/Raster.hpp"
@@ -13,7 +15,7 @@
 
 namespace Render {
     namespace Cpu {
-        class Renderer {
+        class Renderer : public Render::Renderer {
         public:
             struct Settings
             {
@@ -25,19 +27,12 @@ namespace Render {
             };
             Renderer(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter);
 
-            Render::Executor &executor();
-            Render::Framebuffer &renderFramebuffer();
-            Render::Framebuffer &sampleStatusFramebuffer();
-
         private:
             void renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
 
             const Object::Scene &mScene;
             Settings mSettings;
 
-            Render::Executor mExecutor;
-            std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
-            std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
             std::unique_ptr<Render::Cpu::Lighter::Base> mLighter;
 
             Render::Raster<Object::Radiance> mTotalRadiance;

@@ -42,21 +42,6 @@ namespace Render {
             mExecutor.addJob(std::move(job));
         }
 
-        Render::Executor &Renderer::executor()
-        {
-            return mExecutor;
-        }
-
-        Render::Framebuffer &Renderer::renderFramebuffer()
-        {
-            return *mRenderFramebuffer;
-        }
-
-        Render::Framebuffer &Renderer::sampleStatusFramebuffer()
-        {
-            return *mSampleStatusFramebuffer;
-        }
-
         void Renderer::renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler)
         {
             Math::Bivector dv;
