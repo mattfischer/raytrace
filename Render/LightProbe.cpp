@@ -1,6 +1,6 @@
 #include "Render/LightProbe.hpp"
 
-#include "Render/Renderer.hpp"
+#include "Object/Scene.hpp"
 
 namespace Render {
     LightProbe::LightProbe(const Object::Intersection &isect)

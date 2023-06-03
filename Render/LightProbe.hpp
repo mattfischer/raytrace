@@ -4,7 +4,8 @@
 #include "Object/Intersection.hpp"
 #include "Math/OrthonormalBasis.hpp"
 #include "Math/Sampler/Random.hpp"
-#include "Render/Lighter/UniPath.hpp"
+
+#include "Render/Cpu/Lighter/UniPath.hpp"
 
 namespace Render {
     class LightProbe {
@@ -17,7 +18,7 @@ namespace Render {
         const Object::Intersection &mIntersection;
         Math::OrthonormalBasis mBasis;
         Math::Sampler::Random mSampler;
-        Render::Lighter::UniPath mLighter;
+        Render::Cpu::Lighter::UniPath mLighter;
     };
 }
 

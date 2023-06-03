@@ -1,10 +1,10 @@
-#include "Render/Renderer.hpp"
 #include "Object/Scene.hpp"
 #include "Parse/Parser.hpp"
 
-#include "Render/Lighter/Direct.hpp"
-#include "Render/Lighter/UniPath.hpp"
-#include "Render/Lighter/IrradianceCached.hpp"
+#include "Render/Cpu/Renderer.hpp"
+#include "Render/Cpu/Lighter/Direct.hpp"
+#include "Render/Cpu/Lighter/UniPath.hpp"
+#include "Render/Cpu/Lighter/IrradianceCached.hpp"
 #include "Render/LightProbe.hpp"
 
 #include "Math/Sampler/Random.hpp"
@@ -32,7 +32,7 @@ namespace App {
         FramebufferObject *renderFramebufferObject;
         FramebufferObject *sampleStatusFramebufferObject;
         Listener *listener;
-        Render::Renderer *renderer;
+        Render::Cpu::Renderer *renderer;
     };
 
     struct SettingsObject {
@@ -99,7 +99,7 @@ namespace App {
 
         Py_INCREF(engineObject->sceneObject);
 
-        Render::Renderer::Settings settings;
+        Render::Cpu::Renderer::Settings settings;
         settings.width = settingsObject->width;
         settings.height = settingsObject->height;
         settings.minSamples = settingsObject->minSamples;
@@ -107,23 +107,23 @@ namespace App {
         settings.sampleThreshold = settingsObject->sampleThreshold;
 
         wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
-        std::unique_ptr<Render::Lighter::Base> lighter;
+        std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
         if(!wcscmp(lighting, L"none")) {
             lighter = nullptr;
         } else if(!wcscmp(lighting, L"direct")) {
-            lighter = std::make_unique<Render::Lighter::Direct>();
+            lighter = std::make_unique<Render::Cpu::Lighter::Direct>();
         } else if(!wcscmp(lighting, L"pathTracing")) {
-            lighter = std::make_unique<Render::Lighter::UniPath>();
+            lighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
         } else if(!wcscmp(lighting, L"irradianceCaching")) {
-            Render::Lighter::IrradianceCached::Settings lighterSettings;
+            Render::Cpu::Lighter::IrradianceCached::Settings lighterSettings;
 
             lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
             lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
 
-            lighter = std::make_unique<Render::Lighter::IrradianceCached>(lighterSettings);
+            lighter = std::make_unique<Render::Cpu::Lighter::IrradianceCached>(lighterSettings);
         }
 
-        engineObject->renderer = new Render::Renderer(*engineObject->sceneObject->scene, settings, std::move(lighter));
+        engineObject->renderer = new Render::Cpu::Renderer(*engineObject->sceneObject->scene, settings, std::move(lighter));
 
         engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->renderer->renderFramebuffer());
         engineObject->sampleStatusFramebufferObject = wrapFramebuffer(engineObject->renderer->sampleStatusFramebuffer());
@@ -181,7 +181,7 @@ namespace App {
     static PyObject *Engine_renderProbe(PyObject *self, PyObject *args)
     {
         EngineObject *engineObject = (EngineObject*)self;
-        Render::Renderer &renderer = *engineObject->renderer;
+        Render::Cpu::Renderer &renderer = *engineObject->renderer;
 
         int x, y;
         if (!PyArg_ParseTuple(args, "II", &x, &y))
