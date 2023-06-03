@@ -3,16 +3,16 @@
 
 namespace Object {
     Intersection::Intersection()
-        : mScene(*(Object::Scene*)0), mPrimitive(*(Object::Primitive*)0), mBeam(*(Math::Beam*)0)
+        : mScene(nullptr), mPrimitive(nullptr), mBeam(nullptr)
     {
         mShapeIntersection.distance = FLT_MAX;
         Object::Surface::initIntersectionCache(mSurfaceCache);
     }
 
     Intersection::Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection)
-        : mScene(scene), mPrimitive(primitive), mBeam(beam), mShapeIntersection(shapeIntersection)
+        : mScene(&scene), mPrimitive(&primitive), mBeam(&beam), mShapeIntersection(shapeIntersection)
     {
-        mPoint = mBeam.ray().origin() + mBeam.ray().direction() * mShapeIntersection.distance;
+        mPoint = mBeam->ray().origin() + mBeam->ray().direction() * mShapeIntersection.distance;
         Object::Surface::initIntersectionCache(mSurfaceCache);
     };
 
@@ -28,22 +28,22 @@ namespace Object {
 
     const Object::Scene &Intersection::scene() const
     {
-        return mScene;
+        return *mScene;
     }
 
     const Object::Primitive &Intersection::primitive() const
     {
-        return mPrimitive;
+        return *mPrimitive;
     }
 
     const Math::Ray &Intersection::ray() const
     {
-        return mBeam.ray();
+        return mBeam->ray();
     }
 
     const Math::Beam &Intersection::beam() const
     {
-        return mBeam;
+        return *mBeam;
     }
 
     float Intersection::distance() const

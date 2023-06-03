@@ -77,7 +77,7 @@ namespace App {
             Py_XDECREF(mListenerObject);
         }
 
-        void onExecutorDone(float totalTimeSeconds)
+        void onExecutorDone(float totalTimeSeconds) override
         {
             PyGILState_STATE state = PyGILState_Ensure();
             PyObject_CallMethod(mListenerObject, "on_render_done", "f", totalTimeSeconds);            
