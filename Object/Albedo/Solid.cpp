@@ -11,5 +11,10 @@ namespace Object {
         {
             return mColor;
         }
+
+        bool Solid::needSurfaceProjection() const
+        {
+            return false;
+        }        
     }
 }

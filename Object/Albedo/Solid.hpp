@@ -11,7 +11,8 @@ namespace Object {
             Solid(const Object::Color &color);
 
             Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const override;
-
+            bool needSurfaceProjection() const override;
+        
         protected:
             Object::Color mColor;
         };

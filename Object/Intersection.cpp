@@ -85,7 +85,11 @@ namespace Object {
     Object::Color Intersection::albedo() const
     {
         if (!mAlbedoValid) {
-            mAlbedo = mPrimitive->surface().albedo().color(mShapeIntersection.surfacePoint, surfaceProjection());
+            Math::Bivector2D projection;
+            if(mPrimitive->surface().albedo().needSurfaceProjection()) {
+                projection = surfaceProjection();
+            }
+            mAlbedo = mPrimitive->surface().albedo().color(mShapeIntersection.surfacePoint, projection);
             mAlbedoValid = true;
         }
 

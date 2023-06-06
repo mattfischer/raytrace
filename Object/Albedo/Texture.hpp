@@ -15,6 +15,7 @@ namespace Object {
             Texture(std::unique_ptr<Object::Texture<3>> texture);
 
             Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const override;
+            bool needSurfaceProjection() const override;
 
         protected:
             std::unique_ptr<Object::Texture<3>> mTexture;

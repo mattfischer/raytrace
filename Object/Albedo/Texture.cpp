@@ -18,5 +18,10 @@ namespace Object {
 
             return Object::Color(value.channels[0], value.channels[1], value.channels[2]);
         }
+
+        bool Texture::needSurfaceProjection() const
+        {
+            return true;
+        }
     }
 }
