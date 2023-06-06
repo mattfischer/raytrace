@@ -100,7 +100,7 @@ namespace Render {
                 Object::Radiance rad2 = primitive.surface().radiance();
                 float misWeight = 1.0f;
                 if(rad2.magnitude() > 0 && !item.specularBounce && item.generation > 0) {
-                    float dot2 = -primitive.surface().facingNormal(isect) * isect.ray().direction();
+                    float dot2 = -isect.facingNormal() * isect.ray().direction();
                     float pdfArea = item.pdf * dot2 / (isect.distance() * isect.distance());
                     float pdfLight = primitive.shape().samplePdf(isect.point());
                     misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
@@ -133,7 +133,7 @@ namespace Render {
 
             const Object::Intersection &isect = item.isect;
             const Object::Surface &surface = isect.primitive().surface();
-            const Math::Normal &nrmFacing = surface.facingNormal(isect);
+            const Math::Normal &nrmFacing = isect.facingNormal();
             Math::Point pntOffset = item.isect.point() + Math::Vector(nrmFacing) * 0.01f;
             Object::Radiance rad;
 
@@ -176,7 +176,7 @@ namespace Render {
 
             const Object::Intersection &isect = item.isect;
             const Object::Surface &surface = isect.primitive().surface();
-            const Math::Normal &nrmFacing = surface.facingNormal(isect);
+            const Math::Normal &nrmFacing = isect.facingNormal();
             Math::Point pntOffset = item.isect.point() + Math::Vector(nrmFacing) * 0.01f;
             Object::Radiance rad;
 
@@ -211,7 +211,7 @@ namespace Render {
             const Object::Intersection &isect = item.isect;
             const Object::Surface &surface = isect.primitive().surface();
             const Object::Scene &scene = isect.scene();
-            const Math::Normal &nrmFacing = surface.facingNormal(isect);
+            const Math::Normal &nrmFacing = isect.facingNormal();
             const Math::Vector dirOut = -isect.ray().direction();
             
             Object::Radiance rad = isect.primitive().surface().radiance();

@@ -5,14 +5,14 @@
 namespace Render {
     LightProbe::LightProbe(const Object::Intersection &isect)
     : mIntersection(isect)
-    , mBasis(isect.primitive().surface().facingNormal(isect))      
+    , mBasis(isect.facingNormal())      
     {
     }
 
     void LightProbe::getSample(float &azimuth, float &elevation, Object::Color &color)
     {
         const Object::Surface &surface = mIntersection.primitive().surface();
-        const Math::Normal &nrmFacing = surface.facingNormal(mIntersection);
+        const Math::Normal &nrmFacing = mIntersection.facingNormal();
         const Math::Vector dirOut = -mIntersection.ray().direction();
         
         float pdf;

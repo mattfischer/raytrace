@@ -331,8 +331,8 @@ namespace Render {
             {
                 const Object::Surface &surface = isect.primitive().surface();
                 const Math::Point &pnt = isect.point();
-                const Math::Normal &nrmFacing = surface.facingNormal(isect);
-                const Object::Color &albedo = surface.albedo(isect);
+                const Math::Normal &nrmFacing = isect.facingNormal();
+                const Object::Color &albedo = isect.albedo();
 
                 Object::Radiance rad = mDirectLighter->light(isect, sampler);
 
@@ -378,7 +378,7 @@ namespace Render {
 
                 if (isect.valid() && surface.lambert() > 0) {
                     const Math::Point &pnt = isect.point();
-                    const Math::Normal &nrmFacing = surface.facingNormal(isect);
+                    const Math::Normal &nrmFacing = isect.facingNormal();
 
                     if (!mCache->test(pnt, nrmFacing)) {
                         Math::OrthonormalBasis basis(nrmFacing);

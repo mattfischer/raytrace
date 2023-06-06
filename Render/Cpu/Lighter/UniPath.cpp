@@ -19,7 +19,7 @@ namespace Render {
             {
                 const Object::Surface &surface = isect.primitive().surface();
                 const Object::Scene &scene = isect.scene();
-                const Math::Normal &nrmFacing = surface.facingNormal(isect);
+                const Math::Normal &nrmFacing = isect.facingNormal();
                 const Math::Vector dirOut = -isect.ray().direction();
                 
                 Object::Radiance rad = isect.primitive().surface().radiance();
@@ -54,7 +54,7 @@ namespace Render {
                         if (isect2.valid()) {
                             rad2 = lightInternal(isect2, sampler, generation + 1);
                             if(isect2.primitive().surface().radiance().magnitude() > 0 && !pdfDelta) {
-                                float dot2 = -isect2.primitive().surface().facingNormal(isect2) * dirIn;
+                                float dot2 = -isect2.facingNormal() * dirIn;
                                 float pdfArea = pdf * dot2 / (isect2.distance() * isect2.distance());
                                 float pdfLight = isect2.primitive().shape().samplePdf(isect2.point());
                                 misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);

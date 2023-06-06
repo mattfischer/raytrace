@@ -9,13 +9,6 @@
 #include <cmath>
 
 namespace Object {
-    void Surface::initIntersectionCache(IntersectionCache &intersectionCache)
-    {
-        intersectionCache.surfaceProjectionValid = false;
-        intersectionCache.albedoValid = false;
-        intersectionCache.normalValid = false;
-    }
-
     Surface::Surface(std::unique_ptr<Albedo::Base> albedo, std::vector<std::unique_ptr<Brdf::Base>> brdfs, float transmitIor, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap)
     {
         mAlbedo = std::move(albedo);
@@ -65,8 +58,8 @@ namespace Object {
         Object::Color colTransmit(1, 1, 1);
 
         for(const auto &brdf : mBrdfs) {
-            col = col + colTransmit * brdf->reflected(dirIn, facingNormal(isect), -isect.ray().direction(), albedo(isect));
-            colTransmit = colTransmit * brdf->transmitted(dirIn, facingNormal(isect), albedo(isect));
+            col = col + colTransmit * brdf->reflected(dirIn, isect.facingNormal(), -isect.ray().direction(), isect.albedo());
+            colTransmit = colTransmit * brdf->transmitted(dirIn, isect.facingNormal(), isect.albedo());
         }
 
         return col;
@@ -77,73 +70,20 @@ namespace Object {
         Object::Color colTransmit(1, 1, 1);
 
         for(const auto &brdf : mBrdfs) {
-            colTransmit = colTransmit * brdf->transmitted(dirIn, -facingNormal(isect), albedo(isect));
+            colTransmit = colTransmit * brdf->transmitted(dirIn, -isect.facingNormal(), isect.albedo());
         }
 
         return colTransmit;
     }
 
-    Object::Color Surface::albedo(const Object::Intersection &isect) const
-    {
-        IntersectionCache &isectCache = isect.surfaceCache();
-
-        if (!isectCache.albedoValid) {
-            isectCache.albedo = mAlbedo->color(isect.shapeIntersection().surfacePoint, surfaceProjection(isect));
-            isectCache.albedoValid = true;
-        }
-
-        return isectCache.albedo;
-    }
-
-    const Math::Bivector2D &Surface::surfaceProjection(const Object::Intersection &isect) const
-    {
-        IntersectionCache &isectCache = isect.surfaceCache();
-
-        if (!isectCache.surfaceProjectionValid) {
-            Math::Bivector projection = isect.beam().project(isect.shapeIntersection().distance, isect.shapeIntersection().normal);
-            Math::Vector v = isect.shapeIntersection().tangent.u() % isect.shapeIntersection().tangent.v();
-            v = v / v.magnitude2();
-            Math::Vector2D du((projection.u() % isect.shapeIntersection().tangent.v()) * v, (isect.shapeIntersection().tangent.u() % projection.u()) * v);
-            Math::Vector2D dv((projection.v() % isect.shapeIntersection().tangent.v()) * v, (isect.shapeIntersection().tangent.u() % projection.v()) * v);
-            isectCache.surfaceProjection = Math::Bivector2D(du, dv);
-            isectCache.surfaceProjectionValid = true;
-        }
-
-        return isectCache.surfaceProjection;
-    }
-
-    const Math::Normal &Surface::normal(const Object::Intersection &isect) const
-    {
-        IntersectionCache &isectCache = isect.surfaceCache();
-
-        if (!isectCache.normalValid) {
-            isectCache.normal = isect.shapeIntersection().normal;
-            if(hasNormalMap()) {
-                isectCache.normal = normalMap().perturbNormal(isect.shapeIntersection().surfacePoint, surfaceProjection(isect), isect.shapeIntersection().normal, isect.shapeIntersection().tangent);
-            }
-            Math::Vector outgoingDirection = -isect.beam().ray().direction();
-            float dot = isectCache.normal * outgoingDirection;
-            isectCache.facingNormal = (dot > 0) ? isectCache.normal : -isectCache.normal;
-            isectCache.normalValid = true;
-        }
-
-        return isectCache.normal;
-    }
-
-    const Math::Normal &Surface::facingNormal(const Object::Intersection &isect) const
-    {
-        normal(isect);
-        return isect.surfaceCache().facingNormal;
-    }
-
     Object::Color Surface::sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
-        const Math::Normal &nrmFacing = Surface::facingNormal(isect);
+        const Math::Normal &nrmFacing = isect.facingNormal();
 
         float transmitThreshold = 0;
         if(!opaque()) {
-            bool reverse = (Surface::normal(isect) * dirOut < 0);
+            bool reverse = (isect.normal() * dirOut < 0);
 
             float ratio = 1.0f / mTransmitIor;
             if (reverse) {
@@ -182,7 +122,7 @@ namespace Object {
     float Surface::pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
-        const Math::Normal &nrmFacing = Surface::facingNormal(isect);
+        const Math::Normal &nrmFacing = isect.facingNormal();
         
         float totalPdf = 0;
         for(const std::unique_ptr<Object::Brdf::Base> &brdf : mBrdfs) {

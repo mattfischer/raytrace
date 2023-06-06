@@ -14,7 +14,7 @@ namespace Render {
                 const Object::Scene &scene = isect.scene();
                 const Object::Surface &surface = isect.primitive().surface();
                 const Math::Point &point = isect.point();
-                const Math::Normal &nrmFacing = surface.facingNormal(isect);
+                const Math::Normal &nrmFacing = isect.facingNormal();
 
                 Object::Radiance rad = surface.radiance();
                 Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;

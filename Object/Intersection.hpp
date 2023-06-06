@@ -32,7 +32,12 @@ namespace Object {
         const Math::Point &point() const;
         const Object::Shape::Base::Intersection &shapeIntersection() const;
 
-        Surface::IntersectionCache &surfaceCache() const;
+        const Math::Normal &normal() const;
+        const Math::Normal &facingNormal() const;
+
+        Object::Color albedo() const;
+
+        const Math::Bivector2D &surfaceProjection() const;
 
     protected:
         const Object::Scene *mScene;
@@ -41,7 +46,15 @@ namespace Object {
         Object::Shape::Base::Intersection mShapeIntersection;
         Math::Point mPoint;
 
-        mutable Surface::IntersectionCache mSurfaceCache;
+        mutable bool mNormalValid;
+        mutable Math::Normal mNormal;
+        mutable Math::Normal mFacingNormal;
+
+        mutable bool mAlbedoValid;
+        mutable Object::Color mAlbedo;
+
+        mutable bool mSurfaceProjectionValid;
+        mutable Math::Bivector2D mSurfaceProjection;
     };
 }
 

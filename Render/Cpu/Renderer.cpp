@@ -66,7 +66,7 @@ namespace Render {
                 mRenderFramebuffer->setPixel(x, y, color);
             } else {
                 if(isect.valid()) {
-                    Object::Color color = isect.primitive().surface().albedo(isect);
+                    Object::Color color = isect.albedo();
                     mRenderFramebuffer->setPixel(x, y, color);
                 }
             }
