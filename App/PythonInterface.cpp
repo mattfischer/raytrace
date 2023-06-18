@@ -68,7 +68,7 @@ namespace App {
         return framebufferObject;
     }
 
-    class Listener : public Render::Executor::Listener
+    class Listener : public Render::Renderer::Listener
     {
     public:
         Listener(PyObject *listenerObject)
@@ -81,7 +81,7 @@ namespace App {
             Py_XDECREF(mListenerObject);
         }
 
-        void onExecutorDone(float totalTimeSeconds) override
+        void onRendererDone(float totalTimeSeconds) override
         {
             PyGILState_STATE state = PyGILState_Ensure();
             PyObject_CallMethod(mListenerObject, "on_render_done", "f", totalTimeSeconds);            
@@ -173,7 +173,7 @@ namespace App {
             delete engineObject->listener;
         }
         engineObject->listener = new Listener(listenerObject);
-        engineObject->renderer->executor().start(engineObject->listener);
+        engineObject->renderer->start(engineObject->listener);
 
         Py_RETURN_NONE;
     }
@@ -182,7 +182,7 @@ namespace App {
     {
         EngineObject *engineObject = (EngineObject*)self;
 
-        engineObject->renderer->executor().stop();
+        engineObject->renderer->stop();
 
         Py_RETURN_NONE;
     }
@@ -191,7 +191,7 @@ namespace App {
     {
         EngineObject *engineObject = (EngineObject*)self;
 
-        return PyBool_FromLong(engineObject->renderer->executor().running());
+        return PyBool_FromLong(engineObject->renderer->running());
     }
 
     static PyObject *Engine_renderProbe(PyObject *self, PyObject *args)
