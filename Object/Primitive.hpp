@@ -15,6 +15,8 @@ namespace Object {
         const Surface &surface() const;
         const BoundingVolume &boundingVolume() const;
 
+        void writeProxy(PrimitiveProxy &proxy) const;
+
     protected:
         std::unique_ptr<Shape::Base> mShape;
         std::unique_ptr<Surface> mSurface;

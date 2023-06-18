@@ -67,4 +67,11 @@ namespace Math {
 
         return Point(x, y, z);
     }
+
+    void Point::writeProxy(PointProxy &proxy) const
+    {
+        proxy.coords[0] = x();
+        proxy.coords[1] = y();
+        proxy.coords[2] = z();
+    }
 }

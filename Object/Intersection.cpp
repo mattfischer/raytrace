@@ -27,7 +27,7 @@ namespace Object {
 
     bool Intersection::valid() const
     {
-        return mShapeIntersection.distance != FLT_MAX;
+        return mPrimitive != nullptr;
     }
 
     const Object::Scene &Intersection::scene() const

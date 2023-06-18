@@ -13,6 +13,8 @@ flex_c = flex_gen.process('Parse/Scene.l')
 bison_c = bison_gen.process('Parse/Scene.y')
 
 python = dependency('python3')
+opencl = dependency('OpenCL')
+
 executable('raytrace',
     'App/Main.cpp',
     'App/PythonInterface.cpp',
@@ -71,8 +73,9 @@ executable('raytrace',
     'Render/Cpu/Lighter/Direct.cpp',
     'Render/Cpu/Lighter/IrradianceCached.cpp',
     'Render/Cpu/Lighter/UniPath.cpp',
-    'Render/Queued/Renderer.cpp',
-    'Render/Queued/WorkQueue.cpp',
+    'Render/Gpu/Renderer.cpp',
+    'Render/Gpu/WorkQueue.cpp',
+    'OpenCL.cpp',
     flex_c, bison_c,
-    dependencies: python
+    dependencies: [python, opencl]
 )

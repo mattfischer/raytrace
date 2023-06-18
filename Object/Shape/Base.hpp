@@ -13,6 +13,8 @@
 #include <vector>
 #include <memory>
 
+#include "Proxies.hpp"
+
 namespace Object {
     namespace Shape {
         class Base
@@ -29,6 +31,8 @@ namespace Object {
             virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const = 0;
             virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const { return false; }
             virtual float samplePdf(const Math::Point &pnt) const { return 0; }
+
+            virtual void writeProxy(PrimitiveProxy &proxy) const { proxy.type = PrimitiveProxy::Type::None; }
         };
     }
 }

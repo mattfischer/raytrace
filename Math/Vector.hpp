@@ -1,6 +1,8 @@
 #ifndef MATH_VECTOR_HPP
 #define MATH_VECTOR_HPP
 
+#include "Proxies.hpp"
+
 namespace Math {
     class Point;
     class Normal;
@@ -29,6 +31,8 @@ namespace Math {
         Vector operator/(float b) const;
         Vector operator-() const;
         Vector operator%(const Vector &b) const;
+
+        void writeProxy(VectorProxy &proxy) const;
 
         static Vector fromPolar(float phi, float theta, float r);
 

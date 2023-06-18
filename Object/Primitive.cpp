@@ -21,4 +21,10 @@ namespace Object {
     {
         return mBoundingVolume;
     }
+
+    void Primitive::writeProxy(PrimitiveProxy &proxy) const
+    {
+        mShape->writeProxy(proxy);
+        proxy.primitive = (uintptr_t)this;
+    }
 }

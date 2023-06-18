@@ -1,6 +1,8 @@
 #ifndef MATH_NORMAL_HPP
 #define MATH_NORMAL_HPP
 
+#include "Proxies.hpp"
+
 namespace Math {
     class Point;
     class BaseTransformation;
@@ -30,6 +32,8 @@ namespace Math {
         Normal operator/(float b) const;
         Normal operator-() const;
         Normal operator%(const Normal &b) const;
+
+        void writeProxy(NormalProxy &proxy) const;
 
     private:
         float mX;

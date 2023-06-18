@@ -4,6 +4,8 @@
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"
 
+#include "Proxies.hpp"
+
 namespace Math {
     class Ray
     {
@@ -13,6 +15,8 @@ namespace Math {
 
         const Point &origin() const;
         const Vector &direction() const;
+
+        void writeProxy(RayProxy &proxy) const;
 
     protected:
         Point mOrigin;

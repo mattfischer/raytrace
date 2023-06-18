@@ -102,4 +102,17 @@ namespace Object {
             return Object::Intersection();
         }
     }
+
+    SceneProxy *Scene::buildProxy(OpenCL::Allocator &clAllocator) const
+    {
+        SceneProxy *proxy = clAllocator.allocate<SceneProxy>();
+        proxy->numPrimitives = mPrimitives.size();
+        proxy->primitives = (PrimitiveProxy*)clAllocator.allocateBytes(sizeof(PrimitiveProxy) * proxy->numPrimitives);
+
+        for(int i=0; i<mPrimitives.size(); i++) {
+            mPrimitives[i]->writeProxy(proxy->primitives[i]);
+        }
+
+        return proxy;
+    }
 }

@@ -130,4 +130,11 @@ namespace Math {
 
         return Vector(x, y, z);
     }
+
+    void Vector::writeProxy(VectorProxy &proxy) const
+    {
+        proxy.coords[0] = x();
+        proxy.coords[1] = y();
+        proxy.coords[2] = z();
+    }
 }

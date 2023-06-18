@@ -1,7 +1,7 @@
-#include "Render/Queued/WorkQueue.hpp"
+#include "Render/Gpu/WorkQueue.hpp"
 
 namespace Render {
-    namespace Queued {
+    namespace Gpu {
         WorkQueue::WorkQueue(size_t size)
         : mQueue(size)
         {
@@ -32,6 +32,11 @@ namespace Render {
         int WorkQueue::numQueued()
         {
             return mWrite - mRead;
+        }
+
+        void WorkQueue::resetRead()
+        {
+            mRead = 0;
         }
 
         void WorkQueue::clear()

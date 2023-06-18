@@ -264,9 +264,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="rendererQueued">
+         <widget class="QRadioButton" name="rendererGpu">
           <property name="text">
-           <string>Queued</string>
+           <string>GPU</string>
           </property>
          </widget>
         </item>

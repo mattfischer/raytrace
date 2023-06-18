@@ -1,14 +1,16 @@
-#include "Render/Queued/Renderer.hpp"
+#include "Render/Gpu/Renderer.hpp"
 
-#include "Render/Queued/WorkQueue.hpp"
+#include "Render/Gpu/WorkQueue.hpp"
 
 #include "Math/Sampler/Random.hpp"
 #include <memory>
 
+#include "Proxies.hpp"
+
 using namespace std::placeholders;
 
 namespace Render {
-    namespace Queued {
+    namespace Gpu {
         static const int kSize = 10000;
 
         Renderer::Renderer(const Object::Scene &scene, const Settings &settings)
@@ -17,14 +19,24 @@ namespace Render {
         , mItems(kSize)
         , mTotalRadiance(settings.width, settings.height)
         , mTotalSamples(settings.width, settings.height)
+        , mClAllocator(mClContext)
+        , mClProgram(mClContext, "kernels.cl")
+        , mClKernel(mClProgram, "intersectRays", mClAllocator)
         {
             mCurrentPixel = 0;
             mRunning = false;
 
+            mClAllocator.mapAreas();
+            mSceneProxy = scene.buildProxy(mClAllocator);
+            mItemProxies = (ItemProxy*)mClAllocator.allocateBytes(sizeof(ItemProxy) * kSize);
+            mClAllocator.unmapAreas();
+            mClKernel.setArg(0, mSceneProxy);
+            mClKernel.setArg(1, mItemProxies);
+
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
                         
-            mGenerateCameraRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
+            mGenerateCameraRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
             mGenerateCameraRayJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return generateCameraRay(threadLocal);
@@ -32,7 +44,7 @@ namespace Render {
                 [&]() {
                     mGenerateCameraRayQueue->clear();
                     if(mIntersectRayQueue->numQueued() > 0) {
-                        mExecutor.runJob(*mIntersectRayJob);
+                        runIntersectRays();
                     } else {
                         auto endTime = std::chrono::steady_clock::now();
                         std::chrono::duration<double> duration = endTime - mStartTime;
@@ -42,7 +54,7 @@ namespace Render {
                 }
             );
 
-            mIntersectRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
+            mIntersectRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
             mIntersectRayJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return intersectRay(threadLocal);
@@ -53,7 +65,7 @@ namespace Render {
                 }
             );
 
-            mDirectLightAreaQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
+            mDirectLightAreaQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
             mDirectLightAreaJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return directLightArea(threadLocal);
@@ -64,7 +76,7 @@ namespace Render {
                 }
             );
 
-            mDirectLightPointQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
+            mDirectLightPointQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
             mDirectLightPointJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return directLightPoint(threadLocal);
@@ -75,7 +87,7 @@ namespace Render {
                 }
             );
 
-            mExtendPathQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
+            mExtendPathQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
             mExtendPathJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return extendPath(threadLocal);
@@ -86,7 +98,7 @@ namespace Render {
                 }
             );
 
-            mCommitRadianceQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
+            mCommitRadianceQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
             mCommitRadianceJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return commitRadiance(threadLocal);
@@ -385,6 +397,70 @@ namespace Render {
             mGenerateCameraRayQueue->addItem(key);
 
             return true;
+        }
+
+        void Renderer::runIntersectRays()
+        {
+            int numQueued = mIntersectRayQueue->numQueued();
+
+            mClAllocator.mapAreas();
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mIntersectRayQueue->getNextKey();
+                Item &item = mItems[key];
+                item.beam.ray().writeProxy(mItemProxies[i].ray);
+            }
+            mIntersectRayQueue->resetRead();
+            mClAllocator.unmapAreas();
+
+            mClKernel.enqueue(mClContext, numQueued);
+            clFlush(mClContext.clQueue());
+
+            mClAllocator.mapAreas();
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mIntersectRayQueue->getNextKey();
+                Item &item = mItems[key];
+            
+                Object::Shape::Base::Intersection shapeIntersection;
+                shapeIntersection.distance = mItemProxies[i].shapeIntersection.distance;
+                shapeIntersection.normal = Math::Normal(mItemProxies[i].shapeIntersection.normal.coords[0], mItemProxies[i].shapeIntersection.normal.coords[1], mItemProxies[i].shapeIntersection.normal.coords[2]);
+                Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shapeIntersection.primitive;
+        
+                item.isect = Object::Intersection(mScene, *primitive, item.beam, shapeIntersection);
+
+                if(item.isect.valid()) {
+                    const Object::Primitive &primitive = item.isect.primitive();
+                    Object::Radiance rad2 = primitive.surface().radiance();
+                    float misWeight = 1.0f;
+                    if(rad2.magnitude() > 0 && !item.specularBounce && item.generation > 0) {
+                        float dot2 = -item.isect.facingNormal() * item.isect.ray().direction();
+                        float pdfArea = item.pdf * dot2 / (item.isect.distance() * item.isect.distance());
+                        float pdfLight = primitive.shape().samplePdf(item.isect.point());
+                        misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
+                    }
+
+                    int totalLights = mScene.areaLights().size() + mScene.pointLights().size();
+                    int lightIndex = (int)std::floor(mThreadLocal.sampler.getValue() * totalLights);
+
+                    item.radiance += rad2 * item.throughput * misWeight;
+
+                    if(lightIndex < mScene.areaLights().size()) {
+                        item.lightIndex = lightIndex;
+                        mDirectLightAreaQueue->addItem(key);
+                    } else {
+                        item.lightIndex = lightIndex - mScene.areaLights().size();
+                        mDirectLightPointQueue->addItem(key);
+                    }
+                } else {
+                    Object::Radiance rad2 = mScene.skyRadiance();
+                    item.radiance += rad2 * item.throughput;
+
+                    mCommitRadianceQueue->addItem(key);
+                }
+            }
+            mClAllocator.unmapAreas();
+
+            mIntersectRayQueue->clear();
+            mExecutor.runJob(*mDirectLightAreaJob);
         }
     }
 }

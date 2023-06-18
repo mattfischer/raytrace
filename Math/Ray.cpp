@@ -20,4 +20,10 @@ namespace Math {
     {
         return mDirection;
     }
+
+    void Ray::writeProxy(RayProxy &proxy) const
+    {
+        mOrigin.writeProxy(proxy.origin);
+        mDirection.writeProxy(proxy.direction);
+    }
 }

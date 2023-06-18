@@ -1,12 +1,12 @@
-#ifndef RENDER_QUEUED_WORKQUEUE_HPP
-#define RENDER_QUEUED_WORKQUEUE_HPP
+#ifndef RENDER_GPU_WORKQUEUE_HPP
+#define RENDER_GPU_WORKQUEUE_HPP
 
 #include <vector>
 #include <functional>
 #include <atomic>
 
 namespace Render {
-    namespace Queued {
+    namespace Gpu {
         class WorkQueue {
         public:
             typedef uint32_t Key;
@@ -18,6 +18,7 @@ namespace Render {
 
             bool addItem(Key key);
             int numQueued();
+            void resetRead();
             void clear();
 
         private:

@@ -7,6 +7,9 @@
 #include "Object/BoundingVolumeHierarchy.hpp"
 #include "Object/Intersection.hpp"
 
+#include "Proxies.hpp"
+#include "OpenCL.hpp"
+
 #include <vector>
 #include <memory>
 
@@ -25,6 +28,8 @@ namespace Object {
         const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
         Object::Intersection intersect(const Math::Beam &beam) const;
+
+        SceneProxy *buildProxy(OpenCL::Allocator &clAllocator) const;
 
     protected:
         std::unique_ptr<Camera> mCamera;

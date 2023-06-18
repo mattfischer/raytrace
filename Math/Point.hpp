@@ -1,6 +1,8 @@
 #ifndef MATH_POINT_HPP
 #define MATH_POINT_HPP
 
+#include "Proxies.hpp"
+
 namespace Math {
     class Vector;
     class BaseTransformation;
@@ -19,6 +21,8 @@ namespace Math {
         Point operator+(const Vector &b) const;
         Point operator-(const Vector &b) const;
         Vector operator-(const Point &b) const;
+
+        void writeProxy(PointProxy &proxy) const;
 
     private:
         float mX;

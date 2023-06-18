@@ -61,5 +61,14 @@ namespace Object {
 
             return volume;
         }
+
+        void Quad::writeProxy(PrimitiveProxy &proxy) const
+        {
+            proxy.type = PrimitiveProxy::Type::Quad;
+            mPosition.writeProxy(proxy.quad.position);
+            mSide1.writeProxy(proxy.quad.side1);
+            mSide2.writeProxy(proxy.quad.side2);
+            mNormal.writeProxy(proxy.quad.normal);
+        }
     }
 }

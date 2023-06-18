@@ -6,7 +6,7 @@
 #include "Render/Cpu/Lighter/UniPath.hpp"
 #include "Render/Cpu/Lighter/IrradianceCached.hpp"
 
-#include "Render/Queued/Renderer.hpp"
+#include "Render/Gpu/Renderer.hpp"
 
 #include "Render/LightProbe.hpp"
 
@@ -130,15 +130,15 @@ namespace App {
             }
             
             engineObject->renderer = new Render::Cpu::Renderer(*engineObject->sceneObject->scene, settings, std::move(lighter));
-        } else if(!wcscmp(renderer, L"queued")) {
-            Render::Queued::Renderer::Settings settings;
+        } else if(!wcscmp(renderer, L"gpu")) {
+            Render::Gpu::Renderer::Settings settings;
             settings.width = settingsObject->width;
             settings.height = settingsObject->height;
             settings.minSamples = settingsObject->minSamples;
             settings.maxSamples = settingsObject->maxSamples;
             settings.sampleThreshold = settingsObject->sampleThreshold;
 
-            engineObject->renderer = new Render::Queued::Renderer(*engineObject->sceneObject->scene, settings);
+            engineObject->renderer = new Render::Gpu::Renderer(*engineObject->sceneObject->scene, settings);
         }
 
         engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->renderer->renderFramebuffer());

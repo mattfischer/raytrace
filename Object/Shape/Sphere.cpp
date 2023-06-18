@@ -66,5 +66,12 @@ namespace Object {
 
             return BoundingVolume(mins, maxes);
         }
+
+        void Sphere::writeProxy(PrimitiveProxy &proxy) const
+        {
+            proxy.type = PrimitiveProxy::Type::Sphere;
+            mPosition.writeProxy(proxy.sphere.position);
+            proxy.sphere.radius = mRadius;
+        }
     }
 }

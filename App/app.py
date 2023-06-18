@@ -107,7 +107,7 @@ class App(QtWidgets.QApplication):
 
         renderer = [
             (self.mainwindow.rendererCpu, 'cpu'),
-            (self.mainwindow.rendererQueued, 'queued')
+            (self.mainwindow.rendererGpu, 'gpu')
         ]
         for(widget, name) in renderer:
             if widget.isChecked():

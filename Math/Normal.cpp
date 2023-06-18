@@ -126,4 +126,10 @@ namespace Math {
         return Normal(x, y, z);
     }
 
+    void Normal::writeProxy(NormalProxy &proxy) const
+    {
+        proxy.coords[0] = x();
+        proxy.coords[1] = y();
+        proxy.coords[2] = z();
+    }
 }

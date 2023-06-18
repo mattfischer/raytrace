@@ -1,5 +1,5 @@
-#ifndef RENDER_QUEUED_RENDERER_HPP
-#define RENDER_QUEUED_RENDERER_HPP
+#ifndef RENDER_GPU_RENDERER_HPP
+#define RENDER_GPU_RENDERER_HPP
 
 #include "Object/Scene.hpp"
 
@@ -8,16 +8,18 @@
 #include "Render/Framebuffer.hpp"
 #include "Render/Executor.hpp"
 #include "Render/Raster.hpp"
-#include "Render/Queued/WorkQueue.hpp"
+#include "Render/Gpu/WorkQueue.hpp"
 
 #include "Math/Beam.hpp"
 #include "Math/Sampler/Random.hpp"
+
+#include "OpenCL.hpp"
 
 #include <vector>
 #include <mutex>
 
 namespace Render {
-    namespace Queued {
+    namespace Gpu {
         class Renderer : public Render::Renderer {
         public:
             struct Settings
@@ -67,6 +69,8 @@ namespace Render {
             bool extendPath(ThreadLocal &threadLocal);
             bool commitRadiance(ThreadLocal &threadLocal);
 
+            void runIntersectRays();
+
             bool mRunning;
             Executor mExecutor;
             Listener *mListener;
@@ -102,6 +106,15 @@ namespace Render {
             std::mutex mFramebufferMutex;
             Raster<Object::Radiance> mTotalRadiance;
             Raster<int> mTotalSamples;
+
+            OpenCL::Context mClContext;
+            OpenCL::Allocator mClAllocator;
+            OpenCL::Program mClProgram;
+            OpenCL::Kernel mClKernel;
+
+            SceneProxy *mSceneProxy;
+            ItemProxy *mItemProxies;
+            ThreadLocal mThreadLocal;
         };
     }
 }
