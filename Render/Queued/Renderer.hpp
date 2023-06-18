@@ -66,9 +66,16 @@ namespace Render {
             void extendPath(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
             void commitRadiance(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
 
+            void runGenerateCameraRayJob();
+            void runIntersectRayJob();
+            void runDirectLightAreaJob();
+            void runDirectLightPointJob();
+            void runExtendPathJob();
+            void runCommitRadianceJob();
+
+            bool mRunning;
             Executor mExecutor;
             Listener *mListener;
-            std::unique_ptr<Executor::Job> mJob;
             std::chrono::time_point<std::chrono::steady_clock> mStartTime;
   
             const Object::Scene &mScene;
@@ -77,11 +84,22 @@ namespace Render {
             std::vector<Item> mItems;
 
             std::unique_ptr<WorkQueue> mGenerateCameraRayQueue;
+            std::unique_ptr<Executor::Job> mGenerateCameraRayJob;
+            
             std::unique_ptr<WorkQueue> mIntersectRayQueue;
+            std::unique_ptr<Executor::Job> mIntersectRayJob;
+            
             std::unique_ptr<WorkQueue> mDirectLightAreaQueue;
+            std::unique_ptr<Executor::Job> mDirectLightAreaJob;
+            
             std::unique_ptr<WorkQueue> mDirectLightPointQueue;
+            std::unique_ptr<Executor::Job> mDirectLightPointJob;
+            
             std::unique_ptr<WorkQueue> mExtendPathQueue;
+            std::unique_ptr<Executor::Job> mExtendPathJob;
+            
             std::unique_ptr<WorkQueue> mCommitRadianceQueue;
+            std::unique_ptr<Executor::Job> mCommitRadianceJob;
 
             std::atomic_uint64_t mCurrentPixel;
 

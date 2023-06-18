@@ -32,7 +32,7 @@ namespace Render {
     {
         std::unique_lock<std::mutex> lock(mMutex);
         mCurrentJob = &job;
-        mJobDoneFunc = jobDoneFunc;
+        mJobDoneFunc = std::move(jobDoneFunc);
         mRunJob = true;
 
         mCondVar.notify_all();
@@ -61,6 +61,7 @@ namespace Render {
                     }
                 }
                 job = mCurrentJob;
+                mNumRunningThreads++;
             }
             
             if(!mRunThreads) {
@@ -68,7 +69,6 @@ namespace Render {
             }
 
             std::unique_ptr<Job::ThreadLocal> threadLocal = job->createThreadLocal();
-            mNumRunningThreads++;
             bool jobDone = false;
             while(mRunThreads && mRunJob && !jobDone) {
                 if(!job->execute(*threadLocal)) {
@@ -76,10 +76,13 @@ namespace Render {
                 }
             }
 
+            std::unique_lock<std::mutex> lock(mMutex);
+            mCurrentJob = nullptr;
             if(--mNumRunningThreads == 0) {
-                mCurrentJob = nullptr;
                 if(jobDone) {
-                    mJobDoneFunc();
+                    auto jobDoneFunc = std::move(mJobDoneFunc);
+                    lock.unlock();
+                    jobDoneFunc();
                 }
             }
         }

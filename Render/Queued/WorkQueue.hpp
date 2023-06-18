@@ -17,6 +17,7 @@ namespace Render {
 
             bool executeNext(ThreadLocal &threadLocal);
             bool addItem(Key key);
+            int numQueued();
 
         private:
             WorkerFunction mWorkerFunction;

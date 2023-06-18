@@ -49,5 +49,14 @@ namespace Render {
                 }
             }
         }
+
+        int WorkQueue::numQueued()
+        {
+            if(mWrite >= mRead) {
+                return mWrite - mRead;
+            } else {
+                return mQueue.size() + mWrite - mRead;
+            }
+        }
     }
 }

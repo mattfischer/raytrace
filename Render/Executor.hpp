@@ -34,7 +34,6 @@ namespace Render {
 
         std::vector<std::unique_ptr<std::thread>> mThreads;
 
-        std::atomic_uint mNumRunningThreads;
         std::atomic_bool mRunThreads;
         std::atomic_bool mRunJob;
 
@@ -42,6 +41,7 @@ namespace Render {
         std::condition_variable mCondVar;
         Job *mCurrentJob;
         JobDoneFunc mJobDoneFunc;
+        int mNumRunningThreads;
     };
 }
 #endif

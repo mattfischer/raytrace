@@ -2,20 +2,15 @@
 
 namespace Render {
         namespace Queued {
-        WorkQueueJob::WorkQueueJob(CreateThreadLocalFunc createThreadLocalFunc)
-        : mCreateThreadLocalFunc(std::move(createThreadLocalFunc))
+        WorkQueueJob::WorkQueueJob(WorkQueue &workQueue, CreateThreadLocalFunc createThreadLocalFunc)
+        : mWorkQueue(workQueue) 
+        , mCreateThreadLocalFunc(std::move(createThreadLocalFunc))
         {
-        }
-
-        void WorkQueueJob::addWorkQueue(WorkQueue &workQueue)
-        {
-            mWorkQueues.push_back(workQueue);
         }
 
         std::unique_ptr<Executor::Job::ThreadLocal> WorkQueueJob::createThreadLocal()
         {
             std::unique_ptr<ThreadLocal> threadLocal = std::make_unique<ThreadLocal>();
-            threadLocal->currentQueue = 0;
             threadLocal->queueThreadLocal = mCreateThreadLocalFunc();
 
             return threadLocal;
@@ -24,15 +19,7 @@ namespace Render {
         bool WorkQueueJob::execute(Executor::Job::ThreadLocal &threadLocalBase)
         {
             ThreadLocal &threadLocal = static_cast<ThreadLocal&>(threadLocalBase);
-            int startQueue = threadLocal.currentQueue;
-            while(!mWorkQueues[threadLocal.currentQueue].get().executeNext(*threadLocal.queueThreadLocal)) {
-                threadLocal.currentQueue = (threadLocal.currentQueue + 1) % mWorkQueues.size();
-                if(threadLocal.currentQueue == startQueue) {
-                    return false;
-                }
-            }
-
-            return true;
+            return mWorkQueue.executeNext(*threadLocal.queueThreadLocal);
         }
     }
 }
