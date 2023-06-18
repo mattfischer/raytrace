@@ -5,38 +5,9 @@
 namespace Render {
     Executor::Executor()
     {
-        mRunThreads = false;
         mNumRunningThreads = 0;
-        mListener = nullptr;
-    }
-
-    Executor::~Executor()
-    {
-        mRunThreads = false;
-        for(std::unique_ptr<std::thread> &thread : mThreads) {
-            thread->join();
-        }
-        mThreads.clear();
-    }
-
-    void Executor::addJob(std::unique_ptr<Job> job)
-    {
-        mJobs.push_back(std::move(job));
-    }
-
-    void Executor::start(Listener *listener)
-    {
-        if(mRunThreads) {
-            return;
-        }
-
-        for(std::unique_ptr<std::thread> &thread : mThreads) {
-            thread->join();
-        }
-        mThreads.clear();
-        mListener = listener;
+        mCurrentJob = nullptr;
         mRunThreads = true;
-        mStartTime = std::chrono::steady_clock::now();
 
         SYSTEM_INFO sysinfo;
         GetSystemInfo(&sysinfo);
@@ -44,13 +15,32 @@ namespace Render {
 
         for(int i=0; i<numThreads; i++) {
             mThreads.push_back(std::make_unique<std::thread>([&]() { runThread(); }));
-            mNumRunningThreads++;
         }
+    }
+
+    Executor::~Executor()
+    {
+        mRunThreads = false;
+        mCondVar.notify_all();
+        for(std::unique_ptr<std::thread> &thread : mThreads) {
+            thread->join();
+        }
+        mThreads.clear();
+    }
+
+    void Executor::runJob(Job &job, JobDoneFunc jobDoneFunc)
+    {
+        std::unique_lock<std::mutex> lock(mMutex);
+        mCurrentJob = &job;
+        mJobDoneFunc = jobDoneFunc;
+        mRunJob = true;
+
+        mCondVar.notify_all();
     }
 
     void Executor::stop()
     {
-        mRunThreads = false;
+        mRunJob = false;
     }
 
     bool Executor::running()
@@ -60,27 +50,38 @@ namespace Render {
 
     void Executor::runThread()
     {
-        bool progress = false;
-        int jobIndex = 0;
+        while(true) {
+            Job *job = nullptr;
+            {
+                std::unique_lock<std::mutex> lock(mMutex);
+                while(!mCurrentJob) {
+                    mCondVar.wait(lock);
+                    if(!mRunThreads) {
+                        break;
+                    }
+                }
+                job = mCurrentJob;
+            }
+            
+            if(!mRunThreads) {
+                break;
+            }
 
-        for(std::unique_ptr<Job> &job : mJobs) {
-            std::unique_ptr<Job::ThreadLocal> threadLocal = job->createThreadLocal();;
-
-            while(mRunThreads) {
+            std::unique_ptr<Job::ThreadLocal> threadLocal = job->createThreadLocal();
+            mNumRunningThreads++;
+            bool jobDone = false;
+            while(mRunThreads && mRunJob && !jobDone) {
                 if(!job->execute(*threadLocal)) {
-                    break;
+                    jobDone = true;
                 }
             }
 
-            if(!mRunThreads) {
-                break;
-            }            
-        }
-
-        if(--mNumRunningThreads == 0) {
-            auto endTime = std::chrono::steady_clock::now();
-            std::chrono::duration<double> duration = endTime - mStartTime;
-            mListener->onExecutorDone(duration.count());
+            if(--mNumRunningThreads == 0) {
+                mCurrentJob = nullptr;
+                if(jobDone) {
+                    mJobDoneFunc();
+                }
+            }
         }
     }
 }

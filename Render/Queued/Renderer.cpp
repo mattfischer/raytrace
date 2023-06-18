@@ -48,9 +48,31 @@ namespace Render {
                 mGenerateCameraRayQueue->addItem(key);
             }
 
-            mExecutor.addJob(std::move(workQueueJob));
+            mJob = std::move(workQueueJob);
         }
-        
+
+        void Renderer::start(Listener *listener)
+        {
+            mListener = listener;
+            mStartTime = std::chrono::steady_clock::now();
+
+            mExecutor.runJob(*mJob, [&]() {
+                auto endTime = std::chrono::steady_clock::now();
+                std::chrono::duration<double> duration = endTime - mStartTime;
+                mListener->onRendererDone(duration.count()); 
+            });
+        }
+
+        void Renderer::stop()
+        {
+            mExecutor.stop();
+        }
+
+        bool Renderer::running()
+        {
+            return mExecutor.running();
+        }
+
         std::unique_ptr<Renderer::ThreadLocal> Renderer::createThreadLocal()
         {
             return std::make_unique<ThreadLocal>();

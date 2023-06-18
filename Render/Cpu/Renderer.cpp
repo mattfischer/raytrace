@@ -24,7 +24,7 @@ namespace Render {
             if(mLighter) {
                 std::vector<std::unique_ptr<Render::Executor::Job>> prerenderJobs = mLighter->createPrerenderJobs(scene, *mRenderFramebuffer);
                 for (std::unique_ptr<Render::Executor::Job> &job : prerenderJobs) {
-                    mExecutor.addJob(std::move(job));
+                    mJobs.push_back(std::move(job));
                 }
             }
 
@@ -39,7 +39,38 @@ namespace Render {
                             renderPixel(x, y, sample, static_cast<ThreadLocal&>(threadLocalBase).sampler);
                         }
                 );
-            mExecutor.addJob(std::move(job));
+            mJobs.push_back(std::move(job));
+        }
+
+        void Renderer::start(Listener *listener)
+        {
+            mListener = listener;
+            mStartTime = std::chrono::steady_clock::now();
+
+            mCurrentJob = 0;
+            mExecutor.runJob(*mJobs[mCurrentJob], [&]() { jobDone(); });
+        }
+
+        void Renderer::stop()
+        {
+            mExecutor.stop();
+        }
+
+        bool Renderer::running()
+        {
+            return mExecutor.running();
+        }
+
+        void Renderer::jobDone()
+        {
+            mCurrentJob++;
+            if(mCurrentJob < mJobs.size()) {
+                mExecutor.runJob(*mJobs[mCurrentJob], [&]() { jobDone(); });
+            } else {
+                auto endTime = std::chrono::steady_clock::now();
+                std::chrono::duration<double> duration = endTime - mStartTime;
+                mListener->onRendererDone(duration.count());
+            }
         }
 
         void Renderer::renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler)

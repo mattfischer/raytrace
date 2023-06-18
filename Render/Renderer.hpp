@@ -5,7 +5,7 @@
 #include "Render/Framebuffer.hpp"
 
 namespace Render {
-    class Renderer : public Executor::Listener{
+    class Renderer {
     public:
         class Listener {
         public:
@@ -15,18 +15,14 @@ namespace Render {
 
         virtual ~Renderer() = default;
 
-        void start(Listener *listener);
-        void stop();
-        bool running();
+        virtual void start(Listener *listener) = 0;
+        virtual void stop() = 0;
+        virtual bool running() = 0;
 
         Render::Framebuffer &renderFramebuffer();
         Render::Framebuffer &sampleStatusFramebuffer();
 
-        void onExecutorDone(float totalTimeSeconds);
-
     protected:
-        Render::Executor mExecutor;
-        Listener *mListener;
         std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
         std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
     };

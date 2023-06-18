@@ -6,16 +6,12 @@
 #include <thread>
 #include <chrono>
 #include <atomic>
+#include <mutex>
+#include <functional>
 
 namespace Render {
     class Executor {
     public:
-        class Listener {
-        public:
-            virtual ~Listener() = default;
-            virtual void onExecutorDone(float totalTimeSeconds) = 0;
-        };
-
         class Job {
         public:
             struct ThreadLocal {};
@@ -28,22 +24,24 @@ namespace Render {
         Executor();
         ~Executor();
 
-        void addJob(std::unique_ptr<Job> job);
-
-        void start(Listener *listener);
+        typedef std::function<void()> JobDoneFunc;
+        void runJob(Job &job, JobDoneFunc jobDoneFunc);
         void stop();
         bool running();
 
     private:
         void runThread();
 
-        std::vector<std::unique_ptr<Job>> mJobs;
         std::vector<std::unique_ptr<std::thread>> mThreads;
 
+        std::atomic_uint mNumRunningThreads;
         std::atomic_bool mRunThreads;
-        std::atomic_int mNumRunningThreads;
-        Listener *mListener;
-        std::chrono::time_point<std::chrono::steady_clock> mStartTime;
+        std::atomic_bool mRunJob;
+
+        std::mutex mMutex;
+        std::condition_variable mCondVar;
+        Job *mCurrentJob;
+        JobDoneFunc mJobDoneFunc;
     };
 }
 #endif

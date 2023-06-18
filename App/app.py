@@ -59,6 +59,7 @@ class App(QtWidgets.QApplication):
     def on_renderButton_clicked(self):
         if self.engine and self.engine.rendering():
             self.engine.stop()
+            self.mainwindow.renderButton.setText('Render')
         else:
             self.refreshSettings()
 
@@ -147,9 +148,6 @@ class App(QtWidgets.QApplication):
         self.mainwindow.statusbar.showMessage(message)
 
         self.mainwindow.renderButton.setText('Render')
-
-    def on_render_status(self, message):
-        self.mainwindow.statusbar.showMessage(message)
 
 class LightProbeDialog(QtWidgets.QDialog):
     def __init__(self, parent):

@@ -12,6 +12,7 @@
 #include "Object/Scene.hpp"
 
 #include <memory>
+#include <chrono>
 
 namespace Render {
     namespace Cpu {
@@ -27,8 +28,19 @@ namespace Render {
             };
             Renderer(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter);
 
+            void start(Listener *listener) override;
+            void stop() override;
+            bool running() override;
+
         private:
+            void jobDone();
             void renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+
+            Executor mExecutor;
+            Listener *mListener;
+            std::vector<std::unique_ptr<Executor::Job>> mJobs;
+            int mCurrentJob;
+            std::chrono::time_point<std::chrono::steady_clock> mStartTime;
 
             const Object::Scene &mScene;
             Settings mSettings;

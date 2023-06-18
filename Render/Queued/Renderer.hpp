@@ -31,6 +31,10 @@ namespace Render {
 
             Renderer(const Object::Scene &scene, const Settings &settings);
         
+            void start(Listener *listener) override;
+            void stop() override;
+            bool running() override;
+
         private:
             struct Item {
                 int x;
@@ -61,7 +65,12 @@ namespace Render {
             void directLightPoint(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
             void extendPath(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
             void commitRadiance(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
-            
+
+            Executor mExecutor;
+            Listener *mListener;
+            std::unique_ptr<Executor::Job> mJob;
+            std::chrono::time_point<std::chrono::steady_clock> mStartTime;
+  
             const Object::Scene &mScene;
             const Settings mSettings;
 

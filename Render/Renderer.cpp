@@ -10,27 +10,4 @@ namespace Render {
     {
         return *mSampleStatusFramebuffer;
     }
-
-    void Renderer::start(Listener *listener)
-    {
-        mListener = listener;
-
-        mExecutor.start(this);
-    }
-
-    void Renderer::stop()
-    {
-        mExecutor.stop();
-    }
-
-    bool Renderer::running()
-    {
-        return mExecutor.running();
-    }
-
-    void Renderer::onExecutorDone(float totalTimeSeconds)
-    {
-        mListener->onRendererDone(totalTimeSeconds);
-        mListener = nullptr;
-    }
 }
