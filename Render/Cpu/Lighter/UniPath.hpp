@@ -11,9 +11,6 @@ namespace Render {
             {
             public:
                 Object::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const override;
-
-            private:
-                Object::Radiance lightInternal(const Object::Intersection &isect, Math::Sampler::Base &sampler, int generation) const;
             };
         }
     }
