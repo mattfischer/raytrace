@@ -18,12 +18,12 @@ namespace Render {
 
             bool addItem(Key key);
             int numQueued();
+            void clear();
 
         private:
             std::vector<Key> mQueue;
             std::atomic_int mRead;
             std::atomic_int mWrite;
-            std::atomic_int mCommitted;
         };
     }
 }

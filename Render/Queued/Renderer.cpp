@@ -24,22 +24,22 @@ namespace Render {
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
                         
-            mGenerateCameraRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mGenerateCameraRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
             mGenerateCameraRayJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return generateCameraRay(l); });
 
-            mIntersectRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mIntersectRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
             mIntersectRayJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return intersectRay(l); });
 
-            mDirectLightAreaQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mDirectLightAreaQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
             mDirectLightAreaJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return directLightArea(l); });
 
-            mDirectLightPointQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mDirectLightPointQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
             mDirectLightPointJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return directLightPoint(l); });
 
-            mExtendPathQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mExtendPathQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
             mExtendPathJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return extendPath(l); });
 
-            mCommitRadianceQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mCommitRadianceQueue = std::make_unique<Render::Queued::WorkQueue>(kSize);
             mCommitRadianceJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return commitRadiance(l); });
         }
 
@@ -325,6 +325,7 @@ namespace Render {
         void Renderer::runGenerateCameraRayJob()
         {
             mExecutor.runJob(*mGenerateCameraRayJob, [&]() {
+                mGenerateCameraRayQueue->clear();
                 if(mIntersectRayQueue->numQueued() > 0) {
                     runIntersectRayJob();
                 } else {
@@ -338,27 +339,42 @@ namespace Render {
 
         void Renderer::runIntersectRayJob()
         {
-            mExecutor.runJob(*mIntersectRayJob, [&]() { runDirectLightAreaJob(); });
+            mExecutor.runJob(*mIntersectRayJob, [&]() {
+                mIntersectRayQueue->clear();
+                runDirectLightAreaJob();
+            });
         }
         
         void Renderer::runDirectLightAreaJob()
         {
-            mExecutor.runJob(*mDirectLightAreaJob, [&]() { runDirectLightPointJob(); });
+            mExecutor.runJob(*mDirectLightAreaJob, [&]() {
+                mDirectLightAreaQueue->clear();
+                runDirectLightPointJob();
+            });
         }
         
         void Renderer::runDirectLightPointJob()
         {
-            mExecutor.runJob(*mDirectLightPointJob, [&]() { runExtendPathJob(); });
+            mExecutor.runJob(*mDirectLightPointJob, [&]() {
+                mDirectLightPointQueue->clear();
+                runExtendPathJob();
+            });
         }
         
         void Renderer::runExtendPathJob()
         {
-            mExecutor.runJob(*mExtendPathJob, [&]() { runCommitRadianceJob(); });
+            mExecutor.runJob(*mExtendPathJob, [&]() {
+                mExtendPathQueue->clear();
+                runCommitRadianceJob();
+            });
         }
         
         void Renderer::runCommitRadianceJob()
         {
-            mExecutor.runJob(*mCommitRadianceJob, [&]() { runGenerateCameraRayJob(); });
+            mExecutor.runJob(*mCommitRadianceJob, [&]() {
+                mCommitRadianceQueue->clear();
+                runGenerateCameraRayJob();
+            });
         }
     }
 }

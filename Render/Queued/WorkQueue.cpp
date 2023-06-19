@@ -7,15 +7,14 @@ namespace Render {
         {
             mRead = 0;
             mWrite = 0;
-            mCommitted = 0;
         }
 
         WorkQueue::Key WorkQueue::getNextKey()
         {
             while(true) {
                 int read = mRead.load(std::memory_order_acquire);
-                int newRead = (read + 1) % mQueue.size();
-                if(read == mCommitted.load(std::memory_order_acquire)) {
+                int newRead = read + 1;
+                if(read == mWrite.load(std::memory_order_acquire)) {
                     return kInvalidKey;
                 }
 
@@ -30,20 +29,13 @@ namespace Render {
         {
             while(true) {
                 int write = mWrite.load(std::memory_order_acquire);
-                int newWrite = (write + 1) % mQueue.size();
-                if(newWrite == mRead.load(std::memory_order_acquire)) {
-                    continue;
+                int newWrite = write + 1;
+                if(write == mQueue.size()) {
+                    return false;
                 }
 
                 if(mWrite.compare_exchange_weak(write, newWrite, std::memory_order_acq_rel)) {                
                     mQueue[write] = key;
-
-                    while(true) {
-                        int expected = write;
-                        if(mCommitted.compare_exchange_weak(expected, newWrite, std::memory_order_acq_rel)) {
-                            break;
-                        }
-                    }
                     return true;
                 }
             }
@@ -56,6 +48,12 @@ namespace Render {
             } else {
                 return mQueue.size() + mWrite - mRead;
             }
+        }
+
+        void WorkQueue::clear()
+        {
+            mWrite = 0;
+            mRead = 0;
         }
     }
 }
