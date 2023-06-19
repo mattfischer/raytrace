@@ -35,6 +35,9 @@ namespace Render {
             void stop() override;
             bool running() override;
 
+            Render::Framebuffer &renderFramebuffer() override;
+            Render::Framebuffer &sampleStatusFramebuffer() override;
+
         private:
             struct Item {
                 int x;
@@ -71,6 +74,8 @@ namespace Render {
   
             const Object::Scene &mScene;
             const Settings mSettings;
+            std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
+            std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
             std::vector<Item> mItems;
 

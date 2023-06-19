@@ -19,12 +19,8 @@ namespace Render {
         virtual void stop() = 0;
         virtual bool running() = 0;
 
-        Render::Framebuffer &renderFramebuffer();
-        Render::Framebuffer &sampleStatusFramebuffer();
-
-    protected:
-        std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
-        std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
+        virtual Render::Framebuffer &renderFramebuffer() = 0;
+        virtual Render::Framebuffer &sampleStatusFramebuffer() = 0;
     };
 }
 

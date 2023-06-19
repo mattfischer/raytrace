@@ -61,6 +61,16 @@ namespace Render {
             return mExecutor.running();
         }
 
+        Render::Framebuffer &Renderer::renderFramebuffer()
+        {
+            return *mRenderFramebuffer;
+        }
+
+        Render::Framebuffer &Renderer::sampleStatusFramebuffer()
+        {
+            return *mSampleStatusFramebuffer;
+        }
+
         void Renderer::jobDone()
         {
             mCurrentJob++;

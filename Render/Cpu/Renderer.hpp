@@ -32,6 +32,9 @@ namespace Render {
             void stop() override;
             bool running() override;
 
+            Render::Framebuffer &renderFramebuffer() override;
+            Render::Framebuffer &sampleStatusFramebuffer() override;
+
         private:
             void jobDone();
             void renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
@@ -44,6 +47,8 @@ namespace Render {
 
             const Object::Scene &mScene;
             Settings mSettings;
+            std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
+            std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
             std::unique_ptr<Render::Cpu::Lighter::Base> mLighter;
 

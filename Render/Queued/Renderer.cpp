@@ -122,6 +122,16 @@ namespace Render {
             return mRunning;
         }
 
+        Render::Framebuffer &Renderer::renderFramebuffer()
+        {
+            return *mRenderFramebuffer;
+        }
+
+        Render::Framebuffer &Renderer::sampleStatusFramebuffer()
+        {
+            return *mSampleStatusFramebuffer;
+        }
+
         bool Renderer::generateCameraRay(ThreadLocal &threadLocal)
         {
             WorkQueue::Key key = mGenerateCameraRayQueue->getNextKey();
