@@ -2,27 +2,26 @@
 
 namespace Render {
     namespace Queued {
-        WorkQueue::WorkQueue(size_t size, WorkerFunction workerFunction)
-        : mQueue(size), mWorkerFunction(std::move(workerFunction))
+        WorkQueue::WorkQueue(size_t size)
+        : mQueue(size)
         {
             mRead = 0;
             mWrite = 0;
             mCommitted = 0;
         }
 
-        bool WorkQueue::executeNext(ThreadLocal &threadLocal)
+        WorkQueue::Key WorkQueue::getNextKey()
         {
             while(true) {
                 int read = mRead.load(std::memory_order_acquire);
                 int newRead = (read + 1) % mQueue.size();
                 if(read == mCommitted.load(std::memory_order_acquire)) {
-                    return false;
+                    return kInvalidKey;
                 }
 
                 Key key = mQueue[read];    
                 if(mRead.compare_exchange_weak(read, newRead, std::memory_order_acq_rel)) {
-                    mWorkerFunction(key, threadLocal);
-                    return true;
+                    return key;
                 }
             }
         }

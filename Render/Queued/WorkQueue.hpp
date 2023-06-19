@@ -10,17 +10,16 @@ namespace Render {
         class WorkQueue {
         public:
             typedef uint32_t Key;
-            struct ThreadLocal {};
-            typedef std::function<void(Key, ThreadLocal&)> WorkerFunction;
+            static const Key kInvalidKey = UINT_MAX;
 
-            WorkQueue(size_t size, WorkerFunction workerFunction);
+            WorkQueue(size_t size);
 
-            bool executeNext(ThreadLocal &threadLocal);
+            Key getNextKey();
+
             bool addItem(Key key);
             int numQueued();
 
         private:
-            WorkerFunction mWorkerFunction;
             std::vector<Key> mQueue;
             std::atomic_int mRead;
             std::atomic_int mWrite;

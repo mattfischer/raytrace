@@ -52,19 +52,17 @@ namespace Render {
                 Object::Color throughput;
             };
 
-            struct ThreadLocal : public WorkQueue::ThreadLocal
+            struct ThreadLocal : public Executor::Job::ThreadLocal
             {
                 Math::Sampler::Random sampler;
             };
 
-            std::unique_ptr<ThreadLocal> createThreadLocal();
-
-            void generateCameraRay(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
-            void intersectRay(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
-            void directLightArea(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
-            void directLightPoint(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
-            void extendPath(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
-            void commitRadiance(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocal);
+            bool generateCameraRay(ThreadLocal &threadLocal);
+            bool intersectRay(ThreadLocal &threadLocal);
+            bool directLightArea(ThreadLocal &threadLocal);
+            bool directLightPoint(ThreadLocal &threadLocal);
+            bool extendPath(ThreadLocal &threadLocal);
+            bool commitRadiance(ThreadLocal &threadLocal);
 
             void runGenerateCameraRayJob();
             void runIntersectRayJob();

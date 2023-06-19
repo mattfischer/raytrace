@@ -21,6 +21,21 @@ namespace Render {
             virtual std::unique_ptr<ThreadLocal> createThreadLocal() { return nullptr; }
         };
 
+        template<typename ThreadLocalType> class FuncJob : public Job {
+        public:
+            typedef std::function<bool(ThreadLocalType &)> ExecuteFunc;
+            FuncJob(ExecuteFunc executeFunc) : mExecuteFunc(std::move(executeFunc)) {}
+
+            std::unique_ptr<Job::ThreadLocal> createThreadLocal() { return std::make_unique<ThreadLocalType>(); }
+
+            bool execute(Job::ThreadLocal &threadLocal) {
+                return mExecuteFunc(static_cast<ThreadLocalType&>(threadLocal));
+            }
+
+        private:
+            ExecuteFunc mExecuteFunc;
+        };
+
         Executor();
         ~Executor();
 

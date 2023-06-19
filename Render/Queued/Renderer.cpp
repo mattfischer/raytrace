@@ -1,7 +1,6 @@
 #include "Render/Queued/Renderer.hpp"
 
 #include "Render/Queued/WorkQueue.hpp"
-#include "Render/Queued/WorkQueueJob.hpp"
 
 #include "Math/Sampler/Random.hpp"
 #include <memory>
@@ -24,26 +23,24 @@ namespace Render {
 
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
-            
-            auto createThreadLocalFunc = []() { return std::make_unique<ThreadLocal>(); };
-            
-            mGenerateCameraRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1, [&](auto k, auto &l) { generateCameraRay(k, l); });
-            mGenerateCameraRayJob = std::make_unique<WorkQueueJob>(*mGenerateCameraRayQueue, createThreadLocalFunc);
+                        
+            mGenerateCameraRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mGenerateCameraRayJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return generateCameraRay(l); });
 
-            mIntersectRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1, [&](auto k, auto &l) { intersectRay(k, l); });
-            mIntersectRayJob = std::make_unique<WorkQueueJob>(*mIntersectRayQueue, createThreadLocalFunc);
+            mIntersectRayQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mIntersectRayJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return intersectRay(l); });
 
-            mDirectLightAreaQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1, [&](auto k, auto &l) { directLightArea(k, l); });
-            mDirectLightAreaJob = std::make_unique<WorkQueueJob>(*mDirectLightAreaQueue, createThreadLocalFunc);
+            mDirectLightAreaQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mDirectLightAreaJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return directLightArea(l); });
 
-            mDirectLightPointQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1, [&](auto k, auto &l) { directLightPoint(k, l); });
-            mDirectLightPointJob = std::make_unique<WorkQueueJob>(*mDirectLightPointQueue, createThreadLocalFunc);
+            mDirectLightPointQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mDirectLightPointJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return directLightPoint(l); });
 
-            mExtendPathQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1, [&](auto k, auto &l) { extendPath(k, l); });
-            mExtendPathJob = std::make_unique<WorkQueueJob>(*mExtendPathQueue, createThreadLocalFunc);
+            mExtendPathQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mExtendPathJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return extendPath(l); });
 
-            mCommitRadianceQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1, [&](auto k, auto &l) { commitRadiance(k, l); });
-            mCommitRadianceJob = std::make_unique<WorkQueueJob>(*mCommitRadianceQueue, createThreadLocalFunc);
+            mCommitRadianceQueue = std::make_unique<Render::Queued::WorkQueue>(kSize + 1);
+            mCommitRadianceJob = std::make_unique<Executor::FuncJob<ThreadLocal>>([&](auto &l) { return commitRadiance(l); });
         }
 
         void Renderer::start(Listener *listener)
@@ -70,22 +67,21 @@ namespace Render {
             return mRunning;
         }
 
-        std::unique_ptr<Renderer::ThreadLocal> Renderer::createThreadLocal()
+        bool Renderer::generateCameraRay(ThreadLocal &threadLocal)
         {
-            return std::make_unique<ThreadLocal>();
-        }
+            WorkQueue::Key key = mGenerateCameraRayQueue->getNextKey();
+            if(key == WorkQueue::kInvalidKey) {
+                return false;
+            }
 
-        void Renderer::generateCameraRay(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocalBase)
-        {
             Item &item = mItems[key];
-            ThreadLocal &threadLocal = static_cast<ThreadLocal&>(threadLocalBase);
 
             unsigned int currentPixel = mCurrentPixel++;
 
             int sample = currentPixel / (mSettings.width * mSettings.height);
         
             if(sample >= mSettings.minSamples) {
-                return;
+                return false;
             }
 
             item.y = (currentPixel / mSettings.width) % mSettings.height;
@@ -104,12 +100,18 @@ namespace Render {
             item.throughput = Object::Color(1, 1, 1);
 
             mIntersectRayQueue->addItem(key);
+
+            return true;
         }
 
-        void Renderer::intersectRay(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocalBase)
+        bool Renderer::intersectRay(ThreadLocal &threadLocal)
         {
+            WorkQueue::Key key = mIntersectRayQueue->getNextKey();
+            if(key == WorkQueue::kInvalidKey) {
+                return false;
+            }
+
             Item &item = mItems[key];
-            ThreadLocal &threadLocal = static_cast<ThreadLocal&>(threadLocalBase);
 
             item.isect = mScene.intersect(item.beam);
 
@@ -143,12 +145,18 @@ namespace Render {
 
                 mCommitRadianceQueue->addItem(key);
             }
+
+            return true;
         }
 
-        void Renderer::directLightArea(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocalBase)
+        bool Renderer::directLightArea(ThreadLocal &threadLocal)
         {
+            WorkQueue::Key key = mDirectLightAreaQueue->getNextKey();
+            if(key == WorkQueue::kInvalidKey) {
+                return false;
+            }
+
             Item &item = mItems[key];
-            ThreadLocal &threadLocal = static_cast<ThreadLocal&>(threadLocalBase);
 
             const Object::Intersection &isect = item.isect;
             const Object::Surface &surface = isect.primitive().surface();
@@ -186,12 +194,18 @@ namespace Render {
             }
 
             mExtendPathQueue->addItem(key);
+
+            return true;
         }
 
-        void Renderer::directLightPoint(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocalBase)
+        bool Renderer::directLightPoint(ThreadLocal &threadLocal)
         {
+            WorkQueue::Key key = mDirectLightPointQueue->getNextKey();
+            if(key == WorkQueue::kInvalidKey) {
+                return false;
+            }
+
             Item &item = mItems[key];
-            ThreadLocal &threadLocal = static_cast<ThreadLocal&>(threadLocalBase);
 
             const Object::Intersection &isect = item.isect;
             const Object::Surface &surface = isect.primitive().surface();
@@ -220,12 +234,18 @@ namespace Render {
 
             item.radiance += rad * item.throughput;
             mExtendPathQueue->addItem(key);
+
+            return true;
         }
         
-        void Renderer::extendPath(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocalBase)
+        bool Renderer::extendPath(ThreadLocal &threadLocal)
         {
+            WorkQueue::Key key = mExtendPathQueue->getNextKey();
+            if(key == WorkQueue::kInvalidKey) {
+                return false;
+            }
+
             Item &item = mItems[key];
-            ThreadLocal &threadLocal = static_cast<ThreadLocal&>(threadLocalBase);
 
             const Object::Intersection &isect = item.isect;
             const Object::Surface &surface = isect.primitive().surface();
@@ -265,6 +285,8 @@ namespace Render {
             } else {
                 mCommitRadianceQueue->addItem(key);
             }
+
+            return true;
         }
 
         static Object::Color toneMap(const Object::Radiance &radiance)
@@ -276,10 +298,14 @@ namespace Render {
             return Object::Color(red, green, blue);
         }
 
-        void Renderer::commitRadiance(WorkQueue::Key key, WorkQueue::ThreadLocal &threadLocalBase)
+        bool Renderer::commitRadiance(ThreadLocal &threadLocal)
         {
+            WorkQueue::Key key = mCommitRadianceQueue->getNextKey();
+            if(key == WorkQueue::kInvalidKey) {
+                return false;
+            }
+
             Item &item = mItems[key];
-            ThreadLocal &threadLocal = static_cast<ThreadLocal&>(threadLocalBase);
 
             std::lock_guard<std::mutex> lock(mFramebufferMutex);
             Object::Radiance radTotal = mTotalRadiance.get(item.x, item.y) + item.radiance;
@@ -292,6 +318,8 @@ namespace Render {
             mTotalSamples.set(item.x, item.y, numSamples);
 
             mGenerateCameraRayQueue->addItem(key);
+
+            return true;
         }
 
         void Renderer::runGenerateCameraRayJob()
