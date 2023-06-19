@@ -82,7 +82,10 @@ namespace Render {
                 if(jobDone) {
                     auto jobDoneFunc = std::move(mJobDoneFunc);
                     lock.unlock();
-                    jobDoneFunc();
+                    job->done();
+                    if(jobDoneFunc) {
+                        jobDoneFunc();
+                    }
                 }
             }
         }

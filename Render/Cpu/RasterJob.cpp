@@ -2,12 +2,13 @@
 
 namespace Render {
     namespace Cpu {
-        RasterJob::RasterJob(int width, int height, int iterations, CreateThreadLocalFunc createThreadLocalFunc, ExecuteFunc executeFunc)
+        RasterJob::RasterJob(int width, int height, int iterations, CreateThreadLocalFunc createThreadLocalFunc, ExecuteFunc executeFunc, DoneFunc doneFunc)
         : mWidth(width)
         , mHeight(height)
         , mIterations(iterations)
         , mCreateThreadLocalFunc(std::move(createThreadLocalFunc))
         , mExecuteFunc(std::move(executeFunc))
+        , mDoneFunc(std::move(doneFunc))
         {
             mPixelIndex = 0;
         }
@@ -30,6 +31,13 @@ namespace Render {
 
             mExecuteFunc(x, y, iteration, threadLocal);
             return true;
+        }
+
+        void RasterJob::done()
+        {
+            if(mDoneFunc) {
+                mDoneFunc();
+            }
         }
     }
 }

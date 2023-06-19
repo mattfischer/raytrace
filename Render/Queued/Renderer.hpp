@@ -64,13 +64,6 @@ namespace Render {
             bool extendPath(ThreadLocal &threadLocal);
             bool commitRadiance(ThreadLocal &threadLocal);
 
-            void runGenerateCameraRayJob();
-            void runIntersectRayJob();
-            void runDirectLightAreaJob();
-            void runDirectLightPointJob();
-            void runExtendPathJob();
-            void runCommitRadianceJob();
-
             bool mRunning;
             Executor mExecutor;
             Listener *mListener;

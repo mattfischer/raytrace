@@ -18,29 +18,45 @@ namespace Render {
 
             virtual ~Job() = default;
             virtual bool execute(ThreadLocal &threadLocal) = 0;
-            virtual std::unique_ptr<ThreadLocal> createThreadLocal() { return nullptr; }
+            virtual std::unique_ptr<ThreadLocal> createThreadLocal() = 0;
+            virtual void done() = 0;
         };
 
         template<typename ThreadLocalType> class FuncJob : public Job {
         public:
             typedef std::function<bool(ThreadLocalType &)> ExecuteFunc;
-            FuncJob(ExecuteFunc executeFunc) : mExecuteFunc(std::move(executeFunc)) {}
+            typedef std::function<void()> DoneFunc;
+            FuncJob(ExecuteFunc executeFunc, DoneFunc doneFunc) 
+            : mExecuteFunc(std::move(executeFunc))
+            , mDoneFunc(std::move(doneFunc))
+            {
+            }
 
-            std::unique_ptr<Job::ThreadLocal> createThreadLocal() { return std::make_unique<ThreadLocalType>(); }
+            std::unique_ptr<Job::ThreadLocal> createThreadLocal() override
+            {
+                return std::make_unique<ThreadLocalType>();
+            }
 
-            bool execute(Job::ThreadLocal &threadLocal) {
+            bool execute(Job::ThreadLocal &threadLocal) override
+            {
                 return mExecuteFunc(static_cast<ThreadLocalType&>(threadLocal));
+            }
+
+            void done() override
+            {
+                mDoneFunc();
             }
 
         private:
             ExecuteFunc mExecuteFunc;
+            DoneFunc mDoneFunc;
         };
 
         Executor();
         ~Executor();
 
         typedef std::function<void()> JobDoneFunc;
-        void runJob(Job &job, JobDoneFunc jobDoneFunc);
+        void runJob(Job &job, JobDoneFunc jobDoneFunc = JobDoneFunc());
         void stop();
         bool running();
 
