@@ -32,37 +32,54 @@ namespace Object {
 
     bool BoundingVolumeHierarchy::intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(unsigned int, float&)> &func) const
     {
-        return intersectNode(rayData, 0, maxDistance, func);
-    }
+        struct StackEntry {
+            int nodeIndex;
+            float minDistance;
+        };
 
-    bool BoundingVolumeHierarchy::intersectNode(const BoundingVolume::RayData &rayData, unsigned int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const
-    {
-        const Node &node = mNodes[nodeIndex];
+        StackEntry stack[64];
 
         bool ret = false;
-        if (node.index <= 0) {
-            int index = -node.index;
-            if (func(index, maxDistance)) {
-                ret = true;
-            }
-        }
-        else {
-            unsigned int indices[2] = { nodeIndex + 1, static_cast<unsigned int>(node.index) };
-            float minDistances[2];
-            float maxDistances[2];
-            for (int i = 0; i < 2; i++) {
-                minDistances[i] = FLT_MAX;
-                maxDistances[i] = FLT_MIN;
-                mNodes[indices[i]].volume.intersectRay(rayData, minDistances[i], maxDistances[i]);
+        int n = 0;
+        stack[n].nodeIndex = 0;
+        stack[n].minDistance = 0;
+        n++;
+        do {
+            n--;
+            int nodeIndex = stack[n].nodeIndex;
+            const Node &node = mNodes[nodeIndex];
+            float nodeMinimum = stack[n].minDistance;
+            
+            if(nodeMinimum > maxDistance) {
+                continue;
             }
 
-            for (int i = 0; i < 2; i++) {
-                int j = (minDistances[0] < minDistances[1]) ? i : 1 - i;
-                if (minDistances[j] < maxDistance && maxDistances[j] > 0 && intersectNode(rayData, indices[j], maxDistance, func)) {
+            if (node.index <= 0) {
+                int index = -node.index;
+                if (func(index, maxDistance)) {
                     ret = true;
                 }
             }
-        }
+            else {
+                unsigned int indices[2] = { nodeIndex + 1, static_cast<unsigned int>(node.index) };
+                float minDistances[2];
+                float maxDistances[2];
+                for (int i = 0; i < 2; i++) {
+                    minDistances[i] = FLT_MAX;
+                    maxDistances[i] = -FLT_MAX;
+                    mNodes[indices[i]].volume.intersectRay(rayData, minDistances[i], maxDistances[i]);
+                }
+
+                for (int i = 0; i < 2; i++) {
+                    int j = (minDistances[0] >= minDistances[1]) ? i : 1 - i;
+                    if(maxDistances[j] > 0) {
+                        stack[n].nodeIndex = indices[j];
+                        stack[n].minDistance = minDistances[j];
+                        n++;
+                    }
+                }
+            }
+        } while(n > 0);
 
         return ret;
     }

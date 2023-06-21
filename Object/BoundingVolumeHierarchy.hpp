@@ -24,8 +24,6 @@ namespace Object {
         const std::vector<Node> &nodes() const;
 
     private:
-        bool intersectNode(const BoundingVolume::RayData &rayData, unsigned int nodeIndex, float &maxDistance, const std::function<bool(int, float&)> &func) const;
-
         struct TreeNode {
             int index;
         };
