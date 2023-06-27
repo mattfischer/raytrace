@@ -141,7 +141,7 @@ namespace OpenCL {
         printf("Enqueue kernel: %i\n", errcode);
     }
 
-    static const int kAreaSize = 1024*1024;
+    static const int kAreaSize = 1024*1024*10;
     Allocator::Allocator(Context &context)
     : mContext(context)
     {

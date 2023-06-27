@@ -49,6 +49,11 @@ namespace Render {
                 Object::Intersection isect;
 
                 int lightIndex;
+                Math::Beam shadowBeam;
+                float shadowDot;
+                float shadowDot2;
+                float shadowPdf;
+                float shadowD;
 
                 float pdf;
                 bool specularBounce;
@@ -70,6 +75,8 @@ namespace Render {
             bool commitRadiance(ThreadLocal &threadLocal);
 
             void runIntersectRays();
+            void runDirectLightArea();
+            void runDirectLightPoint();
 
             bool mRunning;
             Executor mExecutor;
@@ -110,7 +117,8 @@ namespace Render {
             OpenCL::Context mClContext;
             OpenCL::Allocator mClAllocator;
             OpenCL::Program mClProgram;
-            OpenCL::Kernel mClKernel;
+            OpenCL::Kernel mClIntersectRayKernel;
+            OpenCL::Kernel mClDirectLightAreaKernel;
 
             SceneProxy *mSceneProxy;
             ItemProxy *mItemProxies;

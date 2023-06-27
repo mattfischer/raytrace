@@ -61,6 +61,8 @@ struct ShapeIntersectionProxy {
 struct ItemProxy {
     RayProxy ray;
     ShapeIntersectionProxy shapeIntersection;
+    RayProxy shadowRay;
+    ShapeIntersectionProxy shadowShapeIntersection;
 };
 
 #endif

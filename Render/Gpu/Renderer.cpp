@@ -21,7 +21,8 @@ namespace Render {
         , mTotalSamples(settings.width, settings.height)
         , mClAllocator(mClContext)
         , mClProgram(mClContext, "kernels.cl")
-        , mClKernel(mClProgram, "intersectRays", mClAllocator)
+        , mClIntersectRayKernel(mClProgram, "intersectRays", mClAllocator)
+        , mClDirectLightAreaKernel(mClProgram, "directLightArea", mClAllocator)
         {
             mCurrentPixel = 0;
             mRunning = false;
@@ -30,8 +31,10 @@ namespace Render {
             mSceneProxy = scene.buildProxy(mClAllocator);
             mItemProxies = (ItemProxy*)mClAllocator.allocateBytes(sizeof(ItemProxy) * kSize);
             mClAllocator.unmapAreas();
-            mClKernel.setArg(0, mSceneProxy);
-            mClKernel.setArg(1, mItemProxies);
+            mClIntersectRayKernel.setArg(0, mSceneProxy);
+            mClIntersectRayKernel.setArg(1, mItemProxies);
+            mClDirectLightAreaKernel.setArg(0, mSceneProxy);
+            mClDirectLightAreaKernel.setArg(1, mItemProxies);
 
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
@@ -61,7 +64,7 @@ namespace Render {
                 },
                 [&]() {
                     mIntersectRayQueue->clear();
-                    mExecutor.runJob(*mDirectLightAreaJob);
+                    runDirectLightArea();
                 }
             );
 
@@ -412,7 +415,7 @@ namespace Render {
             mIntersectRayQueue->resetRead();
             mClAllocator.unmapAreas();
 
-            mClKernel.enqueue(mClContext, numQueued);
+            mClIntersectRayKernel.enqueue(mClContext, numQueued);
             clFlush(mClContext.clQueue());
 
             mClAllocator.mapAreas();
@@ -460,7 +463,99 @@ namespace Render {
             mClAllocator.unmapAreas();
 
             mIntersectRayQueue->clear();
-            mExecutor.runJob(*mDirectLightAreaJob);
+            runDirectLightArea();
+        }
+
+        void Renderer::runDirectLightArea()
+        {
+            int numQueued = mDirectLightAreaQueue->numQueued();
+
+            mClAllocator.mapAreas();
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mDirectLightAreaQueue->getNextKey();
+                Item &item = mItems[key];
+
+                const Object::Intersection &isect = item.isect;
+                const Object::Surface &surface = isect.primitive().surface();
+                const Math::Normal &nrmFacing = isect.facingNormal();
+                Math::Point pntOffset = item.isect.point() + Math::Vector(nrmFacing) * 0.01f;
+                Object::Radiance rad;
+
+                const Object::Primitive &light = mScene.areaLights()[item.lightIndex];
+                const Object::Radiance &rad2 = light.surface().radiance();
+                    
+                Math::Point pnt2;
+                Math::Normal nrm2;
+                float pdf;
+                float misWeight = 1.0f;
+                for(int n=0; n<3; n++) {
+                    mItemProxies[i].shadowRay.direction.coords[n] = 0;
+                }
+
+                if(light.shape().sample(mThreadLocal.sampler, pnt2, nrm2, pdf)) {
+                    Math::Vector dirIn = pnt2 - pntOffset;
+                    float d = dirIn.magnitude();
+                    dirIn = dirIn / d;
+                    float dot2 = std::abs(dirIn * nrm2);
+
+                    float dot = dirIn * nrmFacing;
+                    if(dot > 0) {
+                        Math::Ray ray(pntOffset, dirIn);
+                        Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+                
+                        item.shadowBeam = beam;
+                        item.shadowBeam.ray().writeProxy(mItemProxies[i].shadowRay);
+                        item.shadowDot = dot;
+                        item.shadowDot2 = dot2;
+                        item.shadowPdf = pdf;
+                        item.shadowD = d;
+                    }
+                }
+            }
+            
+            mDirectLightAreaQueue->resetRead();
+            mClAllocator.unmapAreas();
+
+            mClDirectLightAreaKernel.enqueue(mClContext, numQueued);
+            clFlush(mClContext.clQueue());
+
+            mClAllocator.mapAreas();
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mDirectLightAreaQueue->getNextKey();
+                Item &item = mItems[key];
+
+                const Object::Surface &surface = item.isect.primitive().surface();
+                
+                Object::Shape::Base::Intersection shapeIntersection;
+                shapeIntersection.distance = mItemProxies[i].shadowShapeIntersection.distance;
+                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowShapeIntersection.normal.coords[0], mItemProxies[i].shadowShapeIntersection.normal.coords[1], mItemProxies[i].shadowShapeIntersection.normal.coords[2]);
+                Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shadowShapeIntersection.primitive;
+        
+                Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);
+
+                const Object::Primitive &light = mScene.areaLights()[item.lightIndex];
+                const Object::Radiance &rad2 = light.surface().radiance();
+                
+                if (isect2.valid() && &(isect2.primitive()) == &light) {
+                    Math::Vector dirIn = item.shadowBeam.ray().direction();
+                    float d = item.shadowD;
+                    float dot2 = item.shadowDot2;
+                    float dot = item.shadowDot;
+                    float pdf = item.shadowPdf;
+
+                    Object::Radiance irad = rad2 * dot2 * dot / (d * d * pdf);
+                    float pdfBrdf = surface.pdf(item.isect, dirIn) * dot2 / (d * d);
+                    float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
+                    Object::Radiance rad = irad * surface.reflected(item.isect, dirIn);
+                    item.radiance += rad * item.throughput * misWeight;
+                }
+
+                mExtendPathQueue->addItem(key);
+            }
+            mClAllocator.unmapAreas();
+
+            mDirectLightAreaQueue->clear();
+            mExecutor.runJob(*mDirectLightPointJob);   
         }
     }
 }
