@@ -15,6 +15,7 @@ namespace Math {
         Normal(float x, float y, float z);
         explicit Normal(const Point &point);
         explicit Normal(const Vector &vector);
+        explicit Normal(const NormalProxy &proxy);
 
         float x() const;
         float y() const;

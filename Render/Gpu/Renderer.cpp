@@ -428,7 +428,7 @@ namespace Render {
             
                 Object::Shape::Base::Intersection shapeIntersection;
                 shapeIntersection.distance = mItemProxies[i].shapeIntersection.distance;
-                shapeIntersection.normal = Math::Normal(mItemProxies[i].shapeIntersection.normal.coords[0], mItemProxies[i].shapeIntersection.normal.coords[1], mItemProxies[i].shapeIntersection.normal.coords[2]);
+                shapeIntersection.normal = Math::Normal(mItemProxies[i].shapeIntersection.normal);
                 Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shapeIntersection.primitive;
         
                 item.isect = Object::Intersection(mScene, *primitive, item.beam, shapeIntersection);
@@ -531,7 +531,7 @@ namespace Render {
                 
                 Object::Shape::Base::Intersection shapeIntersection;
                 shapeIntersection.distance = mItemProxies[i].shadowShapeIntersection.distance;
-                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowShapeIntersection.normal.coords[0], mItemProxies[i].shadowShapeIntersection.normal.coords[1], mItemProxies[i].shadowShapeIntersection.normal.coords[2]);
+                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowShapeIntersection.normal);
                 Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shadowShapeIntersection.primitive;
         
                 Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);
@@ -614,7 +614,7 @@ namespace Render {
    
                 Object::Shape::Base::Intersection shapeIntersection;
                 shapeIntersection.distance = mItemProxies[i].shadowShapeIntersection.distance;
-                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowShapeIntersection.normal.coords[0], mItemProxies[i].shadowShapeIntersection.normal.coords[1], mItemProxies[i].shadowShapeIntersection.normal.coords[2]);
+                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowShapeIntersection.normal);
                 Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shadowShapeIntersection.primitive;
         
                 Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);

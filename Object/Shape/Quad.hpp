@@ -18,7 +18,7 @@ namespace Object {
             bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const override;
             float samplePdf(const Math::Point &pnt) const override;
 
-            void writeProxy(PrimitiveProxy &proxy) const override;
+            void writeProxy(ShapeProxy &proxy) const override;
 
         private:
             Math::Point mPosition;

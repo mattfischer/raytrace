@@ -62,9 +62,9 @@ namespace Object {
             return volume;
         }
 
-        void Quad::writeProxy(PrimitiveProxy &proxy) const
+        void Quad::writeProxy(ShapeProxy &proxy) const
         {
-            proxy.type = PrimitiveProxy::Type::Quad;
+            proxy.type = ShapeProxy::Type::Quad;
             mPosition.writeProxy(proxy.quad.position);
             mSide1.writeProxy(proxy.quad.side1);
             mSide2.writeProxy(proxy.quad.side2);

@@ -1,28 +1,32 @@
-struct QuadPrimitive {
+struct QuadShape {
     float3 position;
     float3 side1;
     float3 side2;
     float3 normal;
 };
 
-struct SpherePrimitive {
+struct SphereShape {
     float3 position;
     float radius;
 };
 
-enum PrimitiveType {
-    PrimitiveTypeNone,
-    PrimitiveTypeQuad,
-    PrimitiveTypeSphere
+enum ShapeType {
+    ShapeTypeNone,
+    ShapeTypeQuad,
+    ShapeTypeSphere
+};
+
+struct Shape {
+    enum ShapeType type;
+    union {
+        struct QuadShape quad;
+        struct SphereShape sphere;
+    };
 };
 
 struct Primitive {
-    enum PrimitiveType type;
-    uintptr_t primitive;
-    union {
-        struct QuadPrimitive quad;
-        struct SpherePrimitive sphere;
-    };
+    struct Shape shape;
+    uintptr_t primitive;    
 };
 
 struct Scene {
@@ -53,7 +57,7 @@ float length2(float3 v)
     return dot(v, v);
 }
 
-bool intersectQuad(global struct Ray *ray, global struct QuadPrimitive *quad, global struct ShapeIntersection *shapeIntersection)
+bool intersectQuad(global struct Ray *ray, global struct QuadShape *quad, global struct ShapeIntersection *shapeIntersection)
 {
     float distance = dot(ray->origin - quad->position, quad->normal) / dot(ray->direction, -quad->normal);
     if(distance >= 0 && distance < shapeIntersection->distance) {
@@ -70,7 +74,7 @@ bool intersectQuad(global struct Ray *ray, global struct QuadPrimitive *quad, gl
     return false;
 }
 
-bool intersectSphere(global struct Ray *ray, global struct SpherePrimitive *sphere, global struct ShapeIntersection *shapeIntersection)
+bool intersectSphere(global struct Ray *ray, global struct SphereShape *sphere, global struct ShapeIntersection *shapeIntersection)
 {
     float a, b, c;
     float disc;
@@ -101,14 +105,14 @@ bool intersectSphere(global struct Ray *ray, global struct SpherePrimitive *sphe
     return false;
 }
 
-bool intersectPrimitive(global struct Ray *ray, global struct Primitive *primitive, global struct ShapeIntersection *shapeIntersection)
+bool intersectShape(global struct Ray *ray, global struct Shape *shape, global struct ShapeIntersection *shapeIntersection)
 {
-    switch(primitive->type) {
-    case PrimitiveTypeQuad:
-        return intersectQuad(ray, &primitive->quad, shapeIntersection);
+    switch(shape->type) {
+    case ShapeTypeQuad:
+        return intersectQuad(ray, &shape->quad, shapeIntersection);
     
-    case PrimitiveTypeSphere:
-        return intersectSphere(ray, &primitive->sphere, shapeIntersection);
+    case ShapeTypeSphere:
+        return intersectSphere(ray, &shape->sphere, shapeIntersection);
     
     default:
         return false;
@@ -123,7 +127,7 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items)
     item->shapeIntersection.primitive = 0;
     
     for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectPrimitive(&item->ray, &scene->primitives[i], &item->shapeIntersection)) {
+        if(intersectShape(&item->ray, &scene->primitives[i].shape, &item->shapeIntersection)) {
             item->shapeIntersection.primitive = scene->primitives[i].primitive;
         }
     }
@@ -141,7 +145,7 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
     }
 
     for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectPrimitive(&item->shadowRay, &scene->primitives[i], &item->shadowShapeIntersection)) {
+        if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowShapeIntersection)) {
             item->shadowShapeIntersection.primitive = scene->primitives[i].primitive;
         }
     }
@@ -159,7 +163,7 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
     }
 
     for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectPrimitive(&item->shadowRay, &scene->primitives[i], &item->shadowShapeIntersection)) {
+        if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowShapeIntersection)) {
             item->shadowShapeIntersection.primitive = scene->primitives[i].primitive;
         }
     }

@@ -15,19 +15,19 @@ __declspec(align(16)) struct NormalProxy {
     float coords[3];
 };
 
-struct QuadPrimitiveProxy {
+struct QuadShapeProxy {
     PointProxy position;
     VectorProxy side1;
     VectorProxy side2;
     NormalProxy normal;
 };
 
-struct SpherePrimitiveProxy {
+struct SphereShapeProxy {
     PointProxy position;
     float radius;
 };
 
-struct PrimitiveProxy {
+struct ShapeProxy {
     enum Type {
         None,
         Quad,
@@ -35,11 +35,15 @@ struct PrimitiveProxy {
     };
 
     Type type;
-    uintptr_t primitive;
     union {
-        QuadPrimitiveProxy quad;
-        SpherePrimitiveProxy sphere;
+        struct QuadShapeProxy quad;
+        struct SphereShapeProxy sphere;
     };
+};
+
+struct PrimitiveProxy {
+    ShapeProxy shape;
+    uintptr_t primitive;
 };
 
 struct SceneProxy {

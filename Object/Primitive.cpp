@@ -24,7 +24,7 @@ namespace Object {
 
     void Primitive::writeProxy(PrimitiveProxy &proxy) const
     {
-        mShape->writeProxy(proxy);
+        mShape->writeProxy(proxy.shape);
         proxy.primitive = (uintptr_t)this;
     }
 }

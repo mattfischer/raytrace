@@ -13,7 +13,7 @@ namespace Object {
             bool intersect(const Math::Ray &ray, Intersection &isect) const override;
             BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
-            void writeProxy(PrimitiveProxy &proxy) const override;
+            void writeProxy(ShapeProxy &proxy) const override;
 
         private:
             Math::Point mPosition;
