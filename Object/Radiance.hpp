@@ -3,12 +3,15 @@
 
 #include "Object/Color.hpp"
 
+#include "Proxies.hpp"
+
 namespace Object {
     class Radiance
     {
     public:
         Radiance();
         Radiance(float red, float green, float blue);
+        Radiance(RadianceProxy &proxy);
 
         float red() const;
         float green() const;
@@ -25,6 +28,8 @@ namespace Object {
         Radiance operator-(const Radiance &b) const;
 
         Radiance clamp() const;
+
+        void writeProxy(RadianceProxy &proxy) const;
 
     protected:
         float mRed;

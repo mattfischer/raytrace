@@ -15,6 +15,14 @@ __declspec(align(16)) struct NormalProxy {
     float coords[3];
 };
 
+__declspec(align(16)) struct RadianceProxy {
+    float coords[3];
+};
+
+__declspec(align(16)) struct ColorProxy {
+    float coords[3];
+};
+
 struct QuadShapeProxy {
     PointProxy position;
     VectorProxy side1;
@@ -41,14 +49,20 @@ struct ShapeProxy {
     };
 };
 
+struct SurfaceProxy {
+    RadianceProxy radiance;
+};
+
 struct PrimitiveProxy {
     ShapeProxy shape;
+    SurfaceProxy surface;
     uintptr_t primitive;
 };
 
 struct SceneProxy {
     int numPrimitives;
     PrimitiveProxy *primitives;
+    RadianceProxy skyRadiance;
 };
 
 struct RayProxy {
@@ -67,6 +81,11 @@ struct ItemProxy {
     ShapeIntersectionProxy shapeIntersection;
     RayProxy shadowRay;
     ShapeIntersectionProxy shadowShapeIntersection;
+    bool specularBounce;
+    int generation;
+    float pdf;
+    ColorProxy throughput;
+    RadianceProxy radiance;
 };
 
 #endif

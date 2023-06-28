@@ -113,6 +113,8 @@ namespace Object {
             mPrimitives[i]->writeProxy(proxy->primitives[i]);
         }
 
+        mSkyRadiance.writeProxy(proxy->skyRadiance);
+
         return proxy;
     }
 }

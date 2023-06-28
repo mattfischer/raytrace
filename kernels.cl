@@ -24,14 +24,20 @@ struct Shape {
     };
 };
 
+struct Surface {
+    float3 radiance;
+};
+
 struct Primitive {
     struct Shape shape;
+    struct Surface surface;
     uintptr_t primitive;    
 };
 
 struct Scene {
     int numPrimitives;
     global struct Primitive *primitives;
+    float3 skyRadiance;
 };
 
 struct Ray {
@@ -50,6 +56,11 @@ struct Item {
     struct ShapeIntersection shapeIntersection;
     struct Ray shadowRay;
     struct ShapeIntersection shadowShapeIntersection;
+    bool specularBounce;
+    int generation;
+    float pdf;
+    float3 throughput;
+    float3 radiance;
 };
 
 float length2(float3 v)
@@ -119,6 +130,23 @@ bool intersectShape(global struct Ray *ray, global struct Shape *shape, global s
     }
 }
 
+float shapeSamplePdfQuad(global struct QuadShape *quad, float3 point)
+{
+    float surfaceArea = length(cross(quad->side1, quad->side2));
+    return 1.0f / surfaceArea;
+}
+
+float shapeSamplePdf(global struct Shape *shape, float3 point)
+{
+    switch(shape->type) {
+    case ShapeTypeQuad:
+        return shapeSamplePdfQuad(&shape->quad, point);
+    
+    default:
+        return 0;
+    }
+}
+
 kernel void intersectRays(global struct Scene *scene, global struct Item *items)
 {
     int id = (int)get_global_id(0);
@@ -127,9 +155,27 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items)
     item->shapeIntersection.primitive = 0;
     
     for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectShape(&item->ray, &scene->primitives[i].shape, &item->shapeIntersection)) {
-            item->shapeIntersection.primitive = scene->primitives[i].primitive;
+        global struct Primitive *primitive = &scene->primitives[i];
+        if(intersectShape(&item->ray, &primitive->shape, &item->shapeIntersection)) {
+            item->shapeIntersection.primitive = primitive->primitive;
+
+            float3 point = item->ray.origin + item->ray.direction * item->shapeIntersection.distance;
+            float3 rad2 = primitive->surface.radiance;
+            float misWeight = 1.0f;
+            if(length(rad2) > 0 && !item->specularBounce && item->generation > 0) {
+                float dot2 = fabs(dot(item->shapeIntersection.normal, item->ray.direction));
+                float pdfArea = item->pdf * dot2 / (item->shapeIntersection.distance * item->shapeIntersection.distance);
+                float pdfLight = shapeSamplePdf(&primitive->shape, point);
+                misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
+            }
+
+            item->radiance = rad2 * item->throughput * misWeight;        
         }
+    }
+
+    if(item->shapeIntersection.primitive == 0) {
+        float3 rad2 = scene->skyRadiance;
+        item->radiance = rad2 * item->throughput;
     }
 }
 

@@ -1,6 +1,8 @@
 #ifndef OBJECT_COLOR_HPP
 #define OBJECT_COLOR_HPP
 
+#include "Proxies.hpp"
+
 namespace Object {
     class Color
     {
@@ -21,6 +23,8 @@ namespace Object {
 
         float magnitude2() const;
         float maximum() const;
+
+        void writeProxy(ColorProxy &proxy) const;
 
     protected:
         float mRed;

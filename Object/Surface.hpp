@@ -8,6 +8,8 @@
 #include "Object/Radiance.hpp"
 #include "Object/NormalMap.hpp"
 
+#include "Proxies.hpp"
+
 #include <memory>
 
 namespace Object {
@@ -30,6 +32,8 @@ namespace Object {
         bool opaque() const;
         float lambert() const;
         float transmitIor() const;
+
+        void writeProxy(SurfaceProxy &proxy) const;
 
     private:
         std::unique_ptr<Albedo::Base> mAlbedo;

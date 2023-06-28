@@ -75,4 +75,11 @@ namespace Object {
     {
         return std::max(std::max(mRed, mGreen), mBlue);
     }
+
+    void Color::writeProxy(ColorProxy &proxy) const
+    {
+        proxy.coords[0] = mRed;
+        proxy.coords[1] = mGreen;
+        proxy.coords[2] = mBlue;
+    }
 }

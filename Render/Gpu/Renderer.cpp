@@ -414,6 +414,11 @@ namespace Render {
                 WorkQueue::Key key = mIntersectRayQueue->getNextKey();
                 Item &item = mItems[key];
                 item.beam.ray().writeProxy(mItemProxies[i].ray);
+                mItemProxies[i].generation = item.generation;
+                mItemProxies[i].specularBounce = item.specularBounce;
+                mItemProxies[i].pdf = item.pdf;
+                item.throughput.writeProxy(mItemProxies[i].throughput);
+                for(int n=0; n<3; n++) mItemProxies[i].radiance.coords[n] = 0;
             }
             mIntersectRayQueue->resetRead();
             mClAllocator.unmapAreas();
@@ -432,23 +437,11 @@ namespace Render {
                 Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shapeIntersection.primitive;
         
                 item.isect = Object::Intersection(mScene, *primitive, item.beam, shapeIntersection);
+                item.radiance += Object::Radiance(mItemProxies[i].radiance);
 
                 if(item.isect.valid()) {
-                    const Object::Primitive &primitive = item.isect.primitive();
-                    Object::Radiance rad2 = primitive.surface().radiance();
-                    float misWeight = 1.0f;
-                    if(rad2.magnitude() > 0 && !item.specularBounce && item.generation > 0) {
-                        float dot2 = -item.isect.facingNormal() * item.isect.ray().direction();
-                        float pdfArea = item.pdf * dot2 / (item.isect.distance() * item.isect.distance());
-                        float pdfLight = primitive.shape().samplePdf(item.isect.point());
-                        misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
-                    }
-
                     int totalLights = mScene.areaLights().size() + mScene.pointLights().size();
                     int lightIndex = (int)std::floor(mThreadLocal.sampler.getValue() * totalLights);
-
-                    item.radiance += rad2 * item.throughput * misWeight;
-
                     if(lightIndex < mScene.areaLights().size()) {
                         item.lightIndex = lightIndex;
                         mDirectLightAreaQueue->addItem(key);
@@ -457,9 +450,6 @@ namespace Render {
                         mDirectLightPointQueue->addItem(key);
                     }
                 } else {
-                    Object::Radiance rad2 = mScene.skyRadiance();
-                    item.radiance += rad2 * item.throughput;
-
                     mCommitRadianceQueue->addItem(key);
                 }
             }

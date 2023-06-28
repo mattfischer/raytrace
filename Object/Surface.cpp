@@ -147,4 +147,10 @@ namespace Object {
     {
         return mTransmitIor;
     }
+
+    void Surface::writeProxy(SurfaceProxy &proxy) const
+    {
+        mRadiance.writeProxy(proxy.radiance);
+    }
+
 }
