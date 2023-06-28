@@ -146,3 +146,21 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
         }
     }
 }
+
+kernel void directLightPoint(global struct Scene *scene, global struct Item *items)
+{
+    int id = (int)get_global_id(0);
+    global struct Item *item = &items[id];
+    item->shadowShapeIntersection.distance = MAXFLOAT;
+    item->shadowShapeIntersection.primitive = 0;
+    
+    if(item->shadowRay.direction.x == 0 && item->shadowRay.direction.y == 0 && item->shadowRay.direction.z == 0) {
+        return;
+    }
+
+    for(int i=0; i<scene->numPrimitives; i++) {
+        if(intersectPrimitive(&item->shadowRay, &scene->primitives[i], &item->shadowShapeIntersection)) {
+            item->shadowShapeIntersection.primitive = scene->primitives[i].primitive;
+        }
+    }
+}

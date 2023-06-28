@@ -119,6 +119,7 @@ namespace Render {
             OpenCL::Program mClProgram;
             OpenCL::Kernel mClIntersectRayKernel;
             OpenCL::Kernel mClDirectLightAreaKernel;
+            OpenCL::Kernel mClDirectLightPointKernel;
 
             SceneProxy *mSceneProxy;
             ItemProxy *mItemProxies;
