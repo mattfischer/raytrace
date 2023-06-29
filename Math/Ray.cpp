@@ -6,6 +6,12 @@ namespace Math {
     {
     }
 
+    Ray::Ray(const RayProxy &proxy)
+    {
+        mOrigin = Point(proxy.origin);
+        mDirection = Vector(proxy.direction);
+    }
+
     Ray operator*(const BaseTransformation &transformation, const Ray &ray)
     {
         return Ray(transformation * ray.origin(), transformation * ray.direction());

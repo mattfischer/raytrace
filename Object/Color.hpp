@@ -9,6 +9,7 @@ namespace Object {
     public:
         Color();
         Color(float red, float green, float blue);
+        Color(ColorProxy &color);
 
         float red() const;
         float green() const;

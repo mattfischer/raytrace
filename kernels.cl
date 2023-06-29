@@ -1,3 +1,8 @@
+struct Bivector {
+    float3 u;
+    float3 v;
+};
+
 struct QuadShape {
     float3 position;
     float3 side1;
@@ -39,6 +44,15 @@ struct PointLight {
     float3 radiance;
 };
 
+struct Camera {
+    float3 position;
+    float3 direction;
+    struct Bivector imagePlane;
+    float imageSize;
+    float focalLength;
+    float apertureSize;
+};
+
 struct Scene {
     int numPrimitives;
     global struct Primitive *primitives;
@@ -47,11 +61,18 @@ struct Scene {
     int numPointLights;
     global struct PointLight *pointLights;
     float3 skyRadiance;
+    struct Camera camera;
 };
 
 struct Ray {
     float3 origin;
     float3 direction;
+};
+
+struct Beam {
+    struct Ray ray;
+    struct Bivector originDifferential;
+    struct Bivector directionDifferential;
 };
 
 struct ShapeIntersection {
@@ -60,8 +81,13 @@ struct ShapeIntersection {
     uintptr_t primitive;
 };
 
+struct Settings {
+    int width;
+    int height;
+};
+
 struct Item {
-    struct Ray ray;
+    struct Beam beam;
     struct ShapeIntersection shapeIntersection;
     struct Ray shadowRay;
     struct ShapeIntersection shadowShapeIntersection;
@@ -70,8 +96,11 @@ struct Item {
     float pdf;
     float3 throughput;
     float3 radiance;
-    float random[1];
+    float random[4];
     int lightIndex;
+    int currentPixel;
+    int x;
+    int y;
 };
 
 float length2(float3 v)
@@ -158,6 +187,51 @@ float shapeSamplePdf(global struct Shape *shape, float3 point)
     }
 }
 
+void createPixelBeam(global struct Camera *camera, float2 imagePoint, int width, int height, float2 aperturePoint, global struct Beam *beam)
+{
+    float cx = (2 * imagePoint.x - width) / width;
+    float cy = (2 * imagePoint.y - height) / width;
+    float2 imagePointTransformed = (float2)(cx, -cy);
+
+    float3 direction = camera->direction + (camera->imagePlane.u * imagePointTransformed.x + camera->imagePlane.v * imagePointTransformed.y) * camera->imageSize;
+    float len = length(direction);
+    direction = direction / len;
+
+    float3 p = camera->position + direction * camera->focalLength;
+    float r = sqrt(aperturePoint.x);
+    float phi = 2 * 3.14f * aperturePoint.y;
+    float2 apertureDiscPoint = (float2)(r * cos(phi), r * sin(phi));
+    float3 q = camera->position + (camera->imagePlane.u * apertureDiscPoint.x + camera->imagePlane.v * apertureDiscPoint.y) * camera->apertureSize;
+    direction = normalize(p - q);
+
+    beam->ray.origin = q;
+    beam->ray.direction = direction;
+    
+    float pixelSize = 2.0f / width;
+
+    beam->originDifferential.u = (float3)(0, 0, 0);
+    beam->originDifferential.v = (float3)(0, 0, 0);
+    beam->directionDifferential.u = camera->imagePlane.u * pixelSize / len;
+    beam->directionDifferential.v = camera->imagePlane.v * pixelSize / len;
+}
+
+kernel void generateCameraRays(global struct Scene *scene, global struct Settings *settings, global struct Item *items)
+{
+    int id = (int)get_global_id(0);
+    global struct Item *item = &items[id];
+
+    item->y = (item->currentPixel / settings->width) % settings->height;
+    item->x = item->currentPixel % settings->width;
+
+    float2 imagePoint = (float2)(item->x, item->y) + (float2)(item->random[0], item->random[1]);
+    float2 aperturePoint = (float2)(item->random[2], item->random[3]);
+    createPixelBeam(&scene->camera, imagePoint, settings->width, settings->height, aperturePoint, &item->beam);
+    item->specularBounce = false;
+    item->generation = 0;
+    item->radiance = (float3)(0, 0, 0);
+    item->throughput = (float3)(1, 1, 1);
+}
+
 kernel void intersectRays(global struct Scene *scene, global struct Item *items)
 {
     int id = (int)get_global_id(0);
@@ -167,14 +241,14 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items)
     
     for(int i=0; i<scene->numPrimitives; i++) {
         global struct Primitive *primitive = &scene->primitives[i];
-        if(intersectShape(&item->ray, &primitive->shape, &item->shapeIntersection)) {
+        if(intersectShape(&item->beam.ray, &primitive->shape, &item->shapeIntersection)) {
             item->shapeIntersection.primitive = primitive->primitive;
 
-            float3 point = item->ray.origin + item->ray.direction * item->shapeIntersection.distance;
+            float3 point = item->beam.ray.origin + item->beam.ray.direction * item->shapeIntersection.distance;
             float3 rad2 = primitive->surface.radiance;
             float misWeight = 1.0f;
             if(length(rad2) > 0 && !item->specularBounce && item->generation > 0) {
-                float dot2 = fabs(dot(item->shapeIntersection.normal, item->ray.direction));
+                float dot2 = fabs(dot(item->shapeIntersection.normal, item->beam.ray.direction));
                 float pdfArea = item->pdf * dot2 / (item->shapeIntersection.distance * item->shapeIntersection.distance);
                 float pdfLight = shapeSamplePdf(&primitive->shape, point);
                 misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);

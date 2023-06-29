@@ -70,7 +70,7 @@ namespace OpenCL {
         errcode = clBuildProgram(mClProgram, 0, NULL, NULL, NULL, NULL);
         printf("Build program: %i\n", errcode);
 
-        char buffer[1024];
+        char buffer[1024*10];
         size_t logSize;
         clGetProgramBuildInfo(mClProgram, context.clDevice(), CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &logSize);
         buffer[logSize] = '\0';

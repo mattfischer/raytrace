@@ -12,6 +12,7 @@ namespace Math {
     public:
         Ray() = default;
         Ray(const Point &origin, const Vector &direction);
+        Ray(const RayProxy &proxy);
 
         const Point &origin() const;
         const Vector &direction() const;

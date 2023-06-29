@@ -32,6 +32,13 @@ namespace Math {
         mZ = normal.z();
     }
 
+    Vector::Vector(const VectorProxy &proxy)
+    {
+        mX = proxy.coords[0];
+        mY = proxy.coords[1];
+        mZ = proxy.coords[2];
+    }
+
     float Vector::x() const
     {
         return mX;

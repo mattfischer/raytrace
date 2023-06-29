@@ -74,6 +74,7 @@ namespace Render {
             bool extendPath(ThreadLocal &threadLocal);
             bool commitRadiance(ThreadLocal &threadLocal);
 
+            void runGenerateCameraRays();
             void runIntersectRays();
             void runDirectLightArea();
             void runDirectLightPoint();
@@ -117,11 +118,13 @@ namespace Render {
             OpenCL::Context mClContext;
             OpenCL::Allocator mClAllocator;
             OpenCL::Program mClProgram;
+            OpenCL::Kernel mClGenerateCameraRayKernel;
             OpenCL::Kernel mClIntersectRayKernel;
             OpenCL::Kernel mClDirectLightAreaKernel;
             OpenCL::Kernel mClDirectLightPointKernel;
 
             SceneProxy *mSceneProxy;
+            SettingsProxy *mSettingsProxy;
             ItemProxy *mItemProxies;
             ThreadLocal mThreadLocal;
         };

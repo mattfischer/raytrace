@@ -21,6 +21,7 @@ namespace Render {
         , mTotalSamples(settings.width, settings.height)
         , mClAllocator(mClContext)
         , mClProgram(mClContext, "kernels.cl")
+        , mClGenerateCameraRayKernel(mClProgram, "generateCameraRays", mClAllocator)
         , mClIntersectRayKernel(mClProgram, "intersectRays", mClAllocator)
         , mClDirectLightAreaKernel(mClProgram, "directLightArea", mClAllocator)
         , mClDirectLightPointKernel(mClProgram, "directLightPoint", mClAllocator)
@@ -30,8 +31,15 @@ namespace Render {
 
             mClAllocator.mapAreas();
             mSceneProxy = scene.buildProxy(mClAllocator);
+            mSettingsProxy = mClAllocator.allocate<SettingsProxy>();
+            mSettingsProxy->width = mSettings.width;
+            mSettingsProxy->height = mSettings.height;
+
             mItemProxies = (ItemProxy*)mClAllocator.allocateBytes(sizeof(ItemProxy) * kSize);
             mClAllocator.unmapAreas();
+            mClGenerateCameraRayKernel.setArg(0, mSceneProxy);
+            mClGenerateCameraRayKernel.setArg(1, mSettingsProxy);
+            mClGenerateCameraRayKernel.setArg(2, mItemProxies);
             mClIntersectRayKernel.setArg(0, mSceneProxy);
             mClIntersectRayKernel.setArg(1, mItemProxies);
             mClDirectLightAreaKernel.setArg(0, mSceneProxy);
@@ -111,7 +119,7 @@ namespace Render {
                 },
                 [&]() {
                     mCommitRadianceQueue->clear();
-                    mExecutor.runJob(*mGenerateCameraRayJob);
+                    runGenerateCameraRays();
                 }
             );
         }
@@ -126,7 +134,7 @@ namespace Render {
                 mGenerateCameraRayQueue->addItem(key);
             }
 
-            mExecutor.runJob(*mGenerateCameraRayJob);
+            runGenerateCameraRays();
         }
 
         void Renderer::stop()
@@ -405,6 +413,64 @@ namespace Render {
             return true;
         }
 
+        void Renderer::runGenerateCameraRays()
+        {
+            int numQueued = mGenerateCameraRayQueue->numQueued();
+
+            mClAllocator.mapAreas();
+            int numGenerated = 0;
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mGenerateCameraRayQueue->getNextKey();
+                Item &item = mItems[key];
+
+                unsigned int currentPixel = mCurrentPixel++;
+
+                int sample = currentPixel / (mSettings.width * mSettings.height);
+        
+                if(sample >= mSettings.minSamples) {
+                    break;
+                }
+
+                mItemProxies[i].currentPixel = currentPixel;
+                for(int n=0; n<4; n++) {
+                    mItemProxies[i].random[n] = mThreadLocal.sampler.getValue();
+                }
+                numGenerated++;
+            }
+            mGenerateCameraRayQueue->resetRead();
+            mClAllocator.unmapAreas();
+
+            mClGenerateCameraRayKernel.enqueue(mClContext, numGenerated);
+            clFlush(mClContext.clQueue());
+
+            mClAllocator.mapAreas();
+            for(int i=0; i<numGenerated; i++) {
+                WorkQueue::Key key = mGenerateCameraRayQueue->getNextKey();
+                Item &item = mItems[key];
+            
+                item.x = mItemProxies[i].x;
+                item.y = mItemProxies[i].y;
+                item.beam = Math::Beam(mItemProxies[i].beam);
+                item.specularBounce = mItemProxies[i].specularBounce;
+                item.generation = mItemProxies[i].generation;
+                item.radiance = Object::Radiance(mItemProxies[i].radiance);
+                item.throughput = Object::Color(mItemProxies[i].throughput);
+
+                mIntersectRayQueue->addItem(key);
+            }
+            mClAllocator.unmapAreas();
+
+            mGenerateCameraRayQueue->clear();
+            if(mIntersectRayQueue->numQueued() > 0) {
+                runIntersectRays();
+            } else {
+                auto endTime = std::chrono::steady_clock::now();
+                std::chrono::duration<double> duration = endTime - mStartTime;
+                mListener->onRendererDone(duration.count()); 
+                mRunning = false;
+            }
+        }
+
         void Renderer::runIntersectRays()
         {
             int numQueued = mIntersectRayQueue->numQueued();
@@ -413,13 +479,13 @@ namespace Render {
             for(int i=0; i<numQueued; i++) {
                 WorkQueue::Key key = mIntersectRayQueue->getNextKey();
                 Item &item = mItems[key];
-                item.beam.ray().writeProxy(mItemProxies[i].ray);
+                item.beam.writeProxy(mItemProxies[i].beam);
                 mItemProxies[i].generation = item.generation;
                 mItemProxies[i].specularBounce = item.specularBounce;
                 mItemProxies[i].pdf = item.pdf;
                 mItemProxies[i].random[0] = mThreadLocal.sampler.getValue();
                 item.throughput.writeProxy(mItemProxies[i].throughput);
-                for(int n=0; n<3; n++) mItemProxies[i].radiance.coords[n] = 0;
+                item.radiance.writeProxy(mItemProxies[i].radiance);
             }
             mIntersectRayQueue->resetRead();
             mClAllocator.unmapAreas();

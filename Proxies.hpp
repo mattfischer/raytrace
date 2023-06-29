@@ -23,6 +23,11 @@ __declspec(align(16)) struct ColorProxy {
     float coords[3];
 };
 
+struct BivectorProxy {
+    VectorProxy u;
+    VectorProxy v;
+};
+
 struct QuadShapeProxy {
     PointProxy position;
     VectorProxy side1;
@@ -64,6 +69,15 @@ struct PointLightProxy {
     RadianceProxy radiance;
 };
 
+struct CameraProxy {
+    PointProxy position;
+    VectorProxy direction;
+    BivectorProxy imagePlane;
+    float imageSize;
+    float focalLength;
+    float apertureSize;
+};
+
 struct SceneProxy {
     int numPrimitives;
     PrimitiveProxy *primitives;
@@ -72,11 +86,18 @@ struct SceneProxy {
     int numPointLights;
     PointLightProxy *pointLights;
     RadianceProxy skyRadiance;
+    CameraProxy camera;
 };
 
 struct RayProxy {
     PointProxy origin;
     VectorProxy direction;
+};
+
+struct BeamProxy {
+    RayProxy ray;
+    BivectorProxy originDifferential;
+    BivectorProxy directionDifferential;
 };
 
 struct ShapeIntersectionProxy {
@@ -85,8 +106,13 @@ struct ShapeIntersectionProxy {
     uintptr_t primitive;
 };
 
+struct SettingsProxy {
+    int width;
+    int height;
+};
+
 struct ItemProxy {
-    RayProxy ray;
+    BeamProxy beam;
     ShapeIntersectionProxy shapeIntersection;
     RayProxy shadowRay;
     ShapeIntersectionProxy shadowShapeIntersection;
@@ -95,8 +121,11 @@ struct ItemProxy {
     float pdf;
     ColorProxy throughput;
     RadianceProxy radiance;
-    float random[1];
+    float random[4];
     int lightIndex;
+    int currentPixel;
+    int x;
+    int y;
 };
 
 #endif

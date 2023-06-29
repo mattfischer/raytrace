@@ -4,12 +4,15 @@
 #include "Math/Vector.hpp"
 #include "Math/Vector2D.hpp"
 
+#include "Proxies.hpp"
+
 namespace Math {
     class Bivector
     {
     public:
         Bivector() = default;
         Bivector(const Math::Vector &u, const Math::Vector &v);
+        Bivector(const BivectorProxy &proxy);
 
         const Math::Vector &u() const;
         const Math::Vector &v() const;
@@ -20,6 +23,8 @@ namespace Math {
         Bivector operator/(float b) const;
 
         Math::Vector operator*(const Math::Vector2D &b) const;
+
+        void writeProxy(BivectorProxy &proxy) const;
 
     private:
         Math::Vector mU;

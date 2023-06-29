@@ -22,6 +22,13 @@ namespace Math {
         mZ = c.z();
     }
 
+    Point::Point(const PointProxy &proxy)
+    {
+        mX = proxy.coords[0];
+        mY = proxy.coords[1];
+        mZ = proxy.coords[2];
+    }
+
     float Point::x() const
     {
         return mX;

@@ -6,6 +6,8 @@
 #include "Math/Bivector.hpp"
 #include "Math/Point2D.hpp"
 
+#include "Proxies.hpp"
+
 #include <memory>
 
 namespace Object {
@@ -17,6 +19,8 @@ namespace Object {
         Math::Ray createRay(const Math::Point2D &imagePoint, const Math::Point2D &aperturePoint, Math::Bivector &differential) const;
         Math::Beam createPixelBeam(const Math::Point2D &imagePoint, unsigned int width, unsigned int height, const Math::Point2D &aperturePoint) const;
         float projectSize(float size, float distance) const;
+
+        void writeProxy(CameraProxy &proxy) const;
 
     private:
         Math::Point mPosition;

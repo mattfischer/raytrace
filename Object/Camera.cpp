@@ -50,4 +50,14 @@ namespace Object {
     {
         return size * mImageSize * distance;
     }
+
+    void Camera::writeProxy(CameraProxy &proxy) const
+    {
+        mPosition.writeProxy(proxy.position);
+        mDirection.writeProxy(proxy.direction);
+        mImagePlane.writeProxy(proxy.imagePlane);
+        proxy.imageSize = mImageSize;
+        proxy.focalLength = mFocalLength;
+        proxy.apertureSize = mApertureSize;
+    }
 }

@@ -6,6 +6,12 @@ namespace Math {
     {
     }
 
+    Bivector::Bivector(const BivectorProxy &proxy)
+    {
+        mU = Vector(proxy.u);
+        mV = Vector(proxy.v);
+    }
+
     const Math::Vector &Bivector::u() const
     {
         return mU;
@@ -44,5 +50,11 @@ namespace Math {
     Bivector operator*(const BaseTransformation &transformation, const Bivector &bivector)
     {
         return Bivector(transformation * bivector.u(), transformation * bivector.v());
+    }
+
+    void Bivector::writeProxy(BivectorProxy &proxy) const
+    {
+        mU.writeProxy(proxy.u);
+        mV.writeProxy(proxy.v);
     }
 }

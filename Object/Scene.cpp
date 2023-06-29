@@ -125,6 +125,7 @@ namespace Object {
         }
 
         mSkyRadiance.writeProxy(proxy->skyRadiance);
+        mCamera->writeProxy(proxy->camera);
 
         return proxy;
     }
