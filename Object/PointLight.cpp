@@ -18,4 +18,10 @@ namespace Object {
     {
         return mRadiance;
     }
+
+    void PointLight::writeProxy(PointLightProxy &proxy) const
+    {
+        mPosition.writeProxy(proxy.position);
+        mRadiance.writeProxy(proxy.radiance);
+    }
 }

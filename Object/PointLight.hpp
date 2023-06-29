@@ -4,6 +4,8 @@
 #include "Math/Point.hpp"
 #include "Object/Radiance.hpp"
 
+#include "Proxies.hpp"
+
 #include <memory>
 
 namespace Object {
@@ -14,6 +16,8 @@ namespace Object {
 
         const Math::Point &position() const;
         const Object::Radiance &radiance() const;
+
+        void writeProxy(PointLightProxy &proxy) const;
 
     private:
         Math::Point mPosition;

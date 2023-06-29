@@ -34,9 +34,18 @@ struct Primitive {
     uintptr_t primitive;    
 };
 
+struct PointLight {
+    float3 position;
+    float3 radiance;
+};
+
 struct Scene {
     int numPrimitives;
     global struct Primitive *primitives;
+    int numAreaLights;
+    global struct Primitive **areaLights;
+    int numPointLights;
+    global struct PointLight *pointLights;
     float3 skyRadiance;
 };
 
@@ -61,6 +70,8 @@ struct Item {
     float pdf;
     float3 throughput;
     float3 radiance;
+    float random[1];
+    int lightIndex;
 };
 
 float length2(float3 v)
@@ -170,6 +181,9 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items)
             }
 
             item->radiance = rad2 * item->throughput * misWeight;        
+        
+            int totalLights = scene->numAreaLights + scene->numPointLights;
+            item->lightIndex = (int)floor(item->random[0] * totalLights);                    
         }
     }
 

@@ -108,9 +108,20 @@ namespace Object {
         SceneProxy *proxy = clAllocator.allocate<SceneProxy>();
         proxy->numPrimitives = mPrimitives.size();
         proxy->primitives = (PrimitiveProxy*)clAllocator.allocateBytes(sizeof(PrimitiveProxy) * proxy->numPrimitives);
+        proxy->numAreaLights = mAreaLights.size();
+        proxy->areaLights = (PrimitiveProxy**)clAllocator.allocateBytes(sizeof(PrimitiveProxy*) * proxy->numAreaLights);
 
+        int n = 0;
         for(int i=0; i<mPrimitives.size(); i++) {
             mPrimitives[i]->writeProxy(proxy->primitives[i]);
+            if(mPrimitives[i]->surface().radiance().magnitude() > 0) {
+                proxy->areaLights[n++] = &proxy->primitives[i];
+            }
+        }
+
+        proxy->numPointLights = mPointLights.size();
+        for(int i=0; i<mPointLights.size(); i++) {
+            mPointLights[i]->writeProxy(proxy->pointLights[i]);
         }
 
         mSkyRadiance.writeProxy(proxy->skyRadiance);

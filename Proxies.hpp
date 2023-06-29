@@ -59,9 +59,18 @@ struct PrimitiveProxy {
     uintptr_t primitive;
 };
 
+struct PointLightProxy {
+    PointProxy position;
+    RadianceProxy radiance;
+};
+
 struct SceneProxy {
     int numPrimitives;
     PrimitiveProxy *primitives;
+    int numAreaLights;
+    PrimitiveProxy **areaLights;
+    int numPointLights;
+    PointLightProxy *pointLights;
     RadianceProxy skyRadiance;
 };
 
@@ -86,6 +95,8 @@ struct ItemProxy {
     float pdf;
     ColorProxy throughput;
     RadianceProxy radiance;
+    float random[1];
+    int lightIndex;
 };
 
 #endif

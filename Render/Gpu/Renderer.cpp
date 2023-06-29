@@ -417,6 +417,7 @@ namespace Render {
                 mItemProxies[i].generation = item.generation;
                 mItemProxies[i].specularBounce = item.specularBounce;
                 mItemProxies[i].pdf = item.pdf;
+                mItemProxies[i].random[0] = mThreadLocal.sampler.getValue();
                 item.throughput.writeProxy(mItemProxies[i].throughput);
                 for(int n=0; n<3; n++) mItemProxies[i].radiance.coords[n] = 0;
             }
@@ -440,8 +441,7 @@ namespace Render {
                 item.radiance += Object::Radiance(mItemProxies[i].radiance);
 
                 if(item.isect.valid()) {
-                    int totalLights = mScene.areaLights().size() + mScene.pointLights().size();
-                    int lightIndex = (int)std::floor(mThreadLocal.sampler.getValue() * totalLights);
+                    int lightIndex = mItemProxies[i].lightIndex;
                     if(lightIndex < mScene.areaLights().size()) {
                         item.lightIndex = lightIndex;
                         mDirectLightAreaQueue->addItem(key);
