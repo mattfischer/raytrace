@@ -107,6 +107,8 @@ struct Item {
     int currentPixel;
     int x;
     int y;
+    float shadowD;
+    float shadowDot;
 };
 
 float length2(float3 v)
@@ -190,6 +192,15 @@ float shapeSamplePdf(global struct Shape *shape, float3 point)
     
     default:
         return 0;
+    }
+}
+
+float3 facingNormal(global struct Intersection *isect)
+{
+    if(dot(isect->shapeIntersection.normal, isect->beam->ray.direction) < 0) {
+        return -isect->shapeIntersection.normal;
+    } else {
+        return isect->shapeIntersection.normal;
     }
 }
 
@@ -298,13 +309,24 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
     item->shadowIsect.shapeIntersection.distance = MAXFLOAT;
     item->shadowIsect.primitive = 0;
     
-    if(item->shadowRay.direction.x == 0 && item->shadowRay.direction.y == 0 && item->shadowRay.direction.z == 0) {
-        return;
-    }
+    global struct Intersection *isect = &item->isect;
+    float3 nrmFacing = facingNormal(isect);
+    float3 pntOffset = isect->point + nrmFacing * 0.01f;
+    global struct PointLight *pointLight = &scene->pointLights[item->lightIndex];
 
-    for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
-            item->shadowIsect.primitive = &scene->primitives[i];
+    float3 dirIn = pointLight->position - pntOffset;
+    item->shadowD = length(dirIn);
+    dirIn = dirIn / item->shadowD;
+
+    item->shadowDot = dot(dirIn, nrmFacing);
+    if(item->shadowDot > 0) {
+        item->shadowRay.origin = pntOffset;
+        item->shadowRay.direction = dirIn;
+
+        for(int i=0; i<scene->numPrimitives; i++) {
+            if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
+                item->shadowIsect.primitive = &scene->primitives[i];
+            }
         }
     }
 }

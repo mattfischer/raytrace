@@ -627,42 +627,6 @@ namespace Render {
         {
             int numQueued = mDirectLightPointQueue->numQueued();
 
-            mClAllocator.mapAreas();
-            for(int i=0; i<numQueued; i++) {
-                WorkQueue::Key key = mDirectLightPointQueue->getNextKey();
-                Item &item = mItems[key];
-
-                const Object::Intersection &isect = item.isect;
-                const Object::Surface &surface = isect.primitive().surface();
-                const Math::Normal &nrmFacing = isect.facingNormal();
-                Math::Point pntOffset = item.isect.point() + Math::Vector(nrmFacing) * 0.01f;
-                Object::Radiance rad;
-
-                const Object::PointLight &pointLight = *mScene.pointLights()[item.lightIndex];
-            
-                Math::Vector dirIn = pointLight.position() - pntOffset;
-                float d = dirIn.magnitude();
-                dirIn = dirIn / d;
-
-                for(int n=0; n<3; n++) {
-                    mItemProxies[i].shadowRay.direction.coords[n] = 0;
-                }
-
-                float dot = dirIn * nrmFacing;
-                if(dot > 0) {
-                    Math::Ray ray(pntOffset, dirIn);
-                    Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-            
-                    item.shadowBeam = beam;
-                    item.shadowBeam.ray().writeProxy(mItemProxies[i].shadowRay);
-                    item.shadowDot = dot;
-                    item.shadowD = d;
-                }
-            }
-            
-            mDirectLightPointQueue->resetRead();
-            mClAllocator.unmapAreas();
-
             mClDirectLightPointKernel.enqueue(mClContext, numQueued);
             clFlush(mClContext.clQueue());
 
@@ -683,12 +647,13 @@ namespace Render {
                 }
 
                 Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);
-                float d = item.shadowD;
-                float dot = item.shadowDot;
+                float d = mItemProxies[i].shadowD;
+                float dot = mItemProxies[i].shadowDot;
 
                 Object::Radiance rad;
                 if (!isect2.valid() || isect2.distance() >= d) {
-                    Math::Vector dirIn = item.shadowBeam.ray().direction();
+                    Math::Ray ray(mItemProxies[i].shadowRay);
+                    Math::Vector dirIn = ray.direction();
                     Object::Radiance irad = pointLight.radiance() * dot / (d * d);
                     rad = irad * surface.reflected(item.isect, dirIn);
                     item.radiance += rad * item.throughput;
