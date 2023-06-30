@@ -78,7 +78,13 @@ struct Beam {
 struct ShapeIntersection {
     float distance;
     float3 normal;
-    uintptr_t primitive;
+};
+
+struct Intersection {
+    struct ShapeIntersection shapeIntersection;
+    global struct Primitive *primitive;
+    global struct Beam *beam;
+    float3 point;
 };
 
 struct Settings {
@@ -88,9 +94,9 @@ struct Settings {
 
 struct Item {
     struct Beam beam;
-    struct ShapeIntersection shapeIntersection;
+    struct Intersection isect;
     struct Ray shadowRay;
-    struct ShapeIntersection shadowShapeIntersection;
+    struct Intersection shadowIsect;
     bool specularBounce;
     int generation;
     float pdf;
@@ -236,21 +242,21 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items)
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
-    item->shapeIntersection.distance = MAXFLOAT;
-    item->shapeIntersection.primitive = 0;
+    item->isect.shapeIntersection.distance = MAXFLOAT;
+    item->isect.primitive = 0;
     
     for(int i=0; i<scene->numPrimitives; i++) {
         global struct Primitive *primitive = &scene->primitives[i];
-        if(intersectShape(&item->beam.ray, &primitive->shape, &item->shapeIntersection)) {
-            item->shapeIntersection.primitive = primitive->primitive;
-
-            float3 point = item->beam.ray.origin + item->beam.ray.direction * item->shapeIntersection.distance;
+        if(intersectShape(&item->beam.ray, &primitive->shape, &item->isect.shapeIntersection)) {
+            item->isect.primitive = primitive;
+            item->isect.beam = &item->beam;
+            item->isect.point = item->beam.ray.origin + item->beam.ray.direction * item->isect.shapeIntersection.distance;
             float3 rad2 = primitive->surface.radiance;
             float misWeight = 1.0f;
             if(length(rad2) > 0 && !item->specularBounce && item->generation > 0) {
-                float dot2 = fabs(dot(item->shapeIntersection.normal, item->beam.ray.direction));
-                float pdfArea = item->pdf * dot2 / (item->shapeIntersection.distance * item->shapeIntersection.distance);
-                float pdfLight = shapeSamplePdf(&primitive->shape, point);
+                float dot2 = fabs(dot(item->isect.shapeIntersection.normal, item->beam.ray.direction));
+                float pdfArea = item->pdf * dot2 / (item->isect.shapeIntersection.distance * item->isect.shapeIntersection.distance);
+                float pdfLight = shapeSamplePdf(&primitive->shape, item->isect.point);
                 misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
             }
 
@@ -261,7 +267,7 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items)
         }
     }
 
-    if(item->shapeIntersection.primitive == 0) {
+    if(item->isect.primitive == 0) {
         float3 rad2 = scene->skyRadiance;
         item->radiance = rad2 * item->throughput;
     }
@@ -271,16 +277,16 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
-    item->shadowShapeIntersection.distance = MAXFLOAT;
-    item->shadowShapeIntersection.primitive = 0;
+    item->shadowIsect.shapeIntersection.distance = MAXFLOAT;
+    item->shadowIsect.primitive = 0;
     
     if(item->shadowRay.direction.x == 0 && item->shadowRay.direction.y == 0 && item->shadowRay.direction.z == 0) {
         return;
     }
 
     for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowShapeIntersection)) {
-            item->shadowShapeIntersection.primitive = scene->primitives[i].primitive;
+        if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
+            item->shadowIsect.primitive = &scene->primitives[i];
         }
     }
 }
@@ -289,16 +295,16 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
-    item->shadowShapeIntersection.distance = MAXFLOAT;
-    item->shadowShapeIntersection.primitive = 0;
+    item->shadowIsect.shapeIntersection.distance = MAXFLOAT;
+    item->shadowIsect.primitive = 0;
     
     if(item->shadowRay.direction.x == 0 && item->shadowRay.direction.y == 0 && item->shadowRay.direction.z == 0) {
         return;
     }
 
     for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowShapeIntersection)) {
-            item->shadowShapeIntersection.primitive = scene->primitives[i].primitive;
+        if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
+            item->shadowIsect.primitive = &scene->primitives[i];
         }
     }
 }

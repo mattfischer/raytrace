@@ -499,10 +499,13 @@ namespace Render {
                 Item &item = mItems[key];
             
                 Object::Shape::Base::Intersection shapeIntersection;
-                shapeIntersection.distance = mItemProxies[i].shapeIntersection.distance;
-                shapeIntersection.normal = Math::Normal(mItemProxies[i].shapeIntersection.normal);
-                Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shapeIntersection.primitive;
-        
+                shapeIntersection.distance = mItemProxies[i].isect.shapeIntersection.distance;
+                shapeIntersection.normal = Math::Normal(mItemProxies[i].isect.shapeIntersection.normal);
+                Object::Primitive *primitive = nullptr;
+                if(mItemProxies[i].isect.primitive) {
+                    primitive = (Object::Primitive*)mItemProxies[i].isect.primitive->primitive;
+                }
+
                 item.isect = Object::Intersection(mScene, *primitive, item.beam, shapeIntersection);
                 item.radiance += Object::Radiance(mItemProxies[i].radiance);
 
@@ -586,10 +589,13 @@ namespace Render {
                 const Object::Surface &surface = item.isect.primitive().surface();
                 
                 Object::Shape::Base::Intersection shapeIntersection;
-                shapeIntersection.distance = mItemProxies[i].shadowShapeIntersection.distance;
-                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowShapeIntersection.normal);
-                Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shadowShapeIntersection.primitive;
-        
+                shapeIntersection.distance = mItemProxies[i].shadowIsect.shapeIntersection.distance;
+                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowIsect.shapeIntersection.normal);
+                Object::Primitive *primitive = nullptr;
+                if(mItemProxies[i].shadowIsect.primitive) {
+                    primitive = (Object::Primitive*)mItemProxies[i].shadowIsect.primitive->primitive;
+                }
+
                 Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);
 
                 const Object::Primitive &light = mScene.areaLights()[item.lightIndex];
@@ -669,10 +675,13 @@ namespace Render {
                 const Object::PointLight &pointLight = *mScene.pointLights()[item.lightIndex];
    
                 Object::Shape::Base::Intersection shapeIntersection;
-                shapeIntersection.distance = mItemProxies[i].shadowShapeIntersection.distance;
-                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowShapeIntersection.normal);
-                Object::Primitive *primitive = (Object::Primitive*)mItemProxies[i].shadowShapeIntersection.primitive;
-        
+                shapeIntersection.distance = mItemProxies[i].shadowIsect.shapeIntersection.distance;
+                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowIsect.shapeIntersection.normal);
+                Object::Primitive *primitive = nullptr;
+                if(mItemProxies[i].shadowIsect.primitive) {
+                    primitive = (Object::Primitive*)mItemProxies[i].shadowIsect.primitive->primitive;
+                }
+
                 Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);
                 float d = item.shadowD;
                 float dot = item.shadowDot;

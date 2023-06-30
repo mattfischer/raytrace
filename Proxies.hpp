@@ -103,7 +103,13 @@ struct BeamProxy {
 struct ShapeIntersectionProxy {
     float distance;
     NormalProxy normal;
-    uintptr_t primitive;
+};
+
+struct IntersectionProxy {
+    ShapeIntersectionProxy shapeIntersection;
+    PrimitiveProxy *primitive;
+    BeamProxy *beam;
+    PointProxy point;
 };
 
 struct SettingsProxy {
@@ -113,9 +119,9 @@ struct SettingsProxy {
 
 struct ItemProxy {
     BeamProxy beam;
-    ShapeIntersectionProxy shapeIntersection;
+    IntersectionProxy isect;
     RayProxy shadowRay;
-    ShapeIntersectionProxy shadowShapeIntersection;
+    IntersectionProxy shadowIsect;
     bool specularBounce;
     int generation;
     float pdf;
