@@ -137,8 +137,6 @@ struct SettingsProxy {
 struct ItemProxy {
     BeamProxy beam;
     IntersectionProxy isect;
-    RayProxy shadowRay;
-    IntersectionProxy shadowIsect;
     bool specularBounce;
     int generation;
     float pdf;

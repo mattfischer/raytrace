@@ -112,8 +112,6 @@ struct Settings {
 struct Item {
     struct Beam beam;
     struct Intersection isect;
-    struct Ray shadowRay;
-    struct Intersection shadowIsect;
     bool specularBounce;
     int generation;
     float pdf;
@@ -131,7 +129,7 @@ float length2(float3 v)
     return dot(v, v);
 }
 
-bool intersectQuad(global struct Ray *ray, global struct QuadShape *quad, global struct ShapeIntersection *shapeIntersection)
+bool intersectQuad(struct Ray *ray, global struct QuadShape *quad, struct ShapeIntersection *shapeIntersection)
 {
     float distance = dot(ray->origin - quad->position, quad->normal) / dot(ray->direction, -quad->normal);
     if(distance >= 0 && distance < shapeIntersection->distance) {
@@ -148,7 +146,7 @@ bool intersectQuad(global struct Ray *ray, global struct QuadShape *quad, global
     return false;
 }
 
-bool intersectSphere(global struct Ray *ray, global struct SphereShape *sphere, global struct ShapeIntersection *shapeIntersection)
+bool intersectSphere(struct Ray *ray, global struct SphereShape *sphere, struct ShapeIntersection *shapeIntersection)
 {
     float a, b, c;
     float disc;
@@ -179,7 +177,7 @@ bool intersectSphere(global struct Ray *ray, global struct SphereShape *sphere, 
     return false;
 }
 
-bool intersectShape(global struct Ray *ray, global struct Shape *shape, global struct ShapeIntersection *shapeIntersection)
+bool intersectShape(struct Ray *ray, global struct Shape *shape, struct ShapeIntersection *shapeIntersection)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
@@ -384,8 +382,6 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
-    item->shadowIsect.shapeIntersection.distance = MAXFLOAT;
-    item->shadowIsect.primitive = 0;
     item->radiance = (float3)(0, 0, 0);
 
     global struct Intersection *isect = &item->isect;
@@ -407,16 +403,21 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
         float dot2 = fabs(dot(dirIn, nrm2));
         float dt = dot(dirIn, nrmFacing);
         if(dt > 0) {    
-            item->shadowRay.origin = pntOffset;
-            item->shadowRay.direction = dirIn;
+            struct Ray shadowRay;
+            shadowRay.origin = pntOffset;
+            shadowRay.direction = dirIn;
+
+            struct Intersection shadowIsect;
+            shadowIsect.shapeIntersection.distance = MAXFLOAT;
+            shadowIsect.primitive = 0;
 
             for(int i=0; i<scene->numPrimitives; i++) {
-                if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
-                    item->shadowIsect.primitive = &scene->primitives[i];
+                if(intersectShape(&shadowRay, &scene->primitives[i].shape, &shadowIsect.shapeIntersection)) {
+                    shadowIsect.primitive = &scene->primitives[i];
                 }
             }
             
-            if(item->shadowIsect.primitive == light) {
+            if(shadowIsect.primitive == light) {
                 float3 rad2 = light->surface.radiance;
                 float3 irad = rad2 * dot2 * dt / (d * d * pdf);
                 float pdfBrdf = surfacePdf(isect, dirIn) * dot2 / (d * d);
@@ -432,8 +433,6 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
-    item->shadowIsect.shapeIntersection.distance = MAXFLOAT;
-    item->shadowIsect.primitive = 0;
     item->radiance = (float3)(0, 0, 0);
 
     global struct Intersection *isect = &item->isect;
@@ -447,16 +446,21 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
 
     float dt = dot(dirIn, nrmFacing);
     if(dt > 0) {
-        item->shadowRay.origin = pntOffset;
-        item->shadowRay.direction = dirIn;
+        struct Ray shadowRay;
+        shadowRay.origin = pntOffset;
+        shadowRay.direction = dirIn;
+
+        struct Intersection shadowIsect;
+        shadowIsect.shapeIntersection.distance = MAXFLOAT;
+        shadowIsect.primitive = 0;
 
         for(int i=0; i<scene->numPrimitives; i++) {
-            if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
-                item->shadowIsect.primitive = &scene->primitives[i];
+            if(intersectShape(&shadowRay, &scene->primitives[i].shape, &shadowIsect.shapeIntersection)) {
+                shadowIsect.primitive = &scene->primitives[i];
             }
         }
 
-        if(item->shadowIsect.primitive == 0 || item->shadowIsect.shapeIntersection.distance >= 0) {
+        if(shadowIsect.primitive == 0 || shadowIsect.shapeIntersection.distance >= 0) {
             float3 irad = pointLight->radiance * dt / (d * d);
             float3 rad = irad * surfaceReflected(isect, dirIn);
             item->radiance = rad * item->throughput;

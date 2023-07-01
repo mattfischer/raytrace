@@ -67,7 +67,7 @@ namespace OpenCL {
         mClProgram = clCreateProgramWithSource(context.clContext(), 1, &source, &size, &errcode);
         printf("Program: %p errcode: %i\n", mClProgram, errcode);
 
-        errcode = clBuildProgram(mClProgram, 0, NULL, NULL, NULL, NULL);
+        errcode = clBuildProgram(mClProgram, 0, NULL, "-cl-std=CL2.0", NULL, NULL);
         printf("Build program: %i\n", errcode);
 
         char buffer[1024*10];
@@ -93,7 +93,7 @@ namespace OpenCL {
         mClProgram = clCreateProgramWithSource(context.clContext(), sourceStrs.size(), &sources[0], &sizes[0], &errcode);
         printf("Program: %p errcode: %i\n", mClProgram, errcode);
 
-        errcode = clBuildProgram(mClProgram, 0, NULL, NULL, NULL, NULL);
+        errcode = clBuildProgram(mClProgram, 0, NULL, "-cl-std=CL2.0", NULL, NULL);
         printf("Build program: %i\n", errcode);
     }
     
