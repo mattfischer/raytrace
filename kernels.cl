@@ -1,149 +1,155 @@
-struct Bivector {
-    float3 u;
-    float3 v;
-};
+typedef float3 Point;
+typedef float3 Vector;
+typedef float3 Normal;
+typedef float3 Color;
+typedef float3 Radiance;
 
-struct QuadShape {
-    float3 position;
-    float3 side1;
-    float3 side2;
-    float3 normal;
-};
+typedef struct {
+    Vector u;
+    Vector v;
+} Bivector;
 
-struct SphereShape {
-    float3 position;
+typedef struct {
+    Point position;
+    Vector side1;
+    Vector side2;
+    Normal normal;
+} QuadShape;
+
+typedef struct {
+    Point position;
     float radius;
-};
+} SphereShape;
 
-enum ShapeType {
+typedef enum {
     ShapeTypeNone,
     ShapeTypeQuad,
     ShapeTypeSphere
-};
+} ShapeType;
 
-struct Shape {
-    enum ShapeType type;
+typedef struct {
+    ShapeType type;
     union {
-        struct QuadShape quad;
-        struct SphereShape sphere;
+        QuadShape quad;
+        SphereShape sphere;
     };
-};
+} Shape;
 
-struct SolidAlbedo {
-    float3 color;
-};
+typedef struct {
+    Color color;
+} SolidAlbedo;
 
-enum AlbedoType {
+typedef enum {
     AlbedoTypeSolid,
     AlbedoTypeTexture
-};
+} AlbedoType;
 
-struct Albedo {
-    enum AlbedoType type;
+typedef struct {
+    AlbedoType type;
     union {
-        struct SolidAlbedo solid;
+        SolidAlbedo solid;
     };
-};
+} Albedo;
 
-struct Surface {
-    float3 radiance;
-    struct Albedo albedo;
-};
+typedef struct {
+    Radiance radiance;
+    Albedo albedo;
+} Surface;
 
-struct Primitive {
-    struct Shape shape;
-    struct Surface surface;
+typedef struct {
+    Shape shape;
+    Surface surface;
     uintptr_t primitive;    
-};
+} Primitive;
 
-struct PointLight {
-    float3 position;
-    float3 radiance;
-};
+typedef struct {
+    Point position;
+    Radiance radiance;
+} PointLight;
 
-struct Camera {
-    float3 position;
-    float3 direction;
-    struct Bivector imagePlane;
+typedef struct {
+    Point position;
+    Vector direction;
+    Bivector imagePlane;
     float imageSize;
     float focalLength;
     float apertureSize;
-};
+} Camera;
 
-struct Scene {
+typedef struct {
     int numPrimitives;
-    global struct Primitive *primitives;
+    global Primitive *primitives;
     int numAreaLights;
-    global struct Primitive * global *areaLights;
+    global Primitive * global *areaLights;
     int numPointLights;
-    global struct PointLight *pointLights;
-    float3 skyRadiance;
-    struct Camera camera;
-};
+    global PointLight *pointLights;
+    Radiance skyRadiance;
+    Camera camera;
+} Scene;
 
-struct Ray {
-    float3 origin;
-    float3 direction;
-};
+typedef struct {
+    Point origin;
+    Vector direction;
+} Ray;
 
-struct Beam {
-    struct Ray ray;
-    struct Bivector originDifferential;
-    struct Bivector directionDifferential;
-};
+typedef struct {
+    Ray ray;
+    Bivector originDifferential;
+    Bivector directionDifferential;
+} Beam;
 
-struct ShapeIntersection {
+typedef struct {
     float distance;
-    float3 normal;
-};
+    Normal normal;
+} ShapeIntersection;
 
-struct Intersection {
-    struct ShapeIntersection shapeIntersection;
-    global struct Primitive *primitive;
-    struct Beam *beam;
-    float3 point;
-};
+typedef struct {
+    ShapeIntersection shapeIntersection;
+    global Primitive *primitive;
+    Beam *beam;
+    Point point;
+} Intersection;
 
-struct Settings {
+typedef struct {
     int width;
     int height;
     int minSamples;
-};
+} Settings;
 
-struct Item {
-    struct Beam beam;
-    struct Intersection isect;
+typedef struct {
+    Beam beam;
+    Intersection isect;
     bool specularBounce;
     int generation;
     float pdf;
-    float3 throughput;
-    float3 radiance;
+    Color throughput;
+    Radiance radiance;
     int lightIndex;
     int x;
     int y;
-};
+} Item;
 
-struct WorkQueue {
+typedef struct {
     global int *data;
-};
+} WorkQueue;
 
-struct Queues {
-    struct WorkQueue generateCameraRayQueue;
-    struct WorkQueue intersectRaysQueue;
-    struct WorkQueue directLightAreaQueue;
-    struct WorkQueue directLightPointQueue;
-    struct WorkQueue extendPathQueue;
-    struct WorkQueue commitRadianceQueue;
-};
+typedef struct {
+    WorkQueue generateCameraRayQueue;
+    WorkQueue intersectRaysQueue;
+    WorkQueue directLightAreaQueue;
+    WorkQueue directLightPointQueue;
+    WorkQueue extendPathQueue;
+    WorkQueue commitRadianceQueue;
+} Queues;
 
-void queueAddItem(struct WorkQueue *queue, int key)
+void queueAddItem(WorkQueue *queue, int key)
 {
     int write = atomic_inc(&queue->data[1]);
     
     queue->data[write + 2] = key;
 }
 
-int queueGetNextKey(struct WorkQueue *queue)
+int queueGetNextKey(WorkQueue *queue)
 {
     int read = atomic_inc(&queue->data[0]);
 
@@ -155,11 +161,11 @@ float length2(float3 v)
     return dot(v, v);
 }
 
-bool intersectQuad(struct Ray *ray, global struct QuadShape *quad, struct ShapeIntersection *shapeIntersection)
+bool intersectQuad(Ray *ray, global QuadShape *quad, ShapeIntersection *shapeIntersection)
 {
     float distance = dot(ray->origin - quad->position, quad->normal) / dot(ray->direction, -quad->normal);
     if(distance >= 0 && distance < shapeIntersection->distance) {
-        float3 point = ray->origin + ray->direction * distance;
+        Point point = ray->origin + ray->direction * distance;
         float u = dot(point - quad->position, quad->side1) / length2(quad->side1);
         float v = dot(point - quad->position, quad->side2) / length2(quad->side2);
         if(u >= 0 && u <= 1 && v >= 0 && v <= 1) {
@@ -172,7 +178,7 @@ bool intersectQuad(struct Ray *ray, global struct QuadShape *quad, struct ShapeI
     return false;
 }
 
-bool intersectSphere(struct Ray *ray, global struct SphereShape *sphere, struct ShapeIntersection *shapeIntersection)
+bool intersectSphere(Ray *ray, global SphereShape *sphere, ShapeIntersection *shapeIntersection)
 {
     float a, b, c;
     float disc;
@@ -186,7 +192,7 @@ bool intersectSphere(struct Ray *ray, global struct SphereShape *sphere, struct 
         float distance = (-b - sqrt(disc)) / (2 * a);
         if(distance >= 0 && distance < shapeIntersection->distance) {
             shapeIntersection->distance = distance;
-            float3 point = ray->origin + ray->direction * distance;
+            Point point = ray->origin + ray->direction * distance;
             shapeIntersection->normal = (point - sphere->position) / sphere->radius;
             return true;
         }
@@ -194,7 +200,7 @@ bool intersectSphere(struct Ray *ray, global struct SphereShape *sphere, struct 
         distance = (-b + sqrt(disc)) / (2 * a);
         if(distance >= 0 && distance < shapeIntersection->distance) {
             shapeIntersection->distance = distance;
-            float3 point = ray->origin + ray->direction * distance;
+            Point point = ray->origin + ray->direction * distance;
             shapeIntersection->normal = (point - sphere->position) / sphere->radius;
             return true;
         }
@@ -203,7 +209,7 @@ bool intersectSphere(struct Ray *ray, global struct SphereShape *sphere, struct 
     return false;
 }
 
-bool intersectShape(struct Ray *ray, global struct Shape *shape, struct ShapeIntersection *shapeIntersection)
+bool intersectShape(Ray *ray, global Shape *shape, ShapeIntersection *shapeIntersection)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
@@ -217,13 +223,13 @@ bool intersectShape(struct Ray *ray, global struct Shape *shape, struct ShapeInt
     }
 }
 
-float shapeSamplePdfQuad(global struct QuadShape *quad, float3 point)
+float shapeSamplePdfQuad(global QuadShape *quad, Point point)
 {
     float surfaceArea = length(cross(quad->side1, quad->side2));
     return 1.0f / surfaceArea;
 }
 
-float shapeSamplePdf(global struct Shape *shape, float3 point)
+float shapeSamplePdf(global Shape *shape, Point point)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
@@ -234,7 +240,7 @@ float shapeSamplePdf(global struct Shape *shape, float3 point)
     }
 }
 
-bool shapeSampleQuad(global struct QuadShape *quad, float2 random, float3 *point, float3 *normal, float *pdf)
+bool shapeSampleQuad(global QuadShape *quad, float2 random, Point *point, Normal *normal, float *pdf)
 {
     *point = quad->position + quad->side1 * random.x + quad->side2 * random.y;
     *normal = quad->normal;
@@ -245,7 +251,7 @@ bool shapeSampleQuad(global struct QuadShape *quad, float2 random, float3 *point
     return true;
 }
 
-bool shapeSample(global struct Shape *shape, float2 random, float3 *point, float3 *normal, float *pdf)
+bool shapeSample(global Shape *shape, float2 random, Point *point, Normal *normal, float *pdf)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
@@ -256,7 +262,7 @@ bool shapeSample(global struct Shape *shape, float2 random, float3 *point, float
     }
 }
 
-float3 facingNormal(global struct Intersection *isect)
+Normal facingNormal(global Intersection *isect)
 {
     if(dot(isect->shapeIntersection.normal, isect->beam->ray.direction) > 0) {
         return -isect->shapeIntersection.normal;
@@ -265,23 +271,23 @@ float3 facingNormal(global struct Intersection *isect)
     }
 }
 
-float surfacePdf(global struct Intersection *isect, float3 dirIn)
+float surfacePdf(global Intersection *isect, Vector dirIn)
 {
-    float3 dirOut = -isect->beam->ray.direction;
-    float3 nrmFacing = facingNormal(isect);
+    Vector dirOut = -isect->beam->ray.direction;
+    Normal nrmFacing = facingNormal(isect);
 
     float cosTheta = max(dot(dirIn, nrmFacing), 0.0f);
     return cosTheta / 3.14f;
 }
 
-float3 surfaceReflected(global struct Intersection *isect, float3 dirIn)
+Color surfaceReflected(global Intersection *isect, Vector dirIn)
 {
-    float3 dirOut = -isect->beam->ray.direction;
-    float3 nrmFacing = facingNormal(isect);
+    Vector dirOut = -isect->beam->ray.direction;
+    Normal nrmFacing = facingNormal(isect);
     return isect->primitive->surface.albedo.solid.color / 3.14f;        
 }
 
-void sceneIntersect(global struct Scene *scene, struct Beam *beam, struct Intersection *isect)
+void sceneIntersect(global Scene *scene, Beam *beam, Intersection *isect)
 {
     isect->shapeIntersection.distance = MAXFLOAT;
     isect->primitive = 0;
@@ -298,17 +304,17 @@ void sceneIntersect(global struct Scene *scene, struct Beam *beam, struct Inters
     }
 }
 
-float3 surfaceSample(global struct Intersection *isect, float2 random, float3 *dirIn, float *pdf, bool *pdfDelta)
+Color surfaceSample(global Intersection *isect, float2 random, Vector *dirIn, float *pdf, bool *pdfDelta)
 {
-    float3 dirOut = -isect->beam->ray.direction;
-    float3 nrmFacing = facingNormal(isect);
+    Vector dirOut = -isect->beam->ray.direction;
+    Normal nrmFacing = facingNormal(isect);
     
     float phi = 2 * 3.14f * random.x;
     float theta = asin(sqrt(random.y));
 
-    float3 x;
-    float3 y;
-    float3 z = nrmFacing;
+    Vector x;
+    Vector y;
+    Vector z = nrmFacing;
     if(fabs(nrmFacing.z) > fabs(nrmFacing.x) && fabs(nrmFacing.z) > fabs(nrmFacing.y)) {
         x = (float3)(1, 0, 0);
         y = (float3)(0, 1, 0);
@@ -329,21 +335,21 @@ float3 surfaceSample(global struct Intersection *isect, float2 random, float3 *d
     return surfaceReflected(isect, *dirIn);
 }
         
-void createPixelBeam(global struct Camera *camera, float2 imagePoint, int width, int height, float2 aperturePoint, global struct Beam *beam)
+void createPixelBeam(global Camera *camera, float2 imagePoint, int width, int height, float2 aperturePoint, global Beam *beam)
 {
     float cx = (2 * imagePoint.x - width) / width;
     float cy = (2 * imagePoint.y - height) / width;
     float2 imagePointTransformed = (float2)(cx, -cy);
 
-    float3 direction = camera->direction + (camera->imagePlane.u * imagePointTransformed.x + camera->imagePlane.v * imagePointTransformed.y) * camera->imageSize;
+    Vector direction = camera->direction + (camera->imagePlane.u * imagePointTransformed.x + camera->imagePlane.v * imagePointTransformed.y) * camera->imageSize;
     float len = length(direction);
     direction = direction / len;
 
-    float3 p = camera->position + direction * camera->focalLength;
+    Point p = camera->position + direction * camera->focalLength;
     float r = sqrt(aperturePoint.x);
     float phi = 2 * 3.14f * aperturePoint.y;
     float2 apertureDiscPoint = (float2)(r * cos(phi), r * sin(phi));
-    float3 q = camera->position + (camera->imagePlane.u * apertureDiscPoint.x + camera->imagePlane.v * apertureDiscPoint.y) * camera->apertureSize;
+    Point q = camera->position + (camera->imagePlane.u * apertureDiscPoint.x + camera->imagePlane.v * apertureDiscPoint.y) * camera->apertureSize;
     direction = normalize(p - q);
 
     beam->ray.origin = q;
@@ -357,10 +363,10 @@ void createPixelBeam(global struct Camera *camera, float2 imagePoint, int width,
     beam->directionDifferential.v = camera->imagePlane.v * pixelSize / len;
 }
 
-kernel void generateCameraRays(global struct Scene *scene, global struct Settings *settings, global struct Item *items, global float* random, global struct Queues *queues, global unsigned int *currentPixel)
+kernel void generateCameraRays(global Scene *scene, global Settings *settings, global Item *items, global float* random, global Queues *queues, global unsigned int *currentPixel)
 {
     int key = queueGetNextKey(&queues->generateCameraRayQueue);
-    global struct Item *item = &items[key];
+    global Item *item = &items[key];
 
     unsigned int cp = atomic_inc(currentPixel);
 
@@ -385,18 +391,18 @@ kernel void generateCameraRays(global struct Scene *scene, global struct Setting
     queueAddItem(&queues->intersectRaysQueue, key);
 }
 
-kernel void intersectRays(global struct Scene *scene, global struct Item *items, global float *random, global struct Queues *queues)
+kernel void intersectRays(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
     int key = queueGetNextKey(&queues->intersectRaysQueue);
-    global struct Item *item = &items[key];
+    global Item *item = &items[key];
 
     sceneIntersect(scene, &item->beam, &item->isect);
 
     if(item->isect.primitive != 0) {
-        float3 rad2 = item->isect.primitive->surface.radiance;
+        Radiance rad2 = item->isect.primitive->surface.radiance;
         float misWeight = 1.0f;
         if(length(rad2) > 0 && !item->specularBounce && item->generation > 0) {
-            float3 nrmFacing = facingNormal(&item->isect);
+            Normal nrmFacing = facingNormal(&item->isect);
             float dot2 = -dot(nrmFacing, item->beam.ray.direction);
             float d = item->isect.shapeIntersection.distance;
             float pdfArea = item->pdf * dot2 / (d * d);
@@ -420,49 +426,49 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items,
     }
 
     if(item->isect.primitive == 0) {
-        float3 rad2 = scene->skyRadiance;
+        Radiance rad2 = scene->skyRadiance;
         item->radiance += rad2 * item->throughput;
         queueAddItem(&queues->commitRadianceQueue, key);
     }
 }
 
-kernel void directLightArea(global struct Scene *scene, global struct Item *items, global float *random, global struct Queues *queues)
+kernel void directLightArea(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
     int key = queueGetNextKey(&queues->directLightAreaQueue);
-    global struct Item *item = &items[key];
+    global Item *item = &items[key];
 
-    global struct Intersection *isect = &item->isect;
-    float3 nrmFacing = facingNormal(isect);
-    float3 pntOffset = isect->point + nrmFacing * 0.01f;
+    global Intersection *isect = &item->isect;
+    Normal nrmFacing = facingNormal(isect);
+    Point pntOffset = isect->point + nrmFacing * 0.01f;
 
-    global struct Primitive *light = scene->areaLights[item->lightIndex];
+    global Primitive *light = scene->areaLights[item->lightIndex];
     
     global float* r = random + key * 10;
 
     float2 rand = (float2)(r[5], r[6]);
-    float3 pnt2;
-    float3 nrm2;
+    Point pnt2;
+    Normal nrm2;
     float pdf;
     if(shapeSample(&light->shape, rand, &pnt2, &nrm2, &pdf)) {
-        float3 dirIn = pnt2 - pntOffset;
+        Vector dirIn = pnt2 - pntOffset;
         float d = length(dirIn);
         dirIn = dirIn / d;
         float dot2 = fabs(dot(dirIn, nrm2));
         float dt = dot(dirIn, nrmFacing);
         if(dt > 0) {    
-            struct Beam shadowBeam;
+            Beam shadowBeam;
             shadowBeam.ray.origin = pntOffset;
             shadowBeam.ray.direction = dirIn;
 
-            struct Intersection shadowIsect;
+            Intersection shadowIsect;
             sceneIntersect(scene, &shadowBeam, &shadowIsect);
 
             if(shadowIsect.primitive == light) {
-                float3 rad2 = light->surface.radiance;
-                float3 irad = rad2 * dot2 * dt / (d * d * pdf);
+                Radiance rad2 = light->surface.radiance;
+                Radiance irad = rad2 * dot2 * dt / (d * d * pdf);
                 float pdfBrdf = surfacePdf(isect, dirIn) * dot2 / (d * d);
                 float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
-                float3 rad = irad * surfaceReflected(isect, dirIn);
+                Radiance rad = irad * surfaceReflected(isect, dirIn);
                 item->radiance += rad * item->throughput * misWeight;
             }
         }
@@ -471,33 +477,32 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
     queueAddItem(&queues->extendPathQueue, key);
 }
 
-kernel void directLightPoint(global struct Scene *scene, global struct Item *items, global struct Queues *queues)
+kernel void directLightPoint(global Scene *scene, global Item *items, global Queues *queues)
 {
     int key = queueGetNextKey(&queues->directLightPointQueue);
-    global struct Item *item = &items[key];
-    item->radiance = (float3)(0, 0, 0);
+    global Item *item = &items[key];
 
-    global struct Intersection *isect = &item->isect;
-    float3 nrmFacing = facingNormal(isect);
-    float3 pntOffset = isect->point + nrmFacing * 0.01f;
-    global struct PointLight *pointLight = &scene->pointLights[item->lightIndex];
+    global Intersection *isect = &item->isect;
+    Normal nrmFacing = facingNormal(isect);
+    Point pntOffset = isect->point + nrmFacing * 0.01f;
+    global PointLight *pointLight = &scene->pointLights[item->lightIndex];
 
-    float3 dirIn = pointLight->position - pntOffset;
+    Vector dirIn = pointLight->position - pntOffset;
     float d = length(dirIn);
     dirIn = dirIn / d;
 
     float dt = dot(dirIn, nrmFacing);
     if(dt > 0) {
-        struct Beam shadowBeam;
+        Beam shadowBeam;
         shadowBeam.ray.origin = pntOffset;
         shadowBeam.ray.direction = dirIn;
 
-        struct Intersection shadowIsect;
+        Intersection shadowIsect;
         sceneIntersect(scene, &shadowBeam, &shadowIsect);
 
         if(shadowIsect.primitive == 0 || shadowIsect.shapeIntersection.distance >= 0) {
-            float3 irad = pointLight->radiance * dt / (d * d);
-            float3 rad = irad * surfaceReflected(isect, dirIn);
+            Radiance irad = pointLight->radiance * dt / (d * d);
+            Radiance rad = irad * surfaceReflected(isect, dirIn);
             item->radiance += rad * item->throughput;
         }
     }
@@ -505,23 +510,23 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
     queueAddItem(&queues->extendPathQueue, key);
 }
 
-kernel void extendPath(global struct Scene *scene, global struct Item *items, global float *random, global struct Queues *queues)
+kernel void extendPath(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
     int key = queueGetNextKey(&queues->extendPathQueue);
-    global struct Item *item = &items[key];
-    global struct Intersection *isect = &item->isect;
-    float3 nrmFacing = facingNormal(isect);
+    global Item *item = &items[key];
+    global Intersection *isect = &item->isect;
+    Normal nrmFacing = facingNormal(isect);
     
-    float3 dirIn;
+    Vector dirIn;
     float pdf;
     bool pdfDelta;
     
     global float *r = random + key * 10;
 
     float2 rand = (float2)(r[7], r[8]);
-    float3 reflected = surfaceSample(isect, rand, &dirIn, &pdf, &pdfDelta);
+    Color reflected = surfaceSample(isect, rand, &dirIn, &pdf, &pdfDelta);
     float dt = dot(dirIn, nrmFacing);
-    float3 pntOffset = isect->point + nrmFacing * 0.01f;
+    Point pntOffset = isect->point + nrmFacing * 0.01f;
     
     item->pdf = pdf;
     item->specularBounce = pdfDelta;
