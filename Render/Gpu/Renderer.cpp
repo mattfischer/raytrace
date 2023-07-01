@@ -58,7 +58,7 @@ namespace Render {
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
                         
-            mGenerateCameraRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
+            mGenerateCameraRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
             mGenerateCameraRayJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return generateCameraRay(threadLocal);
@@ -76,7 +76,7 @@ namespace Render {
                 }
             );
 
-            mIntersectRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
+            mIntersectRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
             mIntersectRayJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return intersectRay(threadLocal);
@@ -87,7 +87,7 @@ namespace Render {
                 }
             );
 
-            mDirectLightAreaQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
+            mDirectLightAreaQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
             mDirectLightAreaJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return directLightArea(threadLocal);
@@ -98,7 +98,7 @@ namespace Render {
                 }
             );
 
-            mDirectLightPointQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
+            mDirectLightPointQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
             mDirectLightPointJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return directLightPoint(threadLocal);
@@ -109,7 +109,7 @@ namespace Render {
                 }
             );
 
-            mExtendPathQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
+            mExtendPathQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
             mExtendPathJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return extendPath(threadLocal);
@@ -120,13 +120,14 @@ namespace Render {
                 }
             );
 
-            mCommitRadianceQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize);
+            mCommitRadianceQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
             mCommitRadianceJob = std::make_unique<Executor::FuncJob<ThreadLocal>>(
                 [&](ThreadLocal &threadLocal) {
                     return commitRadiance(threadLocal);
                 },
                 [&]() {
                     mCommitRadianceQueue->clear();
+                    mClAllocator.unmapAreas();
                     runGenerateCameraRays();
                 }
             );
@@ -138,17 +139,18 @@ namespace Render {
             mRunning = true;
             mStartTime = std::chrono::steady_clock::now();
 
+            mClAllocator.mapAreas();
             for(WorkQueue::Key key = 0; key < kSize; key++) {
                 mGenerateCameraRayQueue->addItem(key);
             }
+            mClAllocator.unmapAreas();
 
-            runGenerateCameraRays();
+            mThread = std::thread([&]() { runThread(); });
         }
 
         void Renderer::stop()
         {
             mRunning = false;
-            mExecutor.stop();
         }
 
         bool Renderer::running()
@@ -423,9 +425,9 @@ namespace Render {
 
         void Renderer::runGenerateCameraRays()
         {
-            int numQueued = mGenerateCameraRayQueue->numQueued();
-
             mClAllocator.mapAreas();
+
+            int numQueued = mGenerateCameraRayQueue->numQueued();
             for(int i=0; i<kSize * 10; i++) {
                 mRandom[i] = mThreadLocal.sampler.getValue();
             }
@@ -467,24 +469,18 @@ namespace Render {
 
                 mIntersectRayQueue->addItem(key);
             }
-            mClAllocator.unmapAreas();
 
             mGenerateCameraRayQueue->clear();
-            if(mIntersectRayQueue->numQueued() > 0) {
-                runIntersectRays();
-            } else {
-                auto endTime = std::chrono::steady_clock::now();
-                std::chrono::duration<double> duration = endTime - mStartTime;
-                mListener->onRendererDone(duration.count()); 
-                mRunning = false;
-            }
+            int numIntersect = mIntersectRayQueue->numQueued();
+
+            mClAllocator.unmapAreas();
         }
 
         void Renderer::runIntersectRays()
         {
-            int numQueued = mIntersectRayQueue->numQueued();
-
             mClAllocator.mapAreas();
+
+            int numQueued = mIntersectRayQueue->numQueued();
             for(int i=0; i<numQueued; i++) {
                 WorkQueue::Key key = mIntersectRayQueue->getNextKey();
                 Item &item = mItems[key];
@@ -527,17 +523,15 @@ namespace Render {
                     mCommitRadianceQueue->addItem(key);
                 }
             }
-            mClAllocator.unmapAreas();
-
             mIntersectRayQueue->clear();
-            runDirectLightArea();
+            mClAllocator.unmapAreas();
         }
 
         void Renderer::runDirectLightArea()
         {
-            int numQueued = mDirectLightAreaQueue->numQueued();
-
             mClAllocator.mapAreas();
+
+            int numQueued = mDirectLightAreaQueue->numQueued();
             for(int i=0; i<numQueued; i++) {
                 WorkQueue::Key key = mDirectLightAreaQueue->getNextKey();
                 Item &item = mItems[key];
@@ -564,17 +558,15 @@ namespace Render {
                 item.radiance += Object::Radiance(mItemProxies[i].radiance);
                 mExtendPathQueue->addItem(key);
             }
-            mClAllocator.unmapAreas();
-
             mDirectLightAreaQueue->clear();
-            runDirectLightPoint();   
+            mClAllocator.unmapAreas();
         }
 
         void Renderer::runDirectLightPoint()
         {
-            int numQueued = mDirectLightPointQueue->numQueued();
-
             mClAllocator.mapAreas();
+
+            int numQueued = mDirectLightPointQueue->numQueued();
             for(int i=0; i<numQueued; i++) {
                 WorkQueue::Key key = mDirectLightPointQueue->getNextKey();
                 Item &item = mItems[key];
@@ -588,6 +580,7 @@ namespace Render {
                 item.throughput.writeProxy(mItemProxies[i].throughput);
             }
             mDirectLightPointQueue->resetRead();
+            mClAllocator.unmapAreas();
 
             mClDirectLightPointKernel.enqueue(mClContext, numQueued);
             clFlush(mClContext.clQueue());
@@ -600,17 +593,15 @@ namespace Render {
                 item.radiance += Object::Radiance(mItemProxies[i].radiance);
                 mExtendPathQueue->addItem(key);
             }
-            mClAllocator.unmapAreas();
-
             mDirectLightPointQueue->clear();
-            runExtendPath();   
+            mClAllocator.unmapAreas();
         }
 
         void Renderer::runExtendPath()
         {
-            int numQueued = mExtendPathQueue->numQueued();
-
             mClAllocator.mapAreas();
+
+            int numQueued = mExtendPathQueue->numQueued();
             for(int i=0; i<numQueued; i++) {
                 WorkQueue::Key key = mExtendPathQueue->getNextKey();
                 Item &item = mItems[key];
@@ -623,6 +614,7 @@ namespace Render {
                 mItemProxies[i].generation = item.generation;
             }
             mExtendPathQueue->resetRead();
+            mClAllocator.unmapAreas();
 
             mClExtendPathKernel.enqueue(mClContext, numQueued);
             clFlush(mClContext.clQueue());
@@ -643,10 +635,57 @@ namespace Render {
                     mCommitRadianceQueue->addItem(key);
                 }
             }
-            mClAllocator.unmapAreas();
-
             mExtendPathQueue->clear();
-            mExecutor.runJob(*mCommitRadianceJob);
+            mClAllocator.unmapAreas();
+        }
+
+        void Renderer::runCommitRadiance()
+        {
+            mClAllocator.mapAreas();
+
+            int numQueued = mCommitRadianceQueue->numQueued();
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mCommitRadianceQueue->getNextKey();
+                Item &item = mItems[key];
+
+                Object::Radiance radTotal = mTotalRadiance.get(item.x, item.y) + item.radiance;
+                mTotalRadiance.set(item.x, item.y, radTotal);
+
+                int numSamples = mTotalSamples.get(item.x, item.y) + 1;
+                Object::Color color = toneMap(radTotal / static_cast<float>(numSamples));
+                mRenderFramebuffer->setPixel(item.x, item.y, color);
+
+                mTotalSamples.set(item.x, item.y, numSamples);
+
+                mGenerateCameraRayQueue->addItem(key);
+            }
+            mCommitRadianceQueue->clear();
+            mClAllocator.unmapAreas();
+        }
+
+        void Renderer::runThread()
+        {
+            while(mRunning) {
+                runGenerateCameraRays();
+
+                mClAllocator.mapAreas();
+                int numIntersect = mIntersectRayQueue->numQueued();
+                mClAllocator.unmapAreas();
+
+                if(numIntersect == 0) {
+                    auto endTime = std::chrono::steady_clock::now();
+                    std::chrono::duration<double> duration = endTime - mStartTime;
+                    mListener->onRendererDone(duration.count()); 
+                    mRunning = false;
+                    break;
+                }
+
+                runIntersectRays();
+                runDirectLightArea();
+                runDirectLightPoint();
+                runExtendPath();
+                runCommitRadiance();
+            }    
         }
     }
 }

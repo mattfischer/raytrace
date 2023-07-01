@@ -2,47 +2,48 @@
 
 namespace Render {
     namespace Gpu {
-        WorkQueue::WorkQueue(size_t size)
-        : mQueue(size)
+        WorkQueue::WorkQueue(size_t size, OpenCL::Allocator &allocator)
         {
-            mRead = 0;
-            mWrite = 0;
+            mData = (Key*)allocator.allocateBytes(sizeof(Key) * (size + 2));
+            mData[0] = 0;
+            mData[1] = 0;
+            mSize = size;
         }
 
         WorkQueue::Key WorkQueue::getNextKey()
         {
-            int read = mRead++;
-            if(read >= mWrite) {
+            int read = mData[0]++;
+            if(read >= mData[1]) {
                 return kInvalidKey;
             }
 
-            return mQueue[read];
+            return mData[read + 2];
         }
 
         bool WorkQueue::addItem(Key key)
         {
-            int write = mWrite++;
-            if(write >= mQueue.size()) {
+            int write = mData[1]++;
+            if(write >= mSize) {
                 return false;
             }
-            mQueue[write] = key;
+            mData[write + 2] = key;
             return true;
         }
 
         int WorkQueue::numQueued()
         {
-            return mWrite - mRead;
+            return mData[1] - mData[0];
         }
 
         void WorkQueue::resetRead()
         {
-            mRead = 0;
+            mData[0] = 0;
         }
 
         void WorkQueue::clear()
         {
-            mWrite = 0;
-            mRead = 0;
+            mData[0] = 0;
+            mData[1] = 0;
         }
     }
 }

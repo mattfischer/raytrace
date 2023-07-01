@@ -76,6 +76,9 @@ namespace Render {
             void runDirectLightArea();
             void runDirectLightPoint();
             void runExtendPath();
+            void runCommitRadiance();
+
+            void runThread();
 
             bool mRunning;
             Executor mExecutor;
@@ -108,6 +111,7 @@ namespace Render {
             std::unique_ptr<Executor::Job> mCommitRadianceJob;
 
             std::atomic_uint64_t mCurrentPixel;
+            std::thread mThread;
 
             std::mutex mFramebufferMutex;
             Raster<Object::Radiance> mTotalRadiance;

@@ -1,6 +1,8 @@
 #ifndef RENDER_GPU_WORKQUEUE_HPP
 #define RENDER_GPU_WORKQUEUE_HPP
 
+#include "OpenCL.hpp"
+
 #include <vector>
 #include <functional>
 #include <atomic>
@@ -12,7 +14,7 @@ namespace Render {
             typedef uint32_t Key;
             static const Key kInvalidKey = UINT_MAX;
 
-            WorkQueue(size_t size);
+            WorkQueue(size_t size, OpenCL::Allocator &allocator);
 
             Key getNextKey();
 
@@ -22,9 +24,8 @@ namespace Render {
             void clear();
 
         private:
-            std::vector<Key> mQueue;
-            std::atomic_int mRead;
-            std::atomic_int mWrite;
+            Key *mData;
+            size_t mSize;
         };
     }
 }
