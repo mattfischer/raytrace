@@ -542,12 +542,11 @@ namespace Render {
                     mItemProxies[i].random[n] = mThreadLocal.sampler.getValue();
                 }
                 mItemProxies[i].lightIndex = item.lightIndex;
+    
+                item.isect.writeProxy(mItemProxies[i].isect);
                 mItemProxies[i].isect.primitive = item.isectPrimitiveProxy;
-                item.isect.point().writeProxy(mItemProxies[i].isect.point);
                 item.isect.beam().writeProxy(mItemProxies[i].beam);
                 mItemProxies[i].isect.beam = &mItemProxies[i].beam;
-                item.isect.normal().writeProxy(mItemProxies[i].isect.shapeIntersection.normal);
-                mItemProxies[i].isect.shapeIntersection.distance = item.isect.distance(); 
             }
             mDirectLightAreaQueue->resetRead();
             mClAllocator.unmapAreas();
@@ -562,9 +561,7 @@ namespace Render {
 
                 const Object::Surface &surface = item.isect.primitive().surface();
                 
-                Object::Shape::Base::Intersection shapeIntersection;
-                shapeIntersection.distance = mItemProxies[i].shadowIsect.shapeIntersection.distance;
-                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowIsect.shapeIntersection.normal);
+                Object::Shape::Base::Intersection shapeIntersection(mItemProxies[i].shadowIsect.shapeIntersection);
                 Object::Primitive *primitive = nullptr;
                 if(mItemProxies[i].shadowIsect.primitive) {
                     primitive = (Object::Primitive*)mItemProxies[i].shadowIsect.primitive->primitive;
