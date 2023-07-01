@@ -100,7 +100,7 @@ struct ShapeIntersection {
 struct Intersection {
     struct ShapeIntersection shapeIntersection;
     global struct Primitive *primitive;
-    global struct Beam *beam;
+    struct Beam *beam;
     float3 point;
 };
 
@@ -255,6 +255,23 @@ float3 surfaceReflected(global struct Intersection *isect, float3 dirIn)
     return isect->primitive->surface.albedo.solid.color / 3.14f;        
 }
 
+void sceneIntersect(global struct Scene *scene, struct Beam *beam, struct Intersection *isect)
+{
+    isect->shapeIntersection.distance = MAXFLOAT;
+    isect->primitive = 0;
+    isect->beam = beam;
+
+    for(int i=0; i<scene->numPrimitives; i++) {
+        if(intersectShape(&beam->ray, &scene->primitives[i].shape, &isect->shapeIntersection)) {
+            isect->primitive = &scene->primitives[i];
+        }
+    }
+
+    if(isect->primitive != 0) {
+        isect->point = beam->ray.origin + beam->ray.direction * isect->shapeIntersection.distance;
+    }
+}
+
 float3 surfaceSample(global struct Intersection *isect, float2 random, float3 *dirIn, float *pdf, bool *pdfDelta)
 {
     float3 dirOut = -isect->beam->ray.direction;
@@ -337,37 +354,33 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items,
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
-    item->isect.shapeIntersection.distance = MAXFLOAT;
-    item->isect.primitive = 0;
+
+    sceneIntersect(scene, &item->beam, &item->isect);
+
+    if(item->isect.primitive != 0) {
+        float3 rad2 = item->isect.primitive->surface.radiance;
+        float misWeight = 1.0f;
+        if(length(rad2) > 0 && !item->specularBounce && item->generation > 0) {
+            float3 nrmFacing = facingNormal(&item->isect);
+            float dot2 = -dot(nrmFacing, item->beam.ray.direction);
+            float d = item->isect.shapeIntersection.distance;
+            float pdfArea = item->pdf * dot2 / (d * d);
+            float pdfLight = shapeSamplePdf(&item->isect.primitive->shape, item->isect.point);
+            misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
+        }
+
+        item->radiance = rad2 * item->throughput * misWeight;        
     
-    for(int i=0; i<scene->numPrimitives; i++) {
-        global struct Primitive *primitive = &scene->primitives[i];
-        if(intersectShape(&item->beam.ray, &primitive->shape, &item->isect.shapeIntersection)) {
-            item->isect.primitive = primitive;
-            item->isect.beam = &item->beam;
-            item->isect.point = item->beam.ray.origin + item->beam.ray.direction * item->isect.shapeIntersection.distance;
-            float3 rad2 = primitive->surface.radiance;
-            float misWeight = 1.0f;
-            if(length(rad2) > 0 && !item->specularBounce && item->generation > 0) {
-                float dot2 = fabs(dot(item->isect.shapeIntersection.normal, item->beam.ray.direction));
-                float pdfArea = item->pdf * dot2 / (item->isect.shapeIntersection.distance * item->isect.shapeIntersection.distance);
-                float pdfLight = shapeSamplePdf(&primitive->shape, item->isect.point);
-                misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
-            }
+        int totalLights = scene->numAreaLights + scene->numPointLights;
+        global float *r = random + id * 10;
+        int lightIndex = (int)floor(r[4] * totalLights);
 
-            item->radiance = rad2 * item->throughput * misWeight;        
-        
-            int totalLights = scene->numAreaLights + scene->numPointLights;
-            global float *r = random + id * 10;
-            int lightIndex = (int)floor(r[4] * totalLights);
-
-            if(lightIndex < scene->numAreaLights) {
-                item->lightIndex = lightIndex;
-                item->nextQueue = 0;
-            } else {
-                item->lightIndex = lightIndex - scene->numAreaLights;
-                item->nextQueue = 1;
-            }
+        if(lightIndex < scene->numAreaLights) {
+            item->lightIndex = lightIndex;
+            item->nextQueue = 0;
+        } else {
+            item->lightIndex = lightIndex - scene->numAreaLights;
+            item->nextQueue = 1;
         }
     }
 
@@ -403,20 +416,13 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
         float dot2 = fabs(dot(dirIn, nrm2));
         float dt = dot(dirIn, nrmFacing);
         if(dt > 0) {    
-            struct Ray shadowRay;
-            shadowRay.origin = pntOffset;
-            shadowRay.direction = dirIn;
+            struct Beam shadowBeam;
+            shadowBeam.ray.origin = pntOffset;
+            shadowBeam.ray.direction = dirIn;
 
             struct Intersection shadowIsect;
-            shadowIsect.shapeIntersection.distance = MAXFLOAT;
-            shadowIsect.primitive = 0;
+            sceneIntersect(scene, &shadowBeam, &shadowIsect);
 
-            for(int i=0; i<scene->numPrimitives; i++) {
-                if(intersectShape(&shadowRay, &scene->primitives[i].shape, &shadowIsect.shapeIntersection)) {
-                    shadowIsect.primitive = &scene->primitives[i];
-                }
-            }
-            
             if(shadowIsect.primitive == light) {
                 float3 rad2 = light->surface.radiance;
                 float3 irad = rad2 * dot2 * dt / (d * d * pdf);
@@ -446,19 +452,12 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
 
     float dt = dot(dirIn, nrmFacing);
     if(dt > 0) {
-        struct Ray shadowRay;
-        shadowRay.origin = pntOffset;
-        shadowRay.direction = dirIn;
+        struct Beam shadowBeam;
+        shadowBeam.ray.origin = pntOffset;
+        shadowBeam.ray.direction = dirIn;
 
         struct Intersection shadowIsect;
-        shadowIsect.shapeIntersection.distance = MAXFLOAT;
-        shadowIsect.primitive = 0;
-
-        for(int i=0; i<scene->numPrimitives; i++) {
-            if(intersectShape(&shadowRay, &scene->primitives[i].shape, &shadowIsect.shapeIntersection)) {
-                shadowIsect.primitive = &scene->primitives[i];
-            }
-        }
+        sceneIntersect(scene, &shadowBeam, &shadowIsect);
 
         if(shadowIsect.primitive == 0 || shadowIsect.shapeIntersection.distance >= 0) {
             float3 irad = pointLight->radiance * dt / (d * d);
