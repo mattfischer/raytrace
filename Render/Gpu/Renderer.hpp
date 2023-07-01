@@ -59,18 +59,6 @@ namespace Render {
                 Object::Color throughput;
             };
 
-            struct ThreadLocal : public Executor::Job::ThreadLocal
-            {
-                Math::Sampler::Random sampler;
-            };
-
-            bool generateCameraRay(ThreadLocal &threadLocal);
-            bool intersectRay(ThreadLocal &threadLocal);
-            bool directLightArea(ThreadLocal &threadLocal);
-            bool directLightPoint(ThreadLocal &threadLocal);
-            bool extendPath(ThreadLocal &threadLocal);
-            bool commitRadiance(ThreadLocal &threadLocal);
-
             void runGenerateCameraRays();
             void runIntersectRays();
             void runDirectLightArea();
@@ -81,7 +69,6 @@ namespace Render {
             void runThread();
 
             bool mRunning;
-            Executor mExecutor;
             Listener *mListener;
             std::chrono::time_point<std::chrono::steady_clock> mStartTime;
   
@@ -92,23 +79,12 @@ namespace Render {
 
             std::vector<Item> mItems;
 
-            std::unique_ptr<WorkQueue> mGenerateCameraRayQueue;
-            std::unique_ptr<Executor::Job> mGenerateCameraRayJob;
-            
-            std::unique_ptr<WorkQueue> mIntersectRayQueue;
-            std::unique_ptr<Executor::Job> mIntersectRayJob;
-            
+            std::unique_ptr<WorkQueue> mGenerateCameraRayQueue;            
+            std::unique_ptr<WorkQueue> mIntersectRayQueue;            
             std::unique_ptr<WorkQueue> mDirectLightAreaQueue;
-            std::unique_ptr<Executor::Job> mDirectLightAreaJob;
-            
             std::unique_ptr<WorkQueue> mDirectLightPointQueue;
-            std::unique_ptr<Executor::Job> mDirectLightPointJob;
-            
             std::unique_ptr<WorkQueue> mExtendPathQueue;
-            std::unique_ptr<Executor::Job> mExtendPathJob;
-            
             std::unique_ptr<WorkQueue> mCommitRadianceQueue;
-            std::unique_ptr<Executor::Job> mCommitRadianceJob;
 
             std::atomic_uint64_t mCurrentPixel;
             std::thread mThread;
@@ -130,7 +106,7 @@ namespace Render {
             SettingsProxy *mSettingsProxy;
             ItemProxy *mItemProxies;
             float *mRandom;
-            ThreadLocal mThreadLocal;
+            Math::Sampler::Random mSampler;
         };
     }
 }
