@@ -517,17 +517,13 @@ namespace Render {
 
                 item.isect = Object::Intersection(mScene, *primitive, item.beam, shapeIntersection);
                 item.radiance += Object::Radiance(mItemProxies[i].radiance);
+                item.lightIndex = mItemProxies[i].lightIndex;
 
-                if(item.isect.valid()) {
-                    int lightIndex = mItemProxies[i].lightIndex;
-                    if(lightIndex < mScene.areaLights().size()) {
-                        item.lightIndex = lightIndex;
-                        mDirectLightAreaQueue->addItem(key);
-                    } else {
-                        item.lightIndex = lightIndex - mScene.areaLights().size();
-                        mDirectLightPointQueue->addItem(key);
-                    }
-                } else {
+                if(mItemProxies[i].nextQueue == 0) {
+                    mDirectLightAreaQueue->addItem(key);
+                } else if(mItemProxies[i].nextQueue == 1) {
+                    mDirectLightPointQueue->addItem(key);
+                } else if(mItemProxies[i].nextQueue == 2) {
                     mCommitRadianceQueue->addItem(key);
                 }
             }

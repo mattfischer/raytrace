@@ -361,13 +361,22 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items,
         
             int totalLights = scene->numAreaLights + scene->numPointLights;
             global float *r = random + id * 10;
-            item->lightIndex = (int)floor(r[4] * totalLights);                    
+            int lightIndex = (int)floor(r[4] * totalLights);
+
+            if(lightIndex < scene->numAreaLights) {
+                item->lightIndex = lightIndex;
+                item->nextQueue = 0;
+            } else {
+                item->lightIndex = lightIndex - scene->numAreaLights;
+                item->nextQueue = 1;
+            }
         }
     }
 
     if(item->isect.primitive == 0) {
         float3 rad2 = scene->skyRadiance;
         item->radiance = rad2 * item->throughput;
+        item->nextQueue = 2;
     }
 }
 
