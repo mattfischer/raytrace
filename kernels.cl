@@ -107,6 +107,7 @@ struct Intersection {
 struct Settings {
     int width;
     int height;
+    int minSamples;
 };
 
 struct Item {
@@ -118,11 +119,36 @@ struct Item {
     float3 throughput;
     float3 radiance;
     int lightIndex;
-    int currentPixel;
     int x;
     int y;
-    int nextQueue;
 };
+
+struct WorkQueue {
+    global int *data;
+};
+
+struct Queues {
+    struct WorkQueue generateCameraRayQueue;
+    struct WorkQueue intersectRaysQueue;
+    struct WorkQueue directLightAreaQueue;
+    struct WorkQueue directLightPointQueue;
+    struct WorkQueue extendPathQueue;
+    struct WorkQueue commitRadianceQueue;
+};
+
+void queueAddItem(struct WorkQueue *queue, int key)
+{
+    int write = atomic_inc(&queue->data[1]);
+    
+    queue->data[write + 2] = key;
+}
+
+int queueGetNextKey(struct WorkQueue *queue)
+{
+    int read = atomic_inc(&queue->data[0]);
+
+    return queue->data[read + 2];
+}
 
 float length2(float3 v)
 {
@@ -331,15 +357,22 @@ void createPixelBeam(global struct Camera *camera, float2 imagePoint, int width,
     beam->directionDifferential.v = camera->imagePlane.v * pixelSize / len;
 }
 
-kernel void generateCameraRays(global struct Scene *scene, global struct Settings *settings, global struct Item *items, global float* random)
+kernel void generateCameraRays(global struct Scene *scene, global struct Settings *settings, global struct Item *items, global float* random, global struct Queues *queues, global unsigned int *currentPixel)
 {
-    int id = (int)get_global_id(0);
-    global struct Item *item = &items[id];
+    int key = queueGetNextKey(&queues->generateCameraRayQueue);
+    global struct Item *item = &items[key];
 
-    item->y = (item->currentPixel / settings->width) % settings->height;
-    item->x = item->currentPixel % settings->width;
+    unsigned int cp = atomic_inc(currentPixel);
 
-    global float *r = random + id * 10;
+    int sample = cp / (settings->width * settings->height);
+    if(sample >= settings->minSamples) {
+        return;
+    }
+
+    item->y = (cp / settings->width) % settings->height;
+    item->x = cp % settings->width;
+
+    global float *r = random + key * 10;
 
     float2 imagePoint = (float2)(item->x, item->y) + (float2)(r[0], r[1]);
     float2 aperturePoint = (float2)(r[2], r[3]);
@@ -348,12 +381,14 @@ kernel void generateCameraRays(global struct Scene *scene, global struct Setting
     item->generation = 0;
     item->radiance = (float3)(0, 0, 0);
     item->throughput = (float3)(1, 1, 1);
+
+    queueAddItem(&queues->intersectRaysQueue, key);
 }
 
-kernel void intersectRays(global struct Scene *scene, global struct Item *items, global float *random)
+kernel void intersectRays(global struct Scene *scene, global struct Item *items, global float *random, global struct Queues *queues)
 {
-    int id = (int)get_global_id(0);
-    global struct Item *item = &items[id];
+    int key = queueGetNextKey(&queues->intersectRaysQueue);
+    global struct Item *item = &items[key];
 
     sceneIntersect(scene, &item->beam, &item->isect);
 
@@ -369,33 +404,32 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items,
             misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
         }
 
-        item->radiance = rad2 * item->throughput * misWeight;        
+        item->radiance += rad2 * item->throughput * misWeight;        
     
         int totalLights = scene->numAreaLights + scene->numPointLights;
-        global float *r = random + id * 10;
+        global float *r = random + key * 10;
         int lightIndex = (int)floor(r[4] * totalLights);
 
         if(lightIndex < scene->numAreaLights) {
             item->lightIndex = lightIndex;
-            item->nextQueue = 0;
+            queueAddItem(&queues->directLightAreaQueue, key);
         } else {
             item->lightIndex = lightIndex - scene->numAreaLights;
-            item->nextQueue = 1;
+            queueAddItem(&queues->directLightPointQueue, key);
         }
     }
 
     if(item->isect.primitive == 0) {
         float3 rad2 = scene->skyRadiance;
-        item->radiance = rad2 * item->throughput;
-        item->nextQueue = 2;
+        item->radiance += rad2 * item->throughput;
+        queueAddItem(&queues->commitRadianceQueue, key);
     }
 }
 
-kernel void directLightArea(global struct Scene *scene, global struct Item *items, global float *random)
+kernel void directLightArea(global struct Scene *scene, global struct Item *items, global float *random, global struct Queues *queues)
 {
-    int id = (int)get_global_id(0);
-    global struct Item *item = &items[id];
-    item->radiance = (float3)(0, 0, 0);
+    int key = queueGetNextKey(&queues->directLightAreaQueue);
+    global struct Item *item = &items[key];
 
     global struct Intersection *isect = &item->isect;
     float3 nrmFacing = facingNormal(isect);
@@ -403,7 +437,7 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
 
     global struct Primitive *light = scene->areaLights[item->lightIndex];
     
-    global float* r = random + id * 10;
+    global float* r = random + key * 10;
 
     float2 rand = (float2)(r[5], r[6]);
     float3 pnt2;
@@ -429,16 +463,18 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
                 float pdfBrdf = surfacePdf(isect, dirIn) * dot2 / (d * d);
                 float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
                 float3 rad = irad * surfaceReflected(isect, dirIn);
-                item->radiance = rad * item->throughput * misWeight;
+                item->radiance += rad * item->throughput * misWeight;
             }
         }
     }
+
+    queueAddItem(&queues->extendPathQueue, key);
 }
 
-kernel void directLightPoint(global struct Scene *scene, global struct Item *items)
+kernel void directLightPoint(global struct Scene *scene, global struct Item *items, global struct Queues *queues)
 {
-    int id = (int)get_global_id(0);
-    global struct Item *item = &items[id];
+    int key = queueGetNextKey(&queues->directLightPointQueue);
+    global struct Item *item = &items[key];
     item->radiance = (float3)(0, 0, 0);
 
     global struct Intersection *isect = &item->isect;
@@ -462,15 +498,17 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
         if(shadowIsect.primitive == 0 || shadowIsect.shapeIntersection.distance >= 0) {
             float3 irad = pointLight->radiance * dt / (d * d);
             float3 rad = irad * surfaceReflected(isect, dirIn);
-            item->radiance = rad * item->throughput;
+            item->radiance += rad * item->throughput;
         }
     }
+
+    queueAddItem(&queues->extendPathQueue, key);
 }
 
-kernel void extendPath(global struct Scene *scene, global struct Item *items, global float *random)
+kernel void extendPath(global struct Scene *scene, global struct Item *items, global float *random, global struct Queues *queues)
 {
-    int id = (int)get_global_id(0);
-    global struct Item *item = &items[id];
+    int key = queueGetNextKey(&queues->extendPathQueue);
+    global struct Item *item = &items[key];
     global struct Intersection *isect = &item->isect;
     float3 nrmFacing = facingNormal(isect);
     
@@ -478,7 +516,7 @@ kernel void extendPath(global struct Scene *scene, global struct Item *items, gl
     float pdf;
     bool pdfDelta;
     
-    global float *r = random + id * 10;
+    global float *r = random + key * 10;
 
     float2 rand = (float2)(r[7], r[8]);
     float3 reflected = surfaceSample(isect, rand, &dirIn, &pdf, &pdfDelta);
@@ -504,11 +542,11 @@ kernel void extendPath(global struct Scene *scene, global struct Item *items, gl
             item->beam.ray.direction = dirIn;
             item->throughput = item->throughput / threshold;
             item->generation++;
-            item->nextQueue = 0;
+            queueAddItem(&queues->intersectRaysQueue, key);
         } else {
-            item->nextQueue = 1;
+            queueAddItem(&queues->commitRadianceQueue, key);
         }
     } else {
-        item->nextQueue = 1;
+        queueAddItem(&queues->commitRadianceQueue, key);
     }
 }

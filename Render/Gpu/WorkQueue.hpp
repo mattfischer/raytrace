@@ -23,6 +23,8 @@ namespace Render {
             void resetRead();
             void clear();
 
+            Key *data() { return mData; }
+
         private:
             Key *mData;
             size_t mSize;

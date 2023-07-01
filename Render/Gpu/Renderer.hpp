@@ -41,24 +41,6 @@ namespace Render {
             Render::Framebuffer &sampleStatusFramebuffer() override;
 
         private:
-            struct Item {
-                int x;
-                int y;
-                int generation;
-                Math::Beam beam;
-                Object::Intersection isect;
-                PrimitiveProxy *isectPrimitiveProxy;
-
-                int lightIndex;
-                Math::Beam shadowBeam;
-
-                float pdf;
-                bool specularBounce;
-
-                Object::Radiance radiance;
-                Object::Color throughput;
-            };
-
             void runGenerateCameraRays();
             void runIntersectRays();
             void runDirectLightArea();
@@ -77,8 +59,6 @@ namespace Render {
             std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
             std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
-            std::vector<Item> mItems;
-
             std::unique_ptr<WorkQueue> mGenerateCameraRayQueue;            
             std::unique_ptr<WorkQueue> mIntersectRayQueue;            
             std::unique_ptr<WorkQueue> mDirectLightAreaQueue;
@@ -86,7 +66,6 @@ namespace Render {
             std::unique_ptr<WorkQueue> mExtendPathQueue;
             std::unique_ptr<WorkQueue> mCommitRadianceQueue;
 
-            std::atomic_uint64_t mCurrentPixel;
             std::thread mThread;
 
             std::mutex mFramebufferMutex;
@@ -105,7 +84,9 @@ namespace Render {
             SceneProxy *mSceneProxy;
             SettingsProxy *mSettingsProxy;
             ItemProxy *mItemProxies;
+            QueuesProxy *mQueuesProxy;
             float *mRandom;
+            unsigned int *mCurrentPixel;
             Math::Sampler::Random mSampler;
         };
     }

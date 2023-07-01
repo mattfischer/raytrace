@@ -132,6 +132,7 @@ struct IntersectionProxy {
 struct SettingsProxy {
     int width;
     int height;
+    int minSamples;
 };
 
 struct ItemProxy {
@@ -143,10 +144,21 @@ struct ItemProxy {
     ColorProxy throughput;
     RadianceProxy radiance;
     int lightIndex;
-    int currentPixel;
     int x;
     int y;
-    int nextQueue;
+};
+
+struct WorkQueueProxy {
+    int *data;
+};
+
+struct QueuesProxy {
+    struct WorkQueueProxy generateCameraRayQueue;
+    struct WorkQueueProxy intersectRaysQueue;
+    struct WorkQueueProxy directLightAreaQueue;
+    struct WorkQueueProxy directLightPointQueue;
+    struct WorkQueueProxy extendPathQueue;
+    struct WorkQueueProxy commitRadianceQueue;
 };
 
 #endif
