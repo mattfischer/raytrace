@@ -149,6 +149,7 @@ struct ItemProxy {
     int currentPixel;
     int x;
     int y;
+    int nextQueue;
 };
 
 #endif

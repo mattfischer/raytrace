@@ -75,6 +75,7 @@ namespace Render {
             void runIntersectRays();
             void runDirectLightArea();
             void runDirectLightPoint();
+            void runExtendPath();
 
             bool mRunning;
             Executor mExecutor;
@@ -119,6 +120,7 @@ namespace Render {
             OpenCL::Kernel mClIntersectRayKernel;
             OpenCL::Kernel mClDirectLightAreaKernel;
             OpenCL::Kernel mClDirectLightPointKernel;
+            OpenCL::Kernel mClExtendPathKernel;
 
             SceneProxy *mSceneProxy;
             SettingsProxy *mSettingsProxy;

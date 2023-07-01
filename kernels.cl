@@ -124,6 +124,7 @@ struct Item {
     int currentPixel;
     int x;
     int y;
+    int nextQueue;
 };
 
 float length2(float3 v)
@@ -257,6 +258,37 @@ float3 surfaceReflected(global struct Intersection *isect, float3 dirIn)
     return isect->primitive->surface.albedo.solid.color / 3.14f;        
 }
 
+float3 surfaceSample(global struct Intersection *isect, float2 random, float3 *dirIn, float *pdf, bool *pdfDelta)
+{
+    float3 dirOut = -isect->beam->ray.direction;
+    float3 nrmFacing = facingNormal(isect);
+    
+    float phi = 2 * 3.14f * random.x;
+    float theta = asin(sqrt(random.y));
+
+    float3 x;
+    float3 y;
+    float3 z = nrmFacing;
+    if(fabs(nrmFacing.z) > fabs(nrmFacing.x) && fabs(nrmFacing.z) > fabs(nrmFacing.y)) {
+        x = (float3)(1, 0, 0);
+        y = (float3)(0, 1, 0);
+    } else if(fabs(nrmFacing.x) > fabs(nrmFacing.y) && fabs(nrmFacing.x) > fabs(nrmFacing.z)) {
+        x = (float3)(0, 1, 0);
+        y = (float3)(0, 0, 1);
+    } else {
+        x = (float3)(1, 0, 0);
+        y = (float3)(0, 0, 1);
+    }
+    
+    x = normalize(x - z * dot(x, z));
+    y = normalize(y - z * dot(y, z));
+
+    *dirIn = x * cos(phi) * cos(theta) + y * sin(phi) * cos(theta) + z * sin(theta);
+    *pdf = surfacePdf(isect, *dirIn);
+    *pdfDelta = false;
+    return surfaceReflected(isect, *dirIn);
+}
+        
 void createPixelBeam(global struct Camera *camera, float2 imagePoint, int width, int height, float2 aperturePoint, global struct Beam *beam)
 {
     float cx = (2 * imagePoint.x - width) / width;
@@ -416,5 +448,48 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
             float3 rad = irad * surfaceReflected(isect, dirIn);
             item->radiance = rad * item->throughput;
         }
+    }
+}
+
+kernel void extendPath(global struct Scene *scene, global struct Item *items)
+{
+    int id = (int)get_global_id(0);
+    global struct Item *item = &items[id];
+    global struct Intersection *isect = &item->isect;
+    float3 nrmFacing = facingNormal(isect);
+    
+    float3 dirIn;
+    float pdf;
+    bool pdfDelta;
+    float2 rand = (float2)(item->random[0], item->random[1]);
+    float3 reflected = surfaceSample(isect, rand, &dirIn, &pdf, &pdfDelta);
+    float dt = dot(dirIn, nrmFacing);
+    float3 pntOffset = isect->point + nrmFacing * 0.01f;
+    
+    item->pdf = pdf;
+    item->specularBounce = pdfDelta;
+    if(dt > 0) {
+        item->throughput = item->throughput * reflected * dt / pdf;
+
+        float threshold = 0.0f;
+        float roulette = item->random[2];
+        if(item->generation == 0) {
+            threshold = 1.0f;
+        } else if(item->generation < 10) {
+            float tmax = max(item->throughput.x, max(item->throughput.y, item->throughput.z));
+            threshold = min(1.0f, tmax);
+        }
+
+        if(roulette < threshold) {
+            item->beam.ray.origin = pntOffset;
+            item->beam.ray.direction = dirIn;
+            item->throughput = item->throughput / threshold;
+            item->generation++;
+            item->nextQueue = 0;
+        } else {
+            item->nextQueue = 1;
+        }
+    } else {
+        item->nextQueue = 1;
     }
 }

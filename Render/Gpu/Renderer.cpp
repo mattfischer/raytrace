@@ -25,6 +25,7 @@ namespace Render {
         , mClIntersectRayKernel(mClProgram, "intersectRays", mClAllocator)
         , mClDirectLightAreaKernel(mClProgram, "directLightArea", mClAllocator)
         , mClDirectLightPointKernel(mClProgram, "directLightPoint", mClAllocator)
+        , mClExtendPathKernel(mClProgram, "extendPath", mClAllocator)
         {
             mCurrentPixel = 0;
             mRunning = false;
@@ -46,6 +47,8 @@ namespace Render {
             mClDirectLightAreaKernel.setArg(1, mItemProxies);
             mClDirectLightPointKernel.setArg(0, mSceneProxy);
             mClDirectLightPointKernel.setArg(1, mItemProxies);
+            mClExtendPathKernel.setArg(0, mSceneProxy);
+            mClExtendPathKernel.setArg(1, mItemProxies);
 
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
@@ -602,7 +605,54 @@ namespace Render {
             mClAllocator.unmapAreas();
 
             mDirectLightPointQueue->clear();
-            mExecutor.runJob(*mExtendPathJob);   
+            runExtendPath();   
+        }
+
+        void Renderer::runExtendPath()
+        {
+            int numQueued = mExtendPathQueue->numQueued();
+
+            mClAllocator.mapAreas();
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mExtendPathQueue->getNextKey();
+                Item &item = mItems[key];
+
+                item.isect.writeProxy(mItemProxies[i].isect);
+                mItemProxies[i].isect.primitive = item.isectPrimitiveProxy;
+                item.isect.beam().writeProxy(mItemProxies[i].beam);
+                mItemProxies[i].isect.beam = &mItemProxies[i].beam;
+                item.throughput.writeProxy(mItemProxies[i].throughput);
+                mItemProxies[i].generation = item.generation;
+            
+                for(int n=0; n<3; n++) {
+                    mItemProxies[i].random[n] = mThreadLocal.sampler.getValue();
+                }
+            }
+            mExtendPathQueue->resetRead();
+
+            mClExtendPathKernel.enqueue(mClContext, numQueued);
+            clFlush(mClContext.clQueue());
+
+            mClAllocator.mapAreas();
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mExtendPathQueue->getNextKey();
+                Item &item = mItems[key];
+
+                item.beam = Math::Beam(mItemProxies[i].beam);
+                item.throughput = Object::Color(mItemProxies[i].throughput);
+                item.generation = mItemProxies[i].generation;
+                item.specularBounce = mItemProxies[i].specularBounce;
+                item.pdf = mItemProxies[i].pdf;
+                if(mItemProxies[i].nextQueue == 0) {
+                    mIntersectRayQueue->addItem(key);
+                } else if(mItemProxies[i].nextQueue == 1) {
+                    mCommitRadianceQueue->addItem(key);
+                }
+            }
+            mClAllocator.unmapAreas();
+
+            mExtendPathQueue->clear();
+            mExecutor.runJob(*mCommitRadianceJob);
         }
     }
 }
