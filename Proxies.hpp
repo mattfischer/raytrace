@@ -134,6 +134,8 @@ struct ItemProxy {
     int y;
     float shadowD;
     float shadowDot;
+    float shadowDot2;
+    float shadowPdf;
 };
 
 #endif

@@ -47,6 +47,7 @@ namespace Render {
                 int generation;
                 Math::Beam beam;
                 Object::Intersection isect;
+                PrimitiveProxy *isectPrimitiveProxy;
 
                 int lightIndex;
                 Math::Beam shadowBeam;

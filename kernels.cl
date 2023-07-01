@@ -57,7 +57,7 @@ struct Scene {
     int numPrimitives;
     global struct Primitive *primitives;
     int numAreaLights;
-    global struct Primitive **areaLights;
+    global struct Primitive * global *areaLights;
     int numPointLights;
     global struct PointLight *pointLights;
     float3 skyRadiance;
@@ -109,6 +109,8 @@ struct Item {
     int y;
     float shadowD;
     float shadowDot;
+    float shadowDot2;
+    float shadowPdf;
 };
 
 float length2(float3 v)
@@ -195,9 +197,31 @@ float shapeSamplePdf(global struct Shape *shape, float3 point)
     }
 }
 
+bool shapeSampleQuad(global struct QuadShape *quad, float2 random, float3 *point, float3 *normal, float *pdf)
+{
+    *point = quad->position + quad->side1 * random.x + quad->side2 * random.y;
+    *normal = quad->normal;
+
+    float surfaceArea = length(cross(quad->side1, quad->side2));
+    *pdf = 1.0f / surfaceArea;
+
+    return true;
+}
+
+bool shapeSample(global struct Shape *shape, float2 random, float3 *point, float3 *normal, float *pdf)
+{
+    switch(shape->type) {
+    case ShapeTypeQuad:
+        return shapeSampleQuad(&shape->quad, random, point, normal, pdf);
+    
+    default:
+        return false;
+    }
+}
+
 float3 facingNormal(global struct Intersection *isect)
 {
-    if(dot(isect->shapeIntersection.normal, isect->beam->ray.direction) < 0) {
+    if(dot(isect->shapeIntersection.normal, isect->beam->ray.direction) > 0) {
         return -isect->shapeIntersection.normal;
     } else {
         return isect->shapeIntersection.normal;
@@ -291,13 +315,32 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
     item->shadowIsect.shapeIntersection.distance = MAXFLOAT;
     item->shadowIsect.primitive = 0;
     
-    if(item->shadowRay.direction.x == 0 && item->shadowRay.direction.y == 0 && item->shadowRay.direction.z == 0) {
-        return;
-    }
+    global struct Intersection *isect = &item->isect;
+    float3 nrmFacing = facingNormal(isect);
+    float3 pntOffset = isect->point + nrmFacing * 0.01f;
 
-    for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
-            item->shadowIsect.primitive = &scene->primitives[i];
+    global struct Primitive *light = scene->areaLights[item->lightIndex];
+    
+    float2 rand = (float2)(item->random[0], item->random[1]);
+    float3 pnt2;
+    float3 nrm2;
+    float pdf;
+    if(shapeSample(&light->shape, rand, &pnt2, &nrm2, &pdf)) {
+        float3 dirIn = pnt2 - pntOffset;
+        item->shadowD = length(dirIn);
+        dirIn = dirIn / item->shadowD;
+        item->shadowDot2 = fabs(dot(dirIn, nrm2));
+        item->shadowDot = dot(dirIn, nrmFacing);
+        if(item->shadowDot > 0) {
+            item->shadowRay.origin = pntOffset;
+            item->shadowRay.direction = dirIn;
+            item->shadowPdf = pdf;
+
+            for(int i=0; i<scene->numPrimitives; i++) {
+                if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
+                    item->shadowIsect.primitive = &scene->primitives[i];
+                }
+            }
         }
     }
 }

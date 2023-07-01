@@ -504,6 +504,7 @@ namespace Render {
                 Object::Primitive *primitive = nullptr;
                 if(mItemProxies[i].isect.primitive) {
                     primitive = (Object::Primitive*)mItemProxies[i].isect.primitive->primitive;
+                    item.isectPrimitiveProxy = mItemProxies[i].isect.primitive;
                 }
 
                 item.isect = Object::Intersection(mScene, *primitive, item.beam, shapeIntersection);
@@ -537,44 +538,17 @@ namespace Render {
                 WorkQueue::Key key = mDirectLightAreaQueue->getNextKey();
                 Item &item = mItems[key];
 
-                const Object::Intersection &isect = item.isect;
-                const Object::Surface &surface = isect.primitive().surface();
-                const Math::Normal &nrmFacing = isect.facingNormal();
-                Math::Point pntOffset = item.isect.point() + Math::Vector(nrmFacing) * 0.01f;
-                Object::Radiance rad;
-
-                const Object::Primitive &light = mScene.areaLights()[item.lightIndex];
-                const Object::Radiance &rad2 = light.surface().radiance();
-                    
-                Math::Point pnt2;
-                Math::Normal nrm2;
-                float pdf;
-                float misWeight = 1.0f;
-                for(int n=0; n<3; n++) {
-                    mItemProxies[i].shadowRay.direction.coords[n] = 0;
+                for(int n=0; n<2; n++) {
+                    mItemProxies[i].random[n] = mThreadLocal.sampler.getValue();
                 }
-
-                if(light.shape().sample(mThreadLocal.sampler, pnt2, nrm2, pdf)) {
-                    Math::Vector dirIn = pnt2 - pntOffset;
-                    float d = dirIn.magnitude();
-                    dirIn = dirIn / d;
-                    float dot2 = std::abs(dirIn * nrm2);
-
-                    float dot = dirIn * nrmFacing;
-                    if(dot > 0) {
-                        Math::Ray ray(pntOffset, dirIn);
-                        Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                
-                        item.shadowBeam = beam;
-                        item.shadowBeam.ray().writeProxy(mItemProxies[i].shadowRay);
-                        item.shadowDot = dot;
-                        item.shadowDot2 = dot2;
-                        item.shadowPdf = pdf;
-                        item.shadowD = d;
-                    }
-                }
+                mItemProxies[i].lightIndex = item.lightIndex;
+                mItemProxies[i].isect.primitive = item.isectPrimitiveProxy;
+                item.isect.point().writeProxy(mItemProxies[i].isect.point);
+                item.isect.beam().writeProxy(mItemProxies[i].beam);
+                mItemProxies[i].isect.beam = &mItemProxies[i].beam;
+                item.isect.normal().writeProxy(mItemProxies[i].isect.shapeIntersection.normal);
+                mItemProxies[i].isect.shapeIntersection.distance = item.isect.distance(); 
             }
-            
             mDirectLightAreaQueue->resetRead();
             mClAllocator.unmapAreas();
 
@@ -595,18 +569,20 @@ namespace Render {
                 if(mItemProxies[i].shadowIsect.primitive) {
                     primitive = (Object::Primitive*)mItemProxies[i].shadowIsect.primitive->primitive;
                 }
-
+                Math::Ray shadowRay(mItemProxies[i].shadowRay);
+                item.shadowBeam = Math::Beam(shadowRay, Math::Bivector(), Math::Bivector());
                 Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);
 
-                const Object::Primitive &light = mScene.areaLights()[item.lightIndex];
+                const Object::Primitive &light = mScene.areaLights()[mItemProxies[i].lightIndex];
                 const Object::Radiance &rad2 = light.surface().radiance();
                 
                 if (isect2.valid() && &(isect2.primitive()) == &light) {
-                    Math::Vector dirIn = item.shadowBeam.ray().direction();
-                    float d = item.shadowD;
-                    float dot2 = item.shadowDot2;
-                    float dot = item.shadowDot;
-                    float pdf = item.shadowPdf;
+                    Math::Ray ray(mItemProxies[i].shadowRay);
+                    Math::Vector dirIn = ray.direction();
+                    float d = mItemProxies[i].shadowD;
+                    float dot2 = mItemProxies[i].shadowDot2;
+                    float dot = mItemProxies[i].shadowDot;
+                    float pdf = mItemProxies[i].shadowPdf;
 
                     Object::Radiance irad = rad2 * dot2 * dot / (d * d * pdf);
                     float pdfBrdf = surface.pdf(item.isect, dirIn) * dot2 / (d * d);
