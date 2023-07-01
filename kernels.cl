@@ -119,7 +119,6 @@ struct Item {
     float pdf;
     float3 throughput;
     float3 radiance;
-    float random[4];
     int lightIndex;
     int currentPixel;
     int x;
@@ -317,7 +316,7 @@ void createPixelBeam(global struct Camera *camera, float2 imagePoint, int width,
     beam->directionDifferential.v = camera->imagePlane.v * pixelSize / len;
 }
 
-kernel void generateCameraRays(global struct Scene *scene, global struct Settings *settings, global struct Item *items)
+kernel void generateCameraRays(global struct Scene *scene, global struct Settings *settings, global struct Item *items, global float* random)
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
@@ -325,8 +324,10 @@ kernel void generateCameraRays(global struct Scene *scene, global struct Setting
     item->y = (item->currentPixel / settings->width) % settings->height;
     item->x = item->currentPixel % settings->width;
 
-    float2 imagePoint = (float2)(item->x, item->y) + (float2)(item->random[0], item->random[1]);
-    float2 aperturePoint = (float2)(item->random[2], item->random[3]);
+    global float *r = random + id * 10;
+
+    float2 imagePoint = (float2)(item->x, item->y) + (float2)(r[0], r[1]);
+    float2 aperturePoint = (float2)(r[2], r[3]);
     createPixelBeam(&scene->camera, imagePoint, settings->width, settings->height, aperturePoint, &item->beam);
     item->specularBounce = false;
     item->generation = 0;
@@ -334,7 +335,7 @@ kernel void generateCameraRays(global struct Scene *scene, global struct Setting
     item->throughput = (float3)(1, 1, 1);
 }
 
-kernel void intersectRays(global struct Scene *scene, global struct Item *items)
+kernel void intersectRays(global struct Scene *scene, global struct Item *items, global float *random)
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
@@ -359,7 +360,8 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items)
             item->radiance = rad2 * item->throughput * misWeight;        
         
             int totalLights = scene->numAreaLights + scene->numPointLights;
-            item->lightIndex = (int)floor(item->random[0] * totalLights);                    
+            global float *r = random + id * 10;
+            item->lightIndex = (int)floor(r[4] * totalLights);                    
         }
     }
 
@@ -369,7 +371,7 @@ kernel void intersectRays(global struct Scene *scene, global struct Item *items)
     }
 }
 
-kernel void directLightArea(global struct Scene *scene, global struct Item *items)
+kernel void directLightArea(global struct Scene *scene, global struct Item *items, global float *random)
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
@@ -383,7 +385,9 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
 
     global struct Primitive *light = scene->areaLights[item->lightIndex];
     
-    float2 rand = (float2)(item->random[0], item->random[1]);
+    global float* r = random + id * 10;
+
+    float2 rand = (float2)(r[5], r[6]);
     float3 pnt2;
     float3 nrm2;
     float pdf;
@@ -451,7 +455,7 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
     }
 }
 
-kernel void extendPath(global struct Scene *scene, global struct Item *items)
+kernel void extendPath(global struct Scene *scene, global struct Item *items, global float *random)
 {
     int id = (int)get_global_id(0);
     global struct Item *item = &items[id];
@@ -461,7 +465,10 @@ kernel void extendPath(global struct Scene *scene, global struct Item *items)
     float3 dirIn;
     float pdf;
     bool pdfDelta;
-    float2 rand = (float2)(item->random[0], item->random[1]);
+    
+    global float *r = random + id * 10;
+
+    float2 rand = (float2)(r[7], r[8]);
     float3 reflected = surfaceSample(isect, rand, &dirIn, &pdf, &pdfDelta);
     float dt = dot(dirIn, nrmFacing);
     float3 pntOffset = isect->point + nrmFacing * 0.01f;
@@ -472,7 +479,7 @@ kernel void extendPath(global struct Scene *scene, global struct Item *items)
         item->throughput = item->throughput * reflected * dt / pdf;
 
         float threshold = 0.0f;
-        float roulette = item->random[2];
+        float roulette = r[9];
         if(item->generation == 0) {
             threshold = 1.0f;
         } else if(item->generation < 10) {

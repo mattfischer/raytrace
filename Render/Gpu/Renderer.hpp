@@ -125,6 +125,7 @@ namespace Render {
             SceneProxy *mSceneProxy;
             SettingsProxy *mSettingsProxy;
             ItemProxy *mItemProxies;
+            float *mRandom;
             ThreadLocal mThreadLocal;
         };
     }

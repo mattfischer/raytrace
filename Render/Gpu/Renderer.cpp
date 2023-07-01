@@ -37,18 +37,23 @@ namespace Render {
             mSettingsProxy->height = mSettings.height;
 
             mItemProxies = (ItemProxy*)mClAllocator.allocateBytes(sizeof(ItemProxy) * kSize);
+            mRandom = (float*)mClAllocator.allocateBytes(sizeof(float) * kSize * 10);
             mClAllocator.unmapAreas();
             mClGenerateCameraRayKernel.setArg(0, mSceneProxy);
             mClGenerateCameraRayKernel.setArg(1, mSettingsProxy);
             mClGenerateCameraRayKernel.setArg(2, mItemProxies);
+            mClGenerateCameraRayKernel.setArg(3, mRandom);
             mClIntersectRayKernel.setArg(0, mSceneProxy);
             mClIntersectRayKernel.setArg(1, mItemProxies);
+            mClIntersectRayKernel.setArg(2, mRandom);
             mClDirectLightAreaKernel.setArg(0, mSceneProxy);
             mClDirectLightAreaKernel.setArg(1, mItemProxies);
+            mClDirectLightAreaKernel.setArg(2, mRandom);
             mClDirectLightPointKernel.setArg(0, mSceneProxy);
             mClDirectLightPointKernel.setArg(1, mItemProxies);
             mClExtendPathKernel.setArg(0, mSceneProxy);
             mClExtendPathKernel.setArg(1, mItemProxies);
+            mClExtendPathKernel.setArg(2, mRandom);
 
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
@@ -421,6 +426,10 @@ namespace Render {
             int numQueued = mGenerateCameraRayQueue->numQueued();
 
             mClAllocator.mapAreas();
+            for(int i=0; i<kSize * 10; i++) {
+                mRandom[i] = mThreadLocal.sampler.getValue();
+            }
+
             int numGenerated = 0;
             for(int i=0; i<numQueued; i++) {
                 WorkQueue::Key key = mGenerateCameraRayQueue->getNextKey();
@@ -435,9 +444,6 @@ namespace Render {
                 }
 
                 mItemProxies[i].currentPixel = currentPixel;
-                for(int n=0; n<4; n++) {
-                    mItemProxies[i].random[n] = mThreadLocal.sampler.getValue();
-                }
                 numGenerated++;
             }
             mGenerateCameraRayQueue->resetRead();
@@ -486,7 +492,6 @@ namespace Render {
                 mItemProxies[i].generation = item.generation;
                 mItemProxies[i].specularBounce = item.specularBounce;
                 mItemProxies[i].pdf = item.pdf;
-                mItemProxies[i].random[0] = mThreadLocal.sampler.getValue();
                 item.throughput.writeProxy(mItemProxies[i].throughput);
                 item.radiance.writeProxy(mItemProxies[i].radiance);
             }
@@ -541,9 +546,6 @@ namespace Render {
                 WorkQueue::Key key = mDirectLightAreaQueue->getNextKey();
                 Item &item = mItems[key];
 
-                for(int n=0; n<2; n++) {
-                    mItemProxies[i].random[n] = mThreadLocal.sampler.getValue();
-                }
                 mItemProxies[i].lightIndex = item.lightIndex;
     
                 item.isect.writeProxy(mItemProxies[i].isect);
@@ -623,10 +625,6 @@ namespace Render {
                 mItemProxies[i].isect.beam = &mItemProxies[i].beam;
                 item.throughput.writeProxy(mItemProxies[i].throughput);
                 mItemProxies[i].generation = item.generation;
-            
-                for(int n=0; n<3; n++) {
-                    mItemProxies[i].random[n] = mThreadLocal.sampler.getValue();
-                }
             }
             mExtendPathQueue->resetRead();
 

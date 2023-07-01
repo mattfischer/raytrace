@@ -144,7 +144,6 @@ struct ItemProxy {
     float pdf;
     ColorProxy throughput;
     RadianceProxy radiance;
-    float random[4];
     int lightIndex;
     int currentPixel;
     int x;
