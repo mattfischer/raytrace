@@ -59,7 +59,6 @@ typedef struct {
 typedef struct {
     Shape shape;
     Surface surface;
-    uintptr_t primitive;    
 } Primitive;
 
 typedef struct {
@@ -78,11 +77,11 @@ typedef struct {
 
 typedef struct {
     int numPrimitives;
-    global Primitive *primitives;
+    Primitive *primitives;
     int numAreaLights;
-    global Primitive * global *areaLights;
+    Primitive **areaLights;
     int numPointLights;
-    global PointLight *pointLights;
+    PointLight *pointLights;
     Radiance skyRadiance;
     Camera camera;
 } Scene;
@@ -105,7 +104,7 @@ typedef struct {
 
 typedef struct {
     ShapeIntersection shapeIntersection;
-    global Primitive *primitive;
+    Primitive *primitive;
     Beam *beam;
     Point point;
 } Intersection;
@@ -161,7 +160,7 @@ float length2(float3 v)
     return dot(v, v);
 }
 
-bool intersectQuad(Ray *ray, global QuadShape *quad, ShapeIntersection *shapeIntersection)
+bool intersectQuad(Ray *ray, QuadShape *quad, ShapeIntersection *shapeIntersection)
 {
     float distance = dot(ray->origin - quad->position, quad->normal) / dot(ray->direction, -quad->normal);
     if(distance >= 0 && distance < shapeIntersection->distance) {
@@ -178,7 +177,7 @@ bool intersectQuad(Ray *ray, global QuadShape *quad, ShapeIntersection *shapeInt
     return false;
 }
 
-bool intersectSphere(Ray *ray, global SphereShape *sphere, ShapeIntersection *shapeIntersection)
+bool intersectSphere(Ray *ray, SphereShape *sphere, ShapeIntersection *shapeIntersection)
 {
     float a, b, c;
     float disc;
@@ -209,7 +208,7 @@ bool intersectSphere(Ray *ray, global SphereShape *sphere, ShapeIntersection *sh
     return false;
 }
 
-bool intersectShape(Ray *ray, global Shape *shape, ShapeIntersection *shapeIntersection)
+bool intersectShape(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
@@ -223,13 +222,13 @@ bool intersectShape(Ray *ray, global Shape *shape, ShapeIntersection *shapeInter
     }
 }
 
-float shapeSamplePdfQuad(global QuadShape *quad, Point point)
+float shapeSamplePdfQuad(QuadShape *quad, Point point)
 {
     float surfaceArea = length(cross(quad->side1, quad->side2));
     return 1.0f / surfaceArea;
 }
 
-float shapeSamplePdf(global Shape *shape, Point point)
+float shapeSamplePdf(Shape *shape, Point point)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
@@ -240,7 +239,7 @@ float shapeSamplePdf(global Shape *shape, Point point)
     }
 }
 
-bool shapeSampleQuad(global QuadShape *quad, float2 random, Point *point, Normal *normal, float *pdf)
+bool shapeSampleQuad(QuadShape *quad, float2 random, Point *point, Normal *normal, float *pdf)
 {
     *point = quad->position + quad->side1 * random.x + quad->side2 * random.y;
     *normal = quad->normal;
@@ -251,7 +250,7 @@ bool shapeSampleQuad(global QuadShape *quad, float2 random, Point *point, Normal
     return true;
 }
 
-bool shapeSample(global Shape *shape, float2 random, Point *point, Normal *normal, float *pdf)
+bool shapeSample(Shape *shape, float2 random, Point *point, Normal *normal, float *pdf)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
@@ -262,7 +261,7 @@ bool shapeSample(global Shape *shape, float2 random, Point *point, Normal *norma
     }
 }
 
-Normal facingNormal(global Intersection *isect)
+Normal facingNormal(Intersection *isect)
 {
     if(dot(isect->shapeIntersection.normal, isect->beam->ray.direction) > 0) {
         return -isect->shapeIntersection.normal;
@@ -271,7 +270,7 @@ Normal facingNormal(global Intersection *isect)
     }
 }
 
-float surfacePdf(global Intersection *isect, Vector dirIn)
+float surfacePdf(Intersection *isect, Vector dirIn)
 {
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
@@ -280,14 +279,14 @@ float surfacePdf(global Intersection *isect, Vector dirIn)
     return cosTheta / 3.14f;
 }
 
-Color surfaceReflected(global Intersection *isect, Vector dirIn)
+Color surfaceReflected(Intersection *isect, Vector dirIn)
 {
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
     return isect->primitive->surface.albedo.solid.color / 3.14f;        
 }
 
-void sceneIntersect(global Scene *scene, Beam *beam, Intersection *isect)
+void sceneIntersect(Scene *scene, Beam *beam, Intersection *isect)
 {
     isect->shapeIntersection.distance = MAXFLOAT;
     isect->primitive = 0;
@@ -304,7 +303,7 @@ void sceneIntersect(global Scene *scene, Beam *beam, Intersection *isect)
     }
 }
 
-Color surfaceSample(global Intersection *isect, float2 random, Vector *dirIn, float *pdf, bool *pdfDelta)
+Color surfaceSample(Intersection *isect, float2 random, Vector *dirIn, float *pdf, bool *pdfDelta)
 {
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
@@ -335,7 +334,7 @@ Color surfaceSample(global Intersection *isect, float2 random, Vector *dirIn, fl
     return surfaceReflected(isect, *dirIn);
 }
         
-void createPixelBeam(global Camera *camera, float2 imagePoint, int width, int height, float2 aperturePoint, global Beam *beam)
+void createPixelBeam(Camera *camera, float2 imagePoint, int width, int height, float2 aperturePoint, Beam *beam)
 {
     float cx = (2 * imagePoint.x - width) / width;
     float cy = (2 * imagePoint.y - height) / width;
@@ -366,7 +365,7 @@ void createPixelBeam(global Camera *camera, float2 imagePoint, int width, int he
 kernel void generateCameraRays(global Scene *scene, global Settings *settings, global Item *items, global float* random, global Queues *queues, global unsigned int *currentPixel)
 {
     int key = queueGetNextKey(&queues->generateCameraRayQueue);
-    global Item *item = &items[key];
+    Item *item = &items[key];
 
     unsigned int cp = atomic_inc(currentPixel);
 
@@ -378,7 +377,7 @@ kernel void generateCameraRays(global Scene *scene, global Settings *settings, g
     item->y = (cp / settings->width) % settings->height;
     item->x = cp % settings->width;
 
-    global float *r = random + key * 10;
+    float *r = random + key * 10;
 
     float2 imagePoint = (float2)(item->x, item->y) + (float2)(r[0], r[1]);
     float2 aperturePoint = (float2)(r[2], r[3]);
@@ -394,7 +393,7 @@ kernel void generateCameraRays(global Scene *scene, global Settings *settings, g
 kernel void intersectRays(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
     int key = queueGetNextKey(&queues->intersectRaysQueue);
-    global Item *item = &items[key];
+    Item *item = &items[key];
 
     sceneIntersect(scene, &item->beam, &item->isect);
 
@@ -413,7 +412,7 @@ kernel void intersectRays(global Scene *scene, global Item *items, global float 
         item->radiance += rad2 * item->throughput * misWeight;        
     
         int totalLights = scene->numAreaLights + scene->numPointLights;
-        global float *r = random + key * 10;
+        float *r = random + key * 10;
         int lightIndex = (int)floor(r[4] * totalLights);
 
         if(lightIndex < scene->numAreaLights) {
@@ -435,15 +434,15 @@ kernel void intersectRays(global Scene *scene, global Item *items, global float 
 kernel void directLightArea(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
     int key = queueGetNextKey(&queues->directLightAreaQueue);
-    global Item *item = &items[key];
+    Item *item = &items[key];
 
-    global Intersection *isect = &item->isect;
+    Intersection *isect = &item->isect;
     Normal nrmFacing = facingNormal(isect);
     Point pntOffset = isect->point + nrmFacing * 0.01f;
 
-    global Primitive *light = scene->areaLights[item->lightIndex];
+    Primitive *light = scene->areaLights[item->lightIndex];
     
-    global float* r = random + key * 10;
+    float *r = random + key * 10;
 
     float2 rand = (float2)(r[5], r[6]);
     Point pnt2;
@@ -480,12 +479,12 @@ kernel void directLightArea(global Scene *scene, global Item *items, global floa
 kernel void directLightPoint(global Scene *scene, global Item *items, global Queues *queues)
 {
     int key = queueGetNextKey(&queues->directLightPointQueue);
-    global Item *item = &items[key];
+    Item *item = &items[key];
 
-    global Intersection *isect = &item->isect;
+    Intersection *isect = &item->isect;
     Normal nrmFacing = facingNormal(isect);
     Point pntOffset = isect->point + nrmFacing * 0.01f;
-    global PointLight *pointLight = &scene->pointLights[item->lightIndex];
+    PointLight *pointLight = &scene->pointLights[item->lightIndex];
 
     Vector dirIn = pointLight->position - pntOffset;
     float d = length(dirIn);
@@ -513,15 +512,15 @@ kernel void directLightPoint(global Scene *scene, global Item *items, global Que
 kernel void extendPath(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
     int key = queueGetNextKey(&queues->extendPathQueue);
-    global Item *item = &items[key];
-    global Intersection *isect = &item->isect;
+    Item *item = &items[key];
+    Intersection *isect = &item->isect;
     Normal nrmFacing = facingNormal(isect);
     
     Vector dirIn;
     float pdf;
     bool pdfDelta;
     
-    global float *r = random + key * 10;
+    float *r = random + key * 10;
 
     float2 rand = (float2)(r[7], r[8]);
     Color reflected = surfaceSample(isect, rand, &dirIn, &pdf, &pdfDelta);

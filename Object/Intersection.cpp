@@ -23,7 +23,6 @@ namespace Object {
     Intersection::Intersection(const IntersectionProxy &proxy)
     {
         mPoint = Math::Point(proxy.point);
-        mPrimitive = (Object::Primitive*)proxy.primitive->primitive;
     }
 
     const Math::Point &Intersection::point() const

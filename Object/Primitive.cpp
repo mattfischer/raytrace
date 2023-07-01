@@ -26,6 +26,5 @@ namespace Object {
     {
         mShape->writeProxy(proxy.shape);
         mSurface->writeProxy(proxy.surface);
-        proxy.primitive = (uintptr_t)this;
     }
 }

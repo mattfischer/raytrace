@@ -78,7 +78,6 @@ struct SurfaceProxy {
 struct PrimitiveProxy {
     ShapeProxy shape;
     SurfaceProxy surface;
-    uintptr_t primitive;
 };
 
 struct PointLightProxy {
