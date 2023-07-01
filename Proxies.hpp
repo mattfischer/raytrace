@@ -54,8 +54,25 @@ struct ShapeProxy {
     };
 };
 
+struct SolidAlbedoProxy {
+    ColorProxy color;
+};
+
+struct AlbedoProxy {
+    enum Type {
+        Solid,
+        Texture
+    };
+
+    Type type;
+    union {
+        SolidAlbedoProxy solid;
+    };
+};
+
 struct SurfaceProxy {
     RadianceProxy radiance;
+    AlbedoProxy albedo;
 };
 
 struct PrimitiveProxy {
@@ -132,10 +149,6 @@ struct ItemProxy {
     int currentPixel;
     int x;
     int y;
-    float shadowD;
-    float shadowDot;
-    float shadowDot2;
-    float shadowPdf;
 };
 
 #endif

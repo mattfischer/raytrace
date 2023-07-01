@@ -13,6 +13,8 @@ namespace Object {
             Object::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const override;
             bool needSurfaceProjection() const override;
         
+            void writeProxy(AlbedoProxy &proxy) const override;
+
         protected:
             Object::Color mColor;
         };

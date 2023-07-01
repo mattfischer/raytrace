@@ -15,6 +15,12 @@ namespace Object {
         bool Solid::needSurfaceProjection() const
         {
             return false;
-        }        
+        } 
+
+        void Solid::writeProxy(AlbedoProxy &proxy) const
+        {
+            proxy.type = AlbedoProxy::Type::Solid;
+            mColor.writeProxy(proxy.solid.color);
+        }       
     }
 }

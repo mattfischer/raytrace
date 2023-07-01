@@ -547,6 +547,7 @@ namespace Render {
                 mItemProxies[i].isect.primitive = item.isectPrimitiveProxy;
                 item.isect.beam().writeProxy(mItemProxies[i].beam);
                 mItemProxies[i].isect.beam = &mItemProxies[i].beam;
+                item.throughput.writeProxy(mItemProxies[i].throughput);
             }
             mDirectLightAreaQueue->resetRead();
             mClAllocator.unmapAreas();
@@ -559,35 +560,7 @@ namespace Render {
                 WorkQueue::Key key = mDirectLightAreaQueue->getNextKey();
                 Item &item = mItems[key];
 
-                const Object::Surface &surface = item.isect.primitive().surface();
-                
-                Object::Shape::Base::Intersection shapeIntersection(mItemProxies[i].shadowIsect.shapeIntersection);
-                Object::Primitive *primitive = nullptr;
-                if(mItemProxies[i].shadowIsect.primitive) {
-                    primitive = (Object::Primitive*)mItemProxies[i].shadowIsect.primitive->primitive;
-                }
-                Math::Ray shadowRay(mItemProxies[i].shadowRay);
-                item.shadowBeam = Math::Beam(shadowRay, Math::Bivector(), Math::Bivector());
-                Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);
-
-                const Object::Primitive &light = mScene.areaLights()[mItemProxies[i].lightIndex];
-                const Object::Radiance &rad2 = light.surface().radiance();
-                
-                if (isect2.valid() && &(isect2.primitive()) == &light) {
-                    Math::Ray ray(mItemProxies[i].shadowRay);
-                    Math::Vector dirIn = ray.direction();
-                    float d = mItemProxies[i].shadowD;
-                    float dot2 = mItemProxies[i].shadowDot2;
-                    float dot = mItemProxies[i].shadowDot;
-                    float pdf = mItemProxies[i].shadowPdf;
-
-                    Object::Radiance irad = rad2 * dot2 * dot / (d * d * pdf);
-                    float pdfBrdf = surface.pdf(item.isect, dirIn) * dot2 / (d * d);
-                    float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
-                    Object::Radiance rad = irad * surface.reflected(item.isect, dirIn);
-                    item.radiance += rad * item.throughput * misWeight;
-                }
-
+                item.radiance += Object::Radiance(mItemProxies[i].radiance);
                 mExtendPathQueue->addItem(key);
             }
             mClAllocator.unmapAreas();
@@ -600,38 +573,30 @@ namespace Render {
         {
             int numQueued = mDirectLightPointQueue->numQueued();
 
+            mClAllocator.mapAreas();
+            for(int i=0; i<numQueued; i++) {
+                WorkQueue::Key key = mDirectLightPointQueue->getNextKey();
+                Item &item = mItems[key];
+
+                mItemProxies[i].lightIndex = item.lightIndex;
+    
+                item.isect.writeProxy(mItemProxies[i].isect);
+                mItemProxies[i].isect.primitive = item.isectPrimitiveProxy;
+                item.isect.beam().writeProxy(mItemProxies[i].beam);
+                mItemProxies[i].isect.beam = &mItemProxies[i].beam;
+                item.throughput.writeProxy(mItemProxies[i].throughput);
+            }
+            mDirectLightPointQueue->resetRead();
+
             mClDirectLightPointKernel.enqueue(mClContext, numQueued);
             clFlush(mClContext.clQueue());
 
             mClAllocator.mapAreas();
             for(int i=0; i<numQueued; i++) {
-                WorkQueue::Key key = mDirectLightAreaQueue->getNextKey();
+                WorkQueue::Key key = mDirectLightPointQueue->getNextKey();
                 Item &item = mItems[key];
 
-                const Object::Surface &surface = item.isect.primitive().surface();
-                const Object::PointLight &pointLight = *mScene.pointLights()[item.lightIndex];
-   
-                Object::Shape::Base::Intersection shapeIntersection;
-                shapeIntersection.distance = mItemProxies[i].shadowIsect.shapeIntersection.distance;
-                shapeIntersection.normal = Math::Normal(mItemProxies[i].shadowIsect.shapeIntersection.normal);
-                Object::Primitive *primitive = nullptr;
-                if(mItemProxies[i].shadowIsect.primitive) {
-                    primitive = (Object::Primitive*)mItemProxies[i].shadowIsect.primitive->primitive;
-                }
-
-                Object::Intersection isect2 = Object::Intersection(mScene, *primitive, item.shadowBeam, shapeIntersection);
-                float d = mItemProxies[i].shadowD;
-                float dot = mItemProxies[i].shadowDot;
-
-                Object::Radiance rad;
-                if (!isect2.valid() || isect2.distance() >= d) {
-                    Math::Ray ray(mItemProxies[i].shadowRay);
-                    Math::Vector dirIn = ray.direction();
-                    Object::Radiance irad = pointLight.radiance() * dot / (d * d);
-                    rad = irad * surface.reflected(item.isect, dirIn);
-                    item.radiance += rad * item.throughput;
-                }
-
+                item.radiance += Object::Radiance(mItemProxies[i].radiance);
                 mExtendPathQueue->addItem(key);
             }
             mClAllocator.unmapAreas();

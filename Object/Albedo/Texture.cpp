@@ -23,5 +23,10 @@ namespace Object {
         {
             return true;
         }
+
+        void Texture::writeProxy(AlbedoProxy &proxy) const
+        {
+            proxy.type = AlbedoProxy::Type::Texture;
+        }       
     }
 }

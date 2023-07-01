@@ -29,8 +29,25 @@ struct Shape {
     };
 };
 
+struct SolidAlbedo {
+    float3 color;
+};
+
+enum AlbedoType {
+    AlbedoTypeSolid,
+    AlbedoTypeTexture
+};
+
+struct Albedo {
+    enum AlbedoType type;
+    union {
+        struct SolidAlbedo solid;
+    };
+};
+
 struct Surface {
     float3 radiance;
+    struct Albedo albedo;
 };
 
 struct Primitive {
@@ -107,10 +124,6 @@ struct Item {
     int currentPixel;
     int x;
     int y;
-    float shadowD;
-    float shadowDot;
-    float shadowDot2;
-    float shadowPdf;
 };
 
 float length2(float3 v)
@@ -228,6 +241,22 @@ float3 facingNormal(global struct Intersection *isect)
     }
 }
 
+float surfacePdf(global struct Intersection *isect, float3 dirIn)
+{
+    float3 dirOut = -isect->beam->ray.direction;
+    float3 nrmFacing = facingNormal(isect);
+
+    float cosTheta = max(dot(dirIn, nrmFacing), 0.0f);
+    return cosTheta / 3.14f;
+}
+
+float3 surfaceReflected(global struct Intersection *isect, float3 dirIn)
+{
+    float3 dirOut = -isect->beam->ray.direction;
+    float3 nrmFacing = facingNormal(isect);
+    return isect->primitive->surface.albedo.solid.color / 3.14f;        
+}
+
 void createPixelBeam(global struct Camera *camera, float2 imagePoint, int width, int height, float2 aperturePoint, global struct Beam *beam)
 {
     float cx = (2 * imagePoint.x - width) / width;
@@ -314,7 +343,8 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
     global struct Item *item = &items[id];
     item->shadowIsect.shapeIntersection.distance = MAXFLOAT;
     item->shadowIsect.primitive = 0;
-    
+    item->radiance = (float3)(0, 0, 0);
+
     global struct Intersection *isect = &item->isect;
     float3 nrmFacing = facingNormal(isect);
     float3 pntOffset = isect->point + nrmFacing * 0.01f;
@@ -327,19 +357,27 @@ kernel void directLightArea(global struct Scene *scene, global struct Item *item
     float pdf;
     if(shapeSample(&light->shape, rand, &pnt2, &nrm2, &pdf)) {
         float3 dirIn = pnt2 - pntOffset;
-        item->shadowD = length(dirIn);
-        dirIn = dirIn / item->shadowD;
-        item->shadowDot2 = fabs(dot(dirIn, nrm2));
-        item->shadowDot = dot(dirIn, nrmFacing);
-        if(item->shadowDot > 0) {
+        float d = length(dirIn);
+        dirIn = dirIn / d;
+        float dot2 = fabs(dot(dirIn, nrm2));
+        float dt = dot(dirIn, nrmFacing);
+        if(dt > 0) {    
             item->shadowRay.origin = pntOffset;
             item->shadowRay.direction = dirIn;
-            item->shadowPdf = pdf;
 
             for(int i=0; i<scene->numPrimitives; i++) {
                 if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
                     item->shadowIsect.primitive = &scene->primitives[i];
                 }
+            }
+            
+            if(item->shadowIsect.primitive == light) {
+                float3 rad2 = light->surface.radiance;
+                float3 irad = rad2 * dot2 * dt / (d * d * pdf);
+                float pdfBrdf = surfacePdf(isect, dirIn) * dot2 / (d * d);
+                float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
+                float3 rad = irad * surfaceReflected(isect, dirIn);
+                item->radiance = rad * item->throughput * misWeight;
             }
         }
     }
@@ -351,18 +389,19 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
     global struct Item *item = &items[id];
     item->shadowIsect.shapeIntersection.distance = MAXFLOAT;
     item->shadowIsect.primitive = 0;
-    
+    item->radiance = (float3)(0, 0, 0);
+
     global struct Intersection *isect = &item->isect;
     float3 nrmFacing = facingNormal(isect);
     float3 pntOffset = isect->point + nrmFacing * 0.01f;
     global struct PointLight *pointLight = &scene->pointLights[item->lightIndex];
 
     float3 dirIn = pointLight->position - pntOffset;
-    item->shadowD = length(dirIn);
-    dirIn = dirIn / item->shadowD;
+    float d = length(dirIn);
+    dirIn = dirIn / d;
 
-    item->shadowDot = dot(dirIn, nrmFacing);
-    if(item->shadowDot > 0) {
+    float dt = dot(dirIn, nrmFacing);
+    if(dt > 0) {
         item->shadowRay.origin = pntOffset;
         item->shadowRay.direction = dirIn;
 
@@ -370,6 +409,12 @@ kernel void directLightPoint(global struct Scene *scene, global struct Item *ite
             if(intersectShape(&item->shadowRay, &scene->primitives[i].shape, &item->shadowIsect.shapeIntersection)) {
                 item->shadowIsect.primitive = &scene->primitives[i];
             }
+        }
+
+        if(item->shadowIsect.primitive == 0 || item->shadowIsect.shapeIntersection.distance >= 0) {
+            float3 irad = pointLight->radiance * dt / (d * d);
+            float3 rad = irad * surfaceReflected(isect, dirIn);
+            item->radiance = rad * item->throughput;
         }
     }
 }

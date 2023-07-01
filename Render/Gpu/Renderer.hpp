@@ -51,10 +51,6 @@ namespace Render {
 
                 int lightIndex;
                 Math::Beam shadowBeam;
-                float shadowDot;
-                float shadowDot2;
-                float shadowPdf;
-                float shadowD;
 
                 float pdf;
                 bool specularBounce;
