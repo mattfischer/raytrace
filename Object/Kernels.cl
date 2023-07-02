@@ -68,7 +68,7 @@ Normal facingNormal(Intersection *isect)
     }
 }
 
-float surfacePdf(Intersection *isect, Vector dirIn)
+float Surface_pdf(Intersection *isect, Vector dirIn)
 {
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
@@ -77,31 +77,14 @@ float surfacePdf(Intersection *isect, Vector dirIn)
     return cosTheta / 3.14f;
 }
 
-Color surfaceReflected(Intersection *isect, Vector dirIn)
+Color Surface_reflected(Intersection *isect, Vector dirIn)
 {
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
     return isect->primitive->surface.albedo.solid.color / 3.14f;        
 }
 
-void sceneIntersect(Scene *scene, Beam *beam, Intersection *isect)
-{
-    isect->shapeIntersection.distance = MAXFLOAT;
-    isect->primitive = 0;
-    isect->beam = beam;
-
-    for(int i=0; i<scene->numPrimitives; i++) {
-        if(intersectShape(&beam->ray, &scene->primitives[i].shape, &isect->shapeIntersection)) {
-            isect->primitive = &scene->primitives[i];
-        }
-    }
-
-    if(isect->primitive != 0) {
-        isect->point = beam->ray.origin + beam->ray.direction * isect->shapeIntersection.distance;
-    }
-}
-
-Color surfaceSample(Intersection *isect, float2 random, Vector *dirIn, float *pdf, bool *pdfDelta)
+Color Surface_sample(Intersection *isect, float2 random, Vector *dirIn, float *pdf, bool *pdfDelta)
 {
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
@@ -127,7 +110,25 @@ Color surfaceSample(Intersection *isect, float2 random, Vector *dirIn, float *pd
     y = normalize(y - z * dot(y, z));
 
     *dirIn = x * cos(phi) * cos(theta) + y * sin(phi) * cos(theta) + z * sin(theta);
-    *pdf = surfacePdf(isect, *dirIn);
+    *pdf = Surface_pdf(isect, *dirIn);
     *pdfDelta = false;
-    return surfaceReflected(isect, *dirIn);
+    return Surface_reflected(isect, *dirIn);
 }
+
+void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
+{
+    isect->shapeIntersection.distance = MAXFLOAT;
+    isect->primitive = 0;
+    isect->beam = beam;
+
+    for(int i=0; i<scene->numPrimitives; i++) {
+        if(Shape_intersect(&beam->ray, &scene->primitives[i].shape, &isect->shapeIntersection)) {
+            isect->primitive = &scene->primitives[i];
+        }
+    }
+
+    if(isect->primitive != 0) {
+        isect->point = beam->ray.origin + beam->ray.direction * isect->shapeIntersection.distance;
+    }
+}
+

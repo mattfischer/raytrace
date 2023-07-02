@@ -30,14 +30,14 @@ typedef struct {
     WorkQueue commitRadianceQueue;
 } Queues;
 
-void queueAddItem(WorkQueue *queue, int key)
+void Queue_addItem(WorkQueue *queue, int key)
 {
     int write = atomic_inc(&queue->data[1]);
     
     queue->data[write + 2] = key;
 }
 
-int queueGetNextKey(WorkQueue *queue)
+int Queue_getNextKey(WorkQueue *queue)
 {
     int read = atomic_inc(&queue->data[0]);
 
@@ -74,7 +74,7 @@ void createPixelBeam(Camera *camera, float2 imagePoint, int width, int height, f
 
 kernel void generateCameraRays(global Scene *scene, global Settings *settings, global Item *items, global float* random, global Queues *queues, global unsigned int *currentPixel)
 {
-    int key = queueGetNextKey(&queues->generateCameraRayQueue);
+    int key = Queue_getNextKey(&queues->generateCameraRayQueue);
     Item *item = &items[key];
 
     unsigned int cp = atomic_inc(currentPixel);
@@ -97,15 +97,15 @@ kernel void generateCameraRays(global Scene *scene, global Settings *settings, g
     item->radiance = (float3)(0, 0, 0);
     item->throughput = (float3)(1, 1, 1);
 
-    queueAddItem(&queues->intersectRaysQueue, key);
+    Queue_addItem(&queues->intersectRaysQueue, key);
 }
 
 kernel void intersectRays(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
-    int key = queueGetNextKey(&queues->intersectRaysQueue);
+    int key = Queue_getNextKey(&queues->intersectRaysQueue);
     Item *item = &items[key];
 
-    sceneIntersect(scene, &item->beam, &item->isect);
+    Scene_intersect(scene, &item->beam, &item->isect);
 
     if(item->isect.primitive != 0) {
         Radiance rad2 = item->isect.primitive->surface.radiance;
@@ -115,7 +115,7 @@ kernel void intersectRays(global Scene *scene, global Item *items, global float 
             float dot2 = -dot(nrmFacing, item->beam.ray.direction);
             float d = item->isect.shapeIntersection.distance;
             float pdfArea = item->pdf * dot2 / (d * d);
-            float pdfLight = shapeSamplePdf(&item->isect.primitive->shape, item->isect.point);
+            float pdfLight = Shape_samplePdf(&item->isect.primitive->shape, item->isect.point);
             misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
         }
 
@@ -127,23 +127,23 @@ kernel void intersectRays(global Scene *scene, global Item *items, global float 
 
         if(lightIndex < scene->numAreaLights) {
             item->lightIndex = lightIndex;
-            queueAddItem(&queues->directLightAreaQueue, key);
+            Queue_addItem(&queues->directLightAreaQueue, key);
         } else {
             item->lightIndex = lightIndex - scene->numAreaLights;
-            queueAddItem(&queues->directLightPointQueue, key);
+            Queue_addItem(&queues->directLightPointQueue, key);
         }
     }
 
     if(item->isect.primitive == 0) {
         Radiance rad2 = scene->skyRadiance;
         item->radiance += rad2 * item->throughput;
-        queueAddItem(&queues->commitRadianceQueue, key);
+        Queue_addItem(&queues->commitRadianceQueue, key);
     }
 }
 
 kernel void directLightArea(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
-    int key = queueGetNextKey(&queues->directLightAreaQueue);
+    int key = Queue_getNextKey(&queues->directLightAreaQueue);
     Item *item = &items[key];
 
     Intersection *isect = &item->isect;
@@ -158,7 +158,7 @@ kernel void directLightArea(global Scene *scene, global Item *items, global floa
     Point pnt2;
     Normal nrm2;
     float pdf;
-    if(shapeSample(&light->shape, rand, &pnt2, &nrm2, &pdf)) {
+    if(Shape_sample(&light->shape, rand, &pnt2, &nrm2, &pdf)) {
         Vector dirIn = pnt2 - pntOffset;
         float d = length(dirIn);
         dirIn = dirIn / d;
@@ -170,25 +170,25 @@ kernel void directLightArea(global Scene *scene, global Item *items, global floa
             shadowBeam.ray.direction = dirIn;
 
             Intersection shadowIsect;
-            sceneIntersect(scene, &shadowBeam, &shadowIsect);
+            Scene_intersect(scene, &shadowBeam, &shadowIsect);
 
             if(shadowIsect.primitive == light) {
                 Radiance rad2 = light->surface.radiance;
                 Radiance irad = rad2 * dot2 * dt / (d * d * pdf);
-                float pdfBrdf = surfacePdf(isect, dirIn) * dot2 / (d * d);
+                float pdfBrdf = Surface_pdf(isect, dirIn) * dot2 / (d * d);
                 float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
-                Radiance rad = irad * surfaceReflected(isect, dirIn);
+                Radiance rad = irad * Surface_reflected(isect, dirIn);
                 item->radiance += rad * item->throughput * misWeight;
             }
         }
     }
 
-    queueAddItem(&queues->extendPathQueue, key);
+    Queue_addItem(&queues->extendPathQueue, key);
 }
 
 kernel void directLightPoint(global Scene *scene, global Item *items, global Queues *queues)
 {
-    int key = queueGetNextKey(&queues->directLightPointQueue);
+    int key = Queue_getNextKey(&queues->directLightPointQueue);
     Item *item = &items[key];
 
     Intersection *isect = &item->isect;
@@ -207,21 +207,21 @@ kernel void directLightPoint(global Scene *scene, global Item *items, global Que
         shadowBeam.ray.direction = dirIn;
 
         Intersection shadowIsect;
-        sceneIntersect(scene, &shadowBeam, &shadowIsect);
+        Scene_intersect(scene, &shadowBeam, &shadowIsect);
 
         if(shadowIsect.primitive == 0 || shadowIsect.shapeIntersection.distance >= 0) {
             Radiance irad = pointLight->radiance * dt / (d * d);
-            Radiance rad = irad * surfaceReflected(isect, dirIn);
+            Radiance rad = irad * Surface_reflected(isect, dirIn);
             item->radiance += rad * item->throughput;
         }
     }
 
-    queueAddItem(&queues->extendPathQueue, key);
+    Queue_addItem(&queues->extendPathQueue, key);
 }
 
 kernel void extendPath(global Scene *scene, global Item *items, global float *random, global Queues *queues)
 {
-    int key = queueGetNextKey(&queues->extendPathQueue);
+    int key = Queue_getNextKey(&queues->extendPathQueue);
     Item *item = &items[key];
     Intersection *isect = &item->isect;
     Normal nrmFacing = facingNormal(isect);
@@ -233,7 +233,7 @@ kernel void extendPath(global Scene *scene, global Item *items, global float *ra
     float *r = random + key * 10;
 
     float2 rand = (float2)(r[7], r[8]);
-    Color reflected = surfaceSample(isect, rand, &dirIn, &pdf, &pdfDelta);
+    Color reflected = Surface_sample(isect, rand, &dirIn, &pdf, &pdfDelta);
     float dt = dot(dirIn, nrmFacing);
     Point pntOffset = isect->point + nrmFacing * 0.01f;
     
@@ -256,11 +256,11 @@ kernel void extendPath(global Scene *scene, global Item *items, global float *ra
             item->beam.ray.direction = dirIn;
             item->throughput = item->throughput / threshold;
             item->generation++;
-            queueAddItem(&queues->intersectRaysQueue, key);
+            Queue_addItem(&queues->intersectRaysQueue, key);
         } else {
-            queueAddItem(&queues->commitRadianceQueue, key);
+            Queue_addItem(&queues->commitRadianceQueue, key);
         }
     } else {
-        queueAddItem(&queues->commitRadianceQueue, key);
+        Queue_addItem(&queues->commitRadianceQueue, key);
     }
 }
