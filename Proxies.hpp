@@ -151,13 +151,19 @@ struct WorkQueueProxy {
     int *data;
 };
 
-struct QueuesProxy {
-    struct WorkQueueProxy generateCameraRayQueue;
-    struct WorkQueueProxy intersectRaysQueue;
-    struct WorkQueueProxy directLightAreaQueue;
-    struct WorkQueueProxy directLightPointQueue;
-    struct WorkQueueProxy extendPathQueue;
-    struct WorkQueueProxy commitRadianceQueue;
+struct ContextProxy {
+    SceneProxy scene;
+    SettingsProxy settings;
+    ItemProxy *items;
+    float *random;
+    unsigned int currentPixel;
+
+    WorkQueueProxy generateCameraRayQueue;
+    WorkQueueProxy intersectRaysQueue;
+    WorkQueueProxy directLightAreaQueue;
+    WorkQueueProxy directLightPointQueue;
+    WorkQueueProxy extendPathQueue;
+    WorkQueueProxy commitRadianceQueue;
 };
 
 #endif

@@ -45,5 +45,10 @@ namespace Render {
             mData[0] = 0;
             mData[1] = 0;
         }
+
+        void WorkQueue::writeProxy(WorkQueueProxy &proxy) const
+        {
+            proxy.data = (int*)mData;
+        }
     }
 }

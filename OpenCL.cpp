@@ -97,7 +97,7 @@ namespace OpenCL {
         printf("Build program: %i\n", errcode);
 
         char buffer[1024*10];
-        size_t logSize;
+        size_t logSize = 0;
         clGetProgramBuildInfo(mClProgram, context.clDevice(), CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &logSize);
         buffer[logSize] = '\0';
         printf("%s\n", buffer);

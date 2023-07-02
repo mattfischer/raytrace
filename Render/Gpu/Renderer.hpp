@@ -83,12 +83,7 @@ namespace Render {
             OpenCL::Kernel mClDirectLightPointKernel;
             OpenCL::Kernel mClExtendPathKernel;
 
-            SceneProxy *mSceneProxy;
-            SettingsProxy *mSettingsProxy;
-            ItemProxy *mItemProxies;
-            QueuesProxy *mQueuesProxy;
-            float *mRandom;
-            unsigned int *mCurrentPixel;
+            ContextProxy *mContextProxy;
             Math::Sampler::Random mSampler;
         };
     }

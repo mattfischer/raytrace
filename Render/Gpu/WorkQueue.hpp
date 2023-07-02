@@ -2,6 +2,7 @@
 #define RENDER_GPU_WORKQUEUE_HPP
 
 #include "OpenCL.hpp"
+#include "Proxies.hpp"
 
 #include <vector>
 #include <functional>
@@ -23,7 +24,7 @@ namespace Render {
             void resetRead();
             void clear();
 
-            Key *data() { return mData; }
+            void writeProxy(WorkQueueProxy &proxy) const;
 
         private:
             Key *mData;

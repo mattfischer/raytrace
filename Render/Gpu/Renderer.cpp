@@ -29,41 +29,22 @@ namespace Render {
             mRunning = false;
 
             mClAllocator.mapAreas();
-            mSceneProxy = scene.buildProxy(mClAllocator);
-            mSettingsProxy = mClAllocator.allocate<SettingsProxy>();
-            mSettingsProxy->width = mSettings.width;
-            mSettingsProxy->height = mSettings.height;
-            mSettingsProxy->minSamples = mSettings.minSamples;
+            mContextProxy = mClAllocator.allocate<ContextProxy>();
 
-            mItemProxies = (ItemProxy*)mClAllocator.allocateBytes(sizeof(ItemProxy) * kSize);
-            mRandom = (float*)mClAllocator.allocateBytes(sizeof(float) * kSize * 10);
-            mQueuesProxy = mClAllocator.allocate<QueuesProxy>();
-            mCurrentPixel = mClAllocator.allocate<unsigned int>();
+            scene.writeProxy(mContextProxy->scene, mClAllocator);;
+            mContextProxy->settings.width = mSettings.width;
+            mContextProxy->settings.height = mSettings.height;
+            mContextProxy->settings.minSamples = mSettings.minSamples;
+
+            mContextProxy->items = (ItemProxy*)mClAllocator.allocateBytes(sizeof(ItemProxy) * kSize);
+            mContextProxy->random = (float*)mClAllocator.allocateBytes(sizeof(float) * kSize * 10);
 
             mClAllocator.unmapAreas();
-            mClGenerateCameraRayKernel.setArg(0, mSceneProxy);
-            mClGenerateCameraRayKernel.setArg(1, mSettingsProxy);
-            mClGenerateCameraRayKernel.setArg(2, mItemProxies);
-            mClGenerateCameraRayKernel.setArg(3, mRandom);
-            mClGenerateCameraRayKernel.setArg(4, mQueuesProxy);
-            mClGenerateCameraRayKernel.setArg(5, mCurrentPixel);
-            mClIntersectRayKernel.setArg(0, mSceneProxy);
-            mClIntersectRayKernel.setArg(1, mItemProxies);
-            mClIntersectRayKernel.setArg(2, mRandom);
-            mClIntersectRayKernel.setArg(3, mQueuesProxy);
-            mClDirectLightAreaKernel.setArg(0, mSceneProxy);
-            mClDirectLightAreaKernel.setArg(1, mItemProxies);
-            mClDirectLightAreaKernel.setArg(2, mRandom);
-            mClDirectLightAreaKernel.setArg(3, mQueuesProxy);
-
-            mClDirectLightPointKernel.setArg(0, mSceneProxy);
-            mClDirectLightPointKernel.setArg(1, mItemProxies);
-            mClDirectLightPointKernel.setArg(2, mQueuesProxy);
-
-            mClExtendPathKernel.setArg(0, mSceneProxy);
-            mClExtendPathKernel.setArg(1, mItemProxies);
-            mClExtendPathKernel.setArg(2, mRandom);
-            mClExtendPathKernel.setArg(3, mQueuesProxy);
+            mClGenerateCameraRayKernel.setArg(0, mContextProxy);
+            mClIntersectRayKernel.setArg(0, mContextProxy);
+            mClDirectLightAreaKernel.setArg(0, mContextProxy);
+            mClDirectLightPointKernel.setArg(0, mContextProxy);
+            mClExtendPathKernel.setArg(0, mContextProxy);
 
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
@@ -75,12 +56,12 @@ namespace Render {
             mExtendPathQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
             mCommitRadianceQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
         
-            mQueuesProxy->generateCameraRayQueue.data = (int*)mGenerateCameraRayQueue->data();
-            mQueuesProxy->intersectRaysQueue.data = (int*)mIntersectRayQueue->data();
-            mQueuesProxy->directLightAreaQueue.data = (int*)mDirectLightAreaQueue->data();
-            mQueuesProxy->directLightPointQueue.data = (int*)mDirectLightPointQueue->data();
-            mQueuesProxy->extendPathQueue.data = (int*)mExtendPathQueue->data();
-            mQueuesProxy->commitRadianceQueue.data = (int*)mCommitRadianceQueue->data();
+            mGenerateCameraRayQueue->writeProxy(mContextProxy->generateCameraRayQueue);
+            mIntersectRayQueue->writeProxy(mContextProxy->intersectRaysQueue);
+            mDirectLightAreaQueue->writeProxy(mContextProxy->directLightAreaQueue);
+            mDirectLightPointQueue->writeProxy(mContextProxy->directLightPointQueue);
+            mExtendPathQueue->writeProxy(mContextProxy->extendPathQueue);
+            mCommitRadianceQueue->writeProxy(mContextProxy->commitRadianceQueue);
         }
 
         std::vector<std::string> Renderer::getSourceList()
@@ -100,7 +81,7 @@ namespace Render {
             mStartTime = std::chrono::steady_clock::now();
 
             mClAllocator.mapAreas();
-            *mCurrentPixel = 0;
+            mContextProxy->currentPixel = 0;
             for(WorkQueue::Key key = 0; key < kSize; key++) {
                 mGenerateCameraRayQueue->addItem(key);
             }
@@ -215,7 +196,7 @@ namespace Render {
             int numQueued = mCommitRadianceQueue->numQueued();
             for(int i=0; i<numQueued; i++) {
                 WorkQueue::Key key = mCommitRadianceQueue->getNextKey();
-                ItemProxy &item = mItemProxies[key];
+                ItemProxy &item = mContextProxy->items[key];
 
                 Object::Radiance radTotal = mTotalRadiance.get(item.x, item.y) + Object::Radiance(item.radiance);
                 mTotalRadiance.set(item.x, item.y, radTotal);
@@ -237,7 +218,7 @@ namespace Render {
             while(mRunning) {
                 mClAllocator.mapAreas();
                 for(int i=0; i<kSize * 10; i++) {
-                    mRandom[i] = mSampler.getValue();
+                    mContextProxy->random[i] = mSampler.getValue();
                 }
                 mClAllocator.unmapAreas();
 

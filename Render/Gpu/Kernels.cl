@@ -22,13 +22,19 @@ typedef struct {
 } WorkQueue;
 
 typedef struct {
+    Scene scene;
+    Settings settings;
+    Item *items;
+    float *random;
+    unsigned int currentPixel;
+
     WorkQueue generateCameraRayQueue;
     WorkQueue intersectRaysQueue;
     WorkQueue directLightAreaQueue;
     WorkQueue directLightPointQueue;
     WorkQueue extendPathQueue;
     WorkQueue commitRadianceQueue;
-} Queues;
+} Context;
 
 void Queue_addItem(WorkQueue *queue, int key)
 {
@@ -72,40 +78,40 @@ void createPixelBeam(Camera *camera, float2 imagePoint, int width, int height, f
     beam->directionDifferential.v = camera->imagePlane.v * pixelSize / len;
 }
 
-kernel void generateCameraRays(global Scene *scene, global Settings *settings, global Item *items, global float* random, global Queues *queues, global unsigned int *currentPixel)
+kernel void generateCameraRays(global Context *context)
 {
-    int key = Queue_getNextKey(&queues->generateCameraRayQueue);
-    Item *item = &items[key];
+    int key = Queue_getNextKey(&context->generateCameraRayQueue);
+    Item *item = &context->items[key];
 
-    unsigned int cp = atomic_inc(currentPixel);
+    unsigned int cp = atomic_inc(&context->currentPixel);
 
-    int sample = cp / (settings->width * settings->height);
-    if(sample >= settings->minSamples) {
+    int sample = cp / (context->settings.width * context->settings.height);
+    if(sample >= context->settings.minSamples) {
         return;
     }
 
-    item->y = (cp / settings->width) % settings->height;
-    item->x = cp % settings->width;
+    item->y = (cp / context->settings.width) % context->settings.height;
+    item->x = cp % context->settings.width;
 
-    float *r = random + key * 10;
+    float *r = context->random + key * 10;
 
     float2 imagePoint = (float2)(item->x, item->y) + (float2)(r[0], r[1]);
     float2 aperturePoint = (float2)(r[2], r[3]);
-    createPixelBeam(&scene->camera, imagePoint, settings->width, settings->height, aperturePoint, &item->beam);
+    createPixelBeam(&context->scene.camera, imagePoint, context->settings.width, context->settings.height, aperturePoint, &item->beam);
     item->specularBounce = false;
     item->generation = 0;
     item->radiance = (float3)(0, 0, 0);
     item->throughput = (float3)(1, 1, 1);
 
-    Queue_addItem(&queues->intersectRaysQueue, key);
+    Queue_addItem(&context->intersectRaysQueue, key);
 }
 
-kernel void intersectRays(global Scene *scene, global Item *items, global float *random, global Queues *queues)
+kernel void intersectRays(global Context *context)
 {
-    int key = Queue_getNextKey(&queues->intersectRaysQueue);
-    Item *item = &items[key];
+    int key = Queue_getNextKey(&context->intersectRaysQueue);
+    Item *item = &context->items[key];
 
-    Scene_intersect(scene, &item->beam, &item->isect);
+    Scene_intersect(&context->scene, &item->beam, &item->isect);
 
     if(item->isect.primitive != 0) {
         Radiance rad2 = item->isect.primitive->surface.radiance;
@@ -121,38 +127,38 @@ kernel void intersectRays(global Scene *scene, global Item *items, global float 
 
         item->radiance += rad2 * item->throughput * misWeight;        
     
-        int totalLights = scene->numAreaLights + scene->numPointLights;
-        float *r = random + key * 10;
+        int totalLights = context->scene.numAreaLights + context->scene.numPointLights;
+        float *r = context->random + key * 10;
         int lightIndex = (int)floor(r[4] * totalLights);
 
-        if(lightIndex < scene->numAreaLights) {
+        if(lightIndex < context->scene.numAreaLights) {
             item->lightIndex = lightIndex;
-            Queue_addItem(&queues->directLightAreaQueue, key);
+            Queue_addItem(&context->directLightAreaQueue, key);
         } else {
-            item->lightIndex = lightIndex - scene->numAreaLights;
-            Queue_addItem(&queues->directLightPointQueue, key);
+            item->lightIndex = lightIndex - context->scene.numAreaLights;
+            Queue_addItem(&context->directLightPointQueue, key);
         }
     }
 
     if(item->isect.primitive == 0) {
-        Radiance rad2 = scene->skyRadiance;
+        Radiance rad2 = context->scene.skyRadiance;
         item->radiance += rad2 * item->throughput;
-        Queue_addItem(&queues->commitRadianceQueue, key);
+        Queue_addItem(&context->commitRadianceQueue, key);
     }
 }
 
-kernel void directLightArea(global Scene *scene, global Item *items, global float *random, global Queues *queues)
+kernel void directLightArea(global Context *context)
 {
-    int key = Queue_getNextKey(&queues->directLightAreaQueue);
-    Item *item = &items[key];
+    int key = Queue_getNextKey(&context->directLightAreaQueue);
+    Item *item = &context->items[key];
 
     Intersection *isect = &item->isect;
     Normal nrmFacing = facingNormal(isect);
     Point pntOffset = isect->point + nrmFacing * 0.01f;
 
-    Primitive *light = scene->areaLights[item->lightIndex];
+    Primitive *light = context->scene.areaLights[item->lightIndex];
     
-    float *r = random + key * 10;
+    float *r = context->random + key * 10;
 
     float2 rand = (float2)(r[5], r[6]);
     Point pnt2;
@@ -170,7 +176,7 @@ kernel void directLightArea(global Scene *scene, global Item *items, global floa
             shadowBeam.ray.direction = dirIn;
 
             Intersection shadowIsect;
-            Scene_intersect(scene, &shadowBeam, &shadowIsect);
+            Scene_intersect(&context->scene, &shadowBeam, &shadowIsect);
 
             if(shadowIsect.primitive == light) {
                 Radiance rad2 = light->surface.radiance;
@@ -183,18 +189,18 @@ kernel void directLightArea(global Scene *scene, global Item *items, global floa
         }
     }
 
-    Queue_addItem(&queues->extendPathQueue, key);
+    Queue_addItem(&context->extendPathQueue, key);
 }
 
-kernel void directLightPoint(global Scene *scene, global Item *items, global Queues *queues)
+kernel void directLightPoint(global Context *context)
 {
-    int key = Queue_getNextKey(&queues->directLightPointQueue);
-    Item *item = &items[key];
+    int key = Queue_getNextKey(&context->directLightPointQueue);
+    Item *item = &context->items[key];
 
     Intersection *isect = &item->isect;
     Normal nrmFacing = facingNormal(isect);
     Point pntOffset = isect->point + nrmFacing * 0.01f;
-    PointLight *pointLight = &scene->pointLights[item->lightIndex];
+    PointLight *pointLight = &context->scene.pointLights[item->lightIndex];
 
     Vector dirIn = pointLight->position - pntOffset;
     float d = length(dirIn);
@@ -207,7 +213,7 @@ kernel void directLightPoint(global Scene *scene, global Item *items, global Que
         shadowBeam.ray.direction = dirIn;
 
         Intersection shadowIsect;
-        Scene_intersect(scene, &shadowBeam, &shadowIsect);
+        Scene_intersect(&context->scene, &shadowBeam, &shadowIsect);
 
         if(shadowIsect.primitive == 0 || shadowIsect.shapeIntersection.distance >= 0) {
             Radiance irad = pointLight->radiance * dt / (d * d);
@@ -216,13 +222,13 @@ kernel void directLightPoint(global Scene *scene, global Item *items, global Que
         }
     }
 
-    Queue_addItem(&queues->extendPathQueue, key);
+    Queue_addItem(&context->extendPathQueue, key);
 }
 
-kernel void extendPath(global Scene *scene, global Item *items, global float *random, global Queues *queues)
+kernel void extendPath(global Context *context)
 {
-    int key = Queue_getNextKey(&queues->extendPathQueue);
-    Item *item = &items[key];
+    int key = Queue_getNextKey(&context->extendPathQueue);
+    Item *item = &context->items[key];
     Intersection *isect = &item->isect;
     Normal nrmFacing = facingNormal(isect);
     
@@ -230,7 +236,7 @@ kernel void extendPath(global Scene *scene, global Item *items, global float *ra
     float pdf;
     bool pdfDelta;
     
-    float *r = random + key * 10;
+    float *r = context->random + key * 10;
 
     float2 rand = (float2)(r[7], r[8]);
     Color reflected = Surface_sample(isect, rand, &dirIn, &pdf, &pdfDelta);
@@ -256,11 +262,11 @@ kernel void extendPath(global Scene *scene, global Item *items, global float *ra
             item->beam.ray.direction = dirIn;
             item->throughput = item->throughput / threshold;
             item->generation++;
-            Queue_addItem(&queues->intersectRaysQueue, key);
+            Queue_addItem(&context->intersectRaysQueue, key);
         } else {
-            Queue_addItem(&queues->commitRadianceQueue, key);
+            Queue_addItem(&context->commitRadianceQueue, key);
         }
     } else {
-        Queue_addItem(&queues->commitRadianceQueue, key);
+        Queue_addItem(&context->commitRadianceQueue, key);
     }
 }

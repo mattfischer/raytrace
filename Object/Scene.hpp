@@ -29,7 +29,7 @@ namespace Object {
 
         Object::Intersection intersect(const Math::Beam &beam) const;
 
-        SceneProxy *buildProxy(OpenCL::Allocator &clAllocator) const;
+        void writeProxy(SceneProxy &proxy, OpenCL::Allocator &clAllocator) const;
 
     protected:
         std::unique_ptr<Camera> mCamera;
