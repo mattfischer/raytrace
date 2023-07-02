@@ -22,7 +22,8 @@ namespace OpenCL {
         cl_platform_id mClPlatform;
         cl_device_id mClDevice;
         cl_context mClContext;
-        cl_command_queue mClQueue;
+        cl_command_queue mClHostQueue;
+        cl_command_queue mClDeviceQueue;
     };
 
     class Program {

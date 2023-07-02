@@ -49,7 +49,18 @@ int Queue_getNextKey(WorkQueue *queue)
 
     return queue->data[read + 2];
 }
-        
+
+int Queue_numQueued(WorkQueue *queue)
+{
+    return queue->data[1] - queue->data[0];
+}
+
+void Queue_clear(WorkQueue *queue)
+{
+    queue->data[0] = 0;
+    queue->data[1] = 0;
+}
+
 void createPixelBeam(Camera *camera, float2 imagePoint, int width, int height, float2 aperturePoint, Beam *beam)
 {
     float cx = (2 * imagePoint.x - width) / width;
@@ -78,7 +89,7 @@ void createPixelBeam(Camera *camera, float2 imagePoint, int width, int height, f
     beam->directionDifferential.v = camera->imagePlane.v * pixelSize / len;
 }
 
-kernel void generateCameraRays(global Context *context)
+void generateCameraRays(global Context *context)
 {
     int key = Queue_getNextKey(&context->generateCameraRayQueue);
     Item *item = &context->items[key];
@@ -106,7 +117,7 @@ kernel void generateCameraRays(global Context *context)
     Queue_addItem(&context->intersectRaysQueue, key);
 }
 
-kernel void intersectRays(global Context *context)
+void intersectRays(global Context *context)
 {
     int key = Queue_getNextKey(&context->intersectRaysQueue);
     Item *item = &context->items[key];
@@ -147,7 +158,7 @@ kernel void intersectRays(global Context *context)
     }
 }
 
-kernel void directLightArea(global Context *context)
+void directLightArea(global Context *context)
 {
     int key = Queue_getNextKey(&context->directLightAreaQueue);
     Item *item = &context->items[key];
@@ -192,7 +203,7 @@ kernel void directLightArea(global Context *context)
     Queue_addItem(&context->extendPathQueue, key);
 }
 
-kernel void directLightPoint(global Context *context)
+void directLightPoint(global Context *context)
 {
     int key = Queue_getNextKey(&context->directLightPointQueue);
     Item *item = &context->items[key];
@@ -225,7 +236,7 @@ kernel void directLightPoint(global Context *context)
     Queue_addItem(&context->extendPathQueue, key);
 }
 
-kernel void extendPath(global Context *context)
+void extendPath(global Context *context)
 {
     int key = Queue_getNextKey(&context->extendPathQueue);
     Item *item = &context->items[key];
@@ -269,4 +280,112 @@ kernel void extendPath(global Context *context)
     } else {
         Queue_addItem(&context->commitRadianceQueue, key);
     }
+}
+
+kernel void extendPathDone(global Context *context)
+{
+    Queue_clear(&context->extendPathQueue);
+}
+
+kernel void directLightPointDone(global Context *context)
+{
+    Queue_clear(&context->directLightPointQueue);
+
+    clk_event_t evt;
+    ndrange_t ndr = ndrange_1D(Queue_numQueued(&context->extendPathQueue));
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    ndr,
+                    0, NULL, &evt,
+                    ^{ extendPath(context); });
+
+    ndrange_t nd1 = ndrange_1D(1);
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    nd1,
+                    1, &evt, NULL,
+                    ^{ extendPathDone(context); });
+    release_event(evt);
+}
+
+kernel void directLightAreaDone(global Context *context)
+{
+    Queue_clear(&context->directLightAreaQueue);
+
+    clk_event_t evt;
+    ndrange_t ndr = ndrange_1D(Queue_numQueued(&context->directLightPointQueue));
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    ndr,
+                    0, NULL, &evt,
+                    ^{ directLightPoint(context); });
+
+    ndrange_t nd1 = ndrange_1D(1);
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    nd1,
+                    1, &evt, NULL,
+                    ^{ directLightPointDone(context); });
+    release_event(evt);
+}
+
+kernel void intersectRaysDone(global Context *context)
+{
+    Queue_clear(&context->intersectRaysQueue);
+
+    clk_event_t evt;
+    ndrange_t ndr = ndrange_1D(Queue_numQueued(&context->directLightAreaQueue));
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    ndr,
+                    0, NULL, &evt,
+                    ^{ directLightArea(context); });
+
+    ndrange_t nd1 = ndrange_1D(1);
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    nd1,
+                    1, &evt, NULL,
+                    ^{ directLightAreaDone(context); });
+    release_event(evt);
+}
+
+kernel void generateCameraRaysDone(global Context *context)
+{
+    Queue_clear(&context->generateCameraRayQueue);
+
+    clk_event_t evt;
+    ndrange_t ndr = ndrange_1D(Queue_numQueued(&context->intersectRaysQueue));
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    ndr,
+                    0, NULL, &evt,
+                    ^{ intersectRays(context); });
+
+    ndrange_t nd1 = ndrange_1D(1);
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    nd1,
+                    1, &evt, NULL,
+                    ^{ intersectRaysDone(context); });
+    release_event(evt);
+}
+
+kernel void runIteration(global Context *context)
+{
+    clk_event_t evt;
+    ndrange_t ndr = ndrange_1D(Queue_numQueued(&context->generateCameraRayQueue));
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    ndr,
+                    0, NULL, &evt,
+                    ^{ generateCameraRays(context); });
+
+    ndrange_t nd1 = ndrange_1D(1);
+    enqueue_kernel(get_default_queue(),
+                    CLK_ENQUEUE_FLAGS_NO_WAIT,
+                    nd1,
+                    1, &evt, NULL,
+                    ^{ generateCameraRaysDone(context); });
+    release_event(evt);
 }

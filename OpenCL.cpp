@@ -29,8 +29,15 @@ namespace OpenCL {
         mClContext = clCreateContext(context_properties, 1, &mClDevice, NULL, NULL, &errcode);
         printf("Context: %p errcode: %i\n", mClContext, errcode);
 
-        mClQueue = clCreateCommandQueueWithProperties(mClContext, mClDevice, NULL, &errcode);
-        printf("Command queue: %p errcode: %i\n", mClQueue, errcode);
+        mClHostQueue = clCreateCommandQueueWithProperties(mClContext, mClDevice, NULL, &errcode);
+        printf("Command queue: %p errcode: %i\n", mClHostQueue, errcode);
+
+        cl_queue_properties properties[] = {
+            CL_QUEUE_PROPERTIES, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE | CL_QUEUE_ON_DEVICE | CL_QUEUE_ON_DEVICE_DEFAULT,
+            (cl_queue_properties)0
+        };
+        mClDeviceQueue = clCreateCommandQueueWithProperties(mClContext, mClDevice, properties, &errcode);
+        printf("Command queue: %p errcode: %i\n", mClDeviceQueue, errcode);
     }
 
     Context::~Context()
@@ -54,7 +61,7 @@ namespace OpenCL {
 
     cl_command_queue Context::clQueue()
     {
-        return mClQueue;
+        return mClHostQueue;
     }
 
     Program::Program(Context &context, const std::string &filename)

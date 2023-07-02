@@ -43,13 +43,6 @@ namespace Render {
         private:
             std::vector<std::string> getSourceList();
 
-            void runGenerateCameraRays();
-            void runIntersectRays();
-            void runDirectLightArea();
-            void runDirectLightPoint();
-            void runExtendPath();
-            void runCommitRadiance();
-
             void runThread();
 
             bool mRunning;
@@ -77,11 +70,7 @@ namespace Render {
             OpenCL::Context mClContext;
             OpenCL::Allocator mClAllocator;
             OpenCL::Program mClProgram;
-            OpenCL::Kernel mClGenerateCameraRayKernel;
-            OpenCL::Kernel mClIntersectRayKernel;
-            OpenCL::Kernel mClDirectLightAreaKernel;
-            OpenCL::Kernel mClDirectLightPointKernel;
-            OpenCL::Kernel mClExtendPathKernel;
+            OpenCL::Kernel mClRunIterationKernel;
 
             ContextProxy *mContextProxy;
             Math::Sampler::Random mSampler;
