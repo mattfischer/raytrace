@@ -41,6 +41,8 @@ namespace Render {
             Render::Framebuffer &sampleStatusFramebuffer() override;
 
         private:
+            std::vector<std::string> getSourceList();
+
             void runGenerateCameraRays();
             void runIntersectRays();
             void runDirectLightArea();

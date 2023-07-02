@@ -95,6 +95,12 @@ namespace OpenCL {
 
         errcode = clBuildProgram(mClProgram, 0, NULL, "-cl-std=CL2.0", NULL, NULL);
         printf("Build program: %i\n", errcode);
+
+        char buffer[1024*10];
+        size_t logSize;
+        clGetProgramBuildInfo(mClProgram, context.clDevice(), CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &logSize);
+        buffer[logSize] = '\0';
+        printf("%s\n", buffer);
     }
     
     std::string Program::loadSourceFile(const std::string &filename)

@@ -19,7 +19,7 @@ namespace Render {
         , mTotalRadiance(settings.width, settings.height)
         , mTotalSamples(settings.width, settings.height)
         , mClAllocator(mClContext)
-        , mClProgram(mClContext, "kernels.cl")
+        , mClProgram(mClContext, getSourceList())
         , mClGenerateCameraRayKernel(mClProgram, "generateCameraRays", mClAllocator)
         , mClIntersectRayKernel(mClProgram, "intersectRays", mClAllocator)
         , mClDirectLightAreaKernel(mClProgram, "directLightArea", mClAllocator)
@@ -81,6 +81,16 @@ namespace Render {
             mQueuesProxy->directLightPointQueue.data = (int*)mDirectLightPointQueue->data();
             mQueuesProxy->extendPathQueue.data = (int*)mExtendPathQueue->data();
             mQueuesProxy->commitRadianceQueue.data = (int*)mCommitRadianceQueue->data();
+        }
+
+        std::vector<std::string> Renderer::getSourceList()
+        {
+            return std::vector<std::string> {
+                "Math/Kernels.cl",
+                "Object/Shape/Kernels.cl",
+                "Object/Kernels.cl",
+                "Render/Gpu/Kernels.cl"
+            };
         }
 
         void Renderer::start(Listener *listener)
