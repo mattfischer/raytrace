@@ -20,11 +20,6 @@ namespace Object {
         mSurfaceProjectionValid = false;
     };
 
-    Intersection::Intersection(const IntersectionProxy &proxy)
-    {
-        mPoint = Math::Point(proxy.point);
-    }
-
     const Math::Point &Intersection::point() const
     {
         return mPoint;
@@ -114,11 +109,5 @@ namespace Object {
         }
 
         return mSurfaceProjection;
-    }
-
-    void Intersection::writeProxy(IntersectionProxy &proxy) const
-    {
-        mPoint.writeProxy(proxy.point);
-        mShapeIntersection.writeProxy(proxy.shapeIntersection);
     }
 }

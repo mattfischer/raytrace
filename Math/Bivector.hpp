@@ -12,7 +12,6 @@ namespace Math {
     public:
         Bivector() = default;
         Bivector(const Math::Vector &u, const Math::Vector &v);
-        Bivector(const BivectorProxy &proxy);
 
         const Math::Vector &u() const;
         const Math::Vector &v() const;

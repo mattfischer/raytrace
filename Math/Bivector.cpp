@@ -6,12 +6,6 @@ namespace Math {
     {
     }
 
-    Bivector::Bivector(const BivectorProxy &proxy)
-    {
-        mU = Vector(proxy.u);
-        mV = Vector(proxy.v);
-    }
-
     const Math::Vector &Bivector::u() const
     {
         return mU;

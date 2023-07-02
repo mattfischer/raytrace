@@ -17,13 +17,6 @@ namespace Object {
         mBlue = blue;
     }
 
-    Color::Color(ColorProxy &proxy)
-    {
-        mRed = proxy.coords[0];
-        mGreen = proxy.coords[1];
-        mBlue = proxy.coords[2];
-    }
-
     float Color::red() const
     {
         return mRed;

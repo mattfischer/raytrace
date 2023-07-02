@@ -13,7 +13,6 @@ namespace Math {
         Point();
         Point(float x, float y, float z);
         explicit Point(const Vector &vector);
-        explicit Point(const PointProxy &proxy);
 
         float x() const;
         float y() const;

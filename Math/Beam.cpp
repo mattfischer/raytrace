@@ -6,13 +6,6 @@ namespace Math {
     {
     }
 
-    Beam::Beam(const BeamProxy &proxy)
-    {
-        mRay = Ray(proxy.ray);
-        mOriginDifferential = Bivector(proxy.originDifferential);
-        mDirectionDifferential = Bivector(proxy.directionDifferential);
-    }
-
     const Math::Ray &Beam::ray() const
     {
         return mRay;
@@ -40,12 +33,5 @@ namespace Math {
         Math::Bivector dtD = Math::Bivector(D * (A.u() * N), D * (A.v() * N)) / (N * D);
 
         return A - dtD;
-    }
-
-    void Beam::writeProxy(BeamProxy &proxy) const
-    {
-        mRay.writeProxy(proxy.ray);
-        mOriginDifferential.writeProxy(proxy.originDifferential);
-        mDirectionDifferential.writeProxy(proxy.directionDifferential);
     }
 }

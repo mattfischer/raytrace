@@ -33,13 +33,6 @@ namespace Math {
         mZ = point.z();
     }
 
-    Normal::Normal(const NormalProxy &proxy)
-    {
-        mX = proxy.coords[0];
-        mY = proxy.coords[1];
-        mZ = proxy.coords[2];
-    }
-
     float Normal::x() const
     {
         return mX;

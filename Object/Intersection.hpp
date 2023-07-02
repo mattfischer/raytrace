@@ -20,7 +20,6 @@ namespace Object {
     public:
         Intersection();
         Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection);
-        Intersection(const IntersectionProxy &proxy);
 
         bool valid() const;
 
@@ -39,8 +38,6 @@ namespace Object {
         Object::Color albedo() const;
 
         const Math::Bivector2D &surfaceProjection() const;
-
-        void writeProxy(IntersectionProxy &proxy) const;
 
     protected:
         const Object::Scene *mScene;

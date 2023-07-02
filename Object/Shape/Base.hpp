@@ -21,23 +21,10 @@ namespace Object {
         {
         public:
             struct Intersection {
-                Intersection(const ShapeIntersectionProxy &proxy) {
-                    distance = proxy.distance;
-                    normal = Math::Normal(proxy.normal);
-                }
-
-                Intersection() = default;
-
                 float distance;
                 Math::Normal normal;
                 Math::Bivector tangent;
                 Math::Point2D surfacePoint;
-
-                void writeProxy(ShapeIntersectionProxy &proxy) const
-                {
-                    proxy.distance = distance;
-                    normal.writeProxy(proxy.normal);
-                }
             };
 
             virtual bool intersect(const Math::Ray &ray, Intersection &isect) const = 0;
