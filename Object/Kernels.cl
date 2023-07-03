@@ -1,22 +1,3 @@
-typedef float3 Color;
-typedef float3 Radiance;
-
-typedef struct {
-    Color color;
-} SolidAlbedo;
-
-typedef enum {
-    AlbedoTypeSolid,
-    AlbedoTypeTexture
-} AlbedoType;
-
-typedef struct {
-    AlbedoType type;
-    union {
-        SolidAlbedo solid;
-    };
-} Albedo;
-
 typedef struct {
     Radiance radiance;
     Albedo albedo;
