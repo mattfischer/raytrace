@@ -6,7 +6,7 @@
 #include "Math/Bivector.hpp"
 #include "Math/Point2D.hpp"
 
-#include "Proxies.hpp"
+#include "Object/CLProxies.hpp"
 
 #include <memory>
 

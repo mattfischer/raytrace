@@ -4,7 +4,7 @@
 #include "Math/Ray.hpp"
 #include "Math/Bivector.hpp"
 
-#include "Proxies.hpp"
+#include "Math/CLProxies.hpp"
 
 namespace Math {
     class Beam

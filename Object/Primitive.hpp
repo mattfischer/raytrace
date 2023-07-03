@@ -4,6 +4,7 @@
 #include "Object/Surface.hpp"
 #include "Object/BoundingVolume.hpp"
 #include "Object/Shape/Base.hpp"
+#include "Object/CLProxies.hpp"
 
 namespace Object {
     class Primitive

@@ -4,7 +4,7 @@
 #include "Math/Point.hpp"
 #include "Math/Radiance.hpp"
 
-#include "Proxies.hpp"
+#include "Object/CLProxies.hpp"
 
 #include <memory>
 

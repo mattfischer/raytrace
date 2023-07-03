@@ -13,7 +13,7 @@
 #include <vector>
 #include <memory>
 
-#include "Proxies.hpp"
+#include "Object/Shape/CLProxies.hpp"
 
 namespace Object {
     namespace Shape {

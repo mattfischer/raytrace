@@ -2,7 +2,7 @@
 #define RENDER_GPU_WORKQUEUE_HPP
 
 #include "OpenCL.hpp"
-#include "Proxies.hpp"
+#include "Render/Gpu/CLProxies.hpp"
 
 #include <vector>
 #include <functional>

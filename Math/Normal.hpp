@@ -1,7 +1,7 @@
 #ifndef MATH_NORMAL_HPP
 #define MATH_NORMAL_HPP
 
-#include "Proxies.hpp"
+#include "Math/CLProxies.hpp"
 
 namespace Math {
     class Point;

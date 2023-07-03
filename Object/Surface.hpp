@@ -8,7 +8,7 @@
 #include "Math/Radiance.hpp"
 #include "Object/NormalMap.hpp"
 
-#include "Proxies.hpp"
+#include "Object/CLProxies.hpp"
 
 #include <memory>
 

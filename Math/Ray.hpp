@@ -4,7 +4,7 @@
 #include "Math/Point.hpp"
 #include "Math/Vector.hpp"
 
-#include "Proxies.hpp"
+#include "Math/CLProxies.hpp"
 
 namespace Math {
     class Ray

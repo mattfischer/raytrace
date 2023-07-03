@@ -6,6 +6,8 @@
 #include "Math/Point2D.hpp"
 #include "Math/Bivector2D.hpp"
 
+#include "Object/CLProxies.hpp"
+
 namespace Object {
     namespace Albedo {
         class Base

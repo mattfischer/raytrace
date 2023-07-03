@@ -1,7 +1,7 @@
 #ifndef MATH_COLOR_HPP
 #define MATH_COLOR_HPP
 
-#include "Proxies.hpp"
+#include "Math/CLProxies.hpp"
 
 namespace Math {
     class Color

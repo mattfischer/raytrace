@@ -7,7 +7,7 @@
 #include "Object/BoundingVolumeHierarchy.hpp"
 #include "Object/Intersection.hpp"
 
-#include "Proxies.hpp"
+#include "Object/CLProxies.hpp"
 #include "OpenCL.hpp"
 
 #include <vector>

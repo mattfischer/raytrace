@@ -1,7 +1,7 @@
 #ifndef MATH_VECTOR_HPP
 #define MATH_VECTOR_HPP
 
-#include "Proxies.hpp"
+#include "Math/CLProxies.hpp"
 
 namespace Math {
     class Point;

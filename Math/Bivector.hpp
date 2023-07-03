@@ -4,7 +4,7 @@
 #include "Math/Vector.hpp"
 #include "Math/Vector2D.hpp"
 
-#include "Proxies.hpp"
+#include "Math/CLProxies.hpp"
 
 namespace Math {
     class Bivector

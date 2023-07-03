@@ -1,11 +1,11 @@
 #include "Render/Gpu/Renderer.hpp"
 
 #include "Render/Gpu/WorkQueue.hpp"
+#include "Render/Gpu/CLProxies.hpp"
 
 #include "Math/Sampler/Random.hpp"
-#include <memory>
 
-#include "Proxies.hpp"
+#include <memory>
 
 using namespace std::placeholders;
 

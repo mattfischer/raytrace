@@ -3,7 +3,7 @@
 
 #include "Math/Color.hpp"
 
-#include "Proxies.hpp"
+#include "Math/CLProxies.hpp"
 
 namespace Math {
     class Radiance
