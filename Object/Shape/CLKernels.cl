@@ -3,12 +3,12 @@ typedef struct {
     Vector side1;
     Vector side2;
     Normal normal;
-} QuadShape;
+} ShapeQuad;
 
 typedef struct {
     Point position;
     float radius;
-} SphereShape;
+} ShapeSphere;
 
 typedef enum {
     ShapeTypeNone,
@@ -19,8 +19,8 @@ typedef enum {
 typedef struct {
     ShapeType type;
     union {
-        QuadShape quad;
-        SphereShape sphere;
+        ShapeQuad quad;
+        ShapeSphere sphere;
     };
 } Shape;
 
@@ -34,7 +34,7 @@ float length2(float3 v)
     return dot(v, v);
 }
 
-bool intersectQuad(Ray *ray, QuadShape *quad, ShapeIntersection *shapeIntersection)
+bool ShapeQuad_intersect(Ray *ray, ShapeQuad *quad, ShapeIntersection *shapeIntersection)
 {
     float distance = dot(ray->origin - quad->position, quad->normal) / dot(ray->direction, -quad->normal);
     if(distance >= 0 && distance < shapeIntersection->distance) {
@@ -51,7 +51,24 @@ bool intersectQuad(Ray *ray, QuadShape *quad, ShapeIntersection *shapeIntersecti
     return false;
 }
 
-bool intersectSphere(Ray *ray, SphereShape *sphere, ShapeIntersection *shapeIntersection)
+float ShapeQuad_samplePdf(ShapeQuad *quad, Point point)
+{
+    float surfaceArea = length(cross(quad->side1, quad->side2));
+    return 1.0f / surfaceArea;
+}
+
+bool ShapeQuad_sample(ShapeQuad *quad, float2 random, Point *point, Normal *normal, float *pdf)
+{
+    *point = quad->position + quad->side1 * random.x + quad->side2 * random.y;
+    *normal = quad->normal;
+
+    float surfaceArea = length(cross(quad->side1, quad->side2));
+    *pdf = 1.0f / surfaceArea;
+
+    return true;
+}
+
+bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *shapeIntersection)
 {
     float a, b, c;
     float disc;
@@ -82,31 +99,14 @@ bool intersectSphere(Ray *ray, SphereShape *sphere, ShapeIntersection *shapeInte
     return false;
 }
 
-float shapeSamplePdfQuad(QuadShape *quad, Point point)
-{
-    float surfaceArea = length(cross(quad->side1, quad->side2));
-    return 1.0f / surfaceArea;
-}
-
-bool shapeSampleQuad(QuadShape *quad, float2 random, Point *point, Normal *normal, float *pdf)
-{
-    *point = quad->position + quad->side1 * random.x + quad->side2 * random.y;
-    *normal = quad->normal;
-
-    float surfaceArea = length(cross(quad->side1, quad->side2));
-    *pdf = 1.0f / surfaceArea;
-
-    return true;
-}
-
 bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
-        return intersectQuad(ray, &shape->quad, shapeIntersection);
+        return ShapeQuad_intersect(ray, &shape->quad, shapeIntersection);
     
     case ShapeTypeSphere:
-        return intersectSphere(ray, &shape->sphere, shapeIntersection);
+        return ShapeSphere_intersect(ray, &shape->sphere, shapeIntersection);
     
     default:
         return false;
@@ -117,7 +117,7 @@ float Shape_samplePdf(Shape *shape, Point point)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
-        return shapeSamplePdfQuad(&shape->quad, point);
+        return ShapeQuad_samplePdf(&shape->quad, point);
     
     default:
         return 0;
@@ -128,7 +128,7 @@ bool Shape_sample(Shape *shape, float2 random, Point *point, Normal *normal, flo
 {
     switch(shape->type) {
     case ShapeTypeQuad:
-        return shapeSampleQuad(&shape->quad, random, point, normal, pdf);
+        return ShapeQuad_sample(&shape->quad, random, point, normal, pdf);
     
     default:
         return false;

@@ -3,14 +3,14 @@
 
 #include "Math/CLProxies.hpp"
 
-struct QuadShapeProxy {
+struct ShapeQuadProxy {
     PointProxy position;
     VectorProxy side1;
     VectorProxy side2;
     NormalProxy normal;
 };
 
-struct SphereShapeProxy {
+struct ShapeSphereProxy {
     PointProxy position;
     float radius;
 };
@@ -24,8 +24,8 @@ struct ShapeProxy {
 
     Type type;
     union {
-        struct QuadShapeProxy quad;
-        struct SphereShapeProxy sphere;
+        struct ShapeQuadProxy quad;
+        struct ShapeSphereProxy sphere;
     };
 };
 
