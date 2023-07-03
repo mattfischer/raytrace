@@ -79,14 +79,14 @@ Color Surface_sample(Intersection *isect, float2 random, Vector *dirIn, float *p
     Vector y;
     Vector z = nrmFacing;
     if(fabs(nrmFacing.z) > fabs(nrmFacing.x) && fabs(nrmFacing.z) > fabs(nrmFacing.y)) {
-        x = (float3)(1, 0, 0);
-        y = (float3)(0, 1, 0);
+        x = (Vector)(1, 0, 0);
+        y = (Vector)(0, 1, 0);
     } else if(fabs(nrmFacing.x) > fabs(nrmFacing.y) && fabs(nrmFacing.x) > fabs(nrmFacing.z)) {
-        x = (float3)(0, 1, 0);
-        y = (float3)(0, 0, 1);
+        x = (Vector)(0, 1, 0);
+        y = (Vector)(0, 0, 1);
     } else {
-        x = (float3)(1, 0, 0);
-        y = (float3)(0, 0, 1);
+        x = (Vector)(1, 0, 0);
+        y = (Vector)(0, 0, 1);
     }
     
     x = normalize(x - z * dot(x, z));

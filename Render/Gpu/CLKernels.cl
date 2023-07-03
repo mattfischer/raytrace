@@ -83,8 +83,8 @@ void createPixelBeam(Camera *camera, float2 imagePoint, int width, int height, f
     
     float pixelSize = 2.0f / width;
 
-    beam->originDifferential.u = (float3)(0, 0, 0);
-    beam->originDifferential.v = (float3)(0, 0, 0);
+    beam->originDifferential.u = (Vector)(0, 0, 0);
+    beam->originDifferential.v = (Vector)(0, 0, 0);
     beam->directionDifferential.u = camera->imagePlane.u * pixelSize / len;
     beam->directionDifferential.v = camera->imagePlane.v * pixelSize / len;
 }
@@ -111,8 +111,8 @@ void generateCameraRays(global Context *context)
     createPixelBeam(&context->scene.camera, imagePoint, context->settings.width, context->settings.height, aperturePoint, &item->beam);
     item->specularBounce = false;
     item->generation = 0;
-    item->radiance = (float3)(0, 0, 0);
-    item->throughput = (float3)(1, 1, 1);
+    item->radiance = (Radiance)(0, 0, 0);
+    item->throughput = (Color)(1, 1, 1);
 
     Queue_addItem(&context->intersectRaysQueue, key);
 }

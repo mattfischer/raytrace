@@ -59,11 +59,11 @@ namespace Render {
         std::vector<std::string> Renderer::getSourceList()
         {
             return std::vector<std::string> {
-                "Math/Kernels.cl",
-                "Object/Albedo/Kernels.cl",
-                "Object/Shape/Kernels.cl",
-                "Object/Kernels.cl",
-                "Render/Gpu/Kernels.cl"
+                "Math/CLKernels.cl",
+                "Object/Albedo/CLKernels.cl",
+                "Object/Shape/CLKernels.cl",
+                "Object/CLKernels.cl",
+                "Render/Gpu/CLKernels.cl"
             };
         }
 
