@@ -12,7 +12,7 @@
 #include <cfloat>
 
 namespace Object {
-    Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<PointLight>> &&pointLights, const Object::Radiance &skyRadiance)
+    Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<PointLight>> &&pointLights, const Math::Radiance &skyRadiance)
         : mCamera(std::move(camera))
         , mPrimitives(std::move(primitives))
         , mPointLights(std::move(pointLights))
@@ -56,7 +56,7 @@ namespace Object {
         return mPointLights;
     }
 
-    const Object::Radiance &Scene::skyRadiance() const
+    const Math::Radiance &Scene::skyRadiance() const
     {
         return mSkyRadiance;
     }

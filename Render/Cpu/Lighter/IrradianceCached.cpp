@@ -20,7 +20,7 @@ namespace Render {
             {
             public:
                 RadianceGradient() = default;
-                RadianceGradient(const Object::Radiance &radiance, const Math::Vector &vector)
+                RadianceGradient(const Math::Radiance &radiance, const Math::Vector &vector)
                 {
                     mRed = vector * radiance.red();
                     mGreen = vector * radiance.green();
@@ -34,9 +34,9 @@ namespace Render {
                     mBlue = blue;
                 }
 
-                Object::Radiance operator*(const Math::Vector &vector) const
+                Math::Radiance operator*(const Math::Vector &vector) const
                 {
-                    return Object::Radiance(mRed * vector, mGreen * vector, mBlue * vector);
+                    return Math::Radiance(mRed * vector, mGreen * vector, mBlue * vector);
                 }
 
                 RadianceGradient operator+(const RadianceGradient &other) const
@@ -76,7 +76,7 @@ namespace Render {
                     Math::Point point;
                     Math::Normal normal;
                     float radius;
-                    Object::Radiance radiance;
+                    Math::Radiance radiance;
                     RadianceGradient rotGrad;
                     RadianceGradient transGrad;
                 };
@@ -88,8 +88,8 @@ namespace Render {
                 float error(const Entry &entry, const Math::Point &point, const Math::Normal &normal) const;
                 bool test(const Math::Point &point, const Math::Normal &normal) const;
                 bool testUnlocked(const Math::Point &point, const Math::Normal &normal) const;
-                Object::Radiance interpolate(const Math::Point &point, const Math::Normal &normal) const;
-                Object::Radiance interpolateUnlocked(const Math::Point &point, const Math::Normal &normal) const;
+                Math::Radiance interpolate(const Math::Point &point, const Math::Normal &normal) const;
+                Math::Radiance interpolateUnlocked(const Math::Point &point, const Math::Normal &normal) const;
                 void add(const Entry &entry);
                 void clear();
 
@@ -219,16 +219,16 @@ namespace Render {
                 return ret;
             }
 
-            Object::Radiance IrradianceCached::Cache::interpolate(const Math::Point &point, const Math::Normal &normal) const
+            Math::Radiance IrradianceCached::Cache::interpolate(const Math::Point &point, const Math::Normal &normal) const
             {
                 std::lock_guard<std::mutex> guard(mMutex);
                 return interpolateUnlocked(point, normal);
             }
 
-            Object::Radiance IrradianceCached::Cache::interpolateUnlocked(const Math::Point &point, const Math::Normal &normal) const
+            Math::Radiance IrradianceCached::Cache::interpolateUnlocked(const Math::Point &point, const Math::Normal &normal) const
             {
                 float totalWeight = 0;
-                Object::Radiance irradiance;
+                Math::Radiance irradiance;
                 float threshold = mThreshold;
 
                 auto callback = [&] (const Entry &entry) {
@@ -327,17 +327,17 @@ namespace Render {
                 mCache = std::make_unique<Cache>(settings.cacheThreshold);
             }
 
-            Object::Radiance IrradianceCached::light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const
+            Math::Radiance IrradianceCached::light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const
             {
                 const Object::Surface &surface = isect.primitive().surface();
                 const Math::Point &pnt = isect.point();
                 const Math::Normal &nrmFacing = isect.facingNormal();
-                const Object::Color &albedo = isect.albedo();
+                const Math::Color &albedo = isect.albedo();
 
-                Object::Radiance rad = mDirectLighter->light(isect, sampler);
+                Math::Radiance rad = mDirectLighter->light(isect, sampler);
 
                 if(surface.lambert() > 0) {
-                    Object::Radiance irad = mCache->interpolateUnlocked(pnt, nrmFacing);
+                    Math::Radiance irad = mCache->interpolateUnlocked(pnt, nrmFacing);
                     rad += irad * albedo * surface.lambert() / (float)M_PI;
                 }
 
@@ -368,7 +368,7 @@ namespace Render {
 
             void IrradianceCached::prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Math::Sampler::Base &sampler)
             {
-                Object::Color pixelColor;
+                Math::Color pixelColor;
                 sampler.startSequence();
                 Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D(float(x), float(y)), framebuffer.width(), framebuffer.height(), Math::Point2D());
 
@@ -385,10 +385,10 @@ namespace Render {
 
                         float mean = 0;
                         int den = 0;
-                        Object::Radiance rad;
+                        Math::Radiance rad;
                         const unsigned int M = static_cast<unsigned int>(std::sqrt(mSettings.indirectSamples));
                         const unsigned int N = static_cast<unsigned int>(mSettings.indirectSamples / M);
-                        std::vector<Object::Radiance> samples;
+                        std::vector<Math::Radiance> samples;
                         std::vector<float> sampleDistances;
                         samples.resize(M * N);
                         sampleDistances.resize(M * N);
@@ -408,7 +408,7 @@ namespace Render {
                                 if (isect2.valid()) {
                                     mean += 1 / isect2.distance();
                                     den++;
-                                    Object::Radiance rad2 = mUniPathLighter->light(isect2, sampler);
+                                    Math::Radiance rad2 = mUniPathLighter->light(isect2, sampler);
                                     rad2 = rad2 - isect2.primitive().surface().radiance();
 
                                     samples[k * M + j] = rad2;
@@ -470,7 +470,7 @@ namespace Render {
                             newEntry.rotGrad = rotGrad;
 
                             mCache->add(newEntry);
-                            pixelColor = Object::Color(1, 1, 1);
+                            pixelColor = Math::Color(1, 1, 1);
                         }
                     }
                 }

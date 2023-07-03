@@ -102,13 +102,13 @@ namespace Render {
             return *mSampleStatusFramebuffer;
         }
 
-        static Object::Color toneMap(const Object::Radiance &radiance)
+        static Math::Color toneMap(const Math::Radiance &radiance)
         {
             float red = radiance.red() / (radiance.red() + 1);
             float green = radiance.green() / (radiance.green() + 1);
             float blue = radiance.blue() / (radiance.blue() + 1);
 
-            return Object::Color(red, green, blue);
+            return Math::Color(red, green, blue);
         }
 
         void Renderer::runThread()
@@ -129,11 +129,11 @@ namespace Render {
                     WorkQueue::Key key = mCommitRadianceQueue->getNextKey();
                     ItemProxy &item = mContextProxy->items[key];
 
-                    Object::Radiance radTotal = mTotalRadiance.get(item.x, item.y) + Object::Radiance(item.radiance);
+                    Math::Radiance radTotal = mTotalRadiance.get(item.x, item.y) + Math::Radiance(item.radiance);
                     mTotalRadiance.set(item.x, item.y, radTotal);
 
                     int numSamples = mTotalSamples.get(item.x, item.y) + 1;
-                    Object::Color color = toneMap(radTotal / static_cast<float>(numSamples));
+                    Math::Color color = toneMap(radTotal / static_cast<float>(numSamples));
                     mRenderFramebuffer->setPixel(item.x, item.y, color);
 
                     mTotalSamples.set(item.x, item.y, numSamples);

@@ -9,7 +9,7 @@
 #include <cmath>
 
 namespace Object {
-    Surface::Surface(std::unique_ptr<Albedo::Base> albedo, std::vector<std::unique_ptr<Brdf::Base>> brdfs, float transmitIor, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap)
+    Surface::Surface(std::unique_ptr<Albedo::Base> albedo, std::vector<std::unique_ptr<Brdf::Base>> brdfs, float transmitIor, const Math::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap)
     {
         mAlbedo = std::move(albedo);
         mBrdfs = std::move(brdfs);
@@ -37,7 +37,7 @@ namespace Object {
         return *mAlbedo;
     }
 
-    const Object::Radiance &Surface::radiance() const
+    const Math::Radiance &Surface::radiance() const
     {
         return mRadiance;
     }
@@ -52,10 +52,10 @@ namespace Object {
         return *mNormalMap;
     }
 
-    Object::Color Surface::reflected(const Object::Intersection &isect, const Math::Vector &dirIn) const
+    Math::Color Surface::reflected(const Object::Intersection &isect, const Math::Vector &dirIn) const
     {
-        Object::Color col;
-        Object::Color colTransmit(1, 1, 1);
+        Math::Color col;
+        Math::Color colTransmit(1, 1, 1);
 
         for(const auto &brdf : mBrdfs) {
             col = col + colTransmit * brdf->reflected(dirIn, isect.facingNormal(), -isect.ray().direction(), isect.albedo());
@@ -65,9 +65,9 @@ namespace Object {
         return col;
     }
 
-    Object::Color Surface::transmitted(const Object::Intersection &isect, const Math::Vector &dirIn) const
+    Math::Color Surface::transmitted(const Object::Intersection &isect, const Math::Vector &dirIn) const
     {
-        Object::Color colTransmit(1, 1, 1);
+        Math::Color colTransmit(1, 1, 1);
 
         for(const auto &brdf : mBrdfs) {
             colTransmit = colTransmit * brdf->transmitted(dirIn, -isect.facingNormal(), isect.albedo());
@@ -76,7 +76,7 @@ namespace Object {
         return colTransmit;
     }
 
-    Object::Color Surface::sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
+    Math::Color Surface::sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
         const Math::Normal &nrmFacing = isect.facingNormal();
@@ -94,7 +94,7 @@ namespace Object {
             float c2 = std::sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
 
             dirIn = Math::Vector(nrmFacing) * (ratio * c1 - c2) - dirOut * ratio;
-            Object::Color throughput = transmitted(isect, -dirOut);
+            Math::Color throughput = transmitted(isect, -dirOut);
             transmitThreshold = std::min(1.0f, throughput.maximum());
             float roulette = sampler.getValue();
 

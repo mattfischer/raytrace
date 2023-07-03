@@ -35,7 +35,7 @@ namespace Object {
         const Math::Normal &normal() const;
         const Math::Normal &facingNormal() const;
 
-        Object::Color albedo() const;
+        Math::Color albedo() const;
 
         const Math::Bivector2D &surfaceProjection() const;
 
@@ -51,7 +51,7 @@ namespace Object {
         mutable Math::Normal mFacingNormal;
 
         mutable bool mAlbedoValid;
-        mutable Object::Color mAlbedo;
+        mutable Math::Color mAlbedo;
 
         mutable bool mSurfaceProjectionValid;
         mutable Math::Bivector2D mSurfaceProjection;

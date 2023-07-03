@@ -9,18 +9,18 @@
 namespace Render {
     namespace Cpu {
         namespace Lighter {
-            Object::Radiance Direct::light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const
+            Math::Radiance Direct::light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const
             {
                 const Object::Scene &scene = isect.scene();
                 const Object::Surface &surface = isect.primitive().surface();
                 const Math::Point &point = isect.point();
                 const Math::Normal &nrmFacing = isect.facingNormal();
 
-                Object::Radiance rad = surface.radiance();
+                Math::Radiance rad = surface.radiance();
                 Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
                 for (const Object::Primitive &light : scene.areaLights()) {
-                    const Object::Radiance &rad2 = light.surface().radiance();
+                    const Math::Radiance &rad2 = light.surface().radiance();
 
                     Math::Point pntSample;
                     Math::Normal nrmSample;
@@ -42,7 +42,7 @@ namespace Render {
                         Object::Intersection isect2 = scene.intersect(beam);
 
                         if (isect2.valid() && &(isect2.primitive()) == &light) {
-                            Object::Radiance irad = rad2 * dotSample * dot / (d * d);
+                            Math::Radiance irad = rad2 * dotSample * dot / (d * d);
                             rad += irad * surface.reflected(isect, dirIn) / pdf;
                         }
                     }
@@ -60,7 +60,7 @@ namespace Render {
                         Object::Intersection isect2 = scene.intersect(beam);
 
                         if (!isect2.valid() || isect2.distance() >= d) {
-                            Object::Radiance irad = pointLight->radiance() * dot / (d * d);
+                            Math::Radiance irad = pointLight->radiance() * dot / (d * d);
                             rad += irad * surface.reflected(isect, dirIn);
                         }
                     }

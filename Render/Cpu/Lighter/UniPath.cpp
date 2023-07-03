@@ -10,11 +10,11 @@ namespace Render {
     namespace Cpu {
         namespace Lighter
         {
-            Object::Radiance UniPath::light(const Object::Intersection &isectBase, Math::Sampler::Base &sampler) const
+            Math::Radiance UniPath::light(const Object::Intersection &isectBase, Math::Sampler::Base &sampler) const
             {
                 Object::Intersection isect = isectBase;
-                Object::Radiance rad = isect.primitive().surface().radiance();
-                Object::Color throughput(1, 1, 1);
+                Math::Radiance rad = isect.primitive().surface().radiance();
+                Math::Color throughput(1, 1, 1);
 
                 for(int generation = 0; generation < 10; generation++) {
                     const Object::Surface &surface = isect.primitive().surface();
@@ -25,7 +25,7 @@ namespace Render {
                     Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
                     for (const Object::Primitive &light : scene.areaLights()) {
-                        const Object::Radiance &rad2 = light.surface().radiance();
+                        const Math::Radiance &rad2 = light.surface().radiance();
                         
                         Math::Point pnt2;
                         Math::Normal nrm2;
@@ -49,7 +49,7 @@ namespace Render {
                         Object::Intersection isect2 = scene.intersect(beam);
 
                         if (isect2.valid() && &(isect2.primitive()) == &light) {
-                            Object::Radiance irad = rad2 * dot2 * dot / (d * d);
+                            Math::Radiance irad = rad2 * dot2 * dot / (d * d);
                             float pdfBrdf = surface.pdf(isect, dirIn) * dot2 / (d * d);
                             float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
                             rad += irad * surface.reflected(isect, dirIn) * throughput * misWeight / pdf;
@@ -71,7 +71,7 @@ namespace Render {
                         Object::Intersection isect2 = scene.intersect(beam);
 
                         if (!isect2.valid() || isect2.distance() >= d) {
-                            Object::Radiance irad = pointLight->radiance() * dot / (d * d);
+                            Math::Radiance irad = pointLight->radiance() * dot / (d * d);
                             rad += irad * surface.reflected(isect, dirIn) * throughput;
                         }
                     }
@@ -79,7 +79,7 @@ namespace Render {
                     Math::Vector dirIn;
                     float pdf;
                     bool pdfDelta;
-                    Object::Color reflected = surface.sample(isect, sampler, dirIn, pdf, pdfDelta);
+                    Math::Color reflected = surface.sample(isect, sampler, dirIn, pdf, pdfDelta);
                     float reverse = (dirIn * nrmFacing > 0) ? 1.0f : -1.0f;
                     float dot = dirIn * nrmFacing * reverse;
 
@@ -106,7 +106,7 @@ namespace Render {
                     Object::Intersection isect2 = scene.intersect(beam);
 
                     if (isect2.valid()) {
-                        Object::Radiance rad2 = isect2.primitive().surface().radiance();
+                        Math::Radiance rad2 = isect2.primitive().surface().radiance();
                         if(rad2.magnitude() > 0 && !pdfDelta) {
                             float dot2 = -isect2.facingNormal() * dirIn;
                             float pdfArea = pdf * dot2 / (isect2.distance() * isect2.distance());
@@ -118,7 +118,7 @@ namespace Render {
 
                         isect = isect2;
                     } else {
-                        Object::Radiance rad2 = scene.skyRadiance();
+                        Math::Radiance rad2 = scene.skyRadiance();
                         rad += rad2 * throughput;
                         break;
                     }

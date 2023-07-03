@@ -6,7 +6,7 @@
 
 #include "Math/Vector.hpp"
 
-#include "Object/Radiance.hpp"
+#include "Math/Radiance.hpp"
 #include "Object/Intersection.hpp"
 #include "Math/OrthonormalBasis.hpp"
 
@@ -21,7 +21,7 @@ namespace Render {
                 Base();
                 virtual ~Base();
 
-                virtual Object::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const = 0;
+                virtual Math::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const = 0;
                 virtual std::vector<std::unique_ptr<Render::Executor::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
             };
         }

@@ -2,12 +2,12 @@
 
 namespace Object {
     namespace Albedo {
-        Solid::Solid(const Object::Color &color)
+        Solid::Solid(const Math::Color &color)
         : mColor(color)
         {
         }
 
-        Object::Color Solid::color(const Math::Point2D &, const Math::Bivector2D &) const
+        Math::Color Solid::color(const Math::Point2D &, const Math::Bivector2D &) const
         {
             return mColor;
         }

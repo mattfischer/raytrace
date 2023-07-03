@@ -1,11 +1,11 @@
-#ifndef OBJECT_RADIANCE_HPP
-#define OBJECT_RADIANCE_HPP
+#ifndef MATH_RADIANCE_HPP
+#define MATH_RADIANCE_HPP
 
-#include "Object/Color.hpp"
+#include "Math/Color.hpp"
 
 #include "Proxies.hpp"
 
-namespace Object {
+namespace Math {
     class Radiance
     {
     public:

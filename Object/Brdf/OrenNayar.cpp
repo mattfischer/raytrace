@@ -19,7 +19,7 @@ namespace Object {
             return mStrength;
         }
 
-        Object::Color OrenNayar::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const
+        Math::Color OrenNayar::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Math::Color &albedo) const
         {
             float cosThetaI = dirIn * nrm;
             float sinThetaI = std::sqrt(std::max(0.0f, 1 - cosThetaI * cosThetaI));

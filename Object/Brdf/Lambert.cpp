@@ -20,7 +20,7 @@ namespace Object {
             return mStrength;
         }
 
-        Object::Color Lambert::reflected(const Math::Vector &, const Math::Normal &, const Math::Vector &, const Object::Color &albedo) const
+        Math::Color Lambert::reflected(const Math::Vector &, const Math::Normal &, const Math::Vector &, const Math::Color &albedo) const
         {
             return albedo * mStrength / (float)M_PI;
         }

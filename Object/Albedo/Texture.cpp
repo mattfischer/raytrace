@@ -12,11 +12,11 @@ namespace Object {
             mTexture->generateMipMaps();
         }
 
-        Object::Color Texture::color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const
+        Math::Color Texture::color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const
         {
             Object::Texture<3>::Value value = mTexture->sample(surfacePoint, surfaceProjection);
 
-            return Object::Color(value.channels[0], value.channels[1], value.channels[2]);
+            return Math::Color(value.channels[0], value.channels[1], value.channels[2]);
         }
 
         bool Texture::needSurfaceProjection() const

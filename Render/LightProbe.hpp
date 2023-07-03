@@ -12,7 +12,7 @@ namespace Render {
     public:
         LightProbe(const Object::Intersection &isect);
     
-        void getSample(float &azimuth, float &elevation, Object::Color &color);
+        void getSample(float &azimuth, float &elevation, Math::Color &color);
 
     private:
         const Object::Intersection &mIntersection;

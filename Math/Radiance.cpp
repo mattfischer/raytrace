@@ -1,10 +1,10 @@
-#include "Object/Radiance.hpp"
-#include "Object/Color.hpp"
+#include "Math/Radiance.hpp"
+#include "Math/Color.hpp"
 
 #include <cmath>
 #include <algorithm>
 
-namespace Object {
+namespace Math {
     Radiance::Radiance()
     {
         mRed = 0;

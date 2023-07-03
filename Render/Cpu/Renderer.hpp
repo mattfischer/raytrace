@@ -52,7 +52,7 @@ namespace Render {
 
             std::unique_ptr<Render::Cpu::Lighter::Base> mLighter;
 
-            Render::Raster<Object::Radiance> mTotalRadiance;
+            Render::Raster<Math::Radiance> mTotalRadiance;
         };
     }
 }

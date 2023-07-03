@@ -1,9 +1,9 @@
-#ifndef OBJECT_COLOR_HPP
-#define OBJECT_COLOR_HPP
+#ifndef MATH_COLOR_HPP
+#define MATH_COLOR_HPP
 
 #include "Proxies.hpp"
 
-namespace Object {
+namespace Math {
     class Color
     {
     public:

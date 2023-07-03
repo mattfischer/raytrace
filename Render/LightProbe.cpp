@@ -9,7 +9,7 @@ namespace Render {
     {
     }
 
-    void LightProbe::getSample(float &azimuth, float &elevation, Object::Color &color)
+    void LightProbe::getSample(float &azimuth, float &elevation, Math::Color &color)
     {
         const Object::Surface &surface = mIntersection.primitive().surface();
         const Math::Normal &nrmFacing = mIntersection.facingNormal();
@@ -25,7 +25,7 @@ namespace Render {
 		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
 		
 		Object::Intersection isect2 = mIntersection.scene().intersect(beam);
-        Object::Radiance irad;
+        Math::Radiance irad;
 		if (isect2.valid()) {
 			irad = mLighter.light(isect2, mSampler) * dot;
 		}

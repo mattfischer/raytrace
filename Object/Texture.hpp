@@ -1,7 +1,7 @@
 #ifndef OBJECT_TEXTURE_HPP
 #define OBJECT_TEXTURE_HPP
 
-#include "Object/Color.hpp"
+#include "Math/Color.hpp"
 #include "Math/Point2D.hpp"
 #include "Math/Vector2D.hpp"
 #include "Math/Bivector2D.hpp"

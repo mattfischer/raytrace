@@ -4,7 +4,7 @@
 #include "Math/Transformation.hpp"
 
 namespace Object {
-    PointLight::PointLight(const Math::Point &position, const Object::Radiance &radiance)
+    PointLight::PointLight(const Math::Point &position, const Math::Radiance &radiance)
         : mPosition(position), mRadiance(radiance)
     {
     }
@@ -14,7 +14,7 @@ namespace Object {
         return mPosition;
     }
 
-    const Object::Radiance &PointLight::radiance() const
+    const Math::Radiance &PointLight::radiance() const
     {
         return mRadiance;
     }

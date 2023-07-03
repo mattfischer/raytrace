@@ -16,7 +16,7 @@ namespace Object {
             mPower = power;
         }
 
-        Object::Color Phong::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &) const
+        Math::Color Phong::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Math::Color &) const
         {
             Math::Vector dirReflect = -(dirIn - Math::Vector(nrm) * (2 * (nrm * dirIn)));
 
@@ -26,12 +26,12 @@ namespace Object {
                 coeff = std::pow(dot, mPower);
             }
 
-            return Color(1, 1, 1) * mStrength * coeff * (mPower + 1) / (2 * (float)M_PI);
+            return Math::Color(1, 1, 1) * mStrength * coeff * (mPower + 1) / (2 * (float)M_PI);
         }
 
-        Object::Color Phong::transmitted(const Math::Vector &, const Math::Normal &, const Object::Color &) const
+        Math::Color Phong::transmitted(const Math::Vector &, const Math::Normal &, const Math::Color &) const
         {
-            return Color(1, 1, 1) * (1.0f - mStrength);
+            return Math::Color(1, 1, 1) * (1.0f - mStrength);
         }
 
         Math::Vector Phong::sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const

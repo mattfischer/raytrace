@@ -17,13 +17,13 @@ namespace Object {
     class Scene
     {
     public:
-        Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<PointLight>> &&pointLights, const Object::Radiance &skyRadiance);
+        Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<PointLight>> &&pointLights, const Math::Radiance &skyRadiance);
 
         const Camera &camera() const;
         const std::vector<std::unique_ptr<Primitive>> &primitives() const;
         const std::vector<std::reference_wrapper<Primitive>> &areaLights() const;
         const std::vector<std::unique_ptr<PointLight>> &pointLights() const;
-        const Object::Radiance &skyRadiance() const;
+        const Math::Radiance &skyRadiance() const;
 
         const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
@@ -36,7 +36,7 @@ namespace Object {
         std::vector<std::unique_ptr<Primitive>> mPrimitives;
         std::vector<std::reference_wrapper<Primitive>> mAreaLights;
         std::vector<std::unique_ptr<PointLight>> mPointLights;
-        Object::Radiance mSkyRadiance;
+        Math::Radiance mSkyRadiance;
 
         Object::BoundingVolumeHierarchy mBoundingVolumeHierarchy;
     };

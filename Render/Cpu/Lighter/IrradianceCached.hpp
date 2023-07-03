@@ -21,7 +21,7 @@ namespace Render {
 
                 IrradianceCached(const Settings &settings);
 
-                Object::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const override;
+                Math::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const override;
 
                 std::vector<std::unique_ptr<Render::Executor::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer) override;
 

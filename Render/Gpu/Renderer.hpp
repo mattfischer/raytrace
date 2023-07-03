@@ -64,7 +64,7 @@ namespace Render {
             std::thread mThread;
 
             std::mutex mFramebufferMutex;
-            Raster<Object::Radiance> mTotalRadiance;
+            Raster<Math::Radiance> mTotalRadiance;
             Raster<int> mTotalSamples;
 
             OpenCL::Context mClContext;

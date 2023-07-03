@@ -37,14 +37,14 @@ namespace Parse {
         return Math::Vector(v.x, v.y, v.z);
     }
 
-    Object::Color parseColor(const ASTVector &v)
+    Math::Color parseColor(const ASTVector &v)
     {
-        return Object::Color(v.x, v.y, v.z);
+        return Math::Color(v.x, v.y, v.z);
     }
 
-    Object::Radiance parseRadiance(const ASTVector &v)
+    Math::Radiance parseRadiance(const ASTVector &v)
     {
-        return Object::Radiance(v.x, v.y, v.z);
+        return Math::Radiance(v.x, v.y, v.z);
     }
 
     std::unique_ptr<Object::Camera> parseCamera(AST *ast)
@@ -62,13 +62,13 @@ namespace Parse {
     std::unique_ptr<Object::PointLight> parsePointLight(AST *ast)
     {
         Math::Point position = parsePoint(ast->children[0]->children[0]->data._vector);
-        Object::Radiance radiance = parseRadiance(ast->children[0]->children[1]->data._vector);
+        Math::Radiance radiance = parseRadiance(ast->children[0]->children[1]->data._vector);
         std::unique_ptr<Object::PointLight> pointLight = std::make_unique<Object::PointLight>(position, radiance);
 
         return pointLight;
     }
 
-    Object::Radiance parseSky(AST *ast)
+    Math::Radiance parseSky(AST *ast)
     {
         return parseRadiance(ast->children[0]->data._vector);
     }
@@ -220,7 +220,7 @@ namespace Parse {
     {
         std::unique_ptr<Object::Albedo::Base> albedo;
         std::vector<std::unique_ptr<Object::Brdf::Base>> brdfs;
-        Object::Radiance radiance;
+        Math::Radiance radiance;
         std::unique_ptr<Object::NormalMap> normalMap;
         float transmitIor = 0;
 
@@ -310,7 +310,7 @@ namespace Parse {
         std::unique_ptr<Object::Camera> camera;
         std::vector<std::unique_ptr<Object::Primitive>> primitives;
         std::vector<std::unique_ptr<Object::PointLight>> pointLights;
-        Object::Radiance radSky;
+        Math::Radiance radSky;
 
         for (int i = 0; i<ast->numChildren; i++)
         {

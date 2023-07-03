@@ -1,8 +1,8 @@
-#include "Object/Color.hpp"
+#include "Math/Color.hpp"
 
 #include <algorithm>
 
-namespace Object {
+namespace Math {
     Color::Color()
     {
         mRed = 0;

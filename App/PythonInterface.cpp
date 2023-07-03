@@ -211,7 +211,7 @@ namespace App {
             Render::LightProbe probe(isect);
             PyObject *ret = PyList_New(1000);
             for(int i=0; i<1000; i++) {
-                Object::Color color;
+                Math::Color color;
                 float azimuth;
                 float elevation;
                 probe.getSample(azimuth, elevation, color);

@@ -82,7 +82,7 @@ namespace Object {
         return mFacingNormal;
     }
 
-    Object::Color Intersection::albedo() const
+    Math::Color Intersection::albedo() const
     {
         if (!mAlbedoValid) {
             Math::Bivector2D projection;

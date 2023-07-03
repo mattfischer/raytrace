@@ -27,19 +27,19 @@ namespace Render {
         return &mBits[0];
     }
 
-    void Framebuffer::setPixel(unsigned int x, unsigned int y, const Object::Color &color)
+    void Framebuffer::setPixel(unsigned int x, unsigned int y, const Math::Color &color)
     {
         mBits[(mWidth * y + x) * 3 + 0] = static_cast<unsigned char>(color.red() * 0xff);
         mBits[(mWidth * y + x) * 3 + 1] = static_cast<unsigned char>(color.green() * 0xff);
         mBits[(mWidth * y + x) * 3 + 2] = static_cast<unsigned char>(color.blue() * 0xff);
     }
 
-    Object::Color Framebuffer::toneMap(const Object::Radiance &rad)
+    Math::Color Framebuffer::toneMap(const Math::Radiance &rad)
     {
         float red = rad.red() / (rad.red() + 1);
         float green = rad.green() / (rad.green() + 1);
         float blue = rad.blue() / (rad.blue() + 1);
 
-        return Object::Color(red, green, blue);
+        return Math::Color(red, green, blue);
     }
 }

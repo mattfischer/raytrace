@@ -1,8 +1,8 @@
 #ifndef OBJECT_BRDF_BASE_HPP
 #define OBJECT_BRDF_BASE_HPP
 
-#include "Object/Radiance.hpp"
-#include "Object/Color.hpp"
+#include "Math/Radiance.hpp"
+#include "Math/Color.hpp"
 
 #include "Math/Vector.hpp"
 #include "Math/Normal.hpp"
@@ -18,8 +18,8 @@ namespace Object {
         public:
             virtual ~Base();
 
-            virtual Object::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const;
-            virtual Object::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Object::Color &albedo) const;
+            virtual Math::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Math::Color &albedo) const;
+            virtual Math::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Color &albedo) const;
 
             virtual float lambert() const;
 

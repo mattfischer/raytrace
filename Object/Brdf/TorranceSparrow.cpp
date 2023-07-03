@@ -17,7 +17,7 @@ namespace Object {
             mIor = ior;
         }
 
-        Object::Color TorranceSparrow::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Object::Color &albedo) const
+        Math::Color TorranceSparrow::reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Math::Color &albedo) const
         {
             Math::Vector dirHalf = (dirIn + dirOut).normalize();
             float alpha = std::acos(std::min(1.0f, nrm * dirHalf));
@@ -40,10 +40,10 @@ namespace Object {
             float LN = nrm * dirIn;
             float G = std::min(1.0f, std::min(2 * HN * VN / VH, 2 * HN * LN / VH));
 
-            return Object::Color(1, 1, 1) * mStrength * D * F * G / (4 * VN * LN);
+            return Math::Color(1, 1, 1) * mStrength * D * F * G / (4 * VN * LN);
         }
 
-        Object::Color TorranceSparrow::transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Object::Color &) const
+        Math::Color TorranceSparrow::transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Color &) const
         {
             float cosThetaI = dirIn * nrm;
             float oneMinusCos = 1 - cosThetaI;
@@ -51,7 +51,7 @@ namespace Object {
             R0 = R0 * R0;
 
             float F = R0 + (1 - R0) * oneMinusCos * oneMinusCos * oneMinusCos * oneMinusCos * oneMinusCos;
-            return Color(1, 1, 1) * (1.0f - mStrength * F);
+            return Math::Color(1, 1, 1) * (1.0f - mStrength * F);
         }
 
         Math::Vector TorranceSparrow::sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const

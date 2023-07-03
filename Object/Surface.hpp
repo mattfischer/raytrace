@@ -4,8 +4,8 @@
 #include "Object/Albedo/Base.hpp"
 #include "Object/Brdf/Base.hpp"
 
-#include "Object/Color.hpp"
-#include "Object/Radiance.hpp"
+#include "Math/Color.hpp"
+#include "Math/Radiance.hpp"
 #include "Object/NormalMap.hpp"
 
 #include "Proxies.hpp"
@@ -17,16 +17,16 @@ namespace Object {
     class Surface
     {
     public:
-        Surface(std::unique_ptr<Albedo::Base> albedo, std::vector<std::unique_ptr<Brdf::Base>> brdfs, float transmitIor, const Object::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap);
+        Surface(std::unique_ptr<Albedo::Base> albedo, std::vector<std::unique_ptr<Brdf::Base>> brdfs, float transmitIor, const Math::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap);
 
         const Albedo::Base &albedo() const;
-        const Object::Radiance &radiance() const;
+        const Math::Radiance &radiance() const;
         bool hasNormalMap() const;
         const Object::NormalMap &normalMap() const;
 
-        Object::Color reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
-        Object::Color transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
-        Object::Color sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const;
+        Math::Color reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
+        Math::Color transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
+        Math::Color sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const;
         float pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const;
 
         bool opaque() const;
@@ -39,7 +39,7 @@ namespace Object {
         std::unique_ptr<Albedo::Base> mAlbedo;
         std::vector<std::unique_ptr<Brdf::Base>> mBrdfs;
         float mTransmitIor;
-        Object::Radiance mRadiance;
+        Math::Radiance mRadiance;
         std::unique_ptr<Object::NormalMap> mNormalMap;
 
         float mLambert;

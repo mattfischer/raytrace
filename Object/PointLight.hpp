@@ -2,7 +2,7 @@
 #define OBJECT_POINT_LIGHT_HPP
 
 #include "Math/Point.hpp"
-#include "Object/Radiance.hpp"
+#include "Math/Radiance.hpp"
 
 #include "Proxies.hpp"
 
@@ -12,16 +12,16 @@ namespace Object {
     class PointLight
     {
     public:
-        PointLight(const Math::Point &position, const Object::Radiance &radiance);
+        PointLight(const Math::Point &position, const Math::Radiance &radiance);
 
         const Math::Point &position() const;
-        const Object::Radiance &radiance() const;
+        const Math::Radiance &radiance() const;
 
         void writeProxy(PointLightProxy &proxy) const;
 
     private:
         Math::Point mPosition;
-        Object::Radiance mRadiance;
+        Math::Radiance mRadiance;
     };
 }
 

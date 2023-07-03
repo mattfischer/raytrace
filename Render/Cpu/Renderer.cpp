@@ -92,22 +92,22 @@ namespace Render {
             Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, mSettings.width, mSettings.height, aperturePoint);
             Object::Intersection isect = mScene.intersect(beam);
 
-            Object::Color color;
+            Math::Color color;
             if(mLighter) {
-                Object::Radiance rad;
+                Math::Radiance rad;
                 if (isect.valid()) {
                     rad = mLighter->light(isect, sampler);
                 } else {
                     rad = mScene.skyRadiance();
                 }
         
-                Object::Radiance radTotal = mTotalRadiance.get(x, y) + rad;
+                Math::Radiance radTotal = mTotalRadiance.get(x, y) + rad;
                 mTotalRadiance.set(x, y, radTotal);
-                Object::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
+                Math::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
                 mRenderFramebuffer->setPixel(x, y, color);
             } else {
                 if(isect.valid()) {
-                    Object::Color color = isect.albedo();
+                    Math::Color color = isect.albedo();
                     mRenderFramebuffer->setPixel(x, y, color);
                 }
             }

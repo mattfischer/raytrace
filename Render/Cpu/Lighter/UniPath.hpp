@@ -10,7 +10,7 @@ namespace Render {
             class UniPath : public Base
             {
             public:
-                Object::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const override;
+                Math::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const override;
             };
         }
     }
