@@ -62,7 +62,9 @@ Color Surface_reflected(Intersection *isect, Vector dirIn)
 {
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
-    return isect->primitive->surface.albedo.solid.color / 3.14f;        
+    Color albedo = Albedo_color(&isect->primitive->surface.albedo);
+
+    return albedo / 3.14f;        
 }
 
 Color Surface_sample(Intersection *isect, float2 random, Vector *dirIn, float *pdf, bool *pdfDelta)

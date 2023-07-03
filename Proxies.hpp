@@ -54,7 +54,7 @@ struct ShapeProxy {
     };
 };
 
-struct SolidAlbedoProxy {
+struct AlbedoSolidProxy {
     ColorProxy color;
 };
 
@@ -66,7 +66,7 @@ struct AlbedoProxy {
 
     Type type;
     union {
-        SolidAlbedoProxy solid;
+        AlbedoSolidProxy solid;
     };
 };
 
