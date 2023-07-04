@@ -57,7 +57,13 @@ float Surface_pdf(Intersection *isect, Vector dirIn)
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
 
-    return Brdf_pdf(&surf->brdfs[0], dirIn, nrmFacing, dirOut);
+    float totalPdf = 0;
+    for(int i=0; i<surf->numBrdfs; i++) {
+        totalPdf += Brdf_pdf(&surf->brdfs[i], dirIn, nrmFacing, dirOut);
+    }
+    totalPdf /= surf->numBrdfs;
+
+    return totalPdf;
 }
 
 Color Surface_reflected(Intersection *isect, Vector dirIn)
@@ -67,16 +73,28 @@ Color Surface_reflected(Intersection *isect, Vector dirIn)
     Normal nrmFacing = facingNormal(isect);
     Color albedo = Albedo_color(&surf->albedo);
 
-    return Brdf_reflected(&surf->brdfs[0], dirIn, nrmFacing, dirOut, albedo);
+    Color col = (Color)(0, 0, 0);
+    Color colTransmit = (Color)(1, 1, 1);
+    for(int i=0; i<surf->numBrdfs; i++) {
+        col = col + colTransmit * Brdf_reflected(&surf->brdfs[i], dirIn, nrmFacing, dirOut, albedo);
+        colTransmit = colTransmit * Brdf_transmitted(&surf->brdfs[i], dirIn, nrmFacing, albedo);
+    }
+
+    return col;
 }
 
-Color Surface_sample(Intersection *isect, float2 random, Vector *dirIn, float *pdf, bool *pdfDelta)
+Color Surface_sample(Intersection *isect, float3 random, Vector *dirIn, float *pdf, bool *pdfDelta)
 {
     Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
-    
-    *dirIn = Brdf_sample(&surf->brdfs[0], random, nrmFacing, dirOut);
+
+    int idx = 0;
+    if(surf->numBrdfs > 1) {
+        idx = (int)floor(surf->numBrdfs * random.x);
+    }
+
+    *dirIn = Brdf_sample(&surf->brdfs[idx], random.yz, nrmFacing, dirOut);
     *pdf = Surface_pdf(isect, *dirIn);
     *pdfDelta = false;
     return Surface_reflected(isect, *dirIn);

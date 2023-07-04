@@ -33,7 +33,7 @@ namespace Render {
             mContextProxy->settings.minSamples = mSettings.minSamples;
 
             mContextProxy->items = mClAllocator.allocateArray<ItemProxy>(kSize);
-            mContextProxy->random = mClAllocator.allocateArray<float>(kSize * 10);
+            mContextProxy->random = mClAllocator.allocateArray<float>(kSize * 11);
 
             mClAllocator.unmapAreas();
             mClRunIterationKernel.setArg(0, mContextProxy);
@@ -117,7 +117,7 @@ namespace Render {
         {
             while(mRunning) {
                 mClAllocator.mapAreas();
-                for(int i=0; i<kSize * 10; i++) {
+                for(int i=0; i<kSize * 11; i++) {
                     mContextProxy->random[i] = mSampler.getValue();
                 }
                 mClAllocator.unmapAreas();

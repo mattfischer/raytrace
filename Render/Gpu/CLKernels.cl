@@ -104,7 +104,7 @@ void generateCameraRays(global Context *context)
     item->y = (cp / context->settings.width) % context->settings.height;
     item->x = cp % context->settings.width;
 
-    float *r = context->random + key * 10;
+    float *r = context->random + key * 11;
 
     float2 imagePoint = (float2)(item->x, item->y) + (float2)(r[0], r[1]);
     float2 aperturePoint = (float2)(r[2], r[3]);
@@ -139,7 +139,7 @@ void intersectRays(global Context *context)
         item->radiance += rad2 * item->throughput * misWeight;        
     
         int totalLights = context->scene.numAreaLights + context->scene.numPointLights;
-        float *r = context->random + key * 10;
+        float *r = context->random + key * 11;
         int lightIndex = (int)floor(r[4] * totalLights);
 
         if(lightIndex < context->scene.numAreaLights) {
@@ -169,7 +169,7 @@ void directLightArea(global Context *context)
 
     Primitive *light = context->scene.areaLights[item->lightIndex];
     
-    float *r = context->random + key * 10;
+    float *r = context->random + key * 11;
 
     float2 rand = (float2)(r[5], r[6]);
     Point pnt2;
@@ -247,9 +247,9 @@ void extendPath(global Context *context)
     float pdf;
     bool pdfDelta;
     
-    float *r = context->random + key * 10;
+    float *r = context->random + key * 11;
 
-    float2 rand = (float2)(r[7], r[8]);
+    float3 rand = (float3)(r[7], r[8], r[9]);
     Color reflected = Surface_sample(isect, rand, &dirIn, &pdf, &pdfDelta);
     float dt = dot(dirIn, nrmFacing);
     Point pntOffset = isect->point + nrmFacing * 0.01f;
@@ -260,7 +260,7 @@ void extendPath(global Context *context)
         item->throughput = item->throughput * reflected * dt / pdf;
 
         float threshold = 0.0f;
-        float roulette = r[9];
+        float roulette = r[10];
         if(item->generation == 0) {
             threshold = 1.0f;
         } else if(item->generation < 10) {
