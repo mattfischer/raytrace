@@ -112,7 +112,7 @@ namespace Object {
 
         int n = 0;
         for(int i=0; i<mPrimitives.size(); i++) {
-            mPrimitives[i]->writeProxy(proxy.primitives[i]);
+            mPrimitives[i]->writeProxy(proxy.primitives[i], clAllocator);
             if(mPrimitives[i]->surface().radiance().magnitude() > 0) {
                 proxy.areaLights[n++] = &proxy.primitives[i];
             }

@@ -22,9 +22,9 @@ namespace Object {
         return mBoundingVolume;
     }
 
-    void Primitive::writeProxy(PrimitiveProxy &proxy) const
+    void Primitive::writeProxy(PrimitiveProxy &proxy, OpenCL::Allocator &clAllocator) const
     {
         mShape->writeProxy(proxy.shape);
-        mSurface->writeProxy(proxy.surface);
+        mSurface->writeProxy(proxy.surface, clAllocator);
     }
 }

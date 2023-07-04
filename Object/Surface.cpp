@@ -148,10 +148,15 @@ namespace Object {
         return mTransmitIor;
     }
 
-    void Surface::writeProxy(SurfaceProxy &proxy) const
+    void Surface::writeProxy(SurfaceProxy &proxy, OpenCL::Allocator &clAllocator) const
     {
         mRadiance.writeProxy(proxy.radiance);
         mAlbedo->writeProxy(proxy.albedo);
+        proxy.numBrdfs = mBrdfs.size();
+        proxy.brdfs = (BrdfProxy*)clAllocator.allocateBytes(sizeof(BrdfProxy) * proxy.numBrdfs);
+        for(int i=0; i<mBrdfs.size(); i++) {
+            mBrdfs[i]->writeProxy(proxy.brdfs[i]);
+        }
     }
 
 }

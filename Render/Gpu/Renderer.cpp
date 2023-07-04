@@ -61,6 +61,7 @@ namespace Render {
             return std::vector<std::string> {
                 "Math/CLKernels.cl",
                 "Object/Albedo/CLKernels.cl",
+                "Object/Brdf/CLKernels.cl",
                 "Object/Shape/CLKernels.cl",
                 "Object/CLKernels.cl",
                 "Render/Gpu/CLKernels.cl"

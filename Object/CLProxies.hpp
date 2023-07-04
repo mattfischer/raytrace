@@ -4,10 +4,13 @@
 #include "Math/CLProxies.hpp"
 #include "Object/Albedo/CLProxies.hpp"
 #include "Object/Shape/CLProxies.hpp"
+#include "Object/Brdf/CLProxies.hpp"
 
 struct SurfaceProxy {
     RadianceProxy radiance;
     AlbedoProxy albedo;
+    int numBrdfs;
+    BrdfProxy *brdfs;
 };
 
 struct PrimitiveProxy {

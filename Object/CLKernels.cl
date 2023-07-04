@@ -1,6 +1,8 @@
 typedef struct {
     Radiance radiance;
     Albedo albedo;
+    int numBrdfs;
+    Brdf *brdfs;
 } Surface;
 
 typedef struct {
@@ -51,48 +53,30 @@ Normal facingNormal(Intersection *isect)
 
 float Surface_pdf(Intersection *isect, Vector dirIn)
 {
+    Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
 
-    float cosTheta = max(dot(dirIn, nrmFacing), 0.0f);
-    return cosTheta / 3.14f;
+    return Brdf_pdf(&surf->brdfs[0], dirIn, nrmFacing, dirOut);
 }
 
 Color Surface_reflected(Intersection *isect, Vector dirIn)
 {
+    Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
-    Color albedo = Albedo_color(&isect->primitive->surface.albedo);
+    Color albedo = Albedo_color(&surf->albedo);
 
-    return albedo / 3.14f;        
+    return Brdf_reflected(&surf->brdfs[0], dirIn, nrmFacing, dirOut, albedo);
 }
 
 Color Surface_sample(Intersection *isect, float2 random, Vector *dirIn, float *pdf, bool *pdfDelta)
 {
+    Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
     
-    float phi = 2 * 3.14f * random.x;
-    float theta = asin(sqrt(random.y));
-
-    Vector x;
-    Vector y;
-    Vector z = nrmFacing;
-    if(fabs(nrmFacing.z) > fabs(nrmFacing.x) && fabs(nrmFacing.z) > fabs(nrmFacing.y)) {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 1, 0);
-    } else if(fabs(nrmFacing.x) > fabs(nrmFacing.y) && fabs(nrmFacing.x) > fabs(nrmFacing.z)) {
-        x = (Vector)(0, 1, 0);
-        y = (Vector)(0, 0, 1);
-    } else {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 0, 1);
-    }
-    
-    x = normalize(x - z * dot(x, z));
-    y = normalize(y - z * dot(y, z));
-
-    *dirIn = x * cos(phi) * cos(theta) + y * sin(phi) * cos(theta) + z * sin(theta);
+    *dirIn = Brdf_sample(&surf->brdfs[0], random, nrmFacing, dirOut);
     *pdf = Surface_pdf(isect, *dirIn);
     *pdfDelta = false;
     return Surface_reflected(isect, *dirIn);

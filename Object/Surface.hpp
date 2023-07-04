@@ -9,6 +9,7 @@
 #include "Object/NormalMap.hpp"
 
 #include "Object/CLProxies.hpp"
+#include "OpenCL.hpp"
 
 #include <memory>
 
@@ -33,7 +34,7 @@ namespace Object {
         float lambert() const;
         float transmitIor() const;
 
-        void writeProxy(SurfaceProxy &proxy) const;
+        void writeProxy(SurfaceProxy &proxy, OpenCL::Allocator &clAllocator) const;
 
     private:
         std::unique_ptr<Albedo::Base> mAlbedo;

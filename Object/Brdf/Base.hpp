@@ -10,6 +10,8 @@
 
 #include "Math/Sampler/Base.hpp"
 
+#include "Object/Brdf/CLProxies.hpp"
+
 #include <memory>
 
 namespace Object {
@@ -28,6 +30,12 @@ namespace Object {
 
             virtual bool opaque() const;
             virtual float transmitIor() const;
+
+            virtual void writeProxy(BrdfProxy &proxy) const
+            {
+                proxy.type = BrdfProxy::Type::Lambert;
+                proxy.lambert.strength = 1.0f;
+            }
         };
     }
 }
