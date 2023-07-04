@@ -60,5 +60,12 @@ namespace Object {
             float pdf = coeff * (mPower + 1) / (2 * M_PI);
             return std::min(pdf, 1000.0f);
         }
+
+        void Phong::writeProxy(BrdfProxy &proxy) const
+        {
+            proxy.type = BrdfProxy::Type::Phong;
+            proxy.phong.strength = mStrength;
+            proxy.phong.power = mPower;
+        }
     }
 }
