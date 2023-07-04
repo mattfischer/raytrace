@@ -66,5 +66,12 @@ namespace Object {
             float cosTheta = std::max(dirIn * Math::Vector(nrm), 0.0f);
             return cosTheta / M_PI;
         }
+
+        void OrenNayar::writeProxy(BrdfProxy &proxy) const
+        {
+            proxy.type = BrdfProxy::Type::OrenNayar;
+            proxy.orenNayar.strength = mStrength;
+            proxy.orenNayar.roughness = mRoughness;
+        }
     }
 }

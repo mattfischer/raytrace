@@ -44,5 +44,11 @@ namespace Object {
 
             return pdf;
         }
+
+        void Lambert::writeProxy(BrdfProxy &proxy) const
+        {
+            proxy.type = BrdfProxy::Type::Lambert;
+            proxy.lambert.strength = mStrength;
+        }
     }
 }
