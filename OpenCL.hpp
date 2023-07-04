@@ -64,6 +64,11 @@ namespace OpenCL {
             return new(mem) T(std::forward<Args>(args)...);
         }
 
+        template<typename T> T* allocateArray(size_t count) {
+            void *mem = allocateBytes(sizeof(T) * count);
+            return new(mem) T[count];
+        }
+
         void mapAreas();
         void unmapAreas();
 

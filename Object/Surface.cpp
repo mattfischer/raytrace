@@ -153,7 +153,7 @@ namespace Object {
         mRadiance.writeProxy(proxy.radiance);
         mAlbedo->writeProxy(proxy.albedo);
         proxy.numBrdfs = mBrdfs.size();
-        proxy.brdfs = (BrdfProxy*)clAllocator.allocateBytes(sizeof(BrdfProxy) * proxy.numBrdfs);
+        proxy.brdfs = clAllocator.allocateArray<BrdfProxy>(proxy.numBrdfs);
         for(int i=0; i<mBrdfs.size(); i++) {
             mBrdfs[i]->writeProxy(proxy.brdfs[i]);
         }

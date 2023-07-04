@@ -4,7 +4,7 @@ namespace Render {
     namespace Gpu {
         WorkQueue::WorkQueue(size_t size, OpenCL::Allocator &allocator)
         {
-            mData = (Key*)allocator.allocateBytes(sizeof(Key) * (size + 2));
+            mData = allocator.allocateArray<Key>(size + 2);
             mData[0] = 0;
             mData[1] = 0;
             mSize = size;

@@ -32,8 +32,8 @@ namespace Render {
             mContextProxy->settings.height = mSettings.height;
             mContextProxy->settings.minSamples = mSettings.minSamples;
 
-            mContextProxy->items = (ItemProxy*)mClAllocator.allocateBytes(sizeof(ItemProxy) * kSize);
-            mContextProxy->random = (float*)mClAllocator.allocateBytes(sizeof(float) * kSize * 10);
+            mContextProxy->items = mClAllocator.allocateArray<ItemProxy>(kSize);
+            mContextProxy->random = mClAllocator.allocateArray<float>(kSize * 10);
 
             mClAllocator.unmapAreas();
             mClRunIterationKernel.setArg(0, mContextProxy);

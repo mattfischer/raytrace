@@ -106,9 +106,9 @@ namespace Object {
     void Scene::writeProxy(SceneProxy &proxy, OpenCL::Allocator &clAllocator) const
     {
         proxy.numPrimitives = mPrimitives.size();
-        proxy.primitives = (PrimitiveProxy*)clAllocator.allocateBytes(sizeof(PrimitiveProxy) * proxy.numPrimitives);
+        proxy.primitives = clAllocator.allocateArray<PrimitiveProxy>(proxy.numPrimitives);
         proxy.numAreaLights = mAreaLights.size();
-        proxy.areaLights = (PrimitiveProxy**)clAllocator.allocateBytes(sizeof(PrimitiveProxy*) * proxy.numAreaLights);
+        proxy.areaLights = clAllocator.allocateArray<PrimitiveProxy*>(proxy.numAreaLights);
 
         int n = 0;
         for(int i=0; i<mPrimitives.size(); i++) {
@@ -119,6 +119,7 @@ namespace Object {
         }
 
         proxy.numPointLights = mPointLights.size();
+        proxy.pointLights = clAllocator.allocateArray<PointLightProxy>(proxy.numPointLights);
         for(int i=0; i<mPointLights.size(); i++) {
             mPointLights[i]->writeProxy(proxy.pointLights[i]);
         }
