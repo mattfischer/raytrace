@@ -73,7 +73,7 @@ void createPixelBeam(Camera *camera, float2 imagePoint, int width, int height, f
 
     Point p = camera->position + direction * camera->focalLength;
     float r = sqrt(aperturePoint.x);
-    float phi = 2 * 3.14f * aperturePoint.y;
+    float phi = 2 * M_PI_F * aperturePoint.y;
     float2 apertureDiscPoint = (float2)(r * cos(phi), r * sin(phi));
     Point q = camera->position + (camera->imagePlane.u * apertureDiscPoint.x + camera->imagePlane.v * apertureDiscPoint.y) * camera->apertureSize;
     direction = normalize(p - q);

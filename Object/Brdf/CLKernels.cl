@@ -22,18 +22,18 @@ typedef struct {
 
 Color BrdfLambert_reflected(BrdfLambert *lambert, Vector dirIn, Normal nrm, Vector dirOut, Color albedo)
 {
-    return albedo * lambert->strength / 3.14f;        
+    return albedo * lambert->strength / M_PI_F;        
 }
 
 float BrdfLambert_pdf(BrdfLambert *lambert, Vector dirIn, Normal nrm, Vector dirOut)
 {
     float cosTheta = max(dot(dirIn, nrm), 0.0f);
-    return cosTheta / 3.14f;
+    return cosTheta / M_PI_F;
 }
 
 Vector BrdfLambert_sample(BrdfLambert *lambert, float2 random, Vector nrm, Vector dirOut)
 {
-    float phi = 2 * 3.14f * random.x;
+    float phi = 2 * M_PI_F * random.x;
     float theta = asin(sqrt(random.y));
 
     Vector x;
@@ -83,18 +83,18 @@ Color BrdfOrenNayar_reflected(BrdfOrenNayar *orenNayar, Vector dirIn, Normal nrm
     float sinAlpha = max(sinThetaI, sinThetaR);
     float tanBeta = min(tanThetaI, tanThetaR);
 
-    return albedo * orenNayar->strength * (A + B * max(0.0f, cosPhi) * sinAlpha * tanBeta) / 3.14f;
+    return albedo * orenNayar->strength * (A + B * max(0.0f, cosPhi) * sinAlpha * tanBeta) / M_PI_F;
 }
 
 float BrdfOrenNayar_pdf(BrdfOrenNayar *orenNayar, Vector dirIn, Normal nrm, Vector dirOut)
 {
     float cosTheta = max(dot(dirIn, nrm), 0.0f);
-    return cosTheta / 3.14f;
+    return cosTheta / M_PI_F;
 }
 
 Vector BrdfOrenNayar_sample(BrdfOrenNayar *orenNayar, float2 random, Vector nrm, Vector dirOut)
 {
-    float phi = 2 * 3.14f * random.x;
+    float phi = 2 * M_PI_F * random.x;
     float theta = asin(sqrt(random.y));
 
     Vector x;
