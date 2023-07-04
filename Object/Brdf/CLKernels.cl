@@ -40,6 +40,11 @@ Color BrdfLambert_reflected(BrdfLambert *lambert, Vector dirIn, Normal nrm, Vect
     return albedo * lambert->strength / M_PI_F;        
 }
 
+Color BrdfLambert_transmitted(BrdfLambert *lambert, Vector dirIn, Normal nrm, Color albedo)
+{
+    return (Color)(0, 0, 0);       
+}
+
 float BrdfLambert_pdf(BrdfLambert *lambert, Vector dirIn, Normal nrm, Vector dirOut)
 {
     float cosTheta = max(dot(dirIn, nrm), 0.0f);
@@ -101,6 +106,11 @@ Color BrdfOrenNayar_reflected(BrdfOrenNayar *orenNayar, Vector dirIn, Normal nrm
     return albedo * orenNayar->strength * (A + B * max(0.0f, cosPhi) * sinAlpha * tanBeta) / M_PI_F;
 }
 
+Color BrdfOrenNayar_transmitted(BrdfOrenNayar *orenNayar, Vector dirIn, Normal nrm, Color albedo)
+{
+    return (Color)(0, 0, 0);
+}
+
 float BrdfOrenNayar_pdf(BrdfOrenNayar *orenNayar, Vector dirIn, Normal nrm, Vector dirOut)
 {
     float cosTheta = max(dot(dirIn, nrm), 0.0f);
@@ -142,6 +152,11 @@ Color BrdfPhong_reflected(BrdfPhong *phong, Vector dirIn, Normal nrm, Vector dir
     }
 
     return (Color)(1, 1, 1) * phong->strength * coeff * (phong->power + 1) / (2 * M_PI_F);
+}
+
+Color BrdfPhong_transmitted(BrdfPhong *phong, Vector dirIn, Normal nrm, Color albedo)
+{
+    return (Color)(1, 1, 1) * (1.0f - phong->strength);
 }
 
 float BrdfPhong_pdf(BrdfPhong *phong, Vector dirIn, Normal nrm, Vector dirOut)
@@ -211,6 +226,17 @@ Color BrdfTorranceSparrow_reflected(BrdfTorranceSparrow *torranceSparrow, Vector
     return (Color)(1, 1, 1) * torranceSparrow->strength * D * F * G / (4 * VN * LN);
 }
 
+Color BrdfTorranceSparrow_transmitted(BrdfTorranceSparrow *torranceSparrow, Vector dirIn, Normal nrm, Color albedo)
+{
+    float cosThetaI = dot(dirIn, nrm);
+    float oneMinusCos = 1 - cosThetaI;
+    float R0 = (1 - torranceSparrow->ior) / (1 + torranceSparrow->ior);
+    R0 = R0 * R0;
+
+    float F = R0 + (1 - R0) * oneMinusCos * oneMinusCos * oneMinusCos * oneMinusCos * oneMinusCos;
+    return (Color)(1, 1, 1) * (1.0f - torranceSparrow->strength * F);
+}
+
 float BrdfTorranceSparrow_pdf(BrdfTorranceSparrow *torranceSparrow, Vector dirIn, Normal nrm, Vector dirOut)
 {
     Vector axis = normalize(dirIn + dirOut);
@@ -268,6 +294,26 @@ Color Brdf_reflected(Brdf *brdf, Vector dirIn, Normal nrm, Vector dirOut, Color 
 
         case BrdfTypeTorranceSparrow:
             return BrdfTorranceSparrow_reflected(&brdf->torranceSparrow, dirIn, nrm, dirOut, albedo);
+
+        default:
+            return (Color)(0, 0, 0);
+    }
+}
+
+Color Brdf_transmitted(Brdf *brdf, Vector dirIn, Normal nrm, Color albedo)
+{
+    switch(brdf->type) {
+        case BrdfTypeLambert:
+            return BrdfLambert_transmitted(&brdf->lambert, dirIn, nrm, albedo);
+
+        case BrdfTypeOrenNayar:
+            return BrdfOrenNayar_transmitted(&brdf->orenNayar, dirIn, nrm, albedo);
+
+        case BrdfTypePhong:
+            return BrdfPhong_transmitted(&brdf->phong, dirIn, nrm, albedo);
+
+        case BrdfTypeTorranceSparrow:
+            return BrdfTorranceSparrow_transmitted(&brdf->torranceSparrow, dirIn, nrm, albedo);
 
         default:
             return (Color)(0, 0, 0);
