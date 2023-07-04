@@ -17,6 +17,8 @@ namespace Object {
             float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
             bool opaque() const override;
 
+            void writeProxy(BrdfProxy &proxy) const override;
+
         private:
             float mStrength;
             float mRoughness;

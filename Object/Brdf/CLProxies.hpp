@@ -15,11 +15,18 @@ struct BrdfPhongProxy {
     float power;
 };
 
+struct BrdfTorranceSparrowProxy {
+    float strength;
+    float roughness;
+    float ior;
+};
+
 struct BrdfProxy {
     enum Type {
         Lambert,
         OrenNayar,
-        Phong
+        Phong,
+        TorranceSparrow
     };
 
     Type type;
@@ -27,6 +34,7 @@ struct BrdfProxy {
         BrdfLambertProxy lambert;
         BrdfOrenNayarProxy orenNayar;
         BrdfPhongProxy phong;
+        BrdfTorranceSparrowProxy torranceSparrow;
     };
 };
 

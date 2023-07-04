@@ -31,11 +31,7 @@ namespace Object {
             virtual bool opaque() const;
             virtual float transmitIor() const;
 
-            virtual void writeProxy(BrdfProxy &proxy) const
-            {
-                proxy.type = BrdfProxy::Type::Lambert;
-                proxy.lambert.strength = 1.0f;
-            }
+            virtual void writeProxy(BrdfProxy &proxy) const = 0;
         };
     }
 }

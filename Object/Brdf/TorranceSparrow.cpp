@@ -87,5 +87,14 @@ namespace Object {
         {
             return false;
         }
+
+        void TorranceSparrow::writeProxy(BrdfProxy &proxy) const
+        {
+            proxy.type = BrdfProxy::Type::TorranceSparrow;
+            proxy.torranceSparrow.strength = mStrength;
+            proxy.torranceSparrow.roughness = mRoughness;
+            proxy.torranceSparrow.ior = mIor;
+        }
+
     }
 }
