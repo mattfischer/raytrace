@@ -32,7 +32,8 @@ namespace Render {
             };
 
             Renderer(const Object::Scene &scene, const Settings &settings);
-        
+            ~Renderer();
+
             void start(Listener *listener) override;
             void stop() override;
             bool running() override;

@@ -56,6 +56,11 @@ namespace Render {
             mCommitRadianceQueue->writeProxy(mContextProxy->commitRadianceQueue);
         }
 
+        Renderer::~Renderer()
+        {
+            stop();
+        }
+
         std::vector<std::string> Renderer::getSourceList()
         {
             return std::vector<std::string> {
@@ -81,12 +86,18 @@ namespace Render {
             }
             mClAllocator.unmapAreas();
 
+            if(mThread.joinable()) {
+                mThread.join();
+            }
             mThread = std::thread([&]() { runThread(); });
         }
 
         void Renderer::stop()
         {
-            mRunning = false;
+            if(mRunning) {
+                mRunning = false;
+                mThread.join();
+            }
         }
 
         bool Renderer::running()
