@@ -35,6 +35,23 @@ typedef struct {
     };
 } Brdf;
 
+void orthonormalBasis(Vector *x, Vector *y, Vector z)
+{
+    if(fabs(z.z) > fabs(z.x) && fabs(z.z) > fabs(z.y)) {
+        *x = (Vector)(1, 0, 0);
+        *y = (Vector)(0, 1, 0);
+    } else if(fabs(z.x) > fabs(z.y) && fabs(z.x) > fabs(z.z)) {
+        *x = (Vector)(0, 1, 0);
+        *y = (Vector)(0, 0, 1);
+    } else {
+        *x = (Vector)(1, 0, 0);
+        *y = (Vector)(0, 0, 1);
+    }
+    
+    *x = normalize(*x - z * dot(*x, z));
+    *y = normalize(*y - z * dot(*y, z));
+}
+
 Color BrdfLambert_reflected(BrdfLambert *lambert, Vector dirIn, Normal nrm, Vector dirOut, Color albedo)
 {
     return albedo * lambert->strength / M_PI_F;        
@@ -59,19 +76,7 @@ Vector BrdfLambert_sample(BrdfLambert *lambert, float2 random, Vector nrm, Vecto
     Vector x;
     Vector y;
     Vector z = nrm;
-    if(fabs(nrm.z) > fabs(nrm.x) && fabs(nrm.z) > fabs(nrm.y)) {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 1, 0);
-    } else if(fabs(nrm.x) > fabs(nrm.y) && fabs(nrm.x) > fabs(nrm.z)) {
-        x = (Vector)(0, 1, 0);
-        y = (Vector)(0, 0, 1);
-    } else {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 0, 1);
-    }
-    
-    x = normalize(x - z * dot(x, z));
-    y = normalize(y - z * dot(y, z));
+    orthonormalBasis(&x, &y, z);
 
     return x * cos(phi) * cos(theta) + y * sin(phi) * cos(theta) + z * sin(theta);
 }
@@ -125,19 +130,7 @@ Vector BrdfOrenNayar_sample(BrdfOrenNayar *orenNayar, float2 random, Vector nrm,
     Vector x;
     Vector y;
     Vector z = nrm;
-    if(fabs(nrm.z) > fabs(nrm.x) && fabs(nrm.z) > fabs(nrm.y)) {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 1, 0);
-    } else if(fabs(nrm.x) > fabs(nrm.y) && fabs(nrm.x) > fabs(nrm.z)) {
-        x = (Vector)(0, 1, 0);
-        y = (Vector)(0, 0, 1);
-    } else {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 0, 1);
-    }
-    
-    x = normalize(x - z * dot(x, z));
-    y = normalize(y - z * dot(y, z));
+    orthonormalBasis(&x, &y, z);
 
     return x * cos(phi) * cos(theta) + y * sin(phi) * cos(theta) + z * sin(theta);
 }
@@ -180,19 +173,7 @@ Vector BrdfPhong_sample(BrdfPhong *phong, float2 random, Vector nrm, Vector dirO
     Vector x;
     Vector y;
     Vector z = nrm;
-    if(fabs(nrm.z) > fabs(nrm.x) && fabs(nrm.z) > fabs(nrm.y)) {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 1, 0);
-    } else if(fabs(nrm.x) > fabs(nrm.y) && fabs(nrm.x) > fabs(nrm.z)) {
-        x = (Vector)(0, 1, 0);
-        y = (Vector)(0, 0, 1);
-    } else {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 0, 1);
-    }
-    
-    x = normalize(x - z * dot(x, z));
-    y = normalize(y - z * dot(y, z));
+    orthonormalBasis(&x, &y, z);
 
     Vector dirReflect = x * cos(phi) * cos(theta) + y * sin(phi) * cos(theta) + z * sin(theta);
     Vector dirIn = -(dirReflect - nrm * 2 * dot(dirReflect, nrm));
@@ -260,19 +241,7 @@ Vector BrdfTorranceSparrow_sample(BrdfTorranceSparrow *torranceSparrow, float2 r
     Vector x;
     Vector y;
     Vector z = nrm;
-    if(fabs(nrm.z) > fabs(nrm.x) && fabs(nrm.z) > fabs(nrm.y)) {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 1, 0);
-    } else if(fabs(nrm.x) > fabs(nrm.y) && fabs(nrm.x) > fabs(nrm.z)) {
-        x = (Vector)(0, 1, 0);
-        y = (Vector)(0, 0, 1);
-    } else {
-        x = (Vector)(1, 0, 0);
-        y = (Vector)(0, 0, 1);
-    }
-    
-    x = normalize(x - z * dot(x, z));
-    y = normalize(y - z * dot(y, z));
+    orthonormalBasis(&x, &y, z);
 
     Vector axis = x * cos(phi) * cos(theta) + y * sin(phi) * cos(theta) + z * sin(theta);
     Vector dirIn = -(dirOut - axis * 2 * dot(dirOut, axis));
