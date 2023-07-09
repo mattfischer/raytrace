@@ -43,11 +43,9 @@ void Queue_addItem(WorkQueue *queue, int key)
     queue->data[write + 2] = key;
 }
 
-int Queue_getNextKey(WorkQueue *queue)
+int Queue_getKey(WorkQueue *queue, int idx)
 {
-    int read = atomic_inc(&queue->data[0]);
-
-    return queue->data[read + 2];
+    return queue->data[idx + 2];
 }
 
 int Queue_numQueued(WorkQueue *queue)
@@ -91,7 +89,7 @@ void createPixelBeam(Camera *camera, float2 imagePoint, int width, int height, f
 
 void generateCameraRays(global Context *context)
 {
-    int key = Queue_getNextKey(&context->generateCameraRayQueue);
+    int key = Queue_getKey(&context->generateCameraRayQueue, get_global_id(0));
     Item *item = &context->items[key];
 
     unsigned int cp = atomic_inc(&context->currentPixel);
@@ -119,7 +117,7 @@ void generateCameraRays(global Context *context)
 
 void intersectRays(global Context *context)
 {
-    int key = Queue_getNextKey(&context->intersectRaysQueue);
+    int key = Queue_getKey(&context->intersectRaysQueue, get_global_id(0));
     Item *item = &context->items[key];
 
     Scene_intersect(&context->scene, &item->beam, &item->isect);
@@ -160,7 +158,7 @@ void intersectRays(global Context *context)
 
 void directLightArea(global Context *context)
 {
-    int key = Queue_getNextKey(&context->directLightAreaQueue);
+    int key = Queue_getKey(&context->directLightAreaQueue, get_global_id(0));
     Item *item = &context->items[key];
 
     Intersection *isect = &item->isect;
@@ -205,7 +203,7 @@ void directLightArea(global Context *context)
 
 void directLightPoint(global Context *context)
 {
-    int key = Queue_getNextKey(&context->directLightPointQueue);
+    int key = Queue_getKey(&context->directLightPointQueue, get_global_id(0));
     Item *item = &context->items[key];
 
     Intersection *isect = &item->isect;
@@ -238,7 +236,7 @@ void directLightPoint(global Context *context)
 
 void extendPath(global Context *context)
 {
-    int key = Queue_getNextKey(&context->extendPathQueue);
+    int key = Queue_getKey(&context->extendPathQueue, get_global_id(0));
     Item *item = &context->items[key];
     Intersection *isect = &item->isect;
     Normal nrmFacing = facingNormal(isect);
