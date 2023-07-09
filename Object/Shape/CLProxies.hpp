@@ -15,25 +15,18 @@ struct ShapeSphereProxy {
     float radius;
 };
 
-struct ShapeProxy;
-struct ShapeTransformedProxy {
-    TransformationProxy transformation;
-    ShapeProxy *shape;
-};
-
 struct ShapeProxy {
     enum Type {
         None,
         Quad,
-        Sphere,
-        Transformed
+        Sphere
     };
 
     Type type;
+    TransformationProxy *transformation;
     union {
         struct ShapeQuadProxy quad;
         struct ShapeSphereProxy sphere;
-        struct ShapeTransformedProxy transformed;
     };
 };
 

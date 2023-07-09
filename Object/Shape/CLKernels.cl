@@ -10,29 +10,20 @@ typedef struct {
     float radius;
 } ShapeSphere;
 
-struct _Shape;
-typedef struct _Shape Shape;
-
-typedef struct {
-    Transformation transformation;
-    Shape *shape;
-} ShapeTransformed;
-
 typedef enum {
     ShapeTypeNone,
     ShapeTypeQuad,
     ShapeTypeSphere,
-    ShapeTypeTransformed
 } ShapeType;
 
-struct _Shape {
+typedef struct {
     ShapeType type;
+    Transformation *transformation;
     union {
         ShapeQuad quad;
         ShapeSphere sphere;
-        ShapeTransformed transformed;
     };
-};
+} Shape;
 
 typedef struct {
     float distance;
@@ -109,49 +100,36 @@ bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *sha
     return false;
 }
 
-bool Shape_intersect2(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
-{
-    switch(shape->type) {
-    //case ShapeTypeQuad:
-    //    return ShapeQuad_intersect2(ray, &shape->quad, shapeIntersection);
-
-    case ShapeTypeSphere:
-        return ShapeSphere_intersect(ray, &shape->sphere, shapeIntersection);
-
-    default:
-        return false;
-    }
-}
-
-bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIntersection *shapeIntersection)
-{
-    Ray transformedRay;
-    transformedRay.origin = Matrix_multiplyPoint(&transformed->transformation.inverseMatrix, &ray->origin);
-    transformedRay.direction = Matrix_multiplyVector(&transformed->transformation.inverseMatrix, &ray->direction);
-
-    if(Shape_intersect2(&transformedRay, transformed->shape, shapeIntersection)) {
-        shapeIntersection->normal = normalize(Matrix_multiplyNormal(&transformed->transformation.matrix, &shapeIntersection->normal));
-        return true;
-    }
-
-    return false;
-}
-
 bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
 {
+    Ray rayTrans;
+    if(shape->transformation == NULL) {
+        rayTrans.origin = ray->origin;
+        rayTrans.direction = ray->direction;
+    } else {
+        rayTrans.origin = Matrix_multiplyPoint(&shape->transformation->inverseMatrix, &ray->origin);
+        rayTrans.direction = Matrix_multiplyVector(&shape->transformation->inverseMatrix, &ray->direction);
+    }
+
+    bool result = false;
+
     switch(shape->type) {
     case ShapeTypeQuad:
-        return ShapeQuad_intersect(ray, &shape->quad, shapeIntersection);
-    
+        result = ShapeQuad_intersect(&rayTrans, &shape->quad, shapeIntersection);
+        break;
+
     case ShapeTypeSphere:
-        return ShapeSphere_intersect(ray, &shape->sphere, shapeIntersection);
-    
-    case ShapeTypeTransformed:
-        return ShapeTransformed_intersect(ray, &shape->transformed, shapeIntersection);
+        result = ShapeSphere_intersect(&rayTrans, &shape->sphere, shapeIntersection);
+        break;
 
     default:
-        return false;
+        break;
     }
+
+    if(result && shape->transformation != NULL) {
+        shapeIntersection->normal = normalize(Matrix_multiplyNormal(&shape->transformation->matrix, &shapeIntersection->normal));   
+    }
+    return result;
 }
 
 float Shape_samplePdf(Shape *shape, Point point)
