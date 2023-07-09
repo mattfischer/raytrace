@@ -103,7 +103,7 @@ Color Surface_sample(Intersection *isect, float3 random, Vector *dirIn, float *p
 void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
 {
     isect->shapeIntersection.distance = MAXFLOAT;
-    isect->primitive = 0;
+    isect->primitive = NULL;
     isect->beam = beam;
 
     for(int i=0; i<scene->numPrimitives; i++) {

@@ -6,6 +6,8 @@
 
 #include <array>
 
+#include "Object/Shape/CLProxies.hpp"
+
 namespace Object {
     class BoundingVolume
     {
@@ -25,6 +27,8 @@ namespace Object {
         void expand(const BoundingVolume &volume);
 
         Math::Point centroid() const;
+
+        void writeProxy(BoundingVolumeProxy &proxy) const;
 
         static const std::array<Math::Vector, NUM_VECTORS> &vectors();
         static RayData getRayData(const Math::Ray &ray);

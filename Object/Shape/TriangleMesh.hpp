@@ -32,6 +32,8 @@ namespace Object {
 
             const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
+            void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const override;
+
         private:
             Object::BoundingVolumeHierarchy computeBoundingVolumeHierarchy() const;
 

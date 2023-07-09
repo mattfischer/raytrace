@@ -3,6 +3,20 @@
 
 #include "Math/CLProxies.hpp"
 
+struct BVHLimits {
+    float values[3];
+};
+
+struct BoundingVolumeProxy {
+    BVHLimits mins;
+    BVHLimits maxes;
+};
+
+struct BVHNodeProxy {
+    BoundingVolumeProxy volume;
+    int index;
+};
+
 struct ShapeQuadProxy {
     PointProxy position;
     VectorProxy side1;
@@ -15,11 +29,27 @@ struct ShapeSphereProxy {
     float radius;
 };
 
+__declspec(align(16)) struct TriangleVertices {
+    int values[3];
+};
+
+struct TriangleProxy {
+    TriangleVertices vertices;
+    NormalProxy normal;
+};
+
+struct ShapeTriangleMeshProxy {
+    PointProxy *vertices;
+    TriangleProxy *triangles;
+    BVHNodeProxy *bvh;
+};
+
 struct ShapeProxy {
     enum Type {
         None,
         Quad,
-        Sphere
+        Sphere,
+        TriangleMesh
     };
 
     Type type;
@@ -27,6 +57,7 @@ struct ShapeProxy {
     union {
         struct ShapeQuadProxy quad;
         struct ShapeSphereProxy sphere;
+        struct ShapeTriangleMeshProxy triangleMesh;
     };
 };
 

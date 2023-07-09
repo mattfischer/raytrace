@@ -55,6 +55,24 @@ namespace Object {
             return mBoundingVolumeHierarchy;
         }
 
+        void TriangleMesh::writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const
+        {
+            proxy.type = ShapeProxy::Type::TriangleMesh;
+            proxy.triangleMesh.vertices = clAllocator.allocateArray<PointProxy>(mVertices.size());
+            for(int i=0; i<mVertices.size(); i++) {
+                mVertices[i].point.writeProxy(proxy.triangleMesh.vertices[i]);
+            }
+            proxy.triangleMesh.triangles = clAllocator.allocateArray<TriangleProxy>(mTriangles.size());
+            for(int i=0; i<mTriangles.size(); i++) {
+                for(int j=0; j<3; j++) {
+                    proxy.triangleMesh.triangles[i].vertices.values[j] = mTriangles[i].vertices[j];
+                    mTriangles[i].normal.writeProxy(proxy.triangleMesh.triangles[i].normal);
+                }
+            }
+            proxy.triangleMesh.bvh = clAllocator.allocateArray<BVHNodeProxy>(mBoundingVolumeHierarchy.nodes().size());
+            mBoundingVolumeHierarchy.writeProxy(proxy.triangleMesh.bvh);
+        }
+
         Object::BoundingVolumeHierarchy TriangleMesh::computeBoundingVolumeHierarchy() const
         {
             std::vector<Math::Point> centroids(mTriangles.size());

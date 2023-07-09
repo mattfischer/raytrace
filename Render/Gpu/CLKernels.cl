@@ -122,7 +122,11 @@ void intersectRays(global Context *context)
 
     Scene_intersect(&context->scene, &item->beam, &item->isect);
 
-    if(item->isect.primitive != 0) {
+    if(item->isect.primitive == NULL) {
+        Radiance rad2 = context->scene.skyRadiance;
+        item->radiance += rad2 * item->throughput;
+        Queue_addItem(&context->commitRadianceQueue, key);
+    } else {
         Radiance rad2 = item->isect.primitive->surface.radiance;
         float misWeight = 1.0f;
         if(length(rad2) > 0 && !item->specularBounce && item->generation > 0) {
@@ -147,12 +151,6 @@ void intersectRays(global Context *context)
             item->lightIndex = lightIndex - context->scene.numAreaLights;
             Queue_addItem(&context->directLightPointQueue, key);
         }
-    }
-
-    if(item->isect.primitive == 0) {
-        Radiance rad2 = context->scene.skyRadiance;
-        item->radiance += rad2 * item->throughput;
-        Queue_addItem(&context->commitRadianceQueue, key);
     }
 }
 

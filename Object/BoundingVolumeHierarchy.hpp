@@ -6,6 +6,8 @@
 #include <vector>
 #include <functional>
 
+#include "Object/Shape/CLProxies.hpp"
+
 namespace Object {
     class BoundingVolumeHierarchy
     {
@@ -20,6 +22,8 @@ namespace Object {
         BoundingVolumeHierarchy(const std::vector<Math::Point> &points, const std::function<BoundingVolume(unsigned int)> &func);
 
         bool intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(unsigned int, float&)> &func) const;
+
+        void writeProxy(BVHNodeProxy *proxy) const;
 
         const std::vector<Node> &nodes() const;
 

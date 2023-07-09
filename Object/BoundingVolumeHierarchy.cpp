@@ -134,4 +134,12 @@ namespace Object {
 
         return nodeIndex;
     }
+
+    void BoundingVolumeHierarchy::writeProxy(BVHNodeProxy *proxy) const
+    {
+        for(int i=0; i<mNodes.size(); i++) {
+            proxy[i].index = mNodes[i].index;
+            mNodes[i].volume.writeProxy(proxy[i].volume);
+        }
+    }
 }

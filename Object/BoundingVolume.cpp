@@ -132,4 +132,13 @@ namespace Object {
 
         return Math::Point((v1 % v2) * (d0 / d) + (v2 % v0) * (d1 / d) + (v0 % v1) * (d2 / d));
     }
+
+    void BoundingVolume::writeProxy(BoundingVolumeProxy &proxy) const
+    {
+        for(int i=0; i<NUM_VECTORS; i++) {
+            proxy.mins.values[i] = mMins[i];
+            proxy.maxes.values[i] = mMaxes[i];
+        }
+    }
+
 }
