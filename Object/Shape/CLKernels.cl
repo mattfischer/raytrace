@@ -10,19 +10,29 @@ typedef struct {
     float radius;
 } ShapeSphere;
 
+struct _Shape;
+typedef struct _Shape Shape;
+
+typedef struct {
+    Transformation transformation;
+    Shape *shape;
+} ShapeTransformed;
+
 typedef enum {
     ShapeTypeNone,
     ShapeTypeQuad,
-    ShapeTypeSphere
+    ShapeTypeSphere,
+    ShapeTypeTransformed
 } ShapeType;
 
-typedef struct {
+struct _Shape {
     ShapeType type;
     union {
         ShapeQuad quad;
         ShapeSphere sphere;
+        ShapeTransformed transformed;
     };
-} Shape;
+};
 
 typedef struct {
     float distance;
@@ -99,6 +109,34 @@ bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *sha
     return false;
 }
 
+bool Shape_intersect2(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
+{
+    switch(shape->type) {
+    //case ShapeTypeQuad:
+    //    return ShapeQuad_intersect2(ray, &shape->quad, shapeIntersection);
+
+    case ShapeTypeSphere:
+        return ShapeSphere_intersect(ray, &shape->sphere, shapeIntersection);
+
+    default:
+        return false;
+    }
+}
+
+bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIntersection *shapeIntersection)
+{
+    Ray transformedRay;
+    transformedRay.origin = Matrix_multiplyPoint(&transformed->transformation.inverseMatrix, &ray->origin);
+    transformedRay.direction = Matrix_multiplyVector(&transformed->transformation.inverseMatrix, &ray->direction);
+
+    if(Shape_intersect2(&transformedRay, transformed->shape, shapeIntersection)) {
+        shapeIntersection->normal = normalize(Matrix_multiplyNormal(&transformed->transformation.matrix, &shapeIntersection->normal));
+        return true;
+    }
+
+    return false;
+}
+
 bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
 {
     switch(shape->type) {
@@ -108,6 +146,9 @@ bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersectio
     case ShapeTypeSphere:
         return ShapeSphere_intersect(ray, &shape->sphere, shapeIntersection);
     
+    case ShapeTypeTransformed:
+        return ShapeTransformed_intersect(ray, &shape->transformed, shapeIntersection);
+
     default:
         return false;
     }

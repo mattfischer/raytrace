@@ -100,4 +100,11 @@ namespace Math {
                       at(0, 2), at(1, 2), at(2, 2), at(2, 3),
                       at(3, 0), at(3, 1), at(3, 2), at(3, 3));
     }
+
+    void Matrix::writeProxy(MatrixProxy &proxy) const
+    {
+        for(int i=0; i<16; i++) {
+            proxy.values[i] = mValues[i];
+        }
+    }
 }

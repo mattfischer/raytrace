@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "Object/Shape/CLProxies.hpp"
+#include "OpenCL.hpp"
 
 namespace Object {
     namespace Shape {
@@ -32,7 +33,7 @@ namespace Object {
             virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const { return false; }
             virtual float samplePdf(const Math::Point &pnt) const { return 0; }
 
-            virtual void writeProxy(ShapeProxy &proxy) const { proxy.type = ShapeProxy::Type::None; }
+            virtual void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const { proxy.type = ShapeProxy::Type::None; }
         };
     }
 }

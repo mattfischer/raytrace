@@ -1,6 +1,8 @@
 #ifndef MATH_MATRIX_HPP
 #define MATH_MATRIX_HPP
 
+#include "Math/CLProxies.hpp"
+
 namespace Math {
     class Matrix
     {
@@ -21,6 +23,8 @@ namespace Math {
 
         Matrix partialTranspose() const;
         Matrix operator*(const Matrix &b) const;
+
+        void writeProxy(MatrixProxy &proxy) const;
 
     protected:
         float mValues[16];

@@ -21,6 +21,15 @@ __declspec(align(16)) struct ColorProxy {
     float coords[3];
 };
 
+__declspec(align(16)) struct MatrixProxy {
+    float values[16];
+};
+
+struct TransformationProxy {
+    MatrixProxy matrix;
+    MatrixProxy inverseMatrix;
+};
+
 struct BivectorProxy {
     VectorProxy u;
     VectorProxy v;

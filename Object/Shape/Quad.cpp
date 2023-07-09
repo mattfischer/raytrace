@@ -62,7 +62,7 @@ namespace Object {
             return volume;
         }
 
-        void Quad::writeProxy(ShapeProxy &proxy) const
+        void Quad::writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const
         {
             proxy.type = ShapeProxy::Type::Quad;
             mPosition.writeProxy(proxy.quad.position);

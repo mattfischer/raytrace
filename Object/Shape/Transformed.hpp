@@ -17,6 +17,8 @@ namespace Object {
             bool intersect(const Math::Ray &ray, Intersection &isect) const override;
             BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
+            void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const override;
+
         private:
             std::unique_ptr<Base> mShape;
             Math::Transformation mTransformation;

@@ -183,6 +183,12 @@ namespace Math {
         return *this;
     }
 
+    void Transformation::writeProxy(TransformationProxy &proxy) const
+    {
+        mMatrix.writeProxy(proxy.matrix);
+        mInverseMatrix.writeProxy(proxy.inverseMatrix);
+    }
+
     Transformation operator*(const BaseTransformation &a, const BaseTransformation &b)
     {
         return Transformation(b.matrix() * a.matrix(), a.inverseMatrix() * b.inverseMatrix());

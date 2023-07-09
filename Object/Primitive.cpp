@@ -24,7 +24,7 @@ namespace Object {
 
     void Primitive::writeProxy(PrimitiveProxy &proxy, OpenCL::Allocator &clAllocator) const
     {
-        mShape->writeProxy(proxy.shape);
+        mShape->writeProxy(proxy.shape, clAllocator);
         mSurface->writeProxy(proxy.surface, clAllocator);
     }
 }

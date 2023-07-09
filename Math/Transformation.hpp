@@ -4,6 +4,8 @@
 #include "Math/Matrix.hpp"
 #include "Math/Point.hpp"
 
+#include "Math/CLProxies.hpp"
+
 namespace Math {
     class BaseTransformation {
     public:
@@ -54,6 +56,8 @@ namespace Math {
 
         const Matrix &matrix() const;
         const Matrix &inverseMatrix() const;
+
+        void writeProxy(TransformationProxy &proxy) const;
 
     protected:
         Matrix mMatrix;

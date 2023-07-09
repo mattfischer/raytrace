@@ -67,7 +67,7 @@ namespace Object {
             return BoundingVolume(mins, maxes);
         }
 
-        void Sphere::writeProxy(ShapeProxy &proxy) const
+        void Sphere::writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const
         {
             proxy.type = ShapeProxy::Type::Sphere;
             mPosition.writeProxy(proxy.sphere.position);

@@ -23,5 +23,13 @@ namespace Object {
         {
             return mShape->boundingVolume(trans * mTransformation);
         }
+
+        void Transformed::writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const
+        {
+            proxy.type = ShapeProxy::Type::Transformed;
+            mTransformation.writeProxy(proxy.transformed.transformation);
+            proxy.transformed.shape = clAllocator.allocate<ShapeProxy>();
+            mShape->writeProxy(*proxy.transformed.shape, clAllocator);
+        }
     }
 }
