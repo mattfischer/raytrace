@@ -52,24 +52,30 @@ typedef struct {
     BoundingVolume *volumes;
 } ShapeGroup;
 
+typedef struct {
+    Transformation transformation;
+    Shape *shape;
+} ShapeTransformed;
+
 typedef enum {
     ShapeTypeNone,
     ShapeTypeQuad,
     ShapeTypeSphere,
     ShapeTypeTriangleMesh,
     ShapeTypeGrid,
-    ShapeTypeGroup
+    ShapeTypeGroup,
+    ShapeTypeTransformed
 } ShapeType;
 
 struct _Shape {
     ShapeType type;
-    Transformation *transformation;
     union {
         ShapeQuad quad;
         ShapeSphere sphere;
         ShapeTriangleMesh triangleMesh;
         ShapeGrid grid;
         ShapeGroup group;
+        ShapeTransformed transformed;
     };
 };
 
@@ -370,48 +376,45 @@ bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *shapeI
     return ret;
 }
 
-bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
+bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIntersection *shapeIntersection)
 {
     Ray rayTrans;
-    if(shape->transformation == NULL) {
-        rayTrans.origin = ray->origin;
-        rayTrans.direction = ray->direction;
-    } else {
-        rayTrans.origin = Matrix_multiplyPoint(&shape->transformation->inverseMatrix, &ray->origin);
-        rayTrans.direction = Matrix_multiplyVector(&shape->transformation->inverseMatrix, &ray->direction);
+    rayTrans.origin = Matrix_multiplyPoint(&transformed->transformation.inverseMatrix, &ray->origin);
+    rayTrans.direction = Matrix_multiplyVector(&transformed->transformation.inverseMatrix, &ray->direction);
+    
+    bool ret = false;
+    if(Shape_intersect(&rayTrans, transformed->shape, shapeIntersection)) {
+        shapeIntersection->normal = normalize(Matrix_multiplyNormal(&transformed->transformation.matrix, &shapeIntersection->normal));
+        ret = true;
     }
 
-    bool result = false;
+    return ret;
+}
 
+bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
+{
     switch(shape->type) {
     case ShapeTypeQuad:
-        result = ShapeQuad_intersect(&rayTrans, &shape->quad, shapeIntersection);
-        break;
+        return ShapeQuad_intersect(ray, &shape->quad, shapeIntersection);
 
     case ShapeTypeSphere:
-        result = ShapeSphere_intersect(&rayTrans, &shape->sphere, shapeIntersection);
-        break;
+        return ShapeSphere_intersect(ray, &shape->sphere, shapeIntersection);
 
     case ShapeTypeTriangleMesh:
-        result = ShapeTriangleMesh_intersect(&rayTrans, &shape->triangleMesh, shapeIntersection);
-        break;
+        return ShapeTriangleMesh_intersect(ray, &shape->triangleMesh, shapeIntersection);
 
     case ShapeTypeGrid:
-        result = ShapeGrid_intersect(&rayTrans, &shape->grid, shapeIntersection);
-        break;
+        return ShapeGrid_intersect(ray, &shape->grid, shapeIntersection);
 
     case ShapeTypeGroup:
-        result = ShapeGroup_intersect(&rayTrans, &shape->group, shapeIntersection);
-        break;
+        return ShapeGroup_intersect(ray, &shape->group, shapeIntersection);
+
+    case ShapeTypeTransformed:
+        return ShapeTransformed_intersect(ray, &shape->transformed, shapeIntersection);
 
     default:
-        break;
+        return false;
     }
-
-    if(result && shape->transformation != NULL) {
-        shapeIntersection->normal = normalize(Matrix_multiplyNormal(&shape->transformation->matrix, &shapeIntersection->normal));   
-    }
-    return result;
 }
 
 float Shape_samplePdf(Shape *shape, Point point)

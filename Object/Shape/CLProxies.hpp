@@ -63,6 +63,11 @@ struct ShapeGroupProxy {
     BoundingVolumeProxy *volumes;
 };
 
+struct ShapeTransformedProxy {
+    TransformationProxy transformation;
+    ShapeProxy *shape;
+};
+
 struct ShapeProxy {
     enum Type {
         None,
@@ -70,17 +75,18 @@ struct ShapeProxy {
         Sphere,
         TriangleMesh,
         Grid,
-        Group
+        Group,
+        Transformed
     };
 
     Type type;
-    TransformationProxy *transformation;
     union {
         struct ShapeQuadProxy quad;
         struct ShapeSphereProxy sphere;
         struct ShapeTriangleMeshProxy triangleMesh;
         struct ShapeGridProxy grid;
         struct ShapeGroupProxy group;
+        struct ShapeTransformedProxy transformed;
     };
 };
 
