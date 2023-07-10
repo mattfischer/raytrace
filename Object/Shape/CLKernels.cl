@@ -41,32 +41,37 @@ typedef struct {
     int height;
     GridVertex *vertices;
     BVHNode *bvh;
-} Grid;
+} ShapeGrid;
+
+struct _Shape;
+typedef struct _Shape Shape;
 
 typedef struct {
-    int numChildren;
-    Grid *grids;
+    int numShapes;
+    Shape *shapes;
     BoundingVolume *volumes;
-} ShapeGrids;
+} ShapeGroup;
 
 typedef enum {
     ShapeTypeNone,
     ShapeTypeQuad,
     ShapeTypeSphere,
     ShapeTypeTriangleMesh,
-    ShapeTypeGrids
+    ShapeTypeGrid,
+    ShapeTypeGroup
 } ShapeType;
 
-typedef struct {
+struct _Shape {
     ShapeType type;
     Transformation *transformation;
     union {
         ShapeQuad quad;
         ShapeSphere sphere;
         ShapeTriangleMesh triangleMesh;
-        ShapeGrids grids;
+        ShapeGrid grid;
+        ShapeGroup group;
     };
-} Shape;
+};
 
 typedef struct {
     float distance;
@@ -285,7 +290,7 @@ bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, Shap
     return ret;
 }
 
-bool Grid_intersect(Ray *ray, Grid *grid, ShapeIntersection *shapeIntersection)
+bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *shapeIntersection)
 {
     StackEntry stack[64];
 
@@ -346,15 +351,17 @@ bool Grid_intersect(Ray *ray, Grid *grid, ShapeIntersection *shapeIntersection)
     return ret;
 }
 
-bool ShapeGrids_intersect(Ray *ray, ShapeGrids *grids, ShapeIntersection *shapeIntersection)
+bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection);
+
+bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *shapeIntersection)
 {
     bool ret = false;
 
-    for(int i=0; i<grids->numChildren; i++) {
+    for(int i=0; i<group->numShapes; i++) {
         float minDist;
         float maxDist;
-        if(BoundingVolume_intersect(&grids->volumes[i], ray, &minDist, &maxDist) && minDist < shapeIntersection->distance) {
-            if(Grid_intersect(ray, &grids->grids[i], shapeIntersection)) {
+        if(BoundingVolume_intersect(&group->volumes[i], ray, &minDist, &maxDist) && minDist < shapeIntersection->distance) {
+            if(Shape_intersect(ray, &group->shapes[i], shapeIntersection)) {
                 ret = true;
             }
         }
@@ -389,8 +396,12 @@ bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersectio
         result = ShapeTriangleMesh_intersect(&rayTrans, &shape->triangleMesh, shapeIntersection);
         break;
 
-    case ShapeTypeGrids:
-        result = ShapeGrids_intersect(&rayTrans, &shape->grids, shapeIntersection);
+    case ShapeTypeGrid:
+        result = ShapeGrid_intersect(&rayTrans, &shape->grid, shapeIntersection);
+        break;
+
+    case ShapeTypeGroup:
+        result = ShapeGroup_intersect(&rayTrans, &shape->group, shapeIntersection);
         break;
 
     default:

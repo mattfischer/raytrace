@@ -67,7 +67,7 @@ namespace Object {
             return mGrid->boundingVolume(trans);
         }
 
-        void BezierPatch::writeProxy(GridProxy &proxy, OpenCL::Allocator &clAllocator) const
+        void BezierPatch::writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const
         {
             return mGrid->writeProxy(proxy, clAllocator);
         }

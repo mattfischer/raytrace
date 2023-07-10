@@ -49,16 +49,17 @@ struct GridVertexProxy {
     NormalProxy normal;
 };
 
-struct GridProxy {
+struct ShapeGridProxy {
     int width;
     int height;
     GridVertexProxy *vertices;
     BVHNodeProxy *bvh;
 };
 
-struct ShapeGridsProxy {
-    int numChildren;
-    GridProxy *grids;
+struct ShapeProxy;
+struct ShapeGroupProxy {
+    int numShapes;
+    ShapeProxy *shapes;
     BoundingVolumeProxy *volumes;
 };
 
@@ -68,7 +69,8 @@ struct ShapeProxy {
         Quad,
         Sphere,
         TriangleMesh,
-        Grids
+        Grid,
+        Group
     };
 
     Type type;
@@ -77,7 +79,8 @@ struct ShapeProxy {
         struct ShapeQuadProxy quad;
         struct ShapeSphereProxy sphere;
         struct ShapeTriangleMeshProxy triangleMesh;
-        struct ShapeGridsProxy grids;
+        struct ShapeGridProxy grid;
+        struct ShapeGroupProxy group;
     };
 };
 

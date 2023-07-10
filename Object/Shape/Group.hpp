@@ -1,15 +1,16 @@
-#ifndef OBJECT_SHAPE_BEZIERPATCHES_HPP
-#define OBJECT_SHAPE_BEZIERPATCHES_HPP
+#ifndef OBJECT_SHAPE_GROUP_HPP
+#define OBJECT_SHAPE_GROUP_HPP
 
 #include "Object/Shape/Base.hpp"
-#include "Object/Shape/BezierPatch.hpp"
+
+#include "Object/Shape/CLProxies.hpp"
 
 namespace Object {
     namespace Shape {
-        class BezierPatches : public Base
+        class Group : public Base
         {
         public:
-            BezierPatches(std::vector<std::unique_ptr<BezierPatch>> &&grids);
+            Group(std::vector<std::unique_ptr<Base>> &&shapes);
 
             bool intersect(const Math::Ray &ray, Intersection &isect) const override;
             BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
@@ -17,7 +18,7 @@ namespace Object {
             void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const override;
 
         private:
-            std::vector<std::unique_ptr<BezierPatch>> mPatches;
+            std::vector<std::unique_ptr<Base>> mShapes;
             std::vector<BoundingVolume> mVolumes;
         };
     }

@@ -15,7 +15,7 @@ namespace Object {
             bool intersect(const Math::Ray &ray, Intersection &isect) const override;
             BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
-            void writeProxy(GridProxy &proxy, OpenCL::Allocator &clAllocator) const;
+            void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const;
 
         private:
             std::unique_ptr<Grid> mGrid;

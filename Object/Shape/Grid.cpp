@@ -98,17 +98,18 @@ namespace Object {
             return volume;
         }
 
-        void Grid::writeProxy(GridProxy &proxy, OpenCL::Allocator &clAllocator) const
+        void Grid::writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const
         {
-            proxy.width = mWidth;
-            proxy.height = mHeight;
-            proxy.vertices = clAllocator.allocateArray<GridVertexProxy>(mVertices.size());
+            proxy.type = ShapeProxy::Type::Grid;
+            proxy.grid.width = mWidth;
+            proxy.grid.height = mHeight;
+            proxy.grid.vertices = clAllocator.allocateArray<GridVertexProxy>(mVertices.size());
             for(int i=0; i<mVertices.size(); i++) {
-                mVertices[i].point.writeProxy(proxy.vertices[i].point);
-                mVertices[i].normal.writeProxy(proxy.vertices[i].normal);
+                mVertices[i].point.writeProxy(proxy.grid.vertices[i].point);
+                mVertices[i].normal.writeProxy(proxy.grid.vertices[i].normal);
             }
-            proxy.bvh = clAllocator.allocateArray<BVHNodeProxy>(mBoundingVolumeHierarchy.nodes().size());
-            mBoundingVolumeHierarchy.writeProxy(proxy.bvh);
+            proxy.grid.bvh = clAllocator.allocateArray<BVHNodeProxy>(mBoundingVolumeHierarchy.nodes().size());
+            mBoundingVolumeHierarchy.writeProxy(proxy.grid.bvh);
         }
 
     }
