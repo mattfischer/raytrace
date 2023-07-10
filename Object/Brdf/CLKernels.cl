@@ -243,7 +243,7 @@ Vector BrdfTorranceSparrow_sample(BrdfTorranceSparrow *torranceSparrow, float2 r
     Vector z = nrm;
     orthonormalBasis(&x, &y, z);
 
-    Vector axis = x * cos(phi) * cos(theta) + y * sin(phi) * cos(theta) + z * sin(theta);
+    Vector axis = x * cos(phi) * cos(M_PI_F / 2 - theta) + y * sin(phi) * cos(M_PI_F / 2 - theta) + z * sin(M_PI_F / 2 - theta);
     Vector dirIn = -(dirOut - axis * 2 * dot(dirOut, axis));
 
     return dirIn;
