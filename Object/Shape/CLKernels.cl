@@ -31,11 +31,30 @@ typedef struct {
     BVHNode *bvh;
 } ShapeTriangleMesh;
 
+typedef struct {
+    Point point;
+    Normal normal;
+} GridVertex;
+
+typedef struct {
+    int width;
+    int height;
+    GridVertex *vertices;
+    BVHNode *bvh;
+} Grid;
+
+typedef struct {
+    int numChildren;
+    Grid *grids;
+    BoundingVolume *volumes;
+} ShapeGrids;
+
 typedef enum {
     ShapeTypeNone,
     ShapeTypeQuad,
     ShapeTypeSphere,
-    ShapeTypeTriangleMesh
+    ShapeTypeTriangleMesh,
+    ShapeTypeGrids
 } ShapeType;
 
 typedef struct {
@@ -45,6 +64,7 @@ typedef struct {
         ShapeQuad quad;
         ShapeSphere sphere;
         ShapeTriangleMesh triangleMesh;
+        ShapeGrids grids;
     };
 } Shape;
 
@@ -265,6 +285,84 @@ bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, Shap
     return ret;
 }
 
+bool Grid_intersect(Ray *ray, Grid *grid, ShapeIntersection *shapeIntersection)
+{
+    StackEntry stack[64];
+
+    bool ret = false;
+    int n = 0;
+    stack[n].nodeIndex = 0;
+    stack[n].minDistance = 0;
+    n++;
+
+    do {
+        n--;
+        int nodeIndex = stack[n].nodeIndex;
+        BVHNode *bvhNode = &grid->bvh[nodeIndex];
+        float nodeMinimum = stack[n].minDistance;
+
+        if(nodeMinimum > shapeIntersection->distance) {
+            continue;
+        }
+
+        if(bvhNode->index <= 0) {
+            int index = -bvhNode->index;
+            unsigned int u = index % grid->width;
+            unsigned int v = index / grid->width;
+            GridVertex *vertex0 = &grid->vertices[v * grid->width + u];
+            GridVertex *vertex1 = &grid->vertices[v * grid->width + u + 1];
+            GridVertex *vertex2 = &grid->vertices[(v + 1) * grid->width + u];
+            GridVertex *vertex3 = &grid->vertices[(v + 1) * grid->width + u + 1];
+
+            if(Triangle_intersect(ray, vertex0->point, vertex1->point, vertex2->point, &shapeIntersection->distance)) {
+                shapeIntersection->normal = vertex0->normal;
+                ret = true;
+            }
+            if(Triangle_intersect(ray, vertex3->point, vertex2->point, vertex1->point, &shapeIntersection->distance)) {
+                shapeIntersection->normal = vertex2->normal;
+                ret = true;
+            }
+        } else {
+            int indices[2] = { nodeIndex + 1, bvhNode->index };
+            float minDistances[2];
+            float maxDistances[2];
+            for(int i=0; i<2; i++) {
+                minDistances[i] = MAXFLOAT;
+                maxDistances[i] = -MAXFLOAT;
+                BoundingVolume_intersect(&bvhNode->volume, ray, &minDistances[i], &maxDistances[i]);
+            }
+
+            for(int i=0; i<2; i++) {
+                int j = (minDistances[0] >= minDistances[1]) ? i : 1 - i;
+                if(maxDistances[j] > 0) {
+                    stack[n].nodeIndex = indices[j];
+                    stack[n].minDistance = minDistances[j];
+                    n++;
+                }
+            }
+        }
+    } while(n > 0);
+
+    return ret;
+}
+
+bool ShapeGrids_intersect(Ray *ray, ShapeGrids *grids, ShapeIntersection *shapeIntersection)
+{
+    bool ret = false;
+
+    for(int i=0; i<grids->numChildren; i++) {
+        float minDist;
+        float maxDist;
+        if(BoundingVolume_intersect(&grids->volumes[i], ray, &minDist, &maxDist) && minDist < shapeIntersection->distance) {
+            if(Grid_intersect(ray, &grids->grids[i], shapeIntersection)) {
+                ret = true;
+            }
+        }
+    }
+
+    return ret;
+}
+
 bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
 {
     Ray rayTrans;
@@ -289,6 +387,10 @@ bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersectio
 
     case ShapeTypeTriangleMesh:
         result = ShapeTriangleMesh_intersect(&rayTrans, &shape->triangleMesh, shapeIntersection);
+        break;
+
+    case ShapeTypeGrids:
+        result = ShapeGrids_intersect(&rayTrans, &shape->grids, shapeIntersection);
         break;
 
     default:

@@ -5,9 +5,8 @@ camera {
 model {
     "teapot.bpt"
 	surface {
-		albedo { texture "bricks.bmp" }
-                brdf { torrance_sparrow 0.1 0.05 10 oren_nayar 1 0.5 }
-		normal_map "bump.bmp" 0.01
+		albedo { color <1,0,0> }
+        brdf { torrance_sparrow 0.1 0.05 10 oren_nayar 1 0.5 }
 	}
 	transform {
 		translate <4,-10,-3>

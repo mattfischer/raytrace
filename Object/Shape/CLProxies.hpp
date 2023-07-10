@@ -44,12 +44,31 @@ struct ShapeTriangleMeshProxy {
     BVHNodeProxy *bvh;
 };
 
+struct GridVertexProxy {
+    PointProxy point;
+    NormalProxy normal;
+};
+
+struct GridProxy {
+    int width;
+    int height;
+    GridVertexProxy *vertices;
+    BVHNodeProxy *bvh;
+};
+
+struct ShapeGridsProxy {
+    int numChildren;
+    GridProxy *grids;
+    BoundingVolumeProxy *volumes;
+};
+
 struct ShapeProxy {
     enum Type {
         None,
         Quad,
         Sphere,
-        TriangleMesh
+        TriangleMesh,
+        Grids
     };
 
     Type type;
@@ -58,6 +77,7 @@ struct ShapeProxy {
         struct ShapeQuadProxy quad;
         struct ShapeSphereProxy sphere;
         struct ShapeTriangleMeshProxy triangleMesh;
+        struct ShapeGridsProxy grids;
     };
 };
 

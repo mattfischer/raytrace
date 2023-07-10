@@ -71,7 +71,12 @@ namespace Render {
             OpenCL::Context mClContext;
             OpenCL::Allocator mClAllocator;
             OpenCL::Program mClProgram;
-            OpenCL::Kernel mClRunIterationKernel;
+
+            OpenCL::Kernel mClGenerateCameraRaysKernel;
+            OpenCL::Kernel mClIntersectRaysKernel;
+            OpenCL::Kernel mClDirectLightAreaKernel;
+            OpenCL::Kernel mClDirectLightPointKernel;
+            OpenCL::Kernel mClExtendPathKernel;
 
             ContextProxy *mContextProxy;
             Math::Sampler::Random mSampler;

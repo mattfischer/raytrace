@@ -20,7 +20,11 @@ namespace Render {
         , mTotalSamples(settings.width, settings.height)
         , mClAllocator(mClContext)
         , mClProgram(mClContext, getSourceList())
-        , mClRunIterationKernel(mClProgram, "runIteration", mClAllocator)
+        , mClGenerateCameraRaysKernel(mClProgram, "generateCameraRays", mClAllocator)
+        , mClIntersectRaysKernel(mClProgram, "intersectRays", mClAllocator)
+        , mClDirectLightAreaKernel(mClProgram, "directLightArea", mClAllocator)
+        , mClDirectLightPointKernel(mClProgram, "directLightPoint", mClAllocator)
+        , mClExtendPathKernel(mClProgram, "extendPath", mClAllocator)
         {
             mRunning = false;
 
@@ -36,7 +40,12 @@ namespace Render {
             mContextProxy->random = mClAllocator.allocateArray<float>(kSize * 11);
 
             mClAllocator.unmapAreas();
-            mClRunIterationKernel.setArg(0, mContextProxy);
+
+            mClGenerateCameraRaysKernel.setArg(0, mContextProxy);
+            mClIntersectRaysKernel.setArg(0, mContextProxy);
+            mClDirectLightAreaKernel.setArg(0, mContextProxy);
+            mClDirectLightPointKernel.setArg(0, mContextProxy);
+            mClExtendPathKernel.setArg(0, mContextProxy);
 
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
@@ -131,12 +140,42 @@ namespace Render {
                 for(int i=0; i<kSize * 11; i++) {
                     mContextProxy->random[i] = mSampler.getValue();
                 }
+                int kernelSize = mGenerateCameraRayQueue->numQueued();
                 mClAllocator.unmapAreas();
 
-                mClRunIterationKernel.enqueue(mClContext, 1);
-                clFlush(mClContext.clQueue());
+                mClGenerateCameraRaysKernel.enqueue(mClContext, kernelSize);
+                clFinish(mClContext.clQueue());
+                mClAllocator.mapAreas();
+                mGenerateCameraRayQueue->clear();
+                kernelSize = mIntersectRayQueue->numQueued();
+                mClAllocator.unmapAreas();
+
+                mClIntersectRaysKernel.enqueue(mClContext, kernelSize);
+                clFinish(mClContext.clQueue());
+                mClAllocator.mapAreas();
+                mIntersectRayQueue->clear();
+                kernelSize = mDirectLightAreaQueue->numQueued();
+                mClAllocator.unmapAreas();
+
+                mClDirectLightAreaKernel.enqueue(mClContext, kernelSize);
+                clFinish(mClContext.clQueue());
+                mClAllocator.mapAreas();
+                mDirectLightAreaQueue->clear();
+                kernelSize = mDirectLightPointQueue->numQueued();
+                mClAllocator.unmapAreas();
+
+                mClDirectLightPointKernel.enqueue(mClContext, kernelSize);
+                clFinish(mClContext.clQueue());
+                mClAllocator.mapAreas();
+                mDirectLightPointQueue->clear();
+                kernelSize = mExtendPathQueue->numQueued();
+                mClAllocator.unmapAreas();
+
+                mClExtendPathKernel.enqueue(mClContext, kernelSize);
+                clFinish(mClContext.clQueue());
 
                 mClAllocator.mapAreas();
+                mExtendPathQueue->clear();
                 int numQueued = mCommitRadianceQueue->numQueued();
                 for(int i=0; i<numQueued; i++) {
                     WorkQueue::Key key = mCommitRadianceQueue->getNextKey();
