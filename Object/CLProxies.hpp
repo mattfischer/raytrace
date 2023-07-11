@@ -11,6 +11,8 @@ struct SurfaceProxy {
     AlbedoProxy albedo;
     int numBrdfs;
     BrdfProxy *brdfs;
+    bool opaque;
+    float transmitIor;
 };
 
 struct PrimitiveProxy {

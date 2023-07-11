@@ -37,7 +37,7 @@ namespace Render {
             mContextProxy->settings.minSamples = mSettings.minSamples;
 
             mContextProxy->items = mClAllocator.allocateArray<ItemProxy>(kSize);
-            mContextProxy->random = mClAllocator.allocateArray<float>(kSize * 11);
+            mContextProxy->random = mClAllocator.allocateArray<float>(kSize * 12);
 
             mClAllocator.unmapAreas();
 
@@ -137,7 +137,7 @@ namespace Render {
         {
             while(mRunning) {
                 mClAllocator.mapAreas();
-                for(int i=0; i<kSize * 11; i++) {
+                for(int i=0; i<kSize * 12; i++) {
                     mContextProxy->random[i] = mSampler.getValue();
                 }
                 int kernelSize = mGenerateCameraRayQueue->numQueued();

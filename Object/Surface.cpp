@@ -157,6 +157,8 @@ namespace Object {
         for(int i=0; i<mBrdfs.size(); i++) {
             mBrdfs[i]->writeProxy(proxy.brdfs[i]);
         }
+        proxy.opaque = mOpaque;
+        proxy.transmitIor = mTransmitIor;
     }
 
 }

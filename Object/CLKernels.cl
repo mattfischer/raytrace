@@ -3,6 +3,8 @@ typedef struct {
     Albedo albedo;
     int numBrdfs;
     Brdf *brdfs;
+    bool opaque;
+    float transmitIor;
 } Surface;
 
 typedef struct {
@@ -83,18 +85,55 @@ Color Surface_reflected(Intersection *isect, Vector dirIn)
     return col;
 }
 
-Color Surface_sample(Intersection *isect, float3 random, Vector *dirIn, float *pdf, bool *pdfDelta)
+Color Surface_transmitted(Intersection *isect, Vector dirIn)
+{
+    Surface *surf = &isect->primitive->surface;
+    Normal nrmFacing = facingNormal(isect);
+    Color albedo = Albedo_color(&surf->albedo);
+
+    Color colTransmit = (Color)(1, 1, 1);
+    for(int i=0; i<surf->numBrdfs; i++) {
+        colTransmit = colTransmit * Brdf_transmitted(&surf->brdfs[i], dirIn, -nrmFacing, albedo);
+    }
+
+    return colTransmit;
+}
+
+Color Surface_sample(Intersection *isect, float4 random, Vector *dirIn, float *pdf, bool *pdfDelta)
 {
     Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = facingNormal(isect);
 
-    int idx = 0;
-    if(surf->numBrdfs > 1) {
-        idx = (int)floor(surf->numBrdfs * random.x);
+    float transmitThreshold = 0;
+    if(!surf->opaque) {       
+        bool reverse = (dot(isect->shapeIntersection.normal, dirOut) < 0);
+        float ratio = 1.0f / surf->transmitIor;
+        if(reverse) {
+            ratio = 1.0f / ratio;
+        }
+
+        float c1 = dot(dirOut, nrmFacing);
+        float c2 = sqrt(1.0f - ratio * ratio * (1.0f - c1 * c1));
+
+        *dirIn = nrmFacing * (ratio * c1 - c2) - dirOut * ratio;
+        Color throughput = Surface_transmitted(isect, -dirOut);
+        transmitThreshold = min(1.0f, max(max(throughput.x, throughput.y), throughput.z));
+        float roulette = random.x;
+
+        if(roulette < transmitThreshold) {
+            *pdf = 1.0f;
+            *pdfDelta = true;
+            return Surface_transmitted(isect, *dirIn) / (dot(dirOut, nrmFacing) * transmitThreshold);
+        }
     }
 
-    *dirIn = Brdf_sample(&surf->brdfs[idx], random.yz, nrmFacing, dirOut);
+    int idx = 0;
+    if(surf->numBrdfs > 1) {
+        idx = (int)floor(surf->numBrdfs * random.y);
+    }
+
+    *dirIn = Brdf_sample(&surf->brdfs[idx], random.zw, nrmFacing, dirOut);
     *pdf = Surface_pdf(isect, *dirIn);
     *pdfDelta = false;
     return Surface_reflected(isect, *dirIn);
