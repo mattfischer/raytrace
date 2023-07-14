@@ -49,6 +49,8 @@ struct SceneProxy {
 struct ShapeIntersectionProxy {
     float distance;
     NormalProxy normal;
+    BivectorProxy tangent;
+    Point2DProxy surfacePoint;
 };
 
 struct IntersectionProxy {

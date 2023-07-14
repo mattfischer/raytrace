@@ -47,6 +47,7 @@ struct ShapeTriangleMeshProxy {
 struct GridVertexProxy {
     PointProxy point;
     NormalProxy normal;
+    BivectorProxy tangent;
 };
 
 struct ShapeGridProxy {

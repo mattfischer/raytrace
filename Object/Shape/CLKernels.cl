@@ -34,6 +34,7 @@ typedef struct {
 typedef struct {
     Point point;
     Normal normal;
+    Bivector tangent;
 } GridVertex;
 
 typedef struct {
@@ -82,6 +83,8 @@ struct _Shape {
 typedef struct {
     float distance;
     Normal normal;
+    Bivector tangent;
+    Point2D surfacePoint;
 } ShapeIntersection;
 
 float length2(float3 v)
@@ -89,16 +92,19 @@ float length2(float3 v)
     return dot(v, v);
 }
 
-bool ShapeQuad_intersect(Ray *ray, ShapeQuad *quad, ShapeIntersection *shapeIntersection)
+bool ShapeQuad_intersect(Ray *ray, ShapeQuad *quad, ShapeIntersection *isectShape)
 {
     float distance = dot(ray->origin - quad->position, quad->normal) / dot(ray->direction, -quad->normal);
-    if(distance >= 0 && distance < shapeIntersection->distance) {
+    if(distance >= 0 && distance < isectShape->distance) {
         Point point = ray->origin + ray->direction * distance;
         float u = dot(point - quad->position, quad->side1) / length2(quad->side1);
         float v = dot(point - quad->position, quad->side2) / length2(quad->side2);
         if(u >= 0 && u <= 1 && v >= 0 && v <= 1) {
-            shapeIntersection->distance = distance;
-            shapeIntersection->normal = quad->normal;
+            isectShape->distance = distance;
+            isectShape->normal = quad->normal;
+            isectShape->tangent.u = quad->side1;
+            isectShape->tangent.v = quad->side2;
+            isectShape->surfacePoint = (Point2D)(u, v);
             return true;
         } 
     }
@@ -123,7 +129,7 @@ bool ShapeQuad_sample(ShapeQuad *quad, float2 random, Point *point, Normal *norm
     return true;
 }
 
-bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *shapeIntersection)
+bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *isectShape)
 {
     float a, b, c;
     float disc;
@@ -135,18 +141,24 @@ bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *sha
     disc = b * b - 4 * a * c;
     if(disc >= 0) {
         float distance = (-b - sqrt(disc)) / (2 * a);
-        if(distance >= 0 && distance < shapeIntersection->distance) {
-            shapeIntersection->distance = distance;
+        if(distance >= 0 && distance < isectShape->distance) {
+            isectShape->distance = distance;
             Point point = ray->origin + ray->direction * distance;
-            shapeIntersection->normal = (point - sphere->position) / sphere->radius;
+            isectShape->normal = (point - sphere->position) / sphere->radius;
+            isectShape->tangent.u = (Vector)(0,0,0);
+            isectShape->tangent.v = (Vector)(0,0,0);
+            isectShape->surfacePoint = (Point2D)(0,0);
             return true;
         }
 
         distance = (-b + sqrt(disc)) / (2 * a);
-        if(distance >= 0 && distance < shapeIntersection->distance) {
-            shapeIntersection->distance = distance;
+        if(distance >= 0 && distance < isectShape->distance) {
+            isectShape->distance = distance;
             Point point = ray->origin + ray->direction * distance;
-            shapeIntersection->normal = (point - sphere->position) / sphere->radius;
+            isectShape->normal = (point - sphere->position) / sphere->radius;
+            isectShape->tangent.u = (Vector)(0,0,0);
+            isectShape->tangent.v = (Vector)(0,0,0);
+            isectShape->surfacePoint = (Point2D)(0,0);
             return true;
         }
     }
@@ -154,7 +166,7 @@ bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *sha
     return false;
 }
 
-bool Triangle_intersect(Ray *ray, Point p, Point pu, Point pv, float *distance)
+bool Triangle_intersect(Ray *ray, Point p, Point pu, Point pv, float *distance, float *u, float *v)
 {
     Vector E1 = pu - p;
     Vector E2 = pv - p;
@@ -184,6 +196,8 @@ bool Triangle_intersect(Ray *ray, Point p, Point pu, Point pv, float *distance)
     }
 
     *distance = d;
+    *u = uu;
+    *v = vv;
     return true;
 }
 
@@ -241,7 +255,7 @@ typedef struct {
     float minDistance;
 } StackEntry;
 
-bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, ShapeIntersection *shapeIntersection)
+bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, ShapeIntersection *isectShape)
 {
     StackEntry stack[64];
 
@@ -257,7 +271,7 @@ bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, Shap
         BVHNode *bvhNode = &triangleMesh->bvh[nodeIndex];
         float nodeMinimum = stack[n].minDistance;
 
-        if(nodeMinimum > shapeIntersection->distance) {
+        if(nodeMinimum > isectShape->distance) {
             continue;
         }
 
@@ -268,8 +282,12 @@ bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, Shap
             Point vertex1 = triangleMesh->vertices[triangle->vertices[1]];
             Point vertex2 = triangleMesh->vertices[triangle->vertices[2]];
 
-            if(Triangle_intersect(ray, vertex0, vertex1, vertex2, &shapeIntersection->distance)) {
-                shapeIntersection->normal = triangle->normal;
+            float tu, tv;
+            if(Triangle_intersect(ray, vertex0, vertex1, vertex2, &isectShape->distance, &tu, &tv)) {
+                isectShape->normal = triangle->normal;
+                isectShape->tangent.u = (Vector)(0,0,0);
+                isectShape->tangent.v = (Vector)(0,0,0);
+                isectShape->surfacePoint = (Point2D)(0,0);
                 ret = true;
             }
         } else {
@@ -296,7 +314,7 @@ bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, Shap
     return ret;
 }
 
-bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *shapeIntersection)
+bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *isectShape)
 {
     StackEntry stack[64];
 
@@ -312,7 +330,7 @@ bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *shapeInte
         BVHNode *bvhNode = &grid->bvh[nodeIndex];
         float nodeMinimum = stack[n].minDistance;
 
-        if(nodeMinimum > shapeIntersection->distance) {
+        if(nodeMinimum > isectShape->distance) {
             continue;
         }
 
@@ -321,16 +339,27 @@ bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *shapeInte
             unsigned int u = index % grid->width;
             unsigned int v = index / grid->width;
             GridVertex *vertex0 = &grid->vertices[v * grid->width + u];
+            Point2D pntSurf0 = (Point2D)((float)u / grid->width, (float)v / grid->height);
             GridVertex *vertex1 = &grid->vertices[v * grid->width + u + 1];
+            Point2D pntSurf1 = (Point2D)((float)(u + 1) / grid->width, (float)v / grid->height);
             GridVertex *vertex2 = &grid->vertices[(v + 1) * grid->width + u];
+            Point2D pntSurf2 = (Point2D)((float)u / grid->width, (float)(v + 1) / grid->height);
             GridVertex *vertex3 = &grid->vertices[(v + 1) * grid->width + u + 1];
+            Point2D pntSurf3 = (Point2D)((float)(u + 1) / grid->width, (float)(v + 1) / grid->height);
 
-            if(Triangle_intersect(ray, vertex0->point, vertex1->point, vertex2->point, &shapeIntersection->distance)) {
-                shapeIntersection->normal = vertex0->normal;
+            float tu, tv;
+            if(Triangle_intersect(ray, vertex0->point, vertex1->point, vertex2->point, &isectShape->distance, &tu, &tv)) {
+                isectShape->normal = vertex0->normal * (1 - tu - tv) + vertex1->normal * tu + vertex2->normal * tv;
+                isectShape->tangent.u = vertex0->tangent.u * (1 - tu - tv) + vertex1->tangent.u * tu + vertex2->tangent.u * tv;
+                isectShape->tangent.v = vertex0->tangent.v * (1 - tu - tv) + vertex1->tangent.v * tu + vertex2->tangent.v * tv;
+                isectShape->surfacePoint = pntSurf0 * (1 - tu - tv) + pntSurf1 * tu + pntSurf2 * tv;
                 ret = true;
             }
-            if(Triangle_intersect(ray, vertex3->point, vertex2->point, vertex1->point, &shapeIntersection->distance)) {
-                shapeIntersection->normal = vertex2->normal;
+            if(Triangle_intersect(ray, vertex3->point, vertex2->point, vertex1->point, &isectShape->distance, &tu, &tv)) {
+                isectShape->normal = vertex3->normal * (1 - tu - tv) + vertex2->normal * tu + vertex1->normal * tv;
+                isectShape->tangent.u = vertex3->tangent.u * (1 - tu - tv) + vertex2->tangent.u * tu + vertex1->tangent.u * tv;
+                isectShape->tangent.v = vertex3->tangent.v * (1 - tu - tv) + vertex2->tangent.v * tu + vertex1->tangent.v * tv;
+                isectShape->surfacePoint = pntSurf3 * (1 - tu - tv) + pntSurf2 * tu + pntSurf1 * tv;
                 ret = true;
             }
         } else {
@@ -357,17 +386,35 @@ bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *shapeInte
     return ret;
 }
 
-bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection);
+bool Shape_intersect_3(Ray *ray, Shape *shape, ShapeIntersection *isectShape)
+{
+    switch(shape->type) {
+    case ShapeTypeQuad:
+        return ShapeQuad_intersect(ray, &shape->quad, isectShape);
 
-bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *shapeIntersection)
+    case ShapeTypeSphere:
+        return ShapeSphere_intersect(ray, &shape->sphere, isectShape);
+
+    case ShapeTypeTriangleMesh:
+        return ShapeTriangleMesh_intersect(ray, &shape->triangleMesh, isectShape);
+
+    case ShapeTypeGrid:
+        return ShapeGrid_intersect(ray, &shape->grid, isectShape);
+
+    default:
+        return false;
+    }
+}
+
+bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *isectShape)
 {
     bool ret = false;
 
     for(int i=0; i<group->numShapes; i++) {
         float minDist;
         float maxDist;
-        if(BoundingVolume_intersect(&group->volumes[i], ray, &minDist, &maxDist) && minDist < shapeIntersection->distance) {
-            if(Shape_intersect(ray, &group->shapes[i], shapeIntersection)) {
+        if(BoundingVolume_intersect(&group->volumes[i], ray, &minDist, &maxDist) && minDist < isectShape->distance) {
+            if(Shape_intersect_3(ray, &group->shapes[i], isectShape)) {
                 ret = true;
             }
         }
@@ -376,44 +423,36 @@ bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *shapeI
     return ret;
 }
 
-bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIntersection *shapeIntersection)
+bool Shape_intersect_2(Ray *ray, Shape *shape, ShapeIntersection *isectShape)
+{
+    if(shape->type == ShapeTypeGroup) {
+        return ShapeGroup_intersect(ray, &shape->group, isectShape);
+    } else {
+        return Shape_intersect_3(ray, shape, isectShape);
+    }
+}
+
+bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIntersection *isectShape)
 {
     Ray rayTrans;
     rayTrans.origin = Matrix_multiplyPoint(&transformed->transformation.inverseMatrix, &ray->origin);
     rayTrans.direction = Matrix_multiplyVector(&transformed->transformation.inverseMatrix, &ray->direction);
     
     bool ret = false;
-    if(Shape_intersect(&rayTrans, transformed->shape, shapeIntersection)) {
-        shapeIntersection->normal = normalize(Matrix_multiplyNormal(&transformed->transformation.matrix, &shapeIntersection->normal));
+    if(Shape_intersect_2(&rayTrans, transformed->shape, isectShape)) {
+        isectShape->normal = normalize(Matrix_multiplyNormal(&transformed->transformation.matrix, &isectShape->normal));
         ret = true;
     }
 
     return ret;
 }
 
-bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *shapeIntersection)
+bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *isectShape)
 {
-    switch(shape->type) {
-    case ShapeTypeQuad:
-        return ShapeQuad_intersect(ray, &shape->quad, shapeIntersection);
-
-    case ShapeTypeSphere:
-        return ShapeSphere_intersect(ray, &shape->sphere, shapeIntersection);
-
-    case ShapeTypeTriangleMesh:
-        return ShapeTriangleMesh_intersect(ray, &shape->triangleMesh, shapeIntersection);
-
-    case ShapeTypeGrid:
-        return ShapeGrid_intersect(ray, &shape->grid, shapeIntersection);
-
-    case ShapeTypeGroup:
-        return ShapeGroup_intersect(ray, &shape->group, shapeIntersection);
-
-    case ShapeTypeTransformed:
-        return ShapeTransformed_intersect(ray, &shape->transformed, shapeIntersection);
-
-    default:
-        return false;
+    if(shape->type == ShapeTypeTransformed) {
+        return ShapeTransformed_intersect(ray, &shape->transformed, isectShape);
+    } else {
+        return Shape_intersect_2(ray, shape, isectShape);
     }
 }
 

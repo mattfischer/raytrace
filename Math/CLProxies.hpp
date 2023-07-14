@@ -25,6 +25,10 @@ __declspec(align(16)) struct MatrixProxy {
     float values[16];
 };
 
+__declspec(align(8)) struct Point2DProxy {
+    float values[2];
+};
+
 struct TransformationProxy {
     MatrixProxy matrix;
     MatrixProxy inverseMatrix;

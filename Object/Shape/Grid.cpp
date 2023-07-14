@@ -107,6 +107,7 @@ namespace Object {
             for(int i=0; i<mVertices.size(); i++) {
                 mVertices[i].point.writeProxy(proxy.grid.vertices[i].point);
                 mVertices[i].normal.writeProxy(proxy.grid.vertices[i].normal);
+                mVertices[i].tangent.writeProxy(proxy.grid.vertices[i].tangent);
             }
             proxy.grid.bvh = clAllocator.allocateArray<BVHNodeProxy>(mBoundingVolumeHierarchy.nodes().size());
             mBoundingVolumeHierarchy.writeProxy(proxy.grid.bvh);

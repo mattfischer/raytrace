@@ -1,4 +1,5 @@
 typedef float3 Point;
+typedef float2 Point2D;
 typedef float3 Vector;
 typedef float3 Normal;
 typedef float3 Color;
