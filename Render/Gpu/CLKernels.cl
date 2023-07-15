@@ -130,7 +130,7 @@ kernel void intersectRays(global Context *context)
         Radiance rad2 = item->isect.primitive->surface.radiance;
         float misWeight = 1.0f;
         if(length(rad2) > 0 && !item->specularBounce && item->generation > 0) {
-            Normal nrmFacing = facingNormal(&item->isect);
+            Normal nrmFacing = item->isect.facingNormal;
             float dot2 = -dot(nrmFacing, item->beam.ray.direction);
             float d = item->isect.shapeIntersection.distance;
             float pdfArea = item->pdf * dot2 / (d * d);
@@ -160,7 +160,7 @@ kernel void directLightArea(global Context *context)
     Item *item = &context->items[key];
 
     Intersection *isect = &item->isect;
-    Normal nrmFacing = facingNormal(isect);
+    Normal nrmFacing = isect->facingNormal;
     Point pntOffset = isect->point + nrmFacing * 0.01f;
 
     Primitive *light = context->scene.areaLights[item->lightIndex];
@@ -205,7 +205,7 @@ kernel void directLightPoint(global Context *context)
     Item *item = &context->items[key];
 
     Intersection *isect = &item->isect;
-    Normal nrmFacing = facingNormal(isect);
+    Normal nrmFacing = isect->facingNormal;
     Point pntOffset = isect->point + nrmFacing * 0.01f;
     PointLight *pointLight = &context->scene.pointLights[item->lightIndex];
 
@@ -237,7 +237,7 @@ kernel void extendPath(global Context *context)
     int key = Queue_getKey(&context->extendPathQueue, get_global_id(0));
     Item *item = &context->items[key];
     Intersection *isect = &item->isect;
-    Normal nrmFacing = facingNormal(isect);
+    Normal nrmFacing = isect->facingNormal;
     
     Vector dirIn;
     float pdf;

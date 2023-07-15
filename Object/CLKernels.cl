@@ -42,22 +42,16 @@ typedef struct {
     Primitive *primitive;
     Beam *beam;
     Point point;
+    Normal normal;
+    Normal facingNormal;
+    Bivector2D surfaceProjection;
 } Intersection;
-
-Normal facingNormal(Intersection *isect)
-{
-    if(dot(isect->shapeIntersection.normal, isect->beam->ray.direction) > 0) {
-        return -isect->shapeIntersection.normal;
-    } else {
-        return isect->shapeIntersection.normal;
-    }
-}
 
 float Surface_pdf(Intersection *isect, Vector dirIn)
 {
     Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
-    Normal nrmFacing = facingNormal(isect);
+    Normal nrmFacing = isect->facingNormal;
 
     float totalPdf = 0;
     for(int i=0; i<surf->numBrdfs; i++) {
@@ -72,7 +66,7 @@ Color Surface_reflected(Intersection *isect, Vector dirIn)
 {
     Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
-    Normal nrmFacing = facingNormal(isect);
+    Normal nrmFacing = isect->facingNormal;
     Color albedo = Albedo_color(&surf->albedo);
 
     Color col = (Color)(0, 0, 0);
@@ -88,7 +82,7 @@ Color Surface_reflected(Intersection *isect, Vector dirIn)
 Color Surface_transmitted(Intersection *isect, Vector dirIn)
 {
     Surface *surf = &isect->primitive->surface;
-    Normal nrmFacing = facingNormal(isect);
+    Normal nrmFacing = isect->facingNormal;
     Color albedo = Albedo_color(&surf->albedo);
 
     Color colTransmit = (Color)(1, 1, 1);
@@ -103,7 +97,7 @@ Color Surface_sample(Intersection *isect, float4 random, Vector *dirIn, float *p
 {
     Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
-    Normal nrmFacing = facingNormal(isect);
+    Normal nrmFacing = isect->facingNormal;
 
     float transmitThreshold = 0;
     if(!surf->opaque) {       
@@ -153,6 +147,20 @@ void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
 
     if(isect->primitive != 0) {
         isect->point = beam->ray.origin + beam->ray.direction * isect->shapeIntersection.distance;
+        isect->normal = isect->shapeIntersection.normal;
+        bool reverse = (dot(isect->normal, isect->beam->ray.direction) > 0);
+        isect->facingNormal = isect->normal * (reverse ? -1 : 1);       
+
+        Bivector projection;
+        Beam_project(beam, isect->shapeIntersection.distance, isect->normal, &projection);
+        Vector v = cross(isect->shapeIntersection.tangent.u, isect->shapeIntersection.tangent.v);
+        v = v / dot(v, v);
+        Vector2D du = (Vector2D)(dot(cross(projection.u, isect->shapeIntersection.tangent.v), v),
+                                 dot(cross(projection.u, isect->shapeIntersection.tangent.u), v));
+        Vector2D dv = (Vector2D)(dot(cross(projection.v, isect->shapeIntersection.tangent.v), v),
+                                 dot(cross(projection.u, isect->shapeIntersection.tangent.v), v));
+        isect->surfaceProjection.u = du;
+        isect->surfaceProjection.v = dv;
     }
 }
 

@@ -58,6 +58,9 @@ struct IntersectionProxy {
     PrimitiveProxy *primitive;
     BeamProxy *beam;
     PointProxy point;
+    NormalProxy normal;
+    NormalProxy facingNormal;
+    Bivector2DProxy surfaceProjection;
 };
 
 #endif
