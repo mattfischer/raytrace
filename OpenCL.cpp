@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include <fstream>
+#include <filesystem>
 
 namespace OpenCL {
     Context::Context()
@@ -65,23 +66,8 @@ namespace OpenCL {
     }
 
     Program::Program(Context &context, const std::string &filename)
+    : Program(context, std::vector<std::string>{filename})
     {
-        std::string sourceStr = loadSourceFile(filename);
-
-        const char *source = sourceStr.c_str();
-        size_t size = sourceStr.size();
-        cl_int errcode;
-        mClProgram = clCreateProgramWithSource(context.clContext(), 1, &source, &size, &errcode);
-        printf("Program: %p errcode: %i\n", mClProgram, errcode);
-
-        errcode = clBuildProgram(mClProgram, 0, NULL, "-cl-std=CL2.0", NULL, NULL);
-        printf("Build program: %i\n", errcode);
-
-        char buffer[1024*10];
-        size_t logSize;
-        clGetProgramBuildInfo(mClProgram, context.clDevice(), CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &logSize);
-        buffer[logSize] = '\0';
-        printf("%s\n", buffer);
     }
 
     Program::Program(Context &context, const std::vector<std::string> &filenames)
@@ -89,25 +75,59 @@ namespace OpenCL {
         std::vector<std::string> sourceStrs;
         std::vector<const char *> sources;
         std::vector<size_t> sizes;
+        std::filesystem::file_time_type cacheTime;
+        bool useCache = false;
+
+        std::filesystem::path cachePath("clcache.bin");
+        if(std::filesystem::exists(cachePath)) {
+            useCache = true;
+            cacheTime = std::filesystem::last_write_time(cachePath);
+        }
+
         for(const std::string &filename : filenames) {
             std::string sourceStr = loadSourceFile(filename);
             sources.push_back(sourceStr.c_str());
             sizes.push_back(sourceStr.size());
             sourceStrs.push_back(std::move(sourceStr));
+            std::filesystem::file_time_type time = std::filesystem::last_write_time(filename);
+            if(time > cacheTime) {
+                useCache = false;
+            }
         }
         
-        cl_int errcode;
-        mClProgram = clCreateProgramWithSource(context.clContext(), sourceStrs.size(), &sources[0], &sizes[0], &errcode);
-        printf("Program: %p errcode: %i\n", mClProgram, errcode);
+        if(useCache) {
+            std::string binStr = loadSourceFile(cachePath.string());
+            cl_device_id device = context.clDevice();
+            size_t length = binStr.size();
+            const unsigned char *binary = (const unsigned char*)&binStr[0];
+            cl_int errcode;
+            mClProgram = clCreateProgramWithBinary(context.clContext(), 1, &device, &length, &binary, NULL, &errcode);
+            printf("Program: %p errcode: %i\n", mClProgram, errcode);
 
-        errcode = clBuildProgram(mClProgram, 0, NULL, "-cl-std=CL2.0", NULL, NULL);
-        printf("Build program: %i\n", errcode);
+            errcode = clBuildProgram(mClProgram, 0, NULL, "-cl-std=CL2.0", NULL, NULL);
+            printf("Build program: %i\n", errcode);
+        } else {
+            cl_int errcode;
+            mClProgram = clCreateProgramWithSource(context.clContext(), sourceStrs.size(), &sources[0], &sizes[0], &errcode);
+            printf("Program: %p errcode: %i\n", mClProgram, errcode);
 
-        char buffer[1024*100];
-        size_t logSize = 0;
-        clGetProgramBuildInfo(mClProgram, context.clDevice(), CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &logSize);
-        buffer[logSize] = '\0';
-        printf("%s\n", buffer);
+            errcode = clBuildProgram(mClProgram, 0, NULL, "-cl-std=CL2.0", NULL, NULL);
+            printf("Build program: %i\n", errcode);
+
+            char buffer[1024*100];
+            size_t logSize = 0;
+            clGetProgramBuildInfo(mClProgram, context.clDevice(), CL_PROGRAM_BUILD_LOG, sizeof(buffer), buffer, &logSize);
+            buffer[logSize] = '\0';
+            printf("%s\n", buffer);
+
+            size_t binSize;
+            clGetProgramInfo(mClProgram, CL_PROGRAM_BINARY_SIZES, sizeof(binSize), &binSize, NULL);
+            unsigned char *binary = new unsigned char[binSize];
+            clGetProgramInfo(mClProgram, CL_PROGRAM_BINARIES, sizeof(unsigned char*), &binary, NULL);
+            std::ofstream of(cachePath.string().c_str(), std::ios::out | std::ios::binary);
+            of.write((const char*)binary, binSize);
+            of.close();
+        }
     }
     
     std::string Program::loadSourceFile(const std::string &filename)

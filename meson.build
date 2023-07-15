@@ -77,5 +77,6 @@ executable('raytrace',
     'Render/Gpu/WorkQueue.cpp',
     'OpenCL.cpp',
     flex_c, bison_c,
+    cpp_args: ['/std:c++17'],
     dependencies: [python, opencl]
 )
