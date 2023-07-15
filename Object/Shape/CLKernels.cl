@@ -441,6 +441,8 @@ bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIn
     bool ret = false;
     if(Shape_intersect_2(&rayTrans, transformed->shape, isectShape)) {
         isectShape->normal = normalize(Matrix_multiplyNormal(&transformed->transformation.matrix, &isectShape->normal));
+        isectShape->tangent.u = Matrix_multiplyVector(&transformed->transformation.matrix, &isectShape->tangent.u);
+        isectShape->tangent.v = Matrix_multiplyVector(&transformed->transformation.matrix, &isectShape->tangent.v);
         ret = true;
     }
 
