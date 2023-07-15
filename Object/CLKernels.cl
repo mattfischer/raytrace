@@ -1,10 +1,15 @@
 typedef struct {
+    Texture texture;
+} NormalMap;
+
+typedef struct {
     Radiance radiance;
     Albedo albedo;
     int numBrdfs;
     Brdf *brdfs;
     bool opaque;
     float transmitIor;
+    NormalMap *normalMap;
 } Surface;
 
 typedef struct {
@@ -46,6 +51,13 @@ typedef struct {
     Normal facingNormal;
     Bivector2D surfaceProjection;
 } Intersection;
+
+Normal NormalMap_perturbNormal(NormalMap *normalMap, Point2D surfacePoint, Bivector2D *surfaceProjection, Normal normal, Bivector *tangent)
+{
+    float2 value = Texture_sample2(&normalMap->texture, surfacePoint, surfaceProjection);
+    Vector offset = tangent->u * value.x + tangent->v * value.y;
+    return normalize(normal + offset);
+}
 
 float Surface_pdf(Intersection *isect, Vector dirIn)
 {
@@ -148,8 +160,6 @@ void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
     if(isect->primitive != 0) {
         isect->point = beam->ray.origin + beam->ray.direction * isect->shapeIntersection.distance;
         isect->normal = isect->shapeIntersection.normal;
-        bool reverse = (dot(isect->normal, isect->beam->ray.direction) > 0);
-        isect->facingNormal = isect->normal * (reverse ? -1 : 1);       
 
         Bivector projection;
         Beam_project(beam, isect->shapeIntersection.distance, isect->normal, &projection);
@@ -161,6 +171,14 @@ void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
                                  dot(cross(projection.u, isect->shapeIntersection.tangent.v), v));
         isect->surfaceProjection.u = du;
         isect->surfaceProjection.v = dv;
+
+        NormalMap *normalMap = isect->primitive->surface.normalMap;
+        if(normalMap) {
+            isect->normal = NormalMap_perturbNormal(normalMap, isect->shapeIntersection.surfacePoint, &isect->surfaceProjection, isect->shapeIntersection.normal, &isect->shapeIntersection.tangent);
+        }        
+        bool reverse = (dot(isect->normal, isect->beam->ray.direction) > 0);
+        isect->facingNormal = isect->normal * (reverse ? -1 : 1);       
+
     }
 }
 

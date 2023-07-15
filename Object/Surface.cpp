@@ -159,6 +159,12 @@ namespace Object {
         }
         proxy.opaque = mOpaque;
         proxy.transmitIor = mTransmitIor;
+        if(mNormalMap) {
+            proxy.normalMap = clAllocator.allocate<NormalMapProxy>();
+            mNormalMap->writeProxy(*proxy.normalMap, clAllocator);
+        } else {
+            proxy.normalMap = nullptr;
+        }
     }
 
 }

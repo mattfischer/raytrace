@@ -30,4 +30,9 @@ namespace Object {
         Math::Vector offset = tangent * Math::Vector2D(value.channels[0], value.channels[1]);
         return (normal + Math::Normal(offset)).normalize();
     }
+
+    void NormalMap::writeProxy(NormalMapProxy &proxy, OpenCL::Allocator &clAllocator) const
+    {
+        mTexture->writeProxy(proxy.texture, clAllocator);
+    }
 }

@@ -6,6 +6,10 @@
 #include "Object/Shape/CLProxies.hpp"
 #include "Object/Brdf/CLProxies.hpp"
 
+struct NormalMapProxy {
+    TextureProxy texture;
+};
+
 struct SurfaceProxy {
     RadianceProxy radiance;
     AlbedoProxy albedo;
@@ -13,6 +17,7 @@ struct SurfaceProxy {
     BrdfProxy *brdfs;
     bool opaque;
     float transmitIor;
+    NormalMapProxy *normalMap;
 };
 
 struct PrimitiveProxy {
