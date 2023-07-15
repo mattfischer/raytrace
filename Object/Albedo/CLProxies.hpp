@@ -3,8 +3,24 @@
 
 #include "Math/CLProxies.hpp"
 
+struct MipMapProxy {
+    int width;
+    int height;
+    int numChannels;
+    float *values;
+};
+
+struct TextureProxy {
+    int numMipMaps;
+    MipMapProxy *mipMaps;
+};
+
 struct AlbedoSolidProxy {
     ColorProxy color;
+};
+
+struct AlbedoTextureProxy {
+    TextureProxy texture;
 };
 
 struct AlbedoProxy {
@@ -16,6 +32,7 @@ struct AlbedoProxy {
     Type type;
     union {
         AlbedoSolidProxy solid;
+        AlbedoTextureProxy texture;
     };
 };
 

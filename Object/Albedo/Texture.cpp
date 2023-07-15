@@ -24,9 +24,10 @@ namespace Object {
             return true;
         }
 
-        void Texture::writeProxy(AlbedoProxy &proxy) const
+        void Texture::writeProxy(AlbedoProxy &proxy, OpenCL::Allocator &clAllocator) const
         {
             proxy.type = AlbedoProxy::Type::Texture;
+            mTexture->writeProxy(proxy.texture.texture, clAllocator);
         }       
     }
 }

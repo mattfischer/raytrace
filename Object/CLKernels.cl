@@ -67,7 +67,7 @@ Color Surface_reflected(Intersection *isect, Vector dirIn)
     Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
     Normal nrmFacing = isect->facingNormal;
-    Color albedo = Albedo_color(&surf->albedo);
+    Color albedo = Albedo_color(&surf->albedo, isect->shapeIntersection.surfacePoint, &isect->surfaceProjection);
 
     Color col = (Color)(0, 0, 0);
     Color colTransmit = (Color)(1, 1, 1);
@@ -83,7 +83,7 @@ Color Surface_transmitted(Intersection *isect, Vector dirIn)
 {
     Surface *surf = &isect->primitive->surface;
     Normal nrmFacing = isect->facingNormal;
-    Color albedo = Albedo_color(&surf->albedo);
+    Color albedo = Albedo_color(&surf->albedo, isect->shapeIntersection.surfacePoint, &isect->surfaceProjection);
 
     Color colTransmit = (Color)(1, 1, 1);
     for(int i=0; i<surf->numBrdfs; i++) {

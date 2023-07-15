@@ -17,7 +17,7 @@ namespace Object {
             return false;
         } 
 
-        void Solid::writeProxy(AlbedoProxy &proxy) const
+        void Solid::writeProxy(AlbedoProxy &proxy, OpenCL::Allocator &clAllocator) const
         {
             proxy.type = AlbedoProxy::Type::Solid;
             mColor.writeProxy(proxy.solid.color);

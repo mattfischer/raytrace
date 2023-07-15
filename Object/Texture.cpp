@@ -48,6 +48,15 @@ namespace Object {
         return *mMipMaps[level];
     }
 
+    void TextureBase::writeProxy(TextureProxy &proxy, OpenCL::Allocator &clAllocator) const
+    {
+        proxy.numMipMaps = mMipMaps.size();
+        proxy.mipMaps = clAllocator.allocateArray<MipMapProxy>(proxy.numMipMaps);
+        for(int i=0; i<mMipMaps.size(); i++) {
+            mMipMaps[i]->writeProxy(proxy.mipMaps[i], clAllocator);
+        }
+    }
+
     void TextureBase::doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const
     {
         float lf = selectMipMap(sampleProjection);
@@ -209,5 +218,14 @@ namespace Object {
                 dx * dy * at(x1, y1, i);
             values[i] += weight * v;
         }
+    }
+
+    void TextureBase::MipMap::writeProxy(MipMapProxy &proxy, OpenCL::Allocator &clAllocator) const
+    {
+        proxy.width = mWidth;
+        proxy.height = mHeight;
+        proxy.numChannels = mNumChannels;
+        proxy.values = clAllocator.allocateArray<float>(mValues.size());
+        memcpy(proxy.values, &mValues[0], mValues.size() * sizeof(float));
     }
 }

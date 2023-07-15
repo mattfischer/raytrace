@@ -9,6 +9,9 @@
 #include <vector>
 #include <memory>
 
+#include "Object/CLProxies.hpp"
+#include "OpenCL.hpp"
+
 namespace Object {
     class TextureBase
     {
@@ -27,6 +30,8 @@ namespace Object {
 
             void sample(const Math::Point2D &samplePoint, float weight, float values[]) const;
 
+            void writeProxy(MipMapProxy &proxy, OpenCL::Allocator &clAllocator) const;
+
         private:
             int mWidth;
             int mHeight;
@@ -38,6 +43,8 @@ namespace Object {
 
         void generateMipMaps();
         const MipMap &mipMap(int level) const;
+
+        void writeProxy(TextureProxy &proxy, OpenCL::Allocator &clAllocator) const;
 
     protected:
         void doSample(const Math::Point2D &samplePoint, const Math::Bivector2D &sampleProjection, float values[]) const;

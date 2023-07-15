@@ -13,7 +13,7 @@ namespace Object {
             Math::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const override;
             bool needSurfaceProjection() const override;
         
-            void writeProxy(AlbedoProxy &proxy) const override;
+            void writeProxy(AlbedoProxy &proxy, OpenCL::Allocator &clAllocator) const override;
 
         protected:
             Math::Color mColor;

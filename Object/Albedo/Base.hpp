@@ -7,6 +7,7 @@
 #include "Math/Bivector2D.hpp"
 
 #include "Object/CLProxies.hpp"
+#include "OpenCL.hpp"
 
 namespace Object {
     namespace Albedo {
@@ -16,7 +17,7 @@ namespace Object {
             virtual Math::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const = 0;
             virtual bool needSurfaceProjection() const = 0;
  
-            virtual void writeProxy(AlbedoProxy &proxy) const = 0;
+            virtual void writeProxy(AlbedoProxy &proxy, OpenCL::Allocator &clAllocator) const = 0;
         };
     }
 }
