@@ -40,6 +40,7 @@ typedef struct {
     PointLight *pointLights;
     Radiance skyRadiance;
     Camera camera;
+    BVHNode *bvh;
 } Scene;
 
 typedef struct {
@@ -151,11 +152,49 @@ void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
     isect->primitive = NULL;
     isect->beam = beam;
 
-    for(int i=0; i<scene->numPrimitives; i++) {
-        if(Shape_intersect(&beam->ray, &scene->primitives[i].shape, &isect->shapeIntersection)) {
-            isect->primitive = &scene->primitives[i];
+    StackEntry stack[64];
+
+    int n = 0;
+    stack[n].nodeIndex = 0;
+    stack[n].minDistance = 0;
+    n++;
+
+    do {
+        n--;
+        int nodeIndex = stack[n].nodeIndex;
+        BVHNode *bvhNode = &scene->bvh[nodeIndex];
+        float nodeMinimum = stack[n].minDistance;
+
+        if(nodeMinimum > isect->shapeIntersection.distance) {
+            continue;
         }
-    }
+
+        if(bvhNode->index <= 0) {
+            int index = -bvhNode->index;
+
+            if(Shape_intersect(&beam->ray, &scene->primitives[index].shape, &isect->shapeIntersection)) {
+                isect->primitive = &scene->primitives[index];
+            }
+        } else {
+            int indices[2] = { nodeIndex + 1, bvhNode->index };
+            float minDistances[2];
+            float maxDistances[2];
+            for(int i=0; i<2; i++) {
+                minDistances[i] = MAXFLOAT;
+                maxDistances[i] = -MAXFLOAT;
+                BoundingVolume_intersect(&bvhNode->volume, &beam->ray, &minDistances[i], &maxDistances[i]);
+            }
+
+            for(int i=0; i<2; i++) {
+                int j = (minDistances[0] >= minDistances[1]) ? i : 1 - i;
+                if(maxDistances[j] > 0) {
+                    stack[n].nodeIndex = indices[j];
+                    stack[n].minDistance = minDistances[j];
+                    n++;
+                }
+            }
+        }
+    } while(n > 0);
 
     if(isect->primitive != 0) {
         isect->point = beam->ray.origin + beam->ray.direction * isect->shapeIntersection.distance;
@@ -177,8 +216,7 @@ void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
             isect->normal = NormalMap_perturbNormal(normalMap, isect->shapeIntersection.surfacePoint, &isect->surfaceProjection, isect->shapeIntersection.normal, &isect->shapeIntersection.tangent);
         }        
         bool reverse = (dot(isect->normal, isect->beam->ray.direction) > 0);
-        isect->facingNormal = isect->normal * (reverse ? -1 : 1);       
-
+        isect->facingNormal = isect->normal * (reverse ? -1 : 1);
     }
 }
 

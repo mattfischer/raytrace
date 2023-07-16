@@ -48,6 +48,7 @@ struct SceneProxy {
     PointLightProxy *pointLights;
     RadianceProxy skyRadiance;
     CameraProxy camera;
+    BVHNodeProxy *bvh;
 };
 
 

@@ -70,8 +70,12 @@ namespace Object {
     {
         Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(beam.ray());
 
-        /*auto func = [&](int index, float &maxDistance) {
-            if (mPrimitives[index]->shape().intersect(ray, shapeIntersection)) {
+        Object::Shape::Base::Intersection shapeIntersection;
+        shapeIntersection.distance = FLT_MAX;
+        Object::Primitive *primitive = 0;
+
+        auto func = [&](int index, float &maxDistance) {
+            if (mPrimitives[index]->shape().intersect(beam.ray(), shapeIntersection)) {
                 primitive = mPrimitives[index].get();
                 return true;
             }
@@ -79,21 +83,7 @@ namespace Object {
             return false;
         };
 
-        mBoundingVolumeHierarchy.intersect(rayData, shapeIntersection.distance, std::ref(func));*/
-
-        Object::Shape::Base::Intersection shapeIntersection;
-        shapeIntersection.distance = FLT_MAX;
-        Object::Primitive *primitive = 0;
-
-        for (const std::unique_ptr<Object::Primitive> &testPrimitive : mPrimitives)
-        {
-            float volumeDistance;
-            if (testPrimitive->boundingVolume().intersectRay(rayData, volumeDistance) && volumeDistance < shapeIntersection.distance) {
-                if (testPrimitive->shape().intersect(beam.ray(), shapeIntersection)) {
-                    primitive = testPrimitive.get();
-                }
-            }
-        }
+        mBoundingVolumeHierarchy.intersect(rayData, shapeIntersection.distance, std::ref(func));
 
         if (primitive) {
             return Object::Intersection(*this, *primitive, beam, shapeIntersection);
@@ -126,5 +116,7 @@ namespace Object {
 
         mSkyRadiance.writeProxy(proxy.skyRadiance);
         mCamera->writeProxy(proxy.camera);
+        proxy.bvh = clAllocator.allocateArray<BVHNodeProxy>(mBoundingVolumeHierarchy.nodes().size());
+        mBoundingVolumeHierarchy.writeProxy(proxy.bvh);
     }
 }
