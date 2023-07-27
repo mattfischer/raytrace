@@ -369,7 +369,7 @@ namespace Render {
             void IrradianceCached::prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Math::Sampler::Base &sampler)
             {
                 Math::Color pixelColor;
-                sampler.startSequence();
+                sampler.startSample(x, y, 0);
                 Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D(float(x), float(y)), framebuffer.width(), framebuffer.height(), Math::Point2D());
 
                 Object::Intersection isect = scene.intersect(beam);

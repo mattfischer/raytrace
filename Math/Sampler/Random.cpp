@@ -5,15 +5,11 @@
 
 namespace Math {
     namespace Sampler {
-        void Random::startSequence(unsigned int index)
+        void Random::startSample(unsigned int index)
         {
         }
 
-        void Random::startSequence(const Base::State &state)
-        {
-        }
-
-        void Random::startSample()
+        void Random::startSample(unsigned int x, unsigned int y, unsigned int sample)
         {
         }
 
@@ -26,15 +22,6 @@ namespace Math {
             }
 
             return value;
-        }
-
-        Math::Point2D Random::getValue2D()
-        {
-            return Math::Point2D(getValue(), getValue());
-        }
-
-        void Random::recordState(Base::State &state) const
-        {
         }
     }
 }

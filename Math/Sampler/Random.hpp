@@ -11,14 +11,10 @@ namespace Math {
         class Random : public Base
         {
         public:
-            void startSequence(unsigned int index = 0) override;
-            void startSequence(const Base::State &state) override;
-            void startSample() override;
+            void startSample(unsigned int index = 0) override;
+            void startSample(unsigned int x, unsigned int y, unsigned int sample) override;
 
             float getValue() override;
-            Math::Point2D getValue2D() override;
-
-            void recordState(Base::State &state) const override;
 
         private:
             std::default_random_engine mRandomEngine;

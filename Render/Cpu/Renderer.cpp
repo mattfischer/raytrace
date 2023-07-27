@@ -1,7 +1,7 @@
 #include "Render/Cpu/Renderer.hpp"
 #include "Render/Cpu/RasterJob.hpp"
 
-#include "Math/Sampler/Random.hpp"
+#include "Math/Sampler/Halton.hpp"
 
 #include <atomic>
 #include <mutex>
@@ -9,7 +9,9 @@
 namespace Render {
     namespace Cpu {
         struct ThreadLocal : public Executor::Job::ThreadLocal {
-            Math::Sampler::Random sampler;
+            Math::Sampler::Halton sampler;
+
+            ThreadLocal(int width, int height) : sampler(width, height) {}
         };
             
         Renderer::Renderer(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter)
@@ -33,7 +35,7 @@ namespace Render {
                     settings.width,
                     settings.height,
                     settings.minSamples,
-                    [&]() { return std::make_unique<ThreadLocal>(); },
+                    [&]() { return std::make_unique<ThreadLocal>(mRenderFramebuffer->width(), mRenderFramebuffer->height()); },
                     [&](int x, int y, int sample, Executor::Job::ThreadLocal &threadLocalBase)
                         {
                             renderPixel(x, y, sample, static_cast<ThreadLocal&>(threadLocalBase).sampler);
@@ -86,7 +88,7 @@ namespace Render {
         void Renderer::renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler)
         {
             Math::Bivector dv;
-            sampler.startSample();
+            sampler.startSample(x, y, sample);
             Math::Point2D imagePoint = Math::Point2D((float)x, (float)y) + sampler.getValue2D();
             Math::Point2D aperturePoint = sampler.getValue2D();
             Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, mSettings.width, mSettings.height, aperturePoint);

@@ -11,27 +11,27 @@ namespace Math {
         class Halton : public Base
         {
         public:
-            Halton(unsigned int numDimensions);
+            Halton(int width, int height);
 
-            void startSequence(unsigned int index = 0) override;
-            void startSequence(const Base::State &state) override;
-            void startSample() override;
+            void startSample(unsigned int index = 0) override;
+            void startSample(unsigned int x, unsigned int y, unsigned int sample) override;
 
             float getValue() override;
-            Math::Point2D getValue2D() override;
-
-            void recordState(Base::State &state) const override;
 
         private:
-            struct State : public Base::State {
-                std::vector<std::tuple<unsigned int, unsigned int>> lastSamples;
-            };
+            uint64_t mIndex;
+            unsigned int mNextDimension;
 
-            unsigned int mNumDimensions;
-            unsigned int mCurrentDimension;
+            unsigned int mWidthExponent;
+            unsigned int mWidthAligned;
+            unsigned int mHeightExponent;
+            unsigned int mHeightAligned;
+            unsigned int mSampleStride;
+
+            int mEuclidX;
+            int mEuclidY;
+            
             std::default_random_engine mRandomEngine;
-
-            std::vector<std::tuple<unsigned int, unsigned int>> mLastSamples;
         };
     }
 }

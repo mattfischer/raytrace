@@ -7,17 +7,14 @@ namespace Math {
     namespace Sampler {
         class Base {
         public:
-            struct State {
-            };
-
-            virtual void startSequence(unsigned int index = 0) = 0;
-            virtual void startSequence(const State &state) = 0;
-            virtual void startSample() = 0;
+            virtual void startSample(unsigned int index = 0) = 0;
+            virtual void startSample(unsigned int x, unsigned int y, unsigned int sample) = 0;
 
             virtual float getValue() = 0;
-            virtual Math::Point2D getValue2D() = 0;
-
-            virtual void recordState(State &state) const = 0;
+            Math::Point2D getValue2D()
+            {
+                return Math::Point2D(getValue(), getValue());
+            }
         };
     }
 }
