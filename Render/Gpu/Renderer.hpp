@@ -6,7 +6,6 @@
 #include "Render/Renderer.hpp"
 
 #include "Render/Framebuffer.hpp"
-#include "Render/Executor.hpp"
 #include "Render/Raster.hpp"
 #include "Render/Gpu/WorkQueue.hpp"
 

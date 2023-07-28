@@ -348,7 +348,7 @@ namespace Render {
                 Math::Sampler::Random sampler;
             };
 
-            std::vector<std::unique_ptr<Render::Executor::Job>> IrradianceCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
+            std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> IrradianceCached::createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer)
             {
                 std::unique_ptr<Executor::Job> job = std::make_unique<Render::Cpu::RasterJob>(
                     framebuffer.width(),
@@ -361,7 +361,7 @@ namespace Render {
                         }
                 );
 
-                std::vector<std::unique_ptr<Render::Executor::Job>> jobs;
+                std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> jobs;
                 jobs.push_back(std::move(job));
                 return jobs;
             }

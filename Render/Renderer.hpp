@@ -1,7 +1,6 @@
 #ifndef RENDER_RENDERER_HPP
 #define RENDER_RENDERER_HPP
 
-#include "Render/Executor.hpp"
 #include "Render/Framebuffer.hpp"
 
 namespace Render {

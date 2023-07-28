@@ -1,7 +1,7 @@
 #ifndef RENDER_CPU_LIGHTER_BASE_HPP
 #define RENDER_CPU_LIGHTER_BASE_HPP
 
-#include "Render/Executor.hpp"
+#include "Render/Cpu/Executor.hpp"
 #include "Render/Framebuffer.hpp"
 
 #include "Math/Vector.hpp"
@@ -22,7 +22,7 @@ namespace Render {
                 virtual ~Base();
 
                 virtual Math::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const = 0;
-                virtual std::vector<std::unique_ptr<Render::Executor::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
+                virtual std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
             };
         }
     }

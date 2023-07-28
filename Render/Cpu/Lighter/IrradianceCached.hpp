@@ -23,7 +23,7 @@ namespace Render {
 
                 Math::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const override;
 
-                std::vector<std::unique_ptr<Render::Executor::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer) override;
+                std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer) override;
 
             private:
                 void prerenderPixel(unsigned int x, unsigned int y, Render::Framebuffer &framebuffer, const Object::Scene &scene, Math::Sampler::Base &sampler);

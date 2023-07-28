@@ -1,7 +1,7 @@
 #ifndef RENDER_CPU_RASTERJOB_HPP
 #define RENDER_CPU_RASTERJOB_HPP
 
-#include "Render/Executor.hpp"
+#include "Render/Cpu/Executor.hpp"
 
 #include <functional>
 #include <atomic>

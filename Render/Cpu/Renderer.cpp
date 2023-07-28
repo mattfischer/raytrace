@@ -24,8 +24,8 @@ namespace Render {
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
 
             if(mLighter) {
-                std::vector<std::unique_ptr<Render::Executor::Job>> prerenderJobs = mLighter->createPrerenderJobs(scene, *mRenderFramebuffer);
-                for (std::unique_ptr<Render::Executor::Job> &job : prerenderJobs) {
+                std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> prerenderJobs = mLighter->createPrerenderJobs(scene, *mRenderFramebuffer);
+                for (std::unique_ptr<Render::Cpu::Executor::Job> &job : prerenderJobs) {
                     mJobs.push_back(std::move(job));
                 }
             }
