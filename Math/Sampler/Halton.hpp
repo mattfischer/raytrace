@@ -5,6 +5,9 @@
 
 #include <stdint.h>
 
+#include "CLProxies.hpp"
+#include "OpenCL.hpp"
+
 namespace Math {
     namespace Sampler {
         class Halton : public Base
@@ -16,6 +19,8 @@ namespace Math {
             void startSample(unsigned int x, unsigned int y, unsigned int sample) override;
 
             float getValue() override;
+
+            void writeProxy(SamplerProxy &proxy, OpenCL::Allocator &clAllocator) const;
 
         private:
             uint64_t mIndex;

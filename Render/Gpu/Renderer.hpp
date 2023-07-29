@@ -10,7 +10,6 @@
 #include "Render/Gpu/WorkQueue.hpp"
 
 #include "Math/Beam.hpp"
-#include "Math/Sampler/Random.hpp"
 
 #include "OpenCL.hpp"
 
@@ -78,7 +77,6 @@ namespace Render {
             OpenCL::Kernel mClExtendPathKernel;
 
             ContextProxy *mContextProxy;
-            Math::Sampler::Random mSampler;
         };
     }
 }

@@ -15,6 +15,7 @@ typedef struct {
     int lightIndex;
     int x;
     int y;
+    SamplerState samplerState;
 } Item;
 
 typedef struct {
@@ -25,8 +26,8 @@ typedef struct {
     Scene scene;
     Settings settings;
     Item *items;
-    float *random;
     unsigned int currentPixel;
+    Sampler sampler;
 
     WorkQueue generateCameraRayQueue;
     WorkQueue intersectRaysQueue;
@@ -101,11 +102,10 @@ kernel void generateCameraRays(global Context *context)
 
     item->y = (cp / context->settings.width) % context->settings.height;
     item->x = cp % context->settings.width;
+    Sampler_startSample(&context->sampler, &item->samplerState, item->x, item->y, sample);
 
-    float *r = context->random + key * 12;
-
-    float2 imagePoint = (float2)(item->x, item->y) + (float2)(r[0], r[1]);
-    float2 aperturePoint = (float2)(r[2], r[3]);
+    float2 imagePoint = (float2)(item->x, item->y) + Sampler_getValue2D(&context->sampler, &item->samplerState);
+    float2 aperturePoint = Sampler_getValue2D(&context->sampler, &item->samplerState);
     createPixelBeam(&context->scene.camera, imagePoint, context->settings.width, context->settings.height, aperturePoint, &item->beam);
     item->specularBounce = false;
     item->generation = 0;
@@ -141,8 +141,7 @@ kernel void intersectRays(global Context *context)
         item->radiance += rad2 * item->throughput * misWeight;        
     
         int totalLights = context->scene.numAreaLights + context->scene.numPointLights;
-        float *r = context->random + key * 12;
-        int lightIndex = (int)floor(r[4] * totalLights);
+        int lightIndex = (int)floor(Sampler_getValue(&context->sampler, &item->samplerState) * totalLights);
 
         if(lightIndex < context->scene.numAreaLights) {
             item->lightIndex = lightIndex;
@@ -164,10 +163,8 @@ kernel void directLightArea(global Context *context)
     Point pntOffset = isect->point + nrmFacing * 0.01f;
 
     Primitive *light = context->scene.areaLights[item->lightIndex];
-    
-    float *r = context->random + key * 12;
 
-    float2 rand = (float2)(r[5], r[6]);
+    float2 rand = Sampler_getValue2D(&context->sampler, &item->samplerState);
     Point pnt2;
     Normal nrm2;
     float pdf;
@@ -243,9 +240,7 @@ kernel void extendPath(global Context *context)
     float pdf;
     bool pdfDelta;
     
-    float *r = context->random + key * 12;
-
-    float4 rand = (float4)(r[7], r[8], r[9], r[10]);
+    float4 rand = (float4)(Sampler_getValue2D(&context->sampler, &item->samplerState), Sampler_getValue2D(&context->sampler, &item->samplerState));
     Color reflected = Surface_sample(isect, rand, &dirIn, &pdf, &pdfDelta);
 
     float dt = dot(dirIn, nrmFacing);
@@ -259,7 +254,7 @@ kernel void extendPath(global Context *context)
         item->throughput = item->throughput * reflected * dt / pdf;
 
         float threshold = 0.0f;
-        float roulette = r[11];
+        float roulette = Sampler_getValue(&context->sampler, &item->samplerState);
         if(item->generation == 0) {
             threshold = 1.0f;
         } else if(item->generation < 10) {

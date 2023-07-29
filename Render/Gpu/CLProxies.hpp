@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "Math/CLProxies.hpp"
+#include "Math/Sampler/CLProxies.hpp"
 #include "Object/CLProxies.hpp"
 
 struct SettingsProxy {
@@ -23,6 +24,7 @@ struct ItemProxy {
     int lightIndex;
     int x;
     int y;
+    SamplerStateProxy samplerState;
 };
 
 struct WorkQueueProxy {
@@ -33,8 +35,8 @@ struct ContextProxy {
     SceneProxy scene;
     SettingsProxy settings;
     ItemProxy *items;
-    float *random;
     unsigned int currentPixel;
+    SamplerProxy sampler;
 
     WorkQueueProxy generateCameraRayQueue;
     WorkQueueProxy intersectRaysQueue;

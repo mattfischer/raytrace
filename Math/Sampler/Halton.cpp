@@ -154,5 +154,34 @@ namespace Math {
 
             return f;
         }
+
+        void Halton::writeProxy(SamplerProxy &proxy, OpenCL::Allocator &clAllocator) const
+        {
+            proxy.widthExponent = mWidthExponent;
+            proxy.widthAligned = mWidthAligned;
+            proxy.heightExponent = mHeightExponent;
+            proxy.heightAligned = mHeightAligned;
+            proxy.sampleStride = mSampleStride;
+            proxy.euclidX = mEuclidX;
+            proxy.euclidY = mEuclidY;
+
+            proxy.numPrimes = sNumPrimes;
+            proxy.primes = clAllocator.allocateArray<int>(sNumPrimes);
+            proxy.primeIndices = clAllocator.allocateArray<int>(sNumPrimes);
+            for(int i=0; i<proxy.numPrimes; i++) {
+                proxy.primes[i] = sPrimes[i];
+                proxy.primeIndices[i] = sPrimeIndices[i];
+            }
+
+            proxy.scrambledDigitsStart = clAllocator.allocateArray<int>(sScrambledDigitsStart.size());
+            for(int i=0; i<sScrambledDigitsStart.size(); i++) {
+                proxy.scrambledDigitsStart[i] = sScrambledDigitsStart[i];
+            }
+            
+            proxy.scrambledDigits = clAllocator.allocateArray<int>(sScrambledDigits.size());
+            for(int i=0; i<sScrambledDigits.size(); i++) {
+                proxy.scrambledDigits[i] = sScrambledDigits[i];
+            }
+        }
     }
 }

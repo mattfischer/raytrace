@@ -3,7 +3,7 @@
 #include "Render/Gpu/WorkQueue.hpp"
 #include "Render/Gpu/CLProxies.hpp"
 
-#include "Math/Sampler/Random.hpp"
+#include "Math/Sampler/Halton.hpp"
 
 #include <memory>
 
@@ -36,8 +36,9 @@ namespace Render {
             mContextProxy->settings.height = mSettings.height;
             mContextProxy->settings.minSamples = mSettings.minSamples;
 
+            Math::Sampler::Halton sampler(mSettings.width, mSettings.height);
+            sampler.writeProxy(mContextProxy->sampler, mClAllocator);
             mContextProxy->items = mClAllocator.allocateArray<ItemProxy>(kSize);
-            mContextProxy->random = mClAllocator.allocateArray<float>(kSize * 12);
 
             mClAllocator.unmapAreas();
 
@@ -74,6 +75,7 @@ namespace Render {
         {
             return std::vector<std::string> {
                 "Math/CLKernels.cl",
+                "Math/Sampler/CLKernels.cl",
                 "Object/Albedo/CLKernels.cl",
                 "Object/Brdf/CLKernels.cl",
                 "Object/Shape/CLKernels.cl",
@@ -137,9 +139,6 @@ namespace Render {
         {
             while(mRunning) {
                 mClAllocator.mapAreas();
-                for(int i=0; i<kSize * 12; i++) {
-                    mContextProxy->random[i] = mSampler.getValue();
-                }
                 int kernelSize = mGenerateCameraRayQueue->numQueued();
                 mClAllocator.unmapAreas();
 
