@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <tuple>
 #include <mutex>
+#include <random>
+#include <vector>
 
 namespace Math {
     namespace Sampler {
@@ -69,8 +71,10 @@ namespace Math {
             mSampleStride = mWidthAligned * mHeightAligned;
             
             std::lock_guard<std::mutex> lock(sMutex);
-            if(sPrimeIndices.size() == 0) {
-                mRandomEngine.seed(0x12345678);
+            if(sPrimeIndices.size() == 0) {                        
+                std::default_random_engine randomEngine;
+                randomEngine.seed(0x12345678);
+
                 sPrimeIndices.resize(sNumPrimes);
                 for(int i=0; i<sNumPrimes; i++) {
                     sPrimeIndices[i] = i;
@@ -80,12 +84,12 @@ namespace Math {
                     }
 
                     if(i > 1) {
-                        std::shuffle(digits.begin(), digits.end(), mRandomEngine);
+                        std::shuffle(digits.begin(), digits.end(), randomEngine);
                     }
                     sScrambledDigitsStart.push_back(sScrambledDigits.size());
                     sScrambledDigits.insert(sScrambledDigits.end(), digits.begin(), digits.end());
                 }
-                std::shuffle(sPrimeIndices.begin() + 2, sPrimeIndices.end(), mRandomEngine);
+                std::shuffle(sPrimeIndices.begin() + 2, sPrimeIndices.end(), randomEngine);
             }
         }
 
@@ -120,11 +124,6 @@ namespace Math {
 
         float Halton::getValue()
         {
-            if (mNextDimension >= sNumPrimes) {
-                std::uniform_real_distribution<float> dist(0, 1);
-                return dist(mRandomEngine);
-            }
-
             int primeIndex = sPrimeIndices[mNextDimension];
             int b = sPrimes[primeIndex];
 
@@ -145,10 +144,14 @@ namespace Math {
                 i++;
             }
 
-            N += sScrambledDigits[scrambledDigitsStart] / (b - 1);
-
-            float f = static_cast<float>(N) / static_cast<float>(D);        
+            float nd = static_cast<float>(sScrambledDigits[scrambledDigitsStart]) / static_cast<float>(b - 1);
+            float f = (static_cast<float>(N) + nd) / static_cast<float>(D);        
             mNextDimension++;
+
+            if(mNextDimension == sNumPrimes) {
+                mNextDimension = 0;
+            }
+
             return f;
         }
     }

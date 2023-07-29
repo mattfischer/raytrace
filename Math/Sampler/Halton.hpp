@@ -3,8 +3,7 @@
 
 #include "Math/Sampler/Base.hpp"
 
-#include <vector>
-#include <random>
+#include <stdint.h>
 
 namespace Math {
     namespace Sampler {
@@ -30,8 +29,6 @@ namespace Math {
 
             int mEuclidX;
             int mEuclidY;
-            
-            std::default_random_engine mRandomEngine;
         };
     }
 }
