@@ -11,7 +11,7 @@ using namespace std::placeholders;
 
 namespace Render {
     namespace Gpu {
-        static const int kSize = 10000;
+        static const int kSize = 1000000;
 
         Renderer::Renderer(const Object::Scene &scene, const Settings &settings)
         : mScene(scene)
@@ -140,41 +140,50 @@ namespace Render {
             while(mRunning) {
                 mClAllocator.mapAreas();
                 int kernelSize = mGenerateCameraRayQueue->numQueued();
-                mClAllocator.unmapAreas();
+                if(kernelSize > 0) {
+                    mClAllocator.unmapAreas();
+                    mClGenerateCameraRaysKernel.enqueue(mClContext, kernelSize);
+                    clFinish(mClContext.clQueue());
+                    mClAllocator.mapAreas();
+                    mGenerateCameraRayQueue->clear();
+                }
 
-                mClGenerateCameraRaysKernel.enqueue(mClContext, kernelSize);
-                clFinish(mClContext.clQueue());
-                mClAllocator.mapAreas();
-                mGenerateCameraRayQueue->clear();
                 kernelSize = mIntersectRayQueue->numQueued();
-                mClAllocator.unmapAreas();
+                if(kernelSize > 0) {
+                    mClAllocator.unmapAreas();
+                    mClIntersectRaysKernel.enqueue(mClContext, kernelSize);
+                    clFinish(mClContext.clQueue());
+                    mClAllocator.mapAreas();
+                    mIntersectRayQueue->clear();
+                }
 
-                mClIntersectRaysKernel.enqueue(mClContext, kernelSize);
-                clFinish(mClContext.clQueue());
-                mClAllocator.mapAreas();
-                mIntersectRayQueue->clear();
-                kernelSize = mDirectLightAreaQueue->numQueued();
-                mClAllocator.unmapAreas();
+                kernelSize = mDirectLightAreaQueue->numQueued();                
+                if(kernelSize > 0) {
+                    mClAllocator.unmapAreas();
+                    mClDirectLightAreaKernel.enqueue(mClContext, kernelSize);
+                    clFinish(mClContext.clQueue());
+                    mClAllocator.mapAreas();
+                    mDirectLightAreaQueue->clear();
+                }
 
-                mClDirectLightAreaKernel.enqueue(mClContext, kernelSize);
-                clFinish(mClContext.clQueue());
-                mClAllocator.mapAreas();
-                mDirectLightAreaQueue->clear();
                 kernelSize = mDirectLightPointQueue->numQueued();
-                mClAllocator.unmapAreas();
+                if(kernelSize > 0) {
+                    mClAllocator.unmapAreas();
+                    mClDirectLightPointKernel.enqueue(mClContext, kernelSize);
+                    clFinish(mClContext.clQueue());
+                    mClAllocator.mapAreas();
+                    mDirectLightPointQueue->clear();
+                }
 
-                mClDirectLightPointKernel.enqueue(mClContext, kernelSize);
-                clFinish(mClContext.clQueue());
-                mClAllocator.mapAreas();
-                mDirectLightPointQueue->clear();
                 kernelSize = mExtendPathQueue->numQueued();
-                mClAllocator.unmapAreas();
+                if(kernelSize > 0) {
+                    mClAllocator.unmapAreas();
+                    mClExtendPathKernel.enqueue(mClContext, kernelSize);
+                    clFinish(mClContext.clQueue());
+                    mClAllocator.mapAreas();
+                    mExtendPathQueue->clear();
+                }
 
-                mClExtendPathKernel.enqueue(mClContext, kernelSize);
-                clFinish(mClContext.clQueue());
-
-                mClAllocator.mapAreas();
-                mExtendPathQueue->clear();
                 int numQueued = mCommitRadianceQueue->numQueued();
                 for(int i=0; i<numQueued; i++) {
                     WorkQueue::Key key = mCommitRadianceQueue->getNextKey();
