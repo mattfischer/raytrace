@@ -105,8 +105,8 @@ namespace Render {
 
         void Renderer::stop()
         {
-            if(mRunning) {
-                mRunning = false;
+            mRunning = false;
+            if(mThread.joinable()) {
                 mThread.join();
             }
         }

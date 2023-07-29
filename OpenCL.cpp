@@ -174,7 +174,7 @@ namespace OpenCL {
         printf("Enqueue kernel: %i\n", errcode);
     }
 
-    static const int kAreaSize = 1024*1024*100;
+    static const int kAreaSize = 1024*1024*1;
     Allocator::Allocator(Context &context)
     : mContext(context)
     {
@@ -184,6 +184,19 @@ namespace OpenCL {
 
     void *Allocator::allocateBytes(size_t size)
     {
+        if(size > kAreaSize) {
+            void *area = clSVMAlloc(mContext.clContext(), CL_MEM_READ_WRITE, size, 0);
+            if(mMapped) {
+                clEnqueueSVMMap(mContext.clQueue(), CL_TRUE, CL_MAP_READ | CL_MAP_WRITE, area, size, 0, NULL, NULL);
+            }
+            if(mAreas.size() == 0) {
+                mAreaFull = kAreaSize;
+            }
+
+            mAreas.insert(mAreas.begin(), area);
+            return area;
+        }
+
         if(mAreas.size() == 0 || kAreaSize - mAreaFull < size) {
             void *area = clSVMAlloc(mContext.clContext(), CL_MEM_READ_WRITE, kAreaSize, 0);
             if(mMapped) {
