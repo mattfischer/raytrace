@@ -240,8 +240,7 @@ kernel void extendPath(global Context *context)
     float pdf;
     bool pdfDelta;
     
-    float4 rand = (float4)(Sampler_getValue2D(&context->sampler, &item->samplerState), Sampler_getValue2D(&context->sampler, &item->samplerState));
-    Color reflected = Surface_sample(isect, rand, &dirIn, &pdf, &pdfDelta);
+    Color reflected = Surface_sample(isect, &context->sampler, &item->samplerState, &dirIn, &pdf, &pdfDelta);
 
     float dt = dot(dirIn, nrmFacing);
     float reverse = (dt > 0) ? 1.0f : -1.0f;

@@ -106,7 +106,7 @@ Color Surface_transmitted(Intersection *isect, Vector dirIn)
     return colTransmit;
 }
 
-Color Surface_sample(Intersection *isect, float4 random, Vector *dirIn, float *pdf, bool *pdfDelta)
+Color Surface_sample(Intersection *isect, Sampler *sampler, SamplerState *samplerState, Vector *dirIn, float *pdf, bool *pdfDelta)
 {
     Surface *surf = &isect->primitive->surface;
     Vector dirOut = -isect->beam->ray.direction;
@@ -126,7 +126,7 @@ Color Surface_sample(Intersection *isect, float4 random, Vector *dirIn, float *p
         *dirIn = nrmFacing * (ratio * c1 - c2) - dirOut * ratio;
         Color throughput = Surface_transmitted(isect, -dirOut);
         transmitThreshold = min(1.0f, max(max(throughput.x, throughput.y), throughput.z));
-        float roulette = random.x;
+        float roulette = Sampler_getValue(sampler, samplerState);
 
         if(roulette < transmitThreshold) {
             *pdf = 1.0f;
@@ -137,10 +137,10 @@ Color Surface_sample(Intersection *isect, float4 random, Vector *dirIn, float *p
 
     int idx = 0;
     if(surf->numBrdfs > 1) {
-        idx = (int)floor(surf->numBrdfs * random.y);
+        idx = (int)floor(surf->numBrdfs * Sampler_getValue(sampler, samplerState));
     }
 
-    *dirIn = Brdf_sample(&surf->brdfs[idx], random.zw, nrmFacing, dirOut);
+    *dirIn = Brdf_sample(&surf->brdfs[idx], sampler, samplerState, nrmFacing, dirOut);
     *pdf = Surface_pdf(isect, *dirIn);
     *pdfDelta = false;
     return Surface_reflected(isect, *dirIn);

@@ -68,10 +68,10 @@ float BrdfLambert_pdf(BrdfLambert *lambert, Vector dirIn, Normal nrm, Vector dir
     return cosTheta / M_PI_F;
 }
 
-Vector BrdfLambert_sample(BrdfLambert *lambert, float2 random, Vector nrm, Vector dirOut)
+Vector BrdfLambert_sample(BrdfLambert *lambert, Sampler *sampler, SamplerState *samplerState, Vector nrm, Vector dirOut)
 {
-    float phi = 2 * M_PI_F * random.x;
-    float theta = asin(sqrt(random.y));
+    float phi = 2 * M_PI_F * Sampler_getValue(sampler, samplerState);
+    float theta = asin(sqrt(Sampler_getValue(sampler, samplerState)));
 
     Vector x;
     Vector y;
@@ -122,10 +122,10 @@ float BrdfOrenNayar_pdf(BrdfOrenNayar *orenNayar, Vector dirIn, Normal nrm, Vect
     return cosTheta / M_PI_F;
 }
 
-Vector BrdfOrenNayar_sample(BrdfOrenNayar *orenNayar, float2 random, Vector nrm, Vector dirOut)
+Vector BrdfOrenNayar_sample(BrdfOrenNayar *orenNayar, Sampler *sampler, SamplerState *samplerState, Vector nrm, Vector dirOut)
 {
-    float phi = 2 * M_PI_F * random.x;
-    float theta = asin(sqrt(random.y));
+    float phi = 2 * M_PI_F * Sampler_getValue(sampler, samplerState);
+    float theta = asin(sqrt(Sampler_getValue(sampler, samplerState)));
 
     Vector x;
     Vector y;
@@ -165,10 +165,10 @@ float BrdfPhong_pdf(BrdfPhong *phong, Vector dirIn, Normal nrm, Vector dirOut)
     return min(pdf, 1000.0f);
 }
 
-Vector BrdfPhong_sample(BrdfPhong *phong, float2 random, Vector nrm, Vector dirOut)
+Vector BrdfPhong_sample(BrdfPhong *phong, Sampler *sampler, SamplerState *samplerState, Vector nrm, Vector dirOut)
 {
-    float phi = 2 * M_PI_F * random.x;
-    float theta = acos(pow(random.y, 1.0f / (phong->power + 1)));
+    float phi = 2 * M_PI_F * Sampler_getValue(sampler, samplerState);
+    float theta = acos(pow(Sampler_getValue(sampler, samplerState), 1.0f / (phong->power + 1)));
 
     Vector x;
     Vector y;
@@ -232,10 +232,10 @@ float BrdfTorranceSparrow_pdf(BrdfTorranceSparrow *torranceSparrow, Vector dirIn
     return min(pdf, 1000.0f);
 }
 
-Vector BrdfTorranceSparrow_sample(BrdfTorranceSparrow *torranceSparrow, float2 random, Vector nrm, Vector dirOut)
+Vector BrdfTorranceSparrow_sample(BrdfTorranceSparrow *torranceSparrow, Sampler *sampler, SamplerState *samplerState, Vector nrm, Vector dirOut)
 {
-    float phi = 2 * M_PI_F * random.x;
-    float tanTheta = sqrt(-torranceSparrow->roughness * torranceSparrow->roughness * log(1 - random.y));
+    float phi = 2 * M_PI_F * Sampler_getValue(sampler, samplerState);
+    float tanTheta = sqrt(-torranceSparrow->roughness * torranceSparrow->roughness * log(1 - Sampler_getValue(sampler, samplerState)));
     float theta = atan(tanTheta);
 
     Vector x;
@@ -309,20 +309,20 @@ float Brdf_pdf(Brdf *brdf, Vector dirIn, Normal nrm, Vector dirOut)
     }
 }
 
-Vector Brdf_sample(Brdf *brdf, float2 random, Vector nrm, Vector dirOut)
+Vector Brdf_sample(Brdf *brdf, Sampler *sampler, SamplerState *samplerState, Vector nrm, Vector dirOut)
 {
     switch(brdf->type) {
         case BrdfTypeLambert:
-            return BrdfLambert_sample(&brdf->lambert, random, nrm, dirOut);
+            return BrdfLambert_sample(&brdf->lambert, sampler, samplerState, nrm, dirOut);
 
         case BrdfTypeOrenNayar:
-            return BrdfOrenNayar_sample(&brdf->orenNayar, random, nrm, dirOut);
+            return BrdfOrenNayar_sample(&brdf->orenNayar, sampler, samplerState, nrm, dirOut);
 
         case BrdfTypePhong:
-            return BrdfPhong_sample(&brdf->phong, random, nrm, dirOut);
+            return BrdfPhong_sample(&brdf->phong, sampler, samplerState, nrm, dirOut);
 
         case BrdfTypeTorranceSparrow:
-            return BrdfTorranceSparrow_sample(&brdf->torranceSparrow, random, nrm, dirOut);
+            return BrdfTorranceSparrow_sample(&brdf->torranceSparrow, sampler, samplerState, nrm, dirOut);
 
         default:
             return (Vector)(0, 0, 0);
