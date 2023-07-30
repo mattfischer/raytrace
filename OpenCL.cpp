@@ -150,8 +150,9 @@ namespace OpenCL {
         return mClProgram;
     }
 
-    Kernel::Kernel(Program &program, const std::string &name, Allocator &allocator)
-    : mAllocator(allocator)
+    Kernel::Kernel(Program &program, const std::string &name, Allocator &constAllocator, Allocator &rwAllocator)
+    : mConstAllocator(constAllocator)
+    , mRwAllocator(rwAllocator)
     {
         cl_int errcode;
         mClKernel = clCreateKernel(program.clProgram(), name.c_str(), &errcode);
@@ -165,7 +166,13 @@ namespace OpenCL {
 
     void Kernel::enqueue(Context &context, int size)
     {
-        std::vector<void*> &areas = mAllocator.areas();
+        std::vector<void*> areas;
+        for(void *area : mConstAllocator.areas()) {
+            areas.push_back(area);
+        }
+        for(void *area : mRwAllocator.areas()) {
+            areas.push_back(area);
+        }
         cl_int errcode = clSetKernelExecInfo(mClKernel, CL_KERNEL_EXEC_INFO_SVM_PTRS, areas.size() * sizeof(void*), &areas[0]);
         printf("Set exec info: %i\n", errcode);
 

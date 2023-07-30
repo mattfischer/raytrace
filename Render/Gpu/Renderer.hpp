@@ -67,7 +67,8 @@ namespace Render {
             Raster<int> mTotalSamples;
 
             OpenCL::Context mClContext;
-            OpenCL::Allocator mClAllocator;
+            OpenCL::Allocator mClConstAllocator;
+            OpenCL::Allocator mClRwAllocator;
             OpenCL::Program mClProgram;
 
             OpenCL::Kernel mClGenerateCameraRaysKernel;

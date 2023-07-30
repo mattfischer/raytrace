@@ -18,29 +18,29 @@ namespace Render {
         , mSettings(settings)
         , mTotalRadiance(settings.width, settings.height)
         , mTotalSamples(settings.width, settings.height)
-        , mClAllocator(mClContext)
+        , mClConstAllocator(mClContext)
+        , mClRwAllocator(mClContext)
         , mClProgram(mClContext, getSourceList())
-        , mClGenerateCameraRaysKernel(mClProgram, "generateCameraRays", mClAllocator)
-        , mClIntersectRaysKernel(mClProgram, "intersectRays", mClAllocator)
-        , mClDirectLightAreaKernel(mClProgram, "directLightArea", mClAllocator)
-        , mClDirectLightPointKernel(mClProgram, "directLightPoint", mClAllocator)
-        , mClExtendPathKernel(mClProgram, "extendPath", mClAllocator)
+        , mClGenerateCameraRaysKernel(mClProgram, "generateCameraRays", mClConstAllocator, mClRwAllocator)
+        , mClIntersectRaysKernel(mClProgram, "intersectRays", mClConstAllocator, mClRwAllocator)
+        , mClDirectLightAreaKernel(mClProgram, "directLightArea", mClConstAllocator, mClRwAllocator)
+        , mClDirectLightPointKernel(mClProgram, "directLightPoint", mClConstAllocator, mClRwAllocator)
+        , mClExtendPathKernel(mClProgram, "extendPath", mClConstAllocator, mClRwAllocator)
         {
             mRunning = false;
 
-            mClAllocator.mapAreas();
-            mContextProxy = mClAllocator.allocate<ContextProxy>();
+            mClRwAllocator.mapAreas();
+            mClConstAllocator.mapAreas();
+            mContextProxy = mClRwAllocator.allocate<ContextProxy>();
 
-            scene.writeProxy(mContextProxy->scene, mClAllocator);;
+            scene.writeProxy(mContextProxy->scene, mClConstAllocator);;
             mContextProxy->settings.width = mSettings.width;
             mContextProxy->settings.height = mSettings.height;
             mContextProxy->settings.minSamples = mSettings.minSamples;
 
             Math::Sampler::Halton sampler(mSettings.width, mSettings.height);
-            sampler.writeProxy(mContextProxy->sampler, mClAllocator);
-            mContextProxy->items = mClAllocator.allocateArray<ItemProxy>(kSize);
-
-            mClAllocator.unmapAreas();
+            sampler.writeProxy(mContextProxy->sampler, mClConstAllocator);
+            mContextProxy->items = mClRwAllocator.allocateArray<ItemProxy>(kSize);
 
             mClGenerateCameraRaysKernel.setArg(0, mContextProxy);
             mClIntersectRaysKernel.setArg(0, mContextProxy);
@@ -51,12 +51,12 @@ namespace Render {
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
                         
-            mGenerateCameraRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
-            mIntersectRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
-            mDirectLightAreaQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
-            mDirectLightPointQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
-            mExtendPathQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
-            mCommitRadianceQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClAllocator);
+            mGenerateCameraRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClRwAllocator);
+            mIntersectRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClRwAllocator);
+            mDirectLightAreaQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClRwAllocator);
+            mDirectLightPointQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClRwAllocator);
+            mExtendPathQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClRwAllocator);
+            mCommitRadianceQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClRwAllocator);
         
             mGenerateCameraRayQueue->writeProxy(mContextProxy->generateCameraRayQueue);
             mIntersectRayQueue->writeProxy(mContextProxy->intersectRaysQueue);
@@ -64,6 +64,9 @@ namespace Render {
             mDirectLightPointQueue->writeProxy(mContextProxy->directLightPointQueue);
             mExtendPathQueue->writeProxy(mContextProxy->extendPathQueue);
             mCommitRadianceQueue->writeProxy(mContextProxy->commitRadianceQueue);
+        
+            mClConstAllocator.unmapAreas();
+            mClRwAllocator.unmapAreas();
         }
 
         Renderer::~Renderer()
@@ -90,12 +93,12 @@ namespace Render {
             mRunning = true;
             mStartTime = std::chrono::steady_clock::now();
 
-            mClAllocator.mapAreas();
+            mClRwAllocator.mapAreas();
             mContextProxy->currentPixel = 0;
             for(WorkQueue::Key key = 0; key < kSize; key++) {
                 mGenerateCameraRayQueue->addItem(key);
             }
-            mClAllocator.unmapAreas();
+            mClRwAllocator.unmapAreas();
 
             if(mThread.joinable()) {
                 mThread.join();
@@ -138,49 +141,49 @@ namespace Render {
         void Renderer::runThread()
         {
             while(mRunning) {
-                mClAllocator.mapAreas();
+                mClRwAllocator.mapAreas();
                 int kernelSize = mGenerateCameraRayQueue->numQueued();
                 if(kernelSize > 0) {
-                    mClAllocator.unmapAreas();
+                    mClRwAllocator.unmapAreas();
                     mClGenerateCameraRaysKernel.enqueue(mClContext, kernelSize);
                     clFinish(mClContext.clQueue());
-                    mClAllocator.mapAreas();
+                    mClRwAllocator.mapAreas();
                     mGenerateCameraRayQueue->clear();
                 }
 
                 kernelSize = mIntersectRayQueue->numQueued();
                 if(kernelSize > 0) {
-                    mClAllocator.unmapAreas();
+                    mClRwAllocator.unmapAreas();
                     mClIntersectRaysKernel.enqueue(mClContext, kernelSize);
                     clFinish(mClContext.clQueue());
-                    mClAllocator.mapAreas();
+                    mClRwAllocator.mapAreas();
                     mIntersectRayQueue->clear();
                 }
 
                 kernelSize = mDirectLightAreaQueue->numQueued();                
                 if(kernelSize > 0) {
-                    mClAllocator.unmapAreas();
+                    mClRwAllocator.unmapAreas();
                     mClDirectLightAreaKernel.enqueue(mClContext, kernelSize);
                     clFinish(mClContext.clQueue());
-                    mClAllocator.mapAreas();
+                    mClRwAllocator.mapAreas();
                     mDirectLightAreaQueue->clear();
                 }
 
                 kernelSize = mDirectLightPointQueue->numQueued();
                 if(kernelSize > 0) {
-                    mClAllocator.unmapAreas();
+                    mClRwAllocator.unmapAreas();
                     mClDirectLightPointKernel.enqueue(mClContext, kernelSize);
                     clFinish(mClContext.clQueue());
-                    mClAllocator.mapAreas();
+                    mClRwAllocator.mapAreas();
                     mDirectLightPointQueue->clear();
                 }
 
                 kernelSize = mExtendPathQueue->numQueued();
                 if(kernelSize > 0) {
-                    mClAllocator.unmapAreas();
+                    mClRwAllocator.unmapAreas();
                     mClExtendPathKernel.enqueue(mClContext, kernelSize);
                     clFinish(mClContext.clQueue());
-                    mClAllocator.mapAreas();
+                    mClRwAllocator.mapAreas();
                     mExtendPathQueue->clear();
                 }
 
@@ -203,7 +206,7 @@ namespace Render {
                 mCommitRadianceQueue->clear();
 
                 int numRays = mGenerateCameraRayQueue->numQueued() + mIntersectRayQueue->numQueued();
-                mClAllocator.unmapAreas();
+                mClRwAllocator.unmapAreas();
 
                 if(numRays == 0) {
                     auto endTime = std::chrono::steady_clock::now();

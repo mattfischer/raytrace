@@ -42,7 +42,7 @@ namespace OpenCL {
     class Allocator;
     class Kernel {
     public:
-        Kernel(Program &program, const std::string &name, Allocator &allocator);
+        Kernel(Program &program, const std::string &name, Allocator &constAllocator, Allocator &rwAllocator);
 
         void setArg(int arg, void *value);
 
@@ -50,7 +50,8 @@ namespace OpenCL {
 
     private:
         cl_kernel mClKernel;
-        Allocator &mAllocator;
+        Allocator &mConstAllocator;
+        Allocator &mRwAllocator;
     };
 
     class Allocator {
