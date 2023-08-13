@@ -9,6 +9,8 @@
 namespace Render {
     namespace Cpu {
         namespace Lighter {
+            static const int kNumRisSamples = 4;
+
             Math::Radiance Direct::light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const
             {
                 const Object::Scene &scene = isect.scene();
@@ -22,28 +24,48 @@ namespace Render {
                 for (const Object::Primitive &light : scene.areaLights()) {
                     const Math::Radiance &rad2 = light.surface().radiance();
 
-                    Math::Point pntSample;
-                    Math::Normal nrmSample;
-                    float pdf;
+                    Math::Vector dirIn;
+                    Math::Radiance radUnshadowed;
+                    float risWeightTotal = 0;
 
-                    if(!light.shape().sample(sampler, pntSample, nrmSample, pdf)) {
-                        continue;
+                    for(int i=0; i<kNumRisSamples; i++) {    
+                        Math::Point pntSample;
+                        Math::Normal nrmSample;
+                        float pdf;
+
+                        if(!light.shape().sample(sampler, pntSample, nrmSample, pdf)) {
+                            continue;
+                        }
+
+                        Math::Vector dirInProp = pntSample - pntOffset;
+                        float d = dirInProp.magnitude();
+                        dirInProp = dirInProp / d;
+
+                        float dot = dirInProp * nrmFacing;
+                        if(dot <= 0) {
+                            continue;
+                        }
+
+                        float dotSample = std::abs(dirInProp * nrmSample);
+                        Math::Radiance irad = rad2 * dotSample * dot / (d * d);
+                        Math::Radiance radProp = irad * surface.reflected(isect, dirInProp);
+
+                        float q = radProp.magnitude();
+                        float w = q / pdf;
+                        risWeightTotal += w;
+                        if(i == 0 || sampler.getValue() < w / risWeightTotal) {
+                            dirIn = dirInProp;
+                            radUnshadowed = radProp / q;
+                        }
                     }
 
-                    Math::Vector dirIn = pntSample - pntOffset;
-                    float d = dirIn.magnitude();
-                    dirIn = dirIn / d;
-                    float dotSample = std::abs(dirIn * nrmSample);
-
-                    float dot = dirIn * nrmFacing;
-                    if(dot > 0) {
+                    if(risWeightTotal > 0) {
                         Math::Ray ray(pntOffset, dirIn);
                         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
                         Object::Intersection isect2 = scene.intersect(beam);
 
                         if (isect2.valid() && &(isect2.primitive()) == &light) {
-                            Math::Radiance irad = rad2 * dotSample * dot / (d * d);
-                            rad += irad * surface.reflected(isect, dirIn) / pdf;
+                            rad += radUnshadowed * risWeightTotal / kNumRisSamples;
                         }
                     }
                 }

@@ -10,6 +10,8 @@ namespace Render {
     namespace Cpu {
         namespace Lighter
         {
+            static const int kNumRisSamples = 4;
+
             Math::Radiance UniPath::light(const Object::Intersection &isectBase, Math::Sampler::Base &sampler) const
             {
                 Object::Intersection isect = isectBase;
@@ -27,32 +29,52 @@ namespace Render {
                     for (const Object::Primitive &light : scene.areaLights()) {
                         const Math::Radiance &rad2 = light.surface().radiance();
                         
-                        Math::Point pnt2;
-                        Math::Normal nrm2;
-                        float pdf;
-                        if(!light.shape().sample(sampler, pnt2, nrm2, pdf)) {
-                            continue;
-                        }
+                        Math::Vector dirIn;
+                        Math::Radiance radUnshadowed;
+                        float risWeightTotal = 0;
 
-                        Math::Vector dirIn = pnt2 - pntOffset;
-                        float d = dirIn.magnitude();
-                        dirIn = dirIn / d;
-                        float dot2 = std::abs(dirIn * nrm2);
+                        int numRisSamples = (generation == 0) ? kNumRisSamples : 1;
 
-                        float dot = dirIn * nrmFacing;
-                        if(dot <= 0) {
-                            continue;
-                        }
+                        for(int i=0; i<numRisSamples; i++) {
+                            Math::Point pnt2;
+                            Math::Normal nrm2;
+                            float pdf;
+                            if(!light.shape().sample(sampler, pnt2, nrm2, pdf)) {
+                                continue;
+                            }
 
-                        Math::Ray ray(pntOffset, dirIn);
-                        Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                        Object::Intersection isect2 = scene.intersect(beam);
+                            Math::Vector dirInProp = pnt2 - pntOffset;
+                            float d = dirInProp.magnitude();
+                            dirInProp = dirInProp / d;
+                            float dot2 = std::abs(dirInProp * nrm2);
 
-                        if (isect2.valid() && &(isect2.primitive()) == &light) {
+                            float dot = dirInProp * nrmFacing;
+                            if(dot <= 0) {
+                                continue;
+                            }
+
                             Math::Radiance irad = rad2 * dot2 * dot / (d * d);
-                            float pdfBrdf = surface.pdf(isect, dirIn) * dot2 / (d * d);
+                            float pdfBrdf = surface.pdf(isect, dirInProp) * dot2 / (d * d);
                             float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
-                            rad += irad * surface.reflected(isect, dirIn) * throughput * misWeight / pdf;
+                            Math::Radiance radProp = irad * surface.reflected(isect, dirInProp) * throughput * misWeight;
+                            
+                            float q = radProp.magnitude();
+                            float w = q / pdf;
+                            risWeightTotal += w;
+                            if(i == 0 || sampler.getValue() < w / risWeightTotal) {
+                                dirIn = dirInProp;
+                                radUnshadowed = radProp / q;
+                            }
+                        }
+
+                        if(risWeightTotal > 0) {
+                            Math::Ray ray(pntOffset, dirIn);
+                            Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+                            Object::Intersection isect2 = scene.intersect(beam);
+
+                            if (isect2.valid() && &(isect2.primitive()) == &light) {
+                                rad += radUnshadowed * risWeightTotal / numRisSamples;
+                            }
                         }
                     }
 
