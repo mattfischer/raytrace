@@ -3,6 +3,8 @@
 
 #include "Math/Sampler/Halton.hpp"
 
+#include "Render/Cpu/Lighter/UniPath.hpp"
+
 #include <atomic>
 #include <mutex>
 
@@ -17,18 +19,12 @@ namespace Render {
         Renderer::Renderer(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter)
         : mScene(scene)
         , mSettings(settings)
-        , mLighter(std::move(lighter))
         , mTotalRadiance(settings.width, settings.height)
         {
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
             mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
 
-            if(mLighter) {
-                std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> prerenderJobs = mLighter->createPrerenderJobs(scene, *mRenderFramebuffer);
-                for (std::unique_ptr<Render::Cpu::Executor::Job> &job : prerenderJobs) {
-                    mJobs.push_back(std::move(job));
-                }
-            }
+            mIndirectLighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
 
             std::unique_ptr<Executor::Job> job = 
                 std::make_unique<RasterJob>(
@@ -94,25 +90,88 @@ namespace Render {
             Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, mSettings.width, mSettings.height, aperturePoint);
             Object::Intersection isect = mScene.intersect(beam);
 
-            Math::Color color;
-            if(mLighter) {
-                Math::Radiance rad;
-                if (isect.valid()) {
-                    rad = mLighter->light(isect, sampler);
-                } else {
-                    rad = mScene.skyRadiance();
+            Math::Radiance rad;
+            if (isect.valid()) {
+                const Math::Normal &nrmFacing = isect.facingNormal(); 
+                const Object::Surface &surface = isect.primitive().surface();
+   
+                Math::Radiance radEmitted = isect.primitive().surface().radiance();
+                
+                float misWeightLight = 0;
+                Math::Radiance radDirectLight;
+
+                int lightIndex = (int)std::floor(sampler.getValue() * mScene.areaLights().size());
+                const Object::Primitive &light = mScene.areaLights()[lightIndex];
+                const Math::Radiance &rad2 = light.surface().radiance();
+
+                Math::Point pnt2;
+                Math::Normal nrm2;
+                float pdf2;
+
+                if(light.shape().sample(sampler, pnt2, nrm2, pdf2)) {
+                    Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
+
+                    Math::Vector dirIn = pnt2 - pntOffset;
+                    float d = dirIn.magnitude();
+                    dirIn = dirIn / d;
+                    float dot2 = std::abs(dirIn * nrm2);
+
+                    float dot = dirIn * nrmFacing;
+                    if(dot > 0) {
+                        Math::Ray ray(pntOffset, dirIn);
+                        Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
+                        Object::Intersection isect2 = mScene.intersect(beam);
+
+                        if (isect2.valid() && &(isect2.primitive()) == &light) {
+                            float pdfBrdf = surface.pdf(isect, dirIn) * dot2 / (d * d);
+                            misWeightLight = pdf2 * pdf2 / (pdf2 * pdf2 + pdfBrdf * pdfBrdf);
+
+                            Math::Radiance irad = rad2 * dot2 * dot / (d * d);
+                            radDirectLight = irad * surface.reflected(isect, dirIn) / pdf2;                            
+                        }
+                    }
                 }
-        
-                Math::Radiance radTotal = mTotalRadiance.get(x, y) + rad;
-                mTotalRadiance.set(x, y, radTotal);
-                Math::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
-                mRenderFramebuffer->setPixel(x, y, color);
+
+                Math::Vector dirIn;
+                float pdf;
+                bool pdfDelta;
+                Math::Color reflected = surface.sample(isect, sampler, dirIn, pdf, pdfDelta);
+                float reverse = (dirIn * nrmFacing > 0) ? 1.0f : -1.0f;
+                float dot = dirIn * nrmFacing * reverse;
+
+                Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f * reverse;
+
+                Math::Radiance radIndirect;
+                Math::Radiance radDirectBrdf;
+                float misWeightBrdf = 0;
+                if(dot > 0) {
+                    Math::Ray reflectRay(pntOffset, dirIn);
+                    Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
+                    Object::Intersection isect2 = mScene.intersect(beam);
+
+                    if (isect2.valid()) {
+                        Math::Radiance rad2 = mIndirectLighter->light(isect2, sampler);
+
+                        radIndirect = (rad2 - isect2.primitive().surface().radiance()) * dot * reflected / pdf;
+
+                        float dot2 = -isect2.facingNormal() * dirIn;
+                        float pdfArea = pdf * dot2 / (isect2.distance() * isect2.distance());
+                        float pdfLight = isect2.primitive().shape().samplePdf(isect2.point());
+                        misWeightBrdf = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
+                        radDirectBrdf = isect2.primitive().surface().radiance() * dot * reflected / pdf;;
+                    }
+                }
+                Math::Radiance radDirect = radDirectLight * misWeightLight + radDirectBrdf * misWeightBrdf;
+
+                rad = radEmitted + radDirect + radIndirect;
             } else {
-                if(isect.valid()) {
-                    Math::Color color = isect.albedo();
-                    mRenderFramebuffer->setPixel(x, y, color);
-                }
+                rad = mScene.skyRadiance();
             }
+    
+            Math::Radiance radTotal = mTotalRadiance.get(x, y) + rad;
+            mTotalRadiance.set(x, y, radTotal);
+            Math::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
+            mRenderFramebuffer->setPixel(x, y, color);
         }
     }
 }

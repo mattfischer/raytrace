@@ -50,7 +50,7 @@ namespace Render {
             std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
             std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
-            std::unique_ptr<Render::Cpu::Lighter::Base> mLighter;
+            std::unique_ptr<Render::Cpu::Lighter::Base> mIndirectLighter;
 
             Render::Raster<Math::Radiance> mTotalRadiance;
         };

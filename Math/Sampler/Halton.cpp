@@ -145,7 +145,10 @@ namespace Math {
             }
 
             float nd = static_cast<float>(sScrambledDigits[scrambledDigitsStart]) / static_cast<float>(b - 1);
-            float f = (static_cast<float>(N) + nd) / static_cast<float>(D);        
+            float f = (static_cast<float>(N) + nd) / static_cast<float>(D);
+            if(f == 1.0f) {
+                f = 0.0f;
+            }
             mNextDimension++;
 
             if(mNextDimension == sNumPrimes) {
