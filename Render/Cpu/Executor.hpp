@@ -57,7 +57,7 @@ namespace Render {
             ~Executor();
 
             typedef std::function<void()> JobDoneFunc;
-            void runJob(Job &job, JobDoneFunc jobDoneFunc = JobDoneFunc());
+            void runJob(std::unique_ptr<Job> job, JobDoneFunc jobDoneFunc = JobDoneFunc());
             void stop();
             bool running();
 
@@ -71,7 +71,7 @@ namespace Render {
 
             std::mutex mMutex;
             std::condition_variable mCondVar;
-            Job *mCurrentJob;
+            std::unique_ptr<Job> mCurrentJob;
             JobDoneFunc mJobDoneFunc;
             int mNumRunningThreads;
         };

@@ -36,13 +36,17 @@ namespace Render {
             Render::Framebuffer &sampleStatusFramebuffer() override;
 
         private:
-            void jobDone();
+            void startRenderJob();
+            void startSampleIndirectJob();
+            void renderJobDone();
+            void sampleIndirectJobDone();
             void renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+            void sampleIndirectPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
 
             Executor mExecutor;
             Listener *mListener;
-            std::vector<std::unique_ptr<Executor::Job>> mJobs;
-            int mCurrentJob;
+            std::unique_ptr<Executor::Job> mRenderJob;
+            int mCurrentSample;
             std::chrono::time_point<std::chrono::steady_clock> mStartTime;
 
             const Object::Scene &mScene;
@@ -51,6 +55,15 @@ namespace Render {
             std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
             std::unique_ptr<Render::Cpu::Lighter::Base> mIndirectLighter;
+
+            struct Reservoir {
+                Object::Intersection isect;
+                Math::Beam beam;
+                Math::Vector dirIn;
+                Math::Radiance indirectRadiance;
+                float weight;
+            };
+            Render::Raster<Reservoir> mReservoirs;
 
             Render::Raster<Math::Radiance> mTotalRadiance;
         };

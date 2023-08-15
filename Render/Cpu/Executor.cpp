@@ -29,10 +29,10 @@ namespace Render {
             mThreads.clear();
         }
 
-        void Executor::runJob(Job &job, JobDoneFunc jobDoneFunc)
+        void Executor::runJob(std::unique_ptr<Job> job, JobDoneFunc jobDoneFunc)
         {
             std::unique_lock<std::mutex> lock(mMutex);
-            mCurrentJob = &job;
+            mCurrentJob = std::move(job);
             mJobDoneFunc = std::move(jobDoneFunc);
             mRunJob = true;
 
@@ -42,6 +42,7 @@ namespace Render {
         void Executor::stop()
         {
             mRunJob = false;
+            mCondVar.notify_all();
         }
 
         bool Executor::running()
@@ -61,7 +62,7 @@ namespace Render {
                             break;
                         }
                     }
-                    job = mCurrentJob;
+                    job = mCurrentJob.get();
                     mNumRunningThreads++;
                 }
                 

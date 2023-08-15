@@ -18,7 +18,8 @@ namespace Render {
         unsigned int height() const { return mHeight; }
 
         void set(unsigned int x, unsigned int y, const T &value) { mElements[mWidth * y + x] = value; }
-        const T &get(unsigned int x,unsigned  int y) const { return mElements.at(mWidth * y + x); }
+        const T &get(unsigned int x, unsigned int y) const { return mElements.at(mWidth * y + x); }
+        T &at(unsigned int x, unsigned int y) { return mElements.at(mWidth * y + x); }
 
     private:
         unsigned int mWidth;
