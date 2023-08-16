@@ -57,13 +57,17 @@ namespace Render {
             std::unique_ptr<Render::Cpu::Lighter::Base> mIndirectLighter;
 
             struct Reservoir {
-                Object::Intersection isect;
-                Math::Beam beam;
                 Math::Vector dirIn;
                 Math::Radiance indirectRadiance;
                 float weight;
             };
             Render::Raster<Reservoir> mReservoirs;
+
+            struct PrimaryHit {
+                Object::Intersection isect;
+                Math::Beam beam;
+            };
+            Render::Raster<PrimaryHit> mPrimaryHits;
 
             Render::Raster<Math::Radiance> mTotalRadiance;
         };
