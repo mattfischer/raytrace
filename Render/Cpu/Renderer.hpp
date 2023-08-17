@@ -37,10 +37,13 @@ namespace Render {
 
         private:
             void startRenderJob();
+            void startSampleDirectJob();
             void startSampleIndirectJob();
             void renderJobDone();
+            void sampleDirectJobDone();
             void sampleIndirectJobDone();
             void renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+            void sampleDirectPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
             void sampleIndirectPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
 
             Executor mExecutor;
@@ -56,12 +59,21 @@ namespace Render {
 
             std::unique_ptr<Render::Cpu::Lighter::Base> mIndirectLighter;
 
-            struct Reservoir {
+            struct DirectReservoir {
+                float weight;
+                Math::Radiance radiance;
+                Math::Point point;
+                Math::Normal normal;
+                const Object::Primitive *primitive;
+            };
+            Render::Raster<DirectReservoir> mDirectReservoirs;
+
+            struct IndirectReservoir {
                 Math::Vector dirIn;
                 Math::Radiance indirectRadiance;
                 float weight;
             };
-            Render::Raster<Reservoir> mReservoirs;
+            Render::Raster<IndirectReservoir> mIndirectReservoirs;
 
             struct PrimaryHit {
                 Object::Intersection isect;
