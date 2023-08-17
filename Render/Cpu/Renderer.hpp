@@ -36,19 +36,15 @@ namespace Render {
             Render::Framebuffer &sampleStatusFramebuffer() override;
 
         private:
-            void startRenderJob();
-            void startSampleDirectJob();
-            void startSampleIndirectJob();
-            void renderJobDone();
-            void sampleDirectJobDone();
-            void sampleIndirectJobDone();
-            void renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
-            void sampleDirectPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
-            void sampleIndirectPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+            void startInitialSampleJob();
+            void startDirectIlluminateJob();
+            void startIndirectIlluminateJob();
+            void initialSamplePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+            void directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+            void indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
 
             Executor mExecutor;
             Listener *mListener;
-            std::unique_ptr<Executor::Job> mRenderJob;
             int mCurrentSample;
             std::chrono::time_point<std::chrono::steady_clock> mStartTime;
 
@@ -59,21 +55,25 @@ namespace Render {
 
             std::unique_ptr<Render::Cpu::Lighter::Base> mIndirectLighter;
 
-            struct DirectReservoir {
+            template<typename T> struct Reservoir {
+                T sample;
                 float weight;
+            };
+
+            struct DirectSample {
                 Math::Radiance radiance;
                 Math::Point point;
                 Math::Normal normal;
                 const Object::Primitive *primitive;
             };
-            Render::Raster<DirectReservoir> mDirectReservoirs;
 
-            struct IndirectReservoir {
+            Render::Raster<Reservoir<DirectSample>> mDirectReservoirs;
+
+            struct IndirectSample {
                 Math::Vector dirIn;
                 Math::Radiance indirectRadiance;
-                float weight;
             };
-            Render::Raster<IndirectReservoir> mIndirectReservoirs;
+            Render::Raster<Reservoir<IndirectSample>> mIndirectReservoirs;
 
             struct PrimaryHit {
                 Object::Intersection isect;
