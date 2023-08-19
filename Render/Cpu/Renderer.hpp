@@ -43,6 +43,8 @@ namespace Render {
             void directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
             void indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
 
+            void addRadiance(int x, int y, int sample, const Math::Radiance &radiance);
+
             Executor mExecutor;
             Listener *mListener;
             int mCurrentSample;
@@ -61,6 +63,33 @@ namespace Render {
                 float W;
                 float M;
                 float q;
+
+                void clear()
+                {
+                    weight = W = M = q = 0;
+                }
+
+                void update(const T &sampleNew, float weightNew, float qNew, Math::Sampler::Base &sampler)
+                {
+                    weight += weightNew;
+                    M++;
+                    if(weight == weightNew || sampler.getValue() < weightNew / weight) {
+                        sample = sampleNew;
+                        q = qNew;
+                    }
+                }
+
+                void merge(const Reservoir<T> &resNew, float qNew, Math::Sampler::Base &sampler)
+                {
+                    float weightNew = qNew * resNew.W * resNew.M;
+                    weight += weightNew;
+                    M += resNew.M;
+
+                    if(sampler.getValue() < weightNew / weight) {
+                        sample = resNew.sample;
+                        q = qNew;
+                    }
+                }
             };
 
             struct DirectSample {

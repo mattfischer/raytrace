@@ -141,15 +141,10 @@ namespace Render {
             Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
             Reservoir<DirectSample> &resDirect = mDirectReservoirs.at(x, y);
-            resDirect.weight = 0;
-            resDirect.W = 0;
-            resDirect.M = 0;
-            resDirect.q = 0;
+            resDirect.clear();
    
-            Math::Radiance rad;
+            Math::Radiance radEmitted;
             if (isect.valid()) {   
-                Math::Radiance radEmitted = isect.primitive().surface().radiance();
-                
                 for(int i=0; i<10; i++) {
                     int lightIndex = (int)std::floor(sampler.getValue() * mScene.areaLights().size());
                     const Object::Primitive &light = mScene.areaLights()[lightIndex];
@@ -172,24 +167,20 @@ namespace Render {
                             float q = radDirect.magnitude();
                             float weight = q / pdf2;
                             
-                            resDirect.M++;
-                            resDirect.weight += weight;
-                            if(resDirect.weight == 0 || sampler.getValue() < weight / resDirect.weight) {
-                                resDirect.sample.point = pnt2;
-                                resDirect.sample.radiance = rad2;
-                                resDirect.sample.normal = nrm2;
-                                resDirect.sample.primitive = &light;
-                                resDirect.q = q;
-                            }
+                            DirectSample sample;
+                            sample.point = pnt2;
+                            sample.radiance = rad2;
+                            sample.normal = nrm2;
+                            sample.primitive = &light;
+                            
+                            resDirect.update(sample, weight, q, sampler);
                         }
                     }
                 }
                 resDirect.W = resDirect.weight / (resDirect.q * resDirect.M);
 
                 Reservoir<IndirectSample> &resIndirect = mIndirectReservoirs.at(x, y);           
-                resIndirect.weight = 0;
-                resIndirect.W = 0;
-                resIndirect.M = 0;
+                resIndirect.clear();
 
                 Math::Vector dirIn;
                 float pdf;
@@ -208,24 +199,22 @@ namespace Render {
                     if (isect2.valid()) {
                         Math::Radiance rad2 = mIndirectLighter->light(isect2, sampler);
                   
-                        resIndirect.sample.point = isect2.point();
-                        resIndirect.sample.indirectRadiance = (rad2 - isect2.primitive().surface().radiance()); 
-                        float q = resIndirect.sample.indirectRadiance.magnitude();
-                        resIndirect.weight = q / pdf;
-                        resIndirect.q = q;
-                        resIndirect.W = 1 / pdf;
-                        resIndirect.M = 1;
+                        IndirectSample sample;
+                        sample.point = isect2.point();
+                        sample.indirectRadiance = (rad2 - isect2.primitive().surface().radiance()); 
+                        float q = sample.indirectRadiance.magnitude();
+                        float weight = q / pdf;
+                        resIndirect.update(sample, weight, q, sampler);
+                        resIndirect.W = resIndirect.weight / (resIndirect.q * resIndirect.M);
                     }
                 }
-                rad = radEmitted;
+
+                radEmitted = isect.primitive().surface().radiance();
             } else {
-                rad = mScene.skyRadiance();
+                radEmitted = mScene.skyRadiance();
             }
     
-            Math::Radiance radTotal = mTotalRadiance.get(x, y) + rad;
-            mTotalRadiance.set(x, y, radTotal);
-            Math::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
-            mRenderFramebuffer->setPixel(x, y, color);
+            addRadiance(x, y, sample, radEmitted);
         }
 
         void Renderer::directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
@@ -237,9 +226,7 @@ namespace Render {
             Math::Point pntOffset = primaryHit.isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
             Reservoir<DirectSample> res;
-            res.M = 0;
-            res.W = 0;
-            res.weight = 0;
+            res.clear();
 
             const int R = 30;
             for(int i=0; i<30; i++) {
@@ -268,14 +255,7 @@ namespace Render {
                     q = rad.magnitude();
                 }
 
-                float weight = q * resCandidate.W * resCandidate.M;
-                res.weight += weight;
-                res.M += resCandidate.M;
-
-                if(sampler.getValue() < weight / res.weight) {
-                    res.sample = resCandidate.sample;
-                    res.q = q;
-                }
+                res.merge(resCandidate, q, sampler);
             }            
             res.W = res.weight / (res.q * res.M);
 
@@ -299,10 +279,7 @@ namespace Render {
                 }
             }
 
-            Math::Radiance radTotal = mTotalRadiance.get(x, y) + radDirect;
-            mTotalRadiance.set(x, y, radTotal);
-            Math::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
-            mRenderFramebuffer->setPixel(x, y, color);
+            addRadiance(x, y, sample, radDirect);
         }
 
         void Renderer::indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
@@ -315,9 +292,7 @@ namespace Render {
             const int N = 10;
             Reservoir<IndirectSample> res[N];
             for(int i=0; i<N; i++) {
-                res[i].M = 0;
-                res[i].W = 0;
-                res[i].weight = 0;
+                res[i].clear();
             }
 
             const int R = 30;
@@ -334,20 +309,15 @@ namespace Render {
                     continue;
                 }
 
-                float weight = resCandidate.weight;
-
+                float q = resCandidate.q;
                 for(int i=0; i<N; i++) {
-                    res[i].weight += weight;
-                    res[i].M += resCandidate.M;
-                    if(sampler.getValue() < weight / res[i].weight) {
-                        res[i].sample = resCandidate.sample;
-                        res[i].q = resCandidate.q;
-                    }
+                    res[i].merge(resCandidate, q, sampler);
                 }
             }
             
             for(int i=0; i<N; i++) {
                 res[i].W = res[i].weight / (res[i].q * res[i].M);
+
                 if(res[i].W > 0) {
                     float q = res[i].sample.indirectRadiance.magnitude();
                     Math::Vector dirIn = res[i].sample.point - primaryHit.isect.point();
@@ -362,7 +332,12 @@ namespace Render {
                 }
             }
 
-            Math::Radiance radTotal = mTotalRadiance.get(x, y) + radIndirect / N;
+            addRadiance(x, y, sample, radIndirect / N);
+        }
+
+        void Renderer::addRadiance(int x, int y, int sample, const Math::Radiance &radiance)
+        {
+            Math::Radiance radTotal = mTotalRadiance.get(x, y) + radiance;
             mTotalRadiance.set(x, y, radTotal);
             Math::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
             mRenderFramebuffer->setPixel(x, y, color);
