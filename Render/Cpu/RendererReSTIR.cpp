@@ -145,7 +145,7 @@ namespace Render {
    
             Math::Radiance radEmitted;
             if (isect.valid()) {   
-                for(int i=0; i<10; i++) {
+                for(int i=0; i<1; i++) {
                     int lightIndex = (int)std::floor(sampler.getValue() * mScene.areaLights().size());
                     const Object::Primitive &light = mScene.areaLights()[lightIndex];
                     const Math::Radiance &rad2 = light.surface().radiance();
