@@ -73,7 +73,7 @@ namespace Render {
             Render::Raster<Reservoir<DirectSample>> mDirectReservoirs;
 
             struct IndirectSample {
-                Math::Vector dirIn;
+                Math::Point point;
                 Math::Radiance indirectRadiance;
             };
             Render::Raster<Reservoir<IndirectSample>> mIndirectReservoirs;

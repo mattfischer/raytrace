@@ -145,11 +145,7 @@ namespace Render {
             resDirect.W = 0;
             resDirect.M = 0;
             resDirect.q = 0;
-
-            mIndirectReservoirs.at(x, y).weight = 0;
-            mIndirectReservoirs.at(x, y).W = 0;
-            mIndirectReservoirs.at(x, y).M = 0;
-    
+   
             Math::Radiance rad;
             if (isect.valid()) {   
                 Math::Radiance radEmitted = isect.primitive().surface().radiance();
@@ -190,6 +186,11 @@ namespace Render {
                 }
                 resDirect.W = resDirect.weight / (resDirect.q * resDirect.M);
 
+                Reservoir<IndirectSample> &resIndirect = mIndirectReservoirs.at(x, y);           
+                resIndirect.weight = 0;
+                resIndirect.W = 0;
+                resIndirect.M = 0;
+
                 Math::Vector dirIn;
                 float pdf;
                 bool pdfDelta;
@@ -207,13 +208,13 @@ namespace Render {
                     if (isect2.valid()) {
                         Math::Radiance rad2 = mIndirectLighter->light(isect2, sampler);
                   
-                        Reservoir<IndirectSample> &reservoir = mIndirectReservoirs.at(x, y);
-                        reservoir.sample.dirIn = dirIn;
-                        reservoir.sample.indirectRadiance = (rad2 - isect2.primitive().surface().radiance()); 
-                        float q = reservoir.sample.indirectRadiance.magnitude();
-                        reservoir.weight = q / pdf;
-                        reservoir.W = 1 / pdf;
-                        reservoir.M = 1;
+                        resIndirect.sample.point = isect2.point();
+                        resIndirect.sample.indirectRadiance = (rad2 - isect2.primitive().surface().radiance()); 
+                        float q = resIndirect.sample.indirectRadiance.magnitude();
+                        resIndirect.weight = q / pdf;
+                        resIndirect.q = q;
+                        resIndirect.W = 1 / pdf;
+                        resIndirect.M = 1;
                     }
                 }
                 rad = radEmitted;
@@ -235,10 +236,10 @@ namespace Render {
             const Object::Surface &surface = primaryHit.isect.primitive().surface();
             Math::Point pntOffset = primaryHit.isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
-            Reservoir<DirectSample> r;// = mDirectReservoirs.at(x, y);
-            r.M = 0;
-            r.W = 0;
-            r.weight = 0;
+            Reservoir<DirectSample> res;
+            res.M = 0;
+            res.W = 0;
+            res.weight = 0;
 
             const int R = 30;
             for(int i=0; i<30; i++) {
@@ -249,51 +250,51 @@ namespace Render {
                 if(sx < 0 || sy < 0 || sx >= mSettings.width || sy >= mSettings.height) {
                     continue;
                 }
-                Reservoir<DirectSample> &reservoir = mDirectReservoirs.at(sx, sy);
-                if(reservoir.weight == 0) {
+                Reservoir<DirectSample> &resCandidate = mDirectReservoirs.at(sx, sy);
+                if(resCandidate.weight == 0) {
                     continue;
                 }
 
-                Math::Vector dirIn = reservoir.sample.point - pntOffset;
+                Math::Vector dirIn = resCandidate.sample.point - pntOffset;
                 float d = dirIn.magnitude();
                 dirIn = dirIn / d;
                 float dot = dirIn * nrmFacing;
-                float dot2 = std::abs(dirIn * reservoir.sample.normal);
+                float dot2 = std::abs(dirIn * resCandidate.sample.normal);
                 
                 float q = 0;
                 if(dot > 0) {
-                    Math::Radiance irad = reservoir.sample.radiance * dot2 * dot / (d * d);
+                    Math::Radiance irad = resCandidate.sample.radiance * dot2 * dot / (d * d);
                     Math::Radiance rad = irad * surface.reflected(primaryHit.isect, dirIn);
                     q = rad.magnitude();
                 }
 
-                float weight = q * reservoir.W * reservoir.M;
-                r.weight += weight;
-                r.M += reservoir.M;
+                float weight = q * resCandidate.W * resCandidate.M;
+                res.weight += weight;
+                res.M += resCandidate.M;
 
-                if(sampler.getValue() < weight / r.weight) {
-                    r.sample = reservoir.sample;
-                    r.q = q;
+                if(sampler.getValue() < weight / res.weight) {
+                    res.sample = resCandidate.sample;
+                    res.q = q;
                 }
             }            
-            r.W = r.weight / (r.q * r.M);
+            res.W = res.weight / (res.q * res.M);
 
-            if(r.W > 0) {
-                Math::Vector dirIn = r.sample.point - pntOffset;
+            if(res.W > 0) {
+                Math::Vector dirIn = res.sample.point - pntOffset;
                 float d = dirIn.magnitude();
                 dirIn = dirIn / d;
                 float dot = dirIn * nrmFacing;
-                float dot2 = std::abs(dirIn * r.sample.normal);
+                float dot2 = std::abs(dirIn * res.sample.normal);
 
                 if(dot > 0) {
                     Math::Ray ray(pntOffset, dirIn);
                     Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
                     Object::Intersection isect2 = mScene.intersect(beam);
 
-                    if (isect2.valid() && &(isect2.primitive()) == r.sample.primitive) {
-                        Math::Radiance irad = r.sample.radiance * dot2 * dot / (d * d);
+                    if (isect2.valid() && &(isect2.primitive()) == res.sample.primitive) {
+                        Math::Radiance irad = res.sample.radiance * dot2 * dot / (d * d);
                         Math::Radiance rad = irad * surface.reflected(primaryHit.isect, dirIn);
-                        radDirect = rad * r.W;
+                        radDirect = rad * res.W;
                     }
                 }
             }
@@ -312,9 +313,13 @@ namespace Render {
             const Object::Surface &surface = primaryHit.isect.primitive().surface();
 
             const int N = 10;
-            IndirectSample samples[N];
-            float W = 0;
-            int m = 0;
+            Reservoir<IndirectSample> res[N];
+            for(int i=0; i<N; i++) {
+                res[i].M = 0;
+                res[i].W = 0;
+                res[i].weight = 0;
+            }
+
             const int R = 30;
             for(int i=0; i<30; i++) {
                 Math::Point2D s = sampler.getValue2D();
@@ -324,36 +329,43 @@ namespace Render {
                 if(sx < 0 || sy < 0 || sx >= mSettings.width || sy >= mSettings.height) {
                     continue;
                 }
-                Reservoir<IndirectSample> &reservoir = mIndirectReservoirs.at(sx, sy);
-                if(reservoir.weight == 0) {
+                Reservoir<IndirectSample> &resCandidate = mIndirectReservoirs.at(sx, sy);
+                if(resCandidate.weight == 0) {
                     continue;
                 }
 
-                W += reservoir.weight;
-                if(m < N) {
-                    samples[m] = reservoir.sample;
-                } else if(sampler.getValue() < reservoir.weight / W) {
-                    int n = (int)std::floor(sampler.getValue() * N);
-                    samples[n] = reservoir.sample;
-                }
+                float weight = resCandidate.weight;
 
-                m++;
+                for(int i=0; i<N; i++) {
+                    res[i].weight += weight;
+                    res[i].M += resCandidate.M;
+                    if(sampler.getValue() < weight / res[i].weight) {
+                        res[i].sample = resCandidate.sample;
+                        res[i].q = resCandidate.q;
+                    }
+                }
             }
             
-            int n = std::min(m, N);
-            for(int i=0; i<n; i++) {
-                float q = samples[i].indirectRadiance.magnitude();
-                float dot = samples[i].dirIn * nrmFacing;
-                if(dot > 0 && W > 0) {
-                    Math::Color reflected = surface.reflected(primaryHit.isect, samples[i].dirIn);
-                    radIndirect += samples[i].indirectRadiance * dot * reflected * W / (q * m * n);
+            for(int i=0; i<N; i++) {
+                res[i].W = res[i].weight / (res[i].q * res[i].M);
+                if(res[i].W > 0) {
+                    float q = res[i].sample.indirectRadiance.magnitude();
+                    Math::Vector dirIn = res[i].sample.point - primaryHit.isect.point();
+                    float d = dirIn.magnitude();
+                    dirIn = dirIn / d;
+                    float dot = dirIn * nrmFacing;
+                    
+                    if(dot > 0) {
+                        Math::Color reflected = surface.reflected(primaryHit.isect, dirIn);
+                        radIndirect += res[i].sample.indirectRadiance * dot * reflected * res[i].W;
+                    }
                 }
             }
 
-            /*Math::Radiance radTotal = mTotalRadiance.get(x, y) + radIndirect;
+            Math::Radiance radTotal = mTotalRadiance.get(x, y) + radIndirect / N;
             mTotalRadiance.set(x, y, radTotal);
             Math::Color color = Framebuffer::toneMap(radTotal / static_cast<float>(sample + 1));
-            mRenderFramebuffer->setPixel(x, y, color);*/
+            mRenderFramebuffer->setPixel(x, y, color);
         }
     }
 }
