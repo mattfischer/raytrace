@@ -55,7 +55,7 @@ namespace Render {
             while(true) {
                 {
                     std::unique_lock<std::mutex> lock(mMutex);
-                    while(!mCurrentJob) {
+                    while(!mCurrentJob || !mRunJob) {
                         mCondVar.wait(lock);
                         if(!mRunThreads) {
                             break;
