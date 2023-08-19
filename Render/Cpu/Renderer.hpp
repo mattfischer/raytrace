@@ -58,6 +58,9 @@ namespace Render {
             template<typename T> struct Reservoir {
                 T sample;
                 float weight;
+                float W;
+                float M;
+                float q;
             };
 
             struct DirectSample {

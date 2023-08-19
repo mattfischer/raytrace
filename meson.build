@@ -1,4 +1,4 @@
-project('raytrace', 'c', 'cpp', default_options: ['buildtype=debugoptimized'])
+project('raytrace', 'c', 'cpp', default_options: ['buildtype=debug'])
 
 flex = find_program('flex')
 bison = find_program('bison')
