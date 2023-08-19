@@ -1,7 +1,8 @@
 #include "Object/Scene.hpp"
 #include "Parse/Parser.hpp"
 
-#include "Render/Cpu/Renderer.hpp"
+#include "Render/Cpu/RendererLighter.hpp"
+#include "Render/Cpu/RendererReSTIR.hpp"
 #include "Render/Cpu/Lighter/Direct.hpp"
 #include "Render/Cpu/Lighter/UniPath.hpp"
 #include "Render/Cpu/Lighter/IrradianceCached.hpp"
@@ -105,31 +106,42 @@ namespace App {
 
         wchar_t *renderer = PyUnicode_AsWideCharString(settingsObject->renderer, NULL);
         if(!wcscmp(renderer, L"cpu")) {
-            Render::Cpu::Renderer::Settings settings;
-            settings.width = settingsObject->width;
-            settings.height = settingsObject->height;
-            settings.minSamples = settingsObject->minSamples;
-            settings.maxSamples = settingsObject->maxSamples;
-            settings.sampleThreshold = settingsObject->sampleThreshold;
-
             wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
-            std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
-            if(!wcscmp(lighting, L"none")) {
-                lighter = nullptr;
-            } else if(!wcscmp(lighting, L"direct")) {
-                lighter = std::make_unique<Render::Cpu::Lighter::Direct>();
-            } else if(!wcscmp(lighting, L"pathTracing")) {
-                lighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
-            } else if(!wcscmp(lighting, L"irradianceCaching")) {
-                Render::Cpu::Lighter::IrradianceCached::Settings lighterSettings;
+            if(!wcscmp(lighting, L"restir")) {
+                Render::Cpu::RendererReSTIR::Settings settings;
+                settings.width = settingsObject->width;
+                settings.height = settingsObject->height;
+                settings.minSamples = settingsObject->minSamples;
+                settings.maxSamples = settingsObject->maxSamples;
+                settings.sampleThreshold = settingsObject->sampleThreshold;
 
-                lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
-                lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
+                engineObject->renderer = new Render::Cpu::RendererReSTIR(*engineObject->sceneObject->scene, settings);
+            } else {
+                Render::Cpu::RendererLighter::Settings settings;
+                settings.width = settingsObject->width;
+                settings.height = settingsObject->height;
+                settings.minSamples = settingsObject->minSamples;
+                settings.maxSamples = settingsObject->maxSamples;
+                settings.sampleThreshold = settingsObject->sampleThreshold;
 
-                lighter = std::make_unique<Render::Cpu::Lighter::IrradianceCached>(lighterSettings);
+                std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
+                if(!wcscmp(lighting, L"none")) {
+                    lighter = nullptr;
+                } else if(!wcscmp(lighting, L"direct")) {
+                    lighter = std::make_unique<Render::Cpu::Lighter::Direct>();
+                } else if(!wcscmp(lighting, L"pathTracing")) {
+                    lighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
+                } else if(!wcscmp(lighting, L"irradianceCaching")) {
+                    Render::Cpu::Lighter::IrradianceCached::Settings lighterSettings;
+
+                    lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
+                    lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
+
+                    lighter = std::make_unique<Render::Cpu::Lighter::IrradianceCached>(lighterSettings);
+                }
+                
+                engineObject->renderer = new Render::Cpu::RendererLighter(*engineObject->sceneObject->scene, settings, std::move(lighter));
             }
-            
-            engineObject->renderer = new Render::Cpu::Renderer(*engineObject->sceneObject->scene, settings, std::move(lighter));
         } else if(!wcscmp(renderer, L"gpu")) {
             Render::Gpu::Renderer::Settings settings;
             settings.width = settingsObject->width;

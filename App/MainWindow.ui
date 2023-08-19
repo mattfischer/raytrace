@@ -316,6 +316,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QRadioButton" name="lightingRestir">
+          <property name="text">
+           <string>ReSTIR</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QRadioButton" name="lightingIrradianceCaching">
           <property name="text">
            <string>Irradiance Caching</string>

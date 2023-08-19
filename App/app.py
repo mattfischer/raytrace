@@ -98,6 +98,7 @@ class App(QtWidgets.QApplication):
             (self.mainwindow.lightingNone, 'none'),
             (self.mainwindow.lightingDirect, 'direct'),
             (self.mainwindow.lightingPathTracing, 'pathTracing'),
+            (self.mainwindow.lightingRestir, 'restir'),
             (self.mainwindow.lightingIrradianceCaching, 'irradianceCaching')
         ]
         for (widget, name) in lighting:

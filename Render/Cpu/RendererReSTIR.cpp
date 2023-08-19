@@ -1,4 +1,4 @@
-#include "Render/Cpu/Renderer.hpp"
+#include "Render/Cpu/RendererReSTIR.hpp"
 #include "Render/Cpu/RasterJob.hpp"
 
 #include "Math/Sampler/Halton.hpp"
@@ -16,7 +16,7 @@ namespace Render {
             ThreadLocal(int width, int height) : sampler(width, height) {}
         };
             
-        Renderer::Renderer(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter)
+        RendererReSTIR::RendererReSTIR(const Object::Scene &scene, const Settings &settings)
         : mScene(scene)
         , mSettings(settings)
         , mDirectReservoirs(settings.width, settings.height)
@@ -30,7 +30,7 @@ namespace Render {
             mIndirectLighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
         }
 
-        void Renderer::start(Listener *listener)
+        void RendererReSTIR::start(Listener *listener)
         {
             mListener = listener;
             mStartTime = std::chrono::steady_clock::now();
@@ -39,27 +39,27 @@ namespace Render {
             startInitialSampleJob();
         }
 
-        void Renderer::stop()
+        void RendererReSTIR::stop()
         {
             mExecutor.stop();
         }
 
-        bool Renderer::running()
+        bool RendererReSTIR::running()
         {
             return mExecutor.running();
         }
 
-        Render::Framebuffer &Renderer::renderFramebuffer()
+        Render::Framebuffer &RendererReSTIR::renderFramebuffer()
         {
             return *mRenderFramebuffer;
         }
 
-        Render::Framebuffer &Renderer::sampleStatusFramebuffer()
+        Render::Framebuffer &RendererReSTIR::sampleStatusFramebuffer()
         {
             return *mSampleStatusFramebuffer;
         }
 
-        void Renderer::startInitialSampleJob()
+        void RendererReSTIR::startInitialSampleJob()
         {
             std::unique_ptr<Executor::Job> job = 
                 std::make_unique<RasterJob>(
@@ -77,7 +77,7 @@ namespace Render {
             mExecutor.runJob(std::move(job));
         }
 
-        void Renderer::startDirectIlluminateJob()
+        void RendererReSTIR::startDirectIlluminateJob()
         {
             std::unique_ptr<Executor::Job> job = 
                 std::make_unique<RasterJob>(
@@ -95,7 +95,7 @@ namespace Render {
             mExecutor.runJob(std::move(job));
         }
 
-        void Renderer::startIndirectIlluminateJob()
+        void RendererReSTIR::startIndirectIlluminateJob()
         {
             std::unique_ptr<Executor::Job> job = 
                 std::make_unique<RasterJob>(
@@ -123,7 +123,7 @@ namespace Render {
             mExecutor.runJob(std::move(job));
         }
 
-        void Renderer::initialSamplePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
+        void RendererReSTIR::initialSamplePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
         {
             Math::Bivector dv;
             sampler.startSample(x, y, sample);
@@ -217,7 +217,7 @@ namespace Render {
             addRadiance(x, y, sample, radEmitted);
         }
 
-        void Renderer::directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
+        void RendererReSTIR::directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
         {
             Math::Radiance radDirect;
             PrimaryHit &primaryHit = mPrimaryHits.at(x, y);
@@ -282,7 +282,7 @@ namespace Render {
             addRadiance(x, y, sample, radDirect);
         }
 
-        void Renderer::indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
+        void RendererReSTIR::indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
         {
             Math::Radiance radIndirect;
             PrimaryHit &primaryHit = mPrimaryHits.at(x, y);
@@ -335,7 +335,7 @@ namespace Render {
             addRadiance(x, y, sample, radIndirect / N);
         }
 
-        void Renderer::addRadiance(int x, int y, int sample, const Math::Radiance &radiance)
+        void RendererReSTIR::addRadiance(int x, int y, int sample, const Math::Radiance &radiance)
         {
             Math::Radiance radTotal = mTotalRadiance.get(x, y) + radiance;
             mTotalRadiance.set(x, y, radTotal);

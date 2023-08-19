@@ -1,5 +1,5 @@
-#ifndef RENDER_CPU_RENDERER_HPP
-#define RENDER_CPU_RENDERER_HPP
+#ifndef RENDER_CPU_RENDERER_RESTIR_HPP
+#define RENDER_CPU_RENDERER_RESTIR_HPP
 
 #include "Render/Renderer.hpp"
 
@@ -7,7 +7,7 @@
 #include "Render/Framebuffer.hpp"
 #include "Render/Raster.hpp"
 
-#include "Render/Cpu/Lighter/Base.hpp"
+#include "Render/Cpu/Lighter/UniPath.hpp"
 
 #include "Object/Scene.hpp"
 
@@ -16,7 +16,7 @@
 
 namespace Render {
     namespace Cpu {
-        class Renderer : public Render::Renderer {
+        class RendererReSTIR : public Render::Renderer {
         public:
             struct Settings
             {
@@ -26,7 +26,7 @@ namespace Render {
                 unsigned int maxSamples;
                 float sampleThreshold;
             };
-            Renderer(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter);
+            RendererReSTIR(const Object::Scene &scene, const Settings &settings);
 
             void start(Listener *listener) override;
             void stop() override;

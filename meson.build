@@ -1,4 +1,4 @@
-project('raytrace', 'c', 'cpp', default_options: ['buildtype=debug'])
+project('raytrace', 'c', 'cpp', default_options: ['buildtype=debugoptimized'])
 
 flex = find_program('flex')
 bison = find_program('bison')
@@ -67,7 +67,8 @@ executable('raytrace',
     'Render/Framebuffer.cpp',
     'Render/LightProbe.cpp',
     'Render/Cpu/Executor.cpp',
-    'Render/Cpu/Renderer.cpp',
+    'Render/Cpu/RendererLighter.cpp',
+    'Render/Cpu/RendererReSTIR.cpp',
     'Render/Cpu/RasterJob.cpp',
     'Render/Cpu/Lighter/Base.cpp',
     'Render/Cpu/Lighter/Direct.cpp',
