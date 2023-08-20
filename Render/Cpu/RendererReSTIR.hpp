@@ -8,6 +8,7 @@
 #include "Render/Raster.hpp"
 
 #include "Render/Cpu/Lighter/UniPath.hpp"
+#include "Math/Sampler/Halton.hpp"
 
 #include "Object/Scene.hpp"
 
@@ -23,6 +24,9 @@ namespace Render {
                 unsigned int width;
                 unsigned int height;
                 unsigned int samples;
+                unsigned int indirectSamples;
+                unsigned int radius;
+                unsigned int candidates;
             };
             RendererReSTIR(const Object::Scene &scene, const Settings &settings);
 
@@ -33,26 +37,6 @@ namespace Render {
             Render::Framebuffer &renderFramebuffer() override;
 
         private:
-            void startInitialSampleJob();
-            void startDirectIlluminateJob();
-            void startIndirectIlluminateJob();
-            void initialSamplePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
-            void directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
-            void indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
-
-            void addRadiance(int x, int y, int sample, const Math::Radiance &radiance);
-
-            Executor mExecutor;
-            Listener *mListener;
-            int mCurrentSample;
-            std::chrono::time_point<std::chrono::steady_clock> mStartTime;
-
-            const Object::Scene &mScene;
-            Settings mSettings;
-            std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
-
-            std::unique_ptr<Render::Cpu::Lighter::Base> mIndirectLighter;
-
             template<typename T> struct Reservoir {
                 T sample;
                 float weight;
@@ -95,12 +79,32 @@ namespace Render {
                 const Object::Primitive *primitive;
             };
 
-            Render::Raster<Reservoir<DirectSample>> mDirectReservoirs;
-
             struct IndirectSample {
                 Math::Point point;
                 Math::Radiance indirectRadiance;
             };
+
+            void startInitialSampleJob();
+            void startDirectIlluminateJob();
+            void startIndirectIlluminateJob();
+            void initialSamplePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+            void directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+            void indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler, Reservoir<IndirectSample> indirectSamples[]);
+
+            void addRadiance(int x, int y, int sample, const Math::Radiance &radiance);
+
+            Executor mExecutor;
+            Listener *mListener;
+            int mCurrentSample;
+            std::chrono::time_point<std::chrono::steady_clock> mStartTime;
+
+            const Object::Scene &mScene;
+            Settings mSettings;
+            std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
+
+            std::unique_ptr<Render::Cpu::Lighter::Base> mIndirectLighter;
+
+            Render::Raster<Reservoir<DirectSample>> mDirectReservoirs;
             Render::Raster<Reservoir<IndirectSample>> mIndirectReservoirs;
 
             struct PrimaryHit {
@@ -110,6 +114,16 @@ namespace Render {
             Render::Raster<PrimaryHit> mPrimaryHits;
 
             Render::Raster<Math::Radiance> mTotalRadiance;
+
+            struct ThreadLocal : public Executor::Job::ThreadLocal {
+                Math::Sampler::Halton sampler;
+                std::vector<Reservoir<IndirectSample>> indirectSamples;
+
+                ThreadLocal(int width, int height, int numIndirectSamples)
+                 : sampler(width, height)
+                 , indirectSamples(numIndirectSamples)
+                {}
+            };    
         };
     }
 }

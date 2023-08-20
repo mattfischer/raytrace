@@ -1,21 +1,11 @@
 #include "Render/Cpu/RendererReSTIR.hpp"
 #include "Render/Cpu/RasterJob.hpp"
 
-#include "Math/Sampler/Halton.hpp"
-
-#include "Render/Cpu/Lighter/UniPath.hpp"
-
 #include <atomic>
 #include <mutex>
 
 namespace Render {
-    namespace Cpu {
-        struct ThreadLocal : public Executor::Job::ThreadLocal {
-            Math::Sampler::Halton sampler;
-
-            ThreadLocal(int width, int height) : sampler(width, height) {}
-        };
-            
+    namespace Cpu {    
         RendererReSTIR::RendererReSTIR(const Object::Scene &scene, const Settings &settings)
         : mScene(scene)
         , mSettings(settings)
@@ -60,7 +50,7 @@ namespace Render {
                     mSettings.width,
                     mSettings.height,
                     1,
-                    [&]() { return std::make_unique<ThreadLocal>(mRenderFramebuffer->width(), mRenderFramebuffer->height()); },
+                    [&]() { return std::make_unique<ThreadLocal>(mRenderFramebuffer->width(), mRenderFramebuffer->height(), mSettings.indirectSamples); },
                     [&](int x, int y, int sample, Executor::Job::ThreadLocal &threadLocalBase)
                         {
                             initialSamplePixel(x, y, mCurrentSample, static_cast<ThreadLocal&>(threadLocalBase).sampler);
@@ -78,7 +68,7 @@ namespace Render {
                     mSettings.width,
                     mSettings.height,
                     1,
-                    [&]() { return std::make_unique<ThreadLocal>(mRenderFramebuffer->width(), mRenderFramebuffer->height()); },
+                    [&]() { return std::make_unique<ThreadLocal>(mRenderFramebuffer->width(), mRenderFramebuffer->height(), mSettings.indirectSamples); },
                     [&](int x, int y, int sample, Executor::Job::ThreadLocal &threadLocalBase)
                         {
                             directIlluminatePixel(x, y, mCurrentSample, static_cast<ThreadLocal&>(threadLocalBase).sampler);
@@ -96,10 +86,10 @@ namespace Render {
                     mSettings.width,
                     mSettings.height,
                     1,
-                    [&]() { return std::make_unique<ThreadLocal>(mRenderFramebuffer->width(), mRenderFramebuffer->height()); },
+                    [&]() { return std::make_unique<ThreadLocal>(mRenderFramebuffer->width(), mRenderFramebuffer->height(), mSettings.indirectSamples); },
                     [&](int x, int y, int sample, Executor::Job::ThreadLocal &threadLocalBase)
                         {
-                            indirectIlluminatePixel(x, y, mCurrentSample, static_cast<ThreadLocal&>(threadLocalBase).sampler);
+                            indirectIlluminatePixel(x, y, mCurrentSample, static_cast<ThreadLocal&>(threadLocalBase).sampler, &static_cast<ThreadLocal&>(threadLocalBase).indirectSamples[0]);
                         },
                     [&]() 
                         {
@@ -222,8 +212,8 @@ namespace Render {
             Reservoir<DirectSample> res;
             res.clear();
 
-            const int R = 30;
-            for(int i=0; i<30; i++) {
+            const int R = mSettings.radius;
+            for(int i=0; i<mSettings.candidates; i++) {
                 Math::Point2D s = sampler.getValue2D();
                 s = s * R * 2 + Math::Point2D(-R, -R);
                 int sx = (int)std::floor(s.u() + x);
@@ -276,21 +266,20 @@ namespace Render {
             addRadiance(x, y, sample, radDirect);
         }
 
-        void RendererReSTIR::indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
+        void RendererReSTIR::indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler, Reservoir<IndirectSample> indirectSamples[])
         {
             Math::Radiance radIndirect;
             PrimaryHit &primaryHit = mPrimaryHits.at(x, y);
             const Math::Normal &nrmFacing = primaryHit.isect.facingNormal(); 
             const Object::Surface &surface = primaryHit.isect.primitive().surface();
 
-            const int N = 10;
-            Reservoir<IndirectSample> res[N];
+            const int N = mSettings.indirectSamples;
             for(int i=0; i<N; i++) {
-                res[i].clear();
+                indirectSamples[i].clear();
             }
 
-            const int R = 30;
-            for(int i=0; i<30; i++) {
+            const int R = mSettings.radius;
+            for(int i=0; i<mSettings.candidates; i++) {
                 Math::Point2D s = sampler.getValue2D();
                 s = s * R * 2 + Math::Point2D(-R, -R);
                 int sx = (int)std::floor(s.u() + x);
@@ -305,23 +294,23 @@ namespace Render {
 
                 float q = resCandidate.q;
                 for(int i=0; i<N; i++) {
-                    res[i].merge(resCandidate, q, sampler);
+                    indirectSamples[i].merge(resCandidate, q, sampler);
                 }
             }
             
             for(int i=0; i<N; i++) {
-                res[i].W = res[i].weight / (res[i].q * res[i].M);
+                indirectSamples[i].W = indirectSamples[i].weight / (indirectSamples[i].q * indirectSamples[i].M);
 
-                if(res[i].W > 0) {
-                    float q = res[i].sample.indirectRadiance.magnitude();
-                    Math::Vector dirIn = res[i].sample.point - primaryHit.isect.point();
+                if(indirectSamples[i].W > 0) {
+                    float q = indirectSamples[i].sample.indirectRadiance.magnitude();
+                    Math::Vector dirIn = indirectSamples[i].sample.point - primaryHit.isect.point();
                     float d = dirIn.magnitude();
                     dirIn = dirIn / d;
                     float dot = dirIn * nrmFacing;
                     
                     if(dot > 0) {
                         Math::Color reflected = surface.reflected(primaryHit.isect, dirIn);
-                        radIndirect += res[i].sample.indirectRadiance * dot * reflected * res[i].W;
+                        radIndirect += indirectSamples[i].sample.indirectRadiance * dot * reflected * indirectSamples[i].W;
                     }
                 }
             }

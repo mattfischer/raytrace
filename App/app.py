@@ -28,6 +28,7 @@ class App(QtWidgets.QApplication):
         self.renderPixmap = None
 
         self.mainwindow.renderMethodIrradianceCaching.toggled.connect(self.on_renderMethodIrradianceCaching_toggled)
+        self.mainwindow.renderMethodRestir.toggled.connect(self.on_renderMethodRestir_toggled)
         self.mainwindow.renderButton.clicked.connect(self.on_renderButton_clicked)
         self.mainwindow.saveButton.clicked.connect(self.on_saveButton_clicked)
         self.mainwindow.renderView.installEventFilter(self)
@@ -48,6 +49,10 @@ class App(QtWidgets.QApplication):
     @Slot()
     def on_renderMethodIrradianceCaching_toggled(self, checked):
         self.mainwindow.groupIrradianceCaching.setEnabled(checked)
+
+    @Slot()
+    def on_renderMethodRestir_toggled(self, checked):
+        self.mainwindow.groupRestir.setEnabled(checked)
 
     @Slot()
     def on_renderButton_clicked(self):
@@ -86,7 +91,7 @@ class App(QtWidgets.QApplication):
         self.settings.height = self.mainwindow.heightBox.value()
         self.settings.samples = self.mainwindow.samplesBox.value()
 
-        renderMethods = [
+        render_methods = [
             (self.mainwindow.renderMethodNoLighting, 'noLighting'),
             (self.mainwindow.renderMethodDirectLighting, 'directLighting'),
             (self.mainwindow.renderMethodPathTracingCpu, 'pathTracingCpu'),
@@ -94,13 +99,17 @@ class App(QtWidgets.QApplication):
             (self.mainwindow.renderMethodRestir, 'restir'),
             (self.mainwindow.renderMethodIrradianceCaching, 'irradianceCaching')
         ]
-        for (widget, name) in renderMethods:
+        for (widget, name) in render_methods:
             if widget.isChecked():
-                self.settings.renderMethod = name
+                self.settings.render_method = name
                 break
 
         self.settings.irradiance_cache_samples = self.mainwindow.irradianceCachingSamples.value()
         self.settings.irradiance_cache_threshold = self.mainwindow.irradianceCachingThreshold.value()
+
+        self.settings.restir_indirect_samples = self.mainwindow.restirIndirectSamples.value()
+        self.settings.restir_radius = self.mainwindow.restirRadius.value()
+        self.settings.restir_candidates = self.mainwindow.restirCandidates.value()
 
     def updateFramebuffer(self):
         dpr = self.mainwindow.renderView.devicePixelRatio()

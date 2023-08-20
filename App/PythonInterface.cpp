@@ -45,6 +45,9 @@ namespace App {
         unsigned int samples;
         unsigned int irradianceCacheSamples;
         float irradianceCacheThreshold;
+        unsigned int restirIndirectSamples;
+        unsigned int restirRadius;
+        unsigned int restirCandidates;
         PyObject *renderMethod;
     };
 
@@ -113,6 +116,9 @@ namespace App {
             settings.width = settingsObject->width;
             settings.height = settingsObject->height;
             settings.samples = settingsObject->samples;
+            settings.indirectSamples = settingsObject->restirIndirectSamples;
+            settings.radius = settingsObject->restirRadius;
+            settings.candidates = settingsObject->restirCandidates;
 
             engineObject->renderer = new Render::Cpu::RendererReSTIR(*engineObject->sceneObject->scene, settings);
         } else {
@@ -241,7 +247,10 @@ namespace App {
         {"samples", T_UINT, offsetof(SettingsObject, samples), 0},
         {"irradiance_cache_samples", T_UINT, offsetof(SettingsObject, irradianceCacheSamples), 0},
         {"irradiance_cache_threshold", T_FLOAT, offsetof(SettingsObject, irradianceCacheThreshold), 0},
-        {"renderMethod", T_OBJECT, offsetof(SettingsObject, renderMethod), 0},
+        {"restir_indirect_samples", T_UINT, offsetof(SettingsObject, restirIndirectSamples), 0},
+        {"restir_radius", T_UINT, offsetof(SettingsObject, restirRadius), 0},
+        {"restir_candidates", T_UINT, offsetof(SettingsObject, restirCandidates), 0},
+        {"render_method", T_OBJECT, offsetof(SettingsObject, renderMethod), 0},
         {NULL}
     };
 
