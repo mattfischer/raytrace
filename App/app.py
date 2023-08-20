@@ -74,7 +74,7 @@ class App(QtWidgets.QApplication):
 
     @Slot()
     def on_saveButton_clicked(self):
-        filename = QtCore.QFileDialog.getSaveFileName(None, '', '', 'PNG Files (*.png)')
+        (filename, _) = QtWidgets.QFileDialog.getSaveFileName(None, '', '', 'PNG Files (*.png)')
         if filename != '':
             self.renderPixmap.save(filename)
 
