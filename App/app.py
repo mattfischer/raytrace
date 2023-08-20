@@ -29,7 +29,7 @@ class App(QtWidgets.QApplication):
         self.sampleStatusImage = None
         self.sampleStatusPixmap = None
 
-        self.mainwindow.lightingIrradianceCaching.toggled.connect(self.on_lightingIrradianceCaching_toggled)
+        self.mainwindow.renderMethodIrradianceCaching.toggled.connect(self.on_renderMethodIrradianceCaching_toggled)
         self.mainwindow.renderButton.clicked.connect(self.on_renderButton_clicked)
         self.mainwindow.saveButton.clicked.connect(self.on_saveButton_clicked)
         self.mainwindow.renderView.installEventFilter(self)
@@ -52,7 +52,7 @@ class App(QtWidgets.QApplication):
             self.timer.stop()
 
     @Slot()
-    def on_lightingIrradianceCaching_toggled(self, checked):
+    def on_renderMethodIrradianceCaching_toggled(self, checked):
         self.mainwindow.groupIrradianceCaching.setEnabled(checked)
 
     @Slot()
@@ -94,25 +94,17 @@ class App(QtWidgets.QApplication):
         self.settings.max_samples = self.mainwindow.samplesMaxBox.value()
         self.settings.sample_threshold = self.mainwindow.samplesThresholdBox.value()
 
-        lighting = [
-            (self.mainwindow.lightingNone, 'none'),
-            (self.mainwindow.lightingDirect, 'direct'),
-            (self.mainwindow.lightingPathTracing, 'pathTracing'),
-            (self.mainwindow.lightingRestir, 'restir'),
-            (self.mainwindow.lightingIrradianceCaching, 'irradianceCaching')
+        renderMethods = [
+            (self.mainwindow.renderMethodNoLighting, 'noLighting'),
+            (self.mainwindow.renderMethodDirectLighting, 'directLighting'),
+            (self.mainwindow.renderMethodPathTracingCpu, 'pathTracingCpu'),
+            (self.mainwindow.renderMethodPathTracingGpu, 'pathTracingGpu'),
+            (self.mainwindow.renderMethodRestir, 'restir'),
+            (self.mainwindow.renderMethodIrradianceCaching, 'irradianceCaching')
         ]
-        for (widget, name) in lighting:
+        for (widget, name) in renderMethods:
             if widget.isChecked():
-                self.settings.lighting = name
-                break
-
-        renderer = [
-            (self.mainwindow.rendererCpu, 'cpu'),
-            (self.mainwindow.rendererGpu, 'gpu')
-        ]
-        for(widget, name) in renderer:
-            if widget.isChecked():
-                self.settings.renderer = name
+                self.settings.renderMethod = name
                 break
 
         self.settings.irradiance_cache_samples = self.mainwindow.irradianceCachingSamples.value()

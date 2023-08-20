@@ -248,35 +248,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupRenderer">
+      <widget class="QGroupBox" name="groupRenderMethod">
        <property name="title">
-        <string>Renderer</string>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QRadioButton" name="rendererCpu">
-          <property name="text">
-           <string>CPU</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="rendererGpu">
-          <property name="text">
-           <string>GPU</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupLighting">
-       <property name="title">
-        <string>Lighting</string>
+        <string>Render Method</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_10">
         <property name="leftMargin">
@@ -292,23 +266,23 @@
          <number>9</number>
         </property>
         <item>
-         <widget class="QRadioButton" name="lightingNone">
+         <widget class="QRadioButton" name="renderMethodNoLighting">
           <property name="text">
-           <string>None</string>
+           <string>No Lighting</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="lightingDirect">
+         <widget class="QRadioButton" name="renderMethodDirectLighting">
           <property name="text">
-           <string>Direct</string>
+           <string>Direct Lighting</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="lightingPathTracing">
+         <widget class="QRadioButton" name="renderMethodPathTracingCpu">
           <property name="text">
-           <string>Path Tracing</string>
+           <string>Path Tracing (CPU)</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -316,14 +290,21 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="lightingRestir">
+         <widget class="QRadioButton" name="renderMethodPathTracingGpu">
+          <property name="text">
+           <string>Path Tracing (GPU)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="renderMethodRestir">
           <property name="text">
            <string>ReSTIR</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="lightingIrradianceCaching">
+         <widget class="QRadioButton" name="renderMethodIrradianceCaching">
           <property name="text">
            <string>Irradiance Caching</string>
           </property>

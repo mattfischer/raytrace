@@ -43,13 +43,12 @@ namespace App {
         PyObject_HEAD
         unsigned int width;
         unsigned int height;
-        PyObject *lighting;
         unsigned int minSamples;
         unsigned int maxSamples;
         float sampleThreshold;
         unsigned int irradianceCacheSamples;
         float irradianceCacheThreshold;
-        PyObject *renderer;
+        PyObject *renderMethod;
     };
 
     struct FramebufferObject {
@@ -104,45 +103,8 @@ namespace App {
 
         Py_INCREF(engineObject->sceneObject);
 
-        wchar_t *renderer = PyUnicode_AsWideCharString(settingsObject->renderer, NULL);
-        if(!wcscmp(renderer, L"cpu")) {
-            wchar_t *lighting = PyUnicode_AsWideCharString(settingsObject->lighting, NULL);
-            if(!wcscmp(lighting, L"restir")) {
-                Render::Cpu::RendererReSTIR::Settings settings;
-                settings.width = settingsObject->width;
-                settings.height = settingsObject->height;
-                settings.minSamples = settingsObject->minSamples;
-                settings.maxSamples = settingsObject->maxSamples;
-                settings.sampleThreshold = settingsObject->sampleThreshold;
-
-                engineObject->renderer = new Render::Cpu::RendererReSTIR(*engineObject->sceneObject->scene, settings);
-            } else {
-                Render::Cpu::RendererLighter::Settings settings;
-                settings.width = settingsObject->width;
-                settings.height = settingsObject->height;
-                settings.minSamples = settingsObject->minSamples;
-                settings.maxSamples = settingsObject->maxSamples;
-                settings.sampleThreshold = settingsObject->sampleThreshold;
-
-                std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
-                if(!wcscmp(lighting, L"none")) {
-                    lighter = nullptr;
-                } else if(!wcscmp(lighting, L"direct")) {
-                    lighter = std::make_unique<Render::Cpu::Lighter::Direct>();
-                } else if(!wcscmp(lighting, L"pathTracing")) {
-                    lighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
-                } else if(!wcscmp(lighting, L"irradianceCaching")) {
-                    Render::Cpu::Lighter::IrradianceCached::Settings lighterSettings;
-
-                    lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
-                    lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
-
-                    lighter = std::make_unique<Render::Cpu::Lighter::IrradianceCached>(lighterSettings);
-                }
-                
-                engineObject->renderer = new Render::Cpu::RendererLighter(*engineObject->sceneObject->scene, settings, std::move(lighter));
-            }
-        } else if(!wcscmp(renderer, L"gpu")) {
+        wchar_t *renderMethod = PyUnicode_AsWideCharString(settingsObject->renderMethod, NULL);
+        if(!wcscmp(renderMethod, L"pathTracingGpu")) {
             Render::Gpu::Renderer::Settings settings;
             settings.width = settingsObject->width;
             settings.height = settingsObject->height;
@@ -151,6 +113,40 @@ namespace App {
             settings.sampleThreshold = settingsObject->sampleThreshold;
 
             engineObject->renderer = new Render::Gpu::Renderer(*engineObject->sceneObject->scene, settings);
+        } else if(!wcscmp(renderMethod, L"restir")) {
+            Render::Cpu::RendererReSTIR::Settings settings;
+            settings.width = settingsObject->width;
+            settings.height = settingsObject->height;
+            settings.minSamples = settingsObject->minSamples;
+            settings.maxSamples = settingsObject->maxSamples;
+            settings.sampleThreshold = settingsObject->sampleThreshold;
+
+            engineObject->renderer = new Render::Cpu::RendererReSTIR(*engineObject->sceneObject->scene, settings);
+        } else {
+            Render::Cpu::RendererLighter::Settings settings;
+            settings.width = settingsObject->width;
+            settings.height = settingsObject->height;
+            settings.minSamples = settingsObject->minSamples;
+            settings.maxSamples = settingsObject->maxSamples;
+            settings.sampleThreshold = settingsObject->sampleThreshold;
+
+            std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
+            if(!wcscmp(renderMethod, L"noLighting")) {
+                lighter = nullptr;
+            } else if(!wcscmp(renderMethod, L"directLighting")) {
+                lighter = std::make_unique<Render::Cpu::Lighter::Direct>();
+            } else if(!wcscmp(renderMethod, L"pathTracingCpu")) {
+                lighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
+            } else if(!wcscmp(renderMethod, L"irradianceCaching")) {
+                Render::Cpu::Lighter::IrradianceCached::Settings lighterSettings;
+
+                lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
+                lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
+
+                lighter = std::make_unique<Render::Cpu::Lighter::IrradianceCached>(lighterSettings);
+            }
+            
+            engineObject->renderer = new Render::Cpu::RendererLighter(*engineObject->sceneObject->scene, settings, std::move(lighter));
         }
 
         engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->renderer->renderFramebuffer());
@@ -254,13 +250,12 @@ namespace App {
     static PyMemberDef Settings_members[] = {
         {"width", T_UINT, offsetof(SettingsObject, width), 0},
         {"height", T_UINT, offsetof(SettingsObject, height), 0},
-        {"lighting", T_OBJECT, offsetof(SettingsObject, lighting), 0},
         {"min_samples", T_UINT, offsetof(SettingsObject, minSamples), 0},
         {"max_samples", T_UINT, offsetof(SettingsObject, maxSamples), 0},
         {"sample_threshold", T_FLOAT, offsetof(SettingsObject, sampleThreshold), 0},
         {"irradiance_cache_samples", T_UINT, offsetof(SettingsObject, irradianceCacheSamples), 0},
         {"irradiance_cache_threshold", T_FLOAT, offsetof(SettingsObject, irradianceCacheThreshold), 0},
-        {"renderer", T_OBJECT, offsetof(SettingsObject, renderer), 0},
+        {"renderMethod", T_OBJECT, offsetof(SettingsObject, renderMethod), 0},
         {NULL}
     };
 
