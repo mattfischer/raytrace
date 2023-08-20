@@ -22,9 +22,7 @@ namespace Render {
             {
                 unsigned int width;
                 unsigned int height;
-                unsigned int minSamples;
-                unsigned int maxSamples;
-                float sampleThreshold;
+                unsigned int samples;
             };
             RendererLighter(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter);
 
@@ -33,7 +31,6 @@ namespace Render {
             bool running() override;
 
             Render::Framebuffer &renderFramebuffer() override;
-            Render::Framebuffer &sampleStatusFramebuffer() override;
 
         private:
             void jobDone();
@@ -48,7 +45,6 @@ namespace Render {
             const Object::Scene &mScene;
             Settings mSettings;
             std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
-            std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
             std::unique_ptr<Render::Cpu::Lighter::Base> mLighter;
 

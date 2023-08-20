@@ -24,9 +24,7 @@ namespace Render {
             {
                 unsigned int width;
                 unsigned int height;
-                unsigned int minSamples;
-                unsigned int maxSamples;
-                float sampleThreshold;
+                unsigned int samples;
             };
 
             Renderer(const Object::Scene &scene, const Settings &settings);
@@ -37,7 +35,6 @@ namespace Render {
             bool running() override;
 
             Render::Framebuffer &renderFramebuffer() override;
-            Render::Framebuffer &sampleStatusFramebuffer() override;
 
         private:
             std::vector<std::string> getSourceList();
@@ -51,7 +48,6 @@ namespace Render {
             const Object::Scene &mScene;
             const Settings mSettings;
             std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
-            std::unique_ptr<Render::Framebuffer> mSampleStatusFramebuffer;
 
             std::unique_ptr<WorkQueue> mGenerateCameraRayQueue;            
             std::unique_ptr<WorkQueue> mIntersectRayQueue;            

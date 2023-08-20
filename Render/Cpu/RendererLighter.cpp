@@ -21,7 +21,6 @@ namespace Render {
         , mTotalRadiance(settings.width, settings.height)
         {
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
-            mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
 
             if(mLighter) {
                 std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> prerenderJobs = mLighter->createPrerenderJobs(scene, *mRenderFramebuffer);
@@ -34,7 +33,7 @@ namespace Render {
                 std::make_unique<RasterJob>(
                     settings.width,
                     settings.height,
-                    settings.minSamples,
+                    settings.samples,
                     [&]() { return std::make_unique<ThreadLocal>(mRenderFramebuffer->width(), mRenderFramebuffer->height()); },
                     [&](int x, int y, int sample, Executor::Job::ThreadLocal &threadLocalBase)
                         {
@@ -66,11 +65,6 @@ namespace Render {
         Render::Framebuffer &RendererLighter::renderFramebuffer()
         {
             return *mRenderFramebuffer;
-        }
-
-        Render::Framebuffer &RendererLighter::sampleStatusFramebuffer()
-        {
-            return *mSampleStatusFramebuffer;
         }
 
         void RendererLighter::jobDone()

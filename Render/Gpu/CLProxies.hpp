@@ -10,7 +10,7 @@
 struct SettingsProxy {
     int width;
     int height;
-    int minSamples;
+    int samples;
 };
 
 struct ItemProxy {

@@ -1,7 +1,7 @@
 typedef struct {
     int width;
     int height;
-    int minSamples;
+    int samples;
 } Settings;
 
 typedef struct {
@@ -96,7 +96,7 @@ kernel void generateCameraRays(global Context *context)
     unsigned int cp = atomic_inc(&context->currentPixel);
 
     int sample = cp / (context->settings.width * context->settings.height);
-    if(sample >= context->settings.minSamples) {
+    if(sample >= context->settings.samples) {
         return;
     }
 

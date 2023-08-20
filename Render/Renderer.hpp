@@ -19,7 +19,6 @@ namespace Render {
         virtual bool running() = 0;
 
         virtual Render::Framebuffer &renderFramebuffer() = 0;
-        virtual Render::Framebuffer &sampleStatusFramebuffer() = 0;
     };
 }
 

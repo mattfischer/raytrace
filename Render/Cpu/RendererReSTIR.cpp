@@ -25,7 +25,6 @@ namespace Render {
         , mTotalRadiance(settings.width, settings.height)
         {
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
-            mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
 
             mIndirectLighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
         }
@@ -52,11 +51,6 @@ namespace Render {
         Render::Framebuffer &RendererReSTIR::renderFramebuffer()
         {
             return *mRenderFramebuffer;
-        }
-
-        Render::Framebuffer &RendererReSTIR::sampleStatusFramebuffer()
-        {
-            return *mSampleStatusFramebuffer;
         }
 
         void RendererReSTIR::startInitialSampleJob()
@@ -110,7 +104,7 @@ namespace Render {
                     [&]() 
                         {
                             mCurrentSample++;
-                            if(mCurrentSample < mSettings.minSamples) {
+                            if(mCurrentSample < mSettings.samples) {
                                 startInitialSampleJob();
                             } else {
                                 auto endTime = std::chrono::steady_clock::now();

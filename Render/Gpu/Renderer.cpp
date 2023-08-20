@@ -36,7 +36,7 @@ namespace Render {
             scene.writeProxy(mContextProxy->scene, mClConstAllocator);;
             mContextProxy->settings.width = mSettings.width;
             mContextProxy->settings.height = mSettings.height;
-            mContextProxy->settings.minSamples = mSettings.minSamples;
+            mContextProxy->settings.samples = mSettings.samples;
 
             Math::Sampler::Halton sampler(mSettings.width, mSettings.height);
             sampler.writeProxy(mContextProxy->sampler, mClConstAllocator);
@@ -49,7 +49,6 @@ namespace Render {
             mClExtendPathKernel.setArg(0, mContextProxy);
 
             mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
-            mSampleStatusFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
                         
             mGenerateCameraRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClRwAllocator);
             mIntersectRayQueue = std::make_unique<Render::Gpu::WorkQueue>(kSize, mClRwAllocator);
@@ -122,11 +121,6 @@ namespace Render {
         Render::Framebuffer &Renderer::renderFramebuffer()
         {
             return *mRenderFramebuffer;
-        }
-
-        Render::Framebuffer &Renderer::sampleStatusFramebuffer()
-        {
-            return *mSampleStatusFramebuffer;
         }
 
         static Math::Color toneMap(const Math::Radiance &radiance)

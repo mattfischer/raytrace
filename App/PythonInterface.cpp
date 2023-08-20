@@ -34,7 +34,6 @@ namespace App {
         PyObject_HEAD
         SceneObject *sceneObject;
         FramebufferObject *renderFramebufferObject;
-        FramebufferObject *sampleStatusFramebufferObject;
         Listener *listener;
         Render::Renderer *renderer;
     };
@@ -43,9 +42,7 @@ namespace App {
         PyObject_HEAD
         unsigned int width;
         unsigned int height;
-        unsigned int minSamples;
-        unsigned int maxSamples;
-        float sampleThreshold;
+        unsigned int samples;
         unsigned int irradianceCacheSamples;
         float irradianceCacheThreshold;
         PyObject *renderMethod;
@@ -108,27 +105,21 @@ namespace App {
             Render::Gpu::Renderer::Settings settings;
             settings.width = settingsObject->width;
             settings.height = settingsObject->height;
-            settings.minSamples = settingsObject->minSamples;
-            settings.maxSamples = settingsObject->maxSamples;
-            settings.sampleThreshold = settingsObject->sampleThreshold;
+            settings.samples = settingsObject->samples;
 
             engineObject->renderer = new Render::Gpu::Renderer(*engineObject->sceneObject->scene, settings);
         } else if(!wcscmp(renderMethod, L"restir")) {
             Render::Cpu::RendererReSTIR::Settings settings;
             settings.width = settingsObject->width;
             settings.height = settingsObject->height;
-            settings.minSamples = settingsObject->minSamples;
-            settings.maxSamples = settingsObject->maxSamples;
-            settings.sampleThreshold = settingsObject->sampleThreshold;
+            settings.samples = settingsObject->samples;
 
             engineObject->renderer = new Render::Cpu::RendererReSTIR(*engineObject->sceneObject->scene, settings);
         } else {
             Render::Cpu::RendererLighter::Settings settings;
             settings.width = settingsObject->width;
             settings.height = settingsObject->height;
-            settings.minSamples = settingsObject->minSamples;
-            settings.maxSamples = settingsObject->maxSamples;
-            settings.sampleThreshold = settingsObject->sampleThreshold;
+            settings.samples = settingsObject->samples;
 
             std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
             if(!wcscmp(renderMethod, L"noLighting")) {
@@ -150,7 +141,6 @@ namespace App {
         }
 
         engineObject->renderFramebufferObject = wrapFramebuffer(engineObject->renderer->renderFramebuffer());
-        engineObject->sampleStatusFramebufferObject = wrapFramebuffer(engineObject->renderer->sampleStatusFramebuffer());
 
         return 0;
     }
@@ -159,7 +149,6 @@ namespace App {
     {
         Py_XDECREF(engineObject->sceneObject);
         Py_XDECREF(engineObject->renderFramebufferObject);
-        Py_XDECREF(engineObject->sampleStatusFramebufferObject);
 
         if(engineObject->listener) {
             delete engineObject->listener;
@@ -243,16 +232,13 @@ namespace App {
 
     static PyMemberDef Engine_members[] = {
         {"render_framebuffer", T_OBJECT_EX, offsetof(EngineObject, renderFramebufferObject), 0},
-        {"sample_status_framebuffer", T_OBJECT_EX, offsetof(EngineObject, sampleStatusFramebufferObject), 0},
         {NULL}
     };
 
     static PyMemberDef Settings_members[] = {
         {"width", T_UINT, offsetof(SettingsObject, width), 0},
         {"height", T_UINT, offsetof(SettingsObject, height), 0},
-        {"min_samples", T_UINT, offsetof(SettingsObject, minSamples), 0},
-        {"max_samples", T_UINT, offsetof(SettingsObject, maxSamples), 0},
-        {"sample_threshold", T_FLOAT, offsetof(SettingsObject, sampleThreshold), 0},
+        {"samples", T_UINT, offsetof(SettingsObject, samples), 0},
         {"irradiance_cache_samples", T_UINT, offsetof(SettingsObject, irradianceCacheSamples), 0},
         {"irradiance_cache_threshold", T_FLOAT, offsetof(SettingsObject, irradianceCacheThreshold), 0},
         {"renderMethod", T_OBJECT, offsetof(SettingsObject, renderMethod), 0},

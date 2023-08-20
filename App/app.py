@@ -26,8 +26,6 @@ class App(QtWidgets.QApplication):
         self.settings = raytrace.Settings()
         self.renderImage = None
         self.renderPixmap = None
-        self.sampleStatusImage = None
-        self.sampleStatusPixmap = None
 
         self.mainwindow.renderMethodIrradianceCaching.toggled.connect(self.on_renderMethodIrradianceCaching_toggled)
         self.mainwindow.renderButton.clicked.connect(self.on_renderButton_clicked)
@@ -43,10 +41,6 @@ class App(QtWidgets.QApplication):
         renderPainter = QtGui.QPainter(self.renderPixmap)
         renderPainter.drawImage(0, 0, self.renderImage)
         self.mainwindow.renderView.setPixmap(self.renderPixmap)
-
-        sampleStatusPainter = QtGui.QPainter(self.sampleStatusPixmap)
-        sampleStatusPainter.drawImage(0, 0, self.sampleStatusImage)
-        self.mainwindow.sampleStatusView.setPixmap(self.sampleStatusPixmap)
 
         if self.engine and not self.engine.rendering():
             self.timer.stop()
@@ -90,9 +84,7 @@ class App(QtWidgets.QApplication):
     def refreshSettings(self):
         self.settings.width = self.mainwindow.widthBox.value()
         self.settings.height = self.mainwindow.heightBox.value()
-        self.settings.min_samples = self.mainwindow.samplesMinBox.value()
-        self.settings.max_samples = self.mainwindow.samplesMaxBox.value()
-        self.settings.sample_threshold = self.mainwindow.samplesThresholdBox.value()
+        self.settings.samples = self.mainwindow.samplesBox.value()
 
         renderMethods = [
             (self.mainwindow.renderMethodNoLighting, 'noLighting'),
@@ -118,13 +110,6 @@ class App(QtWidgets.QApplication):
         self.renderImage.setDevicePixelRatio(dpr)
         self.renderPixmap = QtGui.QPixmap(self.engine.render_framebuffer.width, self.engine.render_framebuffer.height)
         self.renderPixmap.setDevicePixelRatio(dpr)
-
-        self.mainwindow.sampleStatusView.setMinimumSize(self.settings.width / dpr, self.settings.height / dpr)
-        self.sampleStatusImage = QtGui.QImage(self.engine.sample_status_framebuffer, self.engine.sample_status_framebuffer.width, self.engine.sample_status_framebuffer.height,
-                        self.engine.sample_status_framebuffer.width * 3, QtGui.QImage.Format_RGB888)
-        self.sampleStatusImage.setDevicePixelRatio(dpr)
-        self.sampleStatusPixmap = QtGui.QPixmap(self.engine.sample_status_framebuffer.width, self.engine.sample_status_framebuffer.height)
-        self.sampleStatusPixmap.setDevicePixelRatio(dpr)
 
     def on_render_done(self, total_time_seconds):
         seconds = total_time_seconds
