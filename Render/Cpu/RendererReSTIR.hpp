@@ -39,36 +39,44 @@ namespace Render {
         private:
             template<typename T> struct Reservoir {
                 T sample;
-                float weight;
                 float W;
-                float M;
+                int M;
                 float q;
 
                 void clear()
                 {
-                    weight = W = M = q = 0;
+                    W = 0;
+                    M = 0;
+                    q = 0;
                 }
 
-                void update(const T &sampleNew, float weightNew, float qNew, Math::Sampler::Base &sampler)
+                void addSample(const T &sampleNew, float qNew, float pdfNew, Math::Sampler::Base &sampler)
                 {
-                    weight += weightNew;
-                    M++;
-                    if(weight == weightNew || sampler.getValue() < weightNew / weight) {
+                    combine(sampleNew, qNew, 1.0f / pdfNew, 1, sampler);
+                }
+
+                void addReservoir(const Reservoir<T> &resNew, float qNew, Math::Sampler::Base &sampler)
+                {
+                    combine(resNew.sample, qNew, resNew.W, resNew.M, sampler);
+                }
+
+            private:
+                void combine(const T &sampleNew, float qNew, float WNew, int MNew, Math::Sampler::Base &sampler)
+                {
+                    float m0 = (float)M / (float)(M + MNew);
+                    float m1 = (float)MNew / (float)(M + MNew);
+
+                    float w0 = m0 * q * W;
+                    float w1 = m1 * qNew * WNew;
+                    float wSum = w0 + w1;
+
+                    if(w0 == 0 || sampler.getValue() < w1 / wSum) {
                         sample = sampleNew;
                         q = qNew;
                     }
-                }
 
-                void merge(const Reservoir<T> &resNew, float qNew, Math::Sampler::Base &sampler)
-                {
-                    float weightNew = qNew * resNew.W * resNew.M;
-                    weight += weightNew;
-                    M += resNew.M;
-
-                    if(sampler.getValue() < weightNew / weight) {
-                        sample = resNew.sample;
-                        q = qNew;
-                    }
+                    M += MNew;
+                    W = wSum / q;
                 }
             };
 

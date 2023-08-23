@@ -149,19 +149,17 @@ namespace Render {
                             Math::Radiance irad = rad2 * dot2 * dot / (d * d);
                             Math::Radiance radDirect = irad * surface.reflected(isect, dirIn);
                             float q = radDirect.magnitude();
-                            float weight = q / pdf2;
-                            
+
                             DirectSample sample;
                             sample.point = pnt2;
                             sample.radiance = rad2;
                             sample.normal = nrm2;
                             sample.primitive = &light;
                             
-                            resDirect.update(sample, weight, q, sampler);
+                            resDirect.addSample(sample, q, pdf2, sampler);
                         }
                     }
                 }
-                resDirect.W = resDirect.weight / (resDirect.q * resDirect.M);
 
                 Reservoir<IndirectSample> &resIndirect = mIndirectReservoirs.at(x, y);           
                 resIndirect.clear();
@@ -187,9 +185,7 @@ namespace Render {
                         sample.point = isect2.point();
                         sample.indirectRadiance = (rad2 - isect2.primitive().surface().radiance()); 
                         float q = sample.indirectRadiance.magnitude();
-                        float weight = q / pdf;
-                        resIndirect.update(sample, weight, q, sampler);
-                        resIndirect.W = resIndirect.weight / (resIndirect.q * resIndirect.M);
+                        resIndirect.addSample(sample, q, pdf, sampler);
                     }
                 }
 
@@ -222,7 +218,7 @@ namespace Render {
                     continue;
                 }
                 Reservoir<DirectSample> &resCandidate = mDirectReservoirs.at(sx, sy);
-                if(resCandidate.weight == 0) {
+                if(resCandidate.q == 0) {
                     continue;
                 }
 
@@ -239,9 +235,8 @@ namespace Render {
                     q = rad.magnitude();
                 }
 
-                res.merge(resCandidate, q, sampler);
+                res.addReservoir(resCandidate, q, sampler);
             }            
-            res.W = res.weight / (res.q * res.M);
 
             if(res.W > 0) {
                 Math::Vector dirIn = res.sample.point - pntOffset;
@@ -288,19 +283,17 @@ namespace Render {
                     continue;
                 }
                 Reservoir<IndirectSample> &resCandidate = mIndirectReservoirs.at(sx, sy);
-                if(resCandidate.weight == 0) {
+                if(resCandidate.q == 0) {
                     continue;
                 }
 
                 float q = resCandidate.q;
                 for(int i=0; i<N; i++) {
-                    indirectSamples[i].merge(resCandidate, q, sampler);
+                    indirectSamples[i].addReservoir(resCandidate, q, sampler);
                 }
             }
             
             for(int i=0; i<N; i++) {
-                indirectSamples[i].W = indirectSamples[i].weight / (indirectSamples[i].q * indirectSamples[i].M);
-
                 if(indirectSamples[i].W > 0) {
                     float q = indirectSamples[i].sample.indirectRadiance.magnitude();
                     Math::Vector dirIn = indirectSamples[i].sample.point - primaryHit.isect.point();
