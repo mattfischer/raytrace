@@ -183,6 +183,7 @@ namespace Render {
                   
                         IndirectSample sample;
                         sample.point = isect2.point();
+                        sample.normal = isect2.facingNormal();
                         sample.indirectRadiance = (rad2 - isect2.primitive().surface().radiance()); 
                         float q = sample.indirectRadiance.magnitude();
                         resIndirect.addSample(sample, q, pdf, sampler);
@@ -235,7 +236,7 @@ namespace Render {
                     q = rad.magnitude();
                 }
 
-                res.addReservoir(resCandidate, q, sampler);
+                res.addReservoir(resCandidate, q, 1.0f, sampler);
             }            
 
             if(res.W > 0) {
@@ -287,9 +288,12 @@ namespace Render {
                     continue;
                 }
 
-                float q = resCandidate.q;
                 for(int i=0; i<N; i++) {
-                    indirectSamples[i].addReservoir(resCandidate, q, sampler);
+                    Math::Vector r = resCandidate.sample.point - primaryHit.isect.point();
+                    Math::Vector q = resCandidate.sample.point - mPrimaryHits.at(sx, sy).isect.point();
+                    Math::Normal &n = resCandidate.sample.normal;
+                    float J = std::fabs((n * r) * q.magnitude2() / ((n * q) * r.magnitude2()));
+                    indirectSamples[i].addReservoir(resCandidate, resCandidate.q, J, sampler);
                 }
             }
             

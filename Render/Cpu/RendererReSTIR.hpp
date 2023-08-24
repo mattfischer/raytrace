@@ -52,22 +52,22 @@ namespace Render {
 
                 void addSample(const T &sampleNew, float qNew, float pdfNew, Math::Sampler::Base &sampler)
                 {
-                    combine(sampleNew, qNew, 1.0f / pdfNew, 1, sampler);
+                    combine(sampleNew, qNew, 1.0f / pdfNew, 1, 1.0f, sampler);
                 }
 
-                void addReservoir(const Reservoir<T> &resNew, float qNew, Math::Sampler::Base &sampler)
+                void addReservoir(const Reservoir<T> &resNew, float qNew, float J, Math::Sampler::Base &sampler)
                 {
-                    combine(resNew.sample, qNew, resNew.W, resNew.M, sampler);
+                    combine(resNew.sample, qNew, resNew.W, resNew.M, J, sampler);
                 }
 
             private:
-                void combine(const T &sampleNew, float qNew, float WNew, int MNew, Math::Sampler::Base &sampler)
+                void combine(const T &sampleNew, float qNew, float WNew, int MNew, float J, Math::Sampler::Base &sampler)
                 {
                     float m0 = (float)M / (float)(M + MNew);
                     float m1 = (float)MNew / (float)(M + MNew);
 
                     float w0 = m0 * q * W;
-                    float w1 = m1 * qNew * WNew;
+                    float w1 = m1 * qNew * WNew * J;
                     float wSum = w0 + w1;
 
                     if(w0 == 0 || sampler.getValue() < w1 / wSum) {
@@ -89,6 +89,7 @@ namespace Render {
 
             struct IndirectSample {
                 Math::Point point;
+                Math::Normal normal;
                 Math::Radiance indirectRadiance;
             };
 
