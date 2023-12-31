@@ -120,7 +120,7 @@ kernel void intersectRays(global Context *context)
     int key = Queue_getKey(&context->intersectRaysQueue, get_global_id(0));
     Item *item = &context->items[key];
 
-    Scene_intersect(&context->scene, &item->beam, &item->isect);
+    Scene_intersect(&context->scene, &item->beam, &item->isect, MAXFLOAT, true);
 
     if(item->isect.primitive == NULL) {
         Radiance rad2 = context->scene.skyRadiance;
@@ -180,9 +180,9 @@ kernel void directLightArea(global Context *context)
             shadowBeam.ray.direction = dirIn;
 
             Intersection shadowIsect;
-            Scene_intersect(&context->scene, &shadowBeam, &shadowIsect);
+            Scene_intersect(&context->scene, &shadowBeam, &shadowIsect, d, false);
 
-            if(shadowIsect.primitive == light) {
+            if(shadowIsect.primitive == NULL || shadowIsect.primitive == light) {
                 Radiance rad2 = light->surface.radiance;
                 Radiance irad = rad2 * dot2 * dt / (d * d * pdf);
                 float pdfBrdf = Surface_pdf(isect, dirIn) * dot2 / (d * d);
@@ -217,9 +217,9 @@ kernel void directLightPoint(global Context *context)
         shadowBeam.ray.direction = dirIn;
 
         Intersection shadowIsect;
-        Scene_intersect(&context->scene, &shadowBeam, &shadowIsect);
+        Scene_intersect(&context->scene, &shadowBeam, &shadowIsect, d, false);
 
-        if(shadowIsect.primitive == 0 || shadowIsect.shapeIntersection.distance >= 0) {
+        if(shadowIsect.primitive == NULL) {
             Radiance irad = pointLight->radiance * dt / (d * d);
             Radiance rad = irad * Surface_reflected(isect, dirIn);
             item->radiance += rad * item->throughput;

@@ -7,10 +7,10 @@ namespace Object {
         {
         }
 
-        bool Transformed::intersect(const Math::Ray &ray, Intersection &isect) const
+        bool Transformed::intersect(const Math::Ray &ray, Intersection &isect, bool closest) const
         {
             Math::Ray transformedRay = mTransformation.inverse() * ray;
-            if (mShape->intersect(transformedRay, isect)) {
+            if (mShape->intersect(transformedRay, isect, closest)) {
                 isect.normal = (mTransformation * isect.normal).normalize();
                 isect.tangent = mTransformation * isect.tangent;
                 return true;

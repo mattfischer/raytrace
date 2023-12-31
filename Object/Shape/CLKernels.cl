@@ -92,7 +92,7 @@ float length2(float3 v)
     return dot(v, v);
 }
 
-bool ShapeQuad_intersect(Ray *ray, ShapeQuad *quad, ShapeIntersection *isectShape)
+bool ShapeQuad_intersect(Ray *ray, ShapeQuad *quad, ShapeIntersection *isectShape, bool closest)
 {
     float distance = dot(ray->origin - quad->position, quad->normal) / dot(ray->direction, -quad->normal);
     if(distance >= 0 && distance < isectShape->distance) {
@@ -129,7 +129,7 @@ bool ShapeQuad_sample(ShapeQuad *quad, float2 random, Point *point, Normal *norm
     return true;
 }
 
-bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *isectShape)
+bool ShapeSphere_intersect(Ray *ray, ShapeSphere *sphere, ShapeIntersection *isectShape, bool closest)
 {
     float a, b, c;
     float disc;
@@ -255,7 +255,7 @@ typedef struct {
     float minDistance;
 } StackEntry;
 
-bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, ShapeIntersection *isectShape)
+bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, ShapeIntersection *isectShape, bool closest)
 {
     StackEntry stack[64];
 
@@ -289,6 +289,9 @@ bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, Shap
                 isectShape->tangent.v = (Vector)(0,0,0);
                 isectShape->surfacePoint = (Point2D)(0,0);
                 ret = true;
+                if(!closest) {
+                    break;
+                }
             }
         } else {
             int indices[2] = { nodeIndex + 1, bvhNode->index };
@@ -314,7 +317,7 @@ bool ShapeTriangleMesh_intersect(Ray *ray, ShapeTriangleMesh *triangleMesh, Shap
     return ret;
 }
 
-bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *isectShape)
+bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *isectShape, bool closest)
 {
     StackEntry stack[64];
 
@@ -354,6 +357,9 @@ bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *isectShap
                 isectShape->tangent.v = vertex0->tangent.v * (1 - tu - tv) + vertex1->tangent.v * tu + vertex2->tangent.v * tv;
                 isectShape->surfacePoint = pntSurf0 * (1 - tu - tv) + pntSurf1 * tu + pntSurf2 * tv;
                 ret = true;
+                if(!closest) {
+                    break;
+                }
             }
             if(Triangle_intersect(ray, vertex3->point, vertex2->point, vertex1->point, &isectShape->distance, &tu, &tv)) {
                 isectShape->normal = vertex3->normal * (1 - tu - tv) + vertex2->normal * tu + vertex1->normal * tv;
@@ -361,6 +367,9 @@ bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *isectShap
                 isectShape->tangent.v = vertex3->tangent.v * (1 - tu - tv) + vertex2->tangent.v * tu + vertex1->tangent.v * tv;
                 isectShape->surfacePoint = pntSurf3 * (1 - tu - tv) + pntSurf2 * tu + pntSurf1 * tv;
                 ret = true;
+                if(!closest) {
+                    break;
+                }
             }
         } else {
             int indices[2] = { nodeIndex + 1, bvhNode->index };
@@ -386,27 +395,27 @@ bool ShapeGrid_intersect(Ray *ray, ShapeGrid *grid, ShapeIntersection *isectShap
     return ret;
 }
 
-bool Shape_intersect_3(Ray *ray, Shape *shape, ShapeIntersection *isectShape)
+bool Shape_intersect_3(Ray *ray, Shape *shape, ShapeIntersection *isectShape, bool closest)
 {
     switch(shape->type) {
     case ShapeTypeQuad:
-        return ShapeQuad_intersect(ray, &shape->quad, isectShape);
+        return ShapeQuad_intersect(ray, &shape->quad, isectShape, closest);
 
     case ShapeTypeSphere:
-        return ShapeSphere_intersect(ray, &shape->sphere, isectShape);
+        return ShapeSphere_intersect(ray, &shape->sphere, isectShape, closest);
 
     case ShapeTypeTriangleMesh:
-        return ShapeTriangleMesh_intersect(ray, &shape->triangleMesh, isectShape);
+        return ShapeTriangleMesh_intersect(ray, &shape->triangleMesh, isectShape, closest);
 
     case ShapeTypeGrid:
-        return ShapeGrid_intersect(ray, &shape->grid, isectShape);
+        return ShapeGrid_intersect(ray, &shape->grid, isectShape, closest);
 
     default:
         return false;
     }
 }
 
-bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *isectShape)
+bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *isectShape, bool closest)
 {
     bool ret = false;
 
@@ -414,8 +423,11 @@ bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *isectS
         float minDist;
         float maxDist;
         if(BoundingVolume_intersect(&group->volumes[i], ray, &minDist, &maxDist) && minDist < isectShape->distance) {
-            if(Shape_intersect_3(ray, &group->shapes[i], isectShape)) {
+            if(Shape_intersect_3(ray, &group->shapes[i], isectShape, closest)) {
                 ret = true;
+                if(!closest) {
+                    break;
+                }
             }
         }
     }
@@ -423,23 +435,23 @@ bool ShapeGroup_intersect(Ray *ray, ShapeGroup *group, ShapeIntersection *isectS
     return ret;
 }
 
-bool Shape_intersect_2(Ray *ray, Shape *shape, ShapeIntersection *isectShape)
+bool Shape_intersect_2(Ray *ray, Shape *shape, ShapeIntersection *isectShape, bool closest)
 {
     if(shape->type == ShapeTypeGroup) {
-        return ShapeGroup_intersect(ray, &shape->group, isectShape);
+        return ShapeGroup_intersect(ray, &shape->group, isectShape, closest);
     } else {
-        return Shape_intersect_3(ray, shape, isectShape);
+        return Shape_intersect_3(ray, shape, isectShape, closest);
     }
 }
 
-bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIntersection *isectShape)
+bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIntersection *isectShape, bool closest)
 {
     Ray rayTrans;
     rayTrans.origin = Matrix_multiplyPoint(&transformed->transformation.inverseMatrix, &ray->origin);
     rayTrans.direction = Matrix_multiplyVector(&transformed->transformation.inverseMatrix, &ray->direction);
     
     bool ret = false;
-    if(Shape_intersect_2(&rayTrans, transformed->shape, isectShape)) {
+    if(Shape_intersect_2(&rayTrans, transformed->shape, isectShape, closest)) {
         isectShape->normal = normalize(Matrix_multiplyNormal(&transformed->transformation.matrix, &isectShape->normal));
         isectShape->tangent.u = Matrix_multiplyVector(&transformed->transformation.matrix, &isectShape->tangent.u);
         isectShape->tangent.v = Matrix_multiplyVector(&transformed->transformation.matrix, &isectShape->tangent.v);
@@ -449,12 +461,12 @@ bool ShapeTransformed_intersect(Ray *ray, ShapeTransformed *transformed, ShapeIn
     return ret;
 }
 
-bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *isectShape)
+bool Shape_intersect(Ray *ray, Shape *shape, ShapeIntersection *isectShape, bool closest)
 {
     if(shape->type == ShapeTypeTransformed) {
-        return ShapeTransformed_intersect(ray, &shape->transformed, isectShape);
+        return ShapeTransformed_intersect(ray, &shape->transformed, isectShape, closest);
     } else {
-        return Shape_intersect_2(ray, shape, isectShape);
+        return Shape_intersect_2(ray, shape, isectShape, closest);
     }
 }
 

@@ -10,7 +10,7 @@ namespace Object {
         {
         }
 
-        bool Sphere::intersect(const Math::Ray &ray, Intersection &isect) const
+        bool Sphere::intersect(const Math::Ray &ray, Intersection &isect, bool closest) const
         {
             float a, b, c;
             float disc;

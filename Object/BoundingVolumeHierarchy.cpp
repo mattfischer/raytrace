@@ -30,7 +30,7 @@ namespace Object {
         return mNodes;
     }
 
-    bool BoundingVolumeHierarchy::intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(unsigned int, float&)> &func) const
+    bool BoundingVolumeHierarchy::intersect(const BoundingVolume::RayData &rayData, float &maxDistance, bool closest, const std::function<bool(unsigned int, float&)> &func) const
     {
         struct StackEntry {
             int nodeIndex;
@@ -58,6 +58,9 @@ namespace Object {
                 int index = -node.index;
                 if (func(index, maxDistance)) {
                     ret = true;
+                    if(!closest) {
+                        break;
+                    }
                 }
             }
             else {

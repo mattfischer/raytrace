@@ -12,7 +12,7 @@ namespace Object {
             mTangent = Math::Bivector(mSide1, mSide2);
         }
 
-        bool Quad::intersect(const Math::Ray &ray, Intersection &isect) const
+        bool Quad::intersect(const Math::Ray &ray, Intersection &isect, bool closest) const
         {
             float distance = ((ray.origin() - mPosition) * mNormal) / (ray.direction() * -mNormal);
             if (distance >= 0 && distance < isect.distance) {

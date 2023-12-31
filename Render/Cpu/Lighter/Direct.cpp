@@ -39,9 +39,9 @@ namespace Render {
                     if(dot > 0) {
                         Math::Ray ray(pntOffset, dirIn);
                         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                        Object::Intersection isect2 = scene.intersect(beam);
+                        Object::Intersection isect2 = scene.intersect(beam, d, false);
 
-                        if (isect2.valid() && &(isect2.primitive()) == &light) {
+                        if (!isect2.valid() || &(isect2.primitive()) == &light) {
                             Math::Radiance irad = rad2 * dotSample * dot / (d * d);
                             rad += irad * surface.reflected(isect, dirIn) / pdf;
                         }
@@ -57,9 +57,9 @@ namespace Render {
                     if(dot > 0) {
                         Math::Ray ray(pntOffset, dirIn);
                         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                        Object::Intersection isect2 = scene.intersect(beam);
+                        Object::Intersection isect2 = scene.intersect(beam, d, false);
 
-                        if (!isect2.valid() || isect2.distance() >= d) {
+                        if (!isect2.valid()) {
                             Math::Radiance irad = pointLight->radiance() * dot / (d * d);
                             rad += irad * surface.reflected(isect, dirIn);
                         }

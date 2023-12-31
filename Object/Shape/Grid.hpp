@@ -23,7 +23,7 @@ namespace Object {
 
             Grid(unsigned int width, unsigned int height, std::vector<Vertex> &&vertices);
 
-            bool intersect(const Math::Ray &ray, Intersection &isect) const override;
+            bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const override;
             BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
             void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const;

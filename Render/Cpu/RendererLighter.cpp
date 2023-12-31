@@ -86,7 +86,7 @@ namespace Render {
             Math::Point2D imagePoint = Math::Point2D((float)x, (float)y) + sampler.getValue2D();
             Math::Point2D aperturePoint = sampler.getValue2D();
             Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, mSettings.width, mSettings.height, aperturePoint);
-            Object::Intersection isect = mScene.intersect(beam);
+            Object::Intersection isect = mScene.intersect(beam, FLT_MAX, true);
 
             Math::Color color;
             if(mLighter) {

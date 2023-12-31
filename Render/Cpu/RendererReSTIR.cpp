@@ -114,7 +114,7 @@ namespace Render {
             Math::Point2D imagePoint = Math::Point2D((float)x, (float)y) + sampler.getValue2D();
             Math::Point2D aperturePoint = sampler.getValue2D();
             Math::Beam beam = mScene.camera().createPixelBeam(imagePoint, mSettings.width, mSettings.height, aperturePoint);
-            Object::Intersection isect = mScene.intersect(beam);
+            Object::Intersection isect = mScene.intersect(beam, FLT_MAX, true);
 
             PrimaryHit &primaryHit = mPrimaryHits.at(x, y);
             primaryHit.beam = beam;
@@ -176,7 +176,7 @@ namespace Render {
                 if(dot > 0) {
                     Math::Ray reflectRay(pntOffset, dirIn);
                     Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
-                    Object::Intersection isect2 = mScene.intersect(beam);
+                    Object::Intersection isect2 = mScene.intersect(beam, FLT_MAX, true);
 
                     if (isect2.valid()) {
                         Math::Radiance rad2 = mIndirectLighter->light(isect2, sampler);
@@ -249,7 +249,7 @@ namespace Render {
                 if(dot > 0) {
                     Math::Ray ray(pntOffset, dirIn);
                     Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                    Object::Intersection isect2 = mScene.intersect(beam);
+                    Object::Intersection isect2 = mScene.intersect(beam, FLT_MAX, true);
 
                     if (isect2.valid() && &(isect2.primitive()) == res.sample.primitive) {
                         Math::Radiance irad = res.sample.radiance * dot2 * dot / (d * d);

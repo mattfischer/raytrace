@@ -46,9 +46,9 @@ namespace Render {
 
                         Math::Ray ray(pntOffset, dirIn);
                         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                        Object::Intersection isect2 = scene.intersect(beam);
+                        Object::Intersection isect2 = scene.intersect(beam, d, false);
 
-                        if (isect2.valid() && &(isect2.primitive()) == &light) {
+                        if (!isect2.valid() || &(isect2.primitive()) == &light) {
                             Math::Radiance irad = rad2 * dot2 * dot / (d * d);
                             float pdfBrdf = surface.pdf(isect, dirIn) * dot2 / (d * d);
                             float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
@@ -68,9 +68,9 @@ namespace Render {
 
                         Math::Ray ray(pntOffset, dirIn);
                         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                        Object::Intersection isect2 = scene.intersect(beam);
+                        Object::Intersection isect2 = scene.intersect(beam, d, false);
 
-                        if (!isect2.valid() || isect2.distance() >= d) {
+                        if (!isect2.valid()) {
                             Math::Radiance irad = pointLight->radiance() * dot / (d * d);
                             rad += irad * surface.reflected(isect, dirIn) * throughput;
                         }
@@ -103,7 +103,7 @@ namespace Render {
 
                     Math::Ray reflectRay(pntOffset, dirIn);
                     Math::Beam beam(reflectRay, Math::Bivector(), Math::Bivector());
-                    Object::Intersection isect2 = scene.intersect(beam);
+                    Object::Intersection isect2 = scene.intersect(beam, FLT_MAX, true);
 
                     if (isect2.valid()) {
                         Math::Radiance rad2 = isect2.primitive().surface().radiance();

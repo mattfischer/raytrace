@@ -27,7 +27,7 @@ namespace Object {
 
         const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
-        Object::Intersection intersect(const Math::Beam &beam) const;
+        Object::Intersection intersect(const Math::Beam &beam, float maxDistance, bool closest) const;
 
         void writeProxy(SceneProxy &proxy, OpenCL::Allocator &clAllocator) const;
 

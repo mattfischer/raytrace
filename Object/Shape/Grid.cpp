@@ -51,7 +51,7 @@ namespace Object {
             return mVertices[v * mWidth + u];
         }
 
-        bool Grid::intersect(const Math::Ray &ray, Intersection &isect) const
+        bool Grid::intersect(const Math::Ray &ray, Intersection &isect, bool closest) const
         {
             BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
 
@@ -85,7 +85,7 @@ namespace Object {
                 return ret;
             };
 
-            return mBoundingVolumeHierarchy.intersect(rayData, isect.distance, std::ref(callback));
+            return mBoundingVolumeHierarchy.intersect(rayData, isect.distance, closest, std::ref(callback));
         }
 
         BoundingVolume Grid::boundingVolume(const Math::Transformation &trans) const

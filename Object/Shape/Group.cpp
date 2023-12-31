@@ -12,7 +12,7 @@ namespace Object {
             }
         }
 
-        bool Group::intersect(const Math::Ray &ray, Intersection &isect) const
+        bool Group::intersect(const Math::Ray &ray, Intersection &isect, bool closest) const
         {
             bool ret = false;
 
@@ -20,8 +20,11 @@ namespace Object {
             for(int i=0; i<mShapes.size(); i++) {
                 float distance;
                 if (mVolumes[i].intersectRay(rayData, distance) && distance < isect.distance) {
-                    if (mShapes[i]->intersect(ray, isect)) {
+                    if (mShapes[i]->intersect(ray, isect, closest)) {
                         ret = true;
+                        if(!closest) {
+                            break;
+                        }
                     }
                 }
             }

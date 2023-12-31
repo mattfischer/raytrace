@@ -66,24 +66,25 @@ namespace Object {
         return mBoundingVolumeHierarchy;
     }
 
-    Object::Intersection Scene::intersect(const Math::Beam &beam) const
+    Object::Intersection Scene::intersect(const Math::Beam &beam, float maxDistance, bool closest) const
     {
         Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(beam.ray());
 
         Object::Shape::Base::Intersection shapeIntersection;
-        shapeIntersection.distance = FLT_MAX;
+        shapeIntersection.distance = maxDistance;
         Object::Primitive *primitive = 0;
 
         auto func = [&](int index, float &maxDistance) {
-            if (mPrimitives[index]->shape().intersect(beam.ray(), shapeIntersection)) {
+            if (mPrimitives[index]->shape().intersect(beam.ray(), shapeIntersection, closest)) {
                 primitive = mPrimitives[index].get();
+                maxDistance = shapeIntersection.distance;
                 return true;
             }
 
             return false;
         };
 
-        mBoundingVolumeHierarchy.intersect(rayData, shapeIntersection.distance, std::ref(func));
+        mBoundingVolumeHierarchy.intersect(rayData, shapeIntersection.distance, closest, std::ref(func));
 
         if (primitive) {
             return Object::Intersection(*this, *primitive, beam, shapeIntersection);

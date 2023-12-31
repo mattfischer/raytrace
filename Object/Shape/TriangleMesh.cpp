@@ -15,7 +15,7 @@ namespace Object {
         {
         }
 
-        bool TriangleMesh::intersect(const Math::Ray &ray, Intersection &isect) const
+        bool TriangleMesh::intersect(const Math::Ray &ray, Intersection &isect, bool closest) const
         {
             BoundingVolume::RayData rayData = BoundingVolume::getRayData(ray);
 
@@ -37,7 +37,7 @@ namespace Object {
                 return ret;
             };
 
-            return mBoundingVolumeHierarchy.intersect(rayData, isect.distance, std::ref(callback));
+            return mBoundingVolumeHierarchy.intersect(rayData, isect.distance, closest, std::ref(callback));
         }
 
         BoundingVolume TriangleMesh::boundingVolume(const Math::Transformation &trans) const

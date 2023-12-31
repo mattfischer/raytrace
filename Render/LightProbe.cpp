@@ -24,7 +24,7 @@ namespace Render {
 		Math::Ray ray(pntOffset, dirIn);
 		Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
 		
-		Object::Intersection isect2 = mIntersection.scene().intersect(beam);
+		Object::Intersection isect2 = mIntersection.scene().intersect(beam, FLT_MAX, true);
         Math::Radiance irad;
 		if (isect2.valid()) {
 			irad = mLighter.light(isect2, mSampler) * dot;

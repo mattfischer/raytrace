@@ -57,9 +57,9 @@ namespace Object {
             mGrid = std::make_unique<Grid>(width, height, std::move(vertices));
         }
 
-        bool BezierPatch::intersect(const Math::Ray &ray, Intersection &isect) const
+        bool BezierPatch::intersect(const Math::Ray &ray, Intersection &isect, bool closest) const
         {
-            return mGrid->intersect(ray, isect);
+            return mGrid->intersect(ray, isect, closest);
         }
 
         BoundingVolume BezierPatch::boundingVolume(const Math::Transformation &trans) const

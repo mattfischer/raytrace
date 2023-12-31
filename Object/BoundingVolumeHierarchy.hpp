@@ -21,7 +21,7 @@ namespace Object {
         BoundingVolumeHierarchy(std::vector<Node> &&nodes);
         BoundingVolumeHierarchy(const std::vector<Math::Point> &points, const std::function<BoundingVolume(unsigned int)> &func);
 
-        bool intersect(const BoundingVolume::RayData &rayData, float &maxDistance, const std::function<bool(unsigned int, float&)> &func) const;
+        bool intersect(const BoundingVolume::RayData &rayData, float &maxDistance, bool closest, const std::function<bool(unsigned int, float&)> &func) const;
 
         void writeProxy(BVHNodeProxy *proxy) const;
 

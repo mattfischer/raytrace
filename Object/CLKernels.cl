@@ -146,9 +146,9 @@ Color Surface_sample(Intersection *isect, Sampler *sampler, SamplerState *sample
     return Surface_reflected(isect, *dirIn);
 }
 
-void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
+void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect, float maxDistance, bool closest)
 {
-    isect->shapeIntersection.distance = MAXFLOAT;
+    isect->shapeIntersection.distance = maxDistance;
     isect->primitive = NULL;
     isect->beam = beam;
 
@@ -172,8 +172,11 @@ void Scene_intersect(Scene *scene, Beam *beam, Intersection *isect)
         if(bvhNode->index <= 0) {
             int index = -bvhNode->index;
 
-            if(Shape_intersect(&beam->ray, &scene->primitives[index].shape, &isect->shapeIntersection)) {
+            if(Shape_intersect(&beam->ray, &scene->primitives[index].shape, &isect->shapeIntersection, closest)) {
                 isect->primitive = &scene->primitives[index];
+                if(!closest) {
+                    break;
+                }
             }
         } else {
             int indices[2] = { nodeIndex + 1, bvhNode->index };

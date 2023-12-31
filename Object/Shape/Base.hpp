@@ -28,7 +28,7 @@ namespace Object {
                 Math::Point2D surfacePoint;
             };
 
-            virtual bool intersect(const Math::Ray &ray, Intersection &isect) const = 0;
+            virtual bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const = 0;
             virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const = 0;
             virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const { return false; }
             virtual float samplePdf(const Math::Point &pnt) const { return 0; }

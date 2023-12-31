@@ -208,7 +208,7 @@ namespace App {
 
         Object::Scene &scene = *engineObject->sceneObject->scene;
         Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D((float)x, (float)y), renderer.renderFramebuffer().width(), renderer.renderFramebuffer().height(), Math::Point2D());
-        Object::Intersection isect = scene.intersect(beam);
+        Object::Intersection isect = scene.intersect(beam, FLT_MAX, true);
 
         if (isect.valid()) {
             Render::LightProbe probe(isect);

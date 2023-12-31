@@ -372,7 +372,7 @@ namespace Render {
                 sampler.startSample(x, y, 0);
                 Math::Beam beam = scene.camera().createPixelBeam(Math::Point2D(float(x), float(y)), framebuffer.width(), framebuffer.height(), Math::Point2D());
 
-                Object::Intersection isect = scene.intersect(beam);
+                Object::Intersection isect = scene.intersect(beam, FLT_MAX, true);
 
                 const Object::Surface &surface = isect.primitive().surface();
 
@@ -403,7 +403,7 @@ namespace Render {
                                 Math::Point pntOffset = pnt + Math::Vector(nrmFacing) * 0.01f;
                                 Math::Ray ray(pntOffset, dirIn);
                                 Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-                                Object::Intersection isect2 = scene.intersect(beam);
+                                Object::Intersection isect2 = scene.intersect(beam, FLT_MAX, true);
 
                                 if (isect2.valid()) {
                                     mean += 1 / isect2.distance();

@@ -12,7 +12,7 @@ namespace Object {
         public:
             Quad(const Math::Point &position, const Math::Vector &side1, const Math::Vector &side2);
 
-            bool intersect(const Math::Ray &ray, Intersection &isect) const override;
+            bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const override;
             BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
             bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const override;
