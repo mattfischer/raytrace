@@ -14,26 +14,24 @@
 
 #include <memory>
 
-namespace Object {
-    namespace Brdf {
-        class Base {
-        public:
-            virtual ~Base();
+namespace Object::Brdf {
+    class Base {
+    public:
+        virtual ~Base();
 
-            virtual Math::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Math::Color &albedo) const;
-            virtual Math::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Color &albedo) const;
+        virtual Math::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Math::Color &albedo) const;
+        virtual Math::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Color &albedo) const;
 
-            virtual float lambert() const;
+        virtual float lambert() const;
 
-            virtual Math::Vector sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const;
-            virtual float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const;
+        virtual Math::Vector sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const;
+        virtual float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const;
 
-            virtual bool opaque() const;
-            virtual float transmitIor() const;
+        virtual bool opaque() const;
+        virtual float transmitIor() const;
 
-            virtual void writeProxy(BrdfProxy &proxy) const = 0;
-        };
-    }
+        virtual void writeProxy(BrdfProxy &proxy) const = 0;
+    };
 }
 
 #endif

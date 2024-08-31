@@ -6,19 +6,17 @@
 #include <vector>
 #include <random>
 
-namespace Math {
-    namespace Sampler {
-        class Random : public Base
-        {
-        public:
-            void startSample(unsigned int index = 0) override;
-            void startSample(unsigned int x, unsigned int y, unsigned int sample) override;
+namespace Math::Sampler {
+    class Random : public Base
+    {
+    public:
+        void startSample(unsigned int index = 0) override;
+        void startSample(unsigned int x, unsigned int y, unsigned int sample) override;
 
-            float getValue() override;
+        float getValue() override;
 
-        private:
-            std::default_random_engine mRandomEngine;
-        };
-    }
+    private:
+        std::default_random_engine mRandomEngine;
+    };
 }
 #endif

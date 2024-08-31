@@ -13,19 +13,15 @@
 #include <vector>
 #include <memory>
 
-namespace Render {
-    namespace Cpu {
-        namespace Lighter {
-            class Base {
-            public:
-                Base();
-                virtual ~Base();
+namespace Render::Cpu::Lighter {
+    class Base {
+    public:
+        Base();
+        virtual ~Base();
 
-                virtual Math::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const = 0;
-                virtual std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
-            };
-        }
-    }
+        virtual Math::Radiance light(const Object::Intersection &isect, Math::Sampler::Base &sampler) const = 0;
+        virtual std::vector<std::unique_ptr<Render::Cpu::Executor::Job>> createPrerenderJobs(const Object::Scene &scene, Render::Framebuffer &framebuffer);
+    };
 }
 
 #endif

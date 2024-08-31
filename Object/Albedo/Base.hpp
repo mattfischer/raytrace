@@ -9,17 +9,14 @@
 #include "Object/CLProxies.hpp"
 #include "OpenCL.hpp"
 
-namespace Object {
-    namespace Albedo {
-        class Base
-        {
-        public:
-            virtual Math::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const = 0;
-            virtual bool needSurfaceProjection() const = 0;
- 
-            virtual void writeProxy(AlbedoProxy &proxy, OpenCL::Allocator &clAllocator) const = 0;
-        };
-    }
-}
+namespace Object::Albedo {
+    class Base
+    {
+    public:
+        virtual Math::Color color(const Math::Point2D &surfacePoint, const Math::Bivector2D &surfaceProjection) const = 0;
+        virtual bool needSurfaceProjection() const = 0;
 
+        virtual void writeProxy(AlbedoProxy &proxy, OpenCL::Allocator &clAllocator) const = 0;
+    };
+}
 #endif

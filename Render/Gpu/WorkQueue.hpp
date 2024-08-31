@@ -8,29 +8,27 @@
 #include <functional>
 #include <atomic>
 
-namespace Render {
-    namespace Gpu {
-        class WorkQueue {
-        public:
-            typedef uint32_t Key;
-            static const Key kInvalidKey = UINT_MAX;
+namespace Render::Gpu {
+    class WorkQueue {
+    public:
+        typedef uint32_t Key;
+        static const Key kInvalidKey = UINT_MAX;
 
-            WorkQueue(size_t size, OpenCL::Allocator &allocator);
+        WorkQueue(size_t size, OpenCL::Allocator &allocator);
 
-            Key getNextKey();
+        Key getNextKey();
 
-            bool addItem(Key key);
-            int numQueued();
-            void resetRead();
-            void clear();
+        bool addItem(Key key);
+        int numQueued();
+        void resetRead();
+        void clear();
 
-            void writeProxy(WorkQueueProxy &proxy) const;
+        void writeProxy(WorkQueueProxy &proxy) const;
 
-        private:
-            Key *mData;
-            size_t mSize;
-        };
-    }
+    private:
+        Key *mData;
+        size_t mSize;
+    };
 }
 
 #endif

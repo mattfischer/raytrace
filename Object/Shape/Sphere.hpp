@@ -3,23 +3,21 @@
 
 #include "Object/Shape/Base.hpp"
 
-namespace Object {
-    namespace Shape {
-        class Sphere : public Base
-        {
-        public:
-            Sphere(const Math::Point &position, float radius);
+namespace Object::Shape {
+    class Sphere : public Base
+    {
+    public:
+        Sphere(const Math::Point &position, float radius);
 
-            bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const override;
-            BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
+        bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const override;
+        BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
-            void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const override;
+        void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const override;
 
-        private:
-            Math::Point mPosition;
-            float mRadius;
-        };
-    }
+    private:
+        Math::Point mPosition;
+        float mRadius;
+    };
 }
 
 #endif

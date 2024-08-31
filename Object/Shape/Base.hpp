@@ -16,26 +16,24 @@
 #include "Object/Shape/CLProxies.hpp"
 #include "OpenCL.hpp"
 
-namespace Object {
-    namespace Shape {
-        class Base
-        {
-        public:
-            struct Intersection {
-                float distance;
-                Math::Normal normal;
-                Math::Bivector tangent;
-                Math::Point2D surfacePoint;
-            };
-
-            virtual bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const = 0;
-            virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const = 0;
-            virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const { return false; }
-            virtual float samplePdf(const Math::Point &pnt) const { return 0; }
-
-            virtual void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const { proxy.type = ShapeProxy::Type::None; }
+namespace Object::Shape {
+    class Base
+    {
+    public:
+        struct Intersection {
+            float distance;
+            Math::Normal normal;
+            Math::Bivector tangent;
+            Math::Point2D surfacePoint;
         };
-    }
+
+        virtual bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const = 0;
+        virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const = 0;
+        virtual bool sample(Math::Sampler::Base &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const { return false; }
+        virtual float samplePdf(const Math::Point &pnt) const { return 0; }
+
+        virtual void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const { proxy.type = ShapeProxy::Type::None; }
+    };
 }
 
 #endif

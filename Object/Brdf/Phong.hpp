@@ -3,26 +3,24 @@
 
 #include "Object/Brdf/Base.hpp"
 
-namespace Object {
-    namespace Brdf {
-        class Phong : public Base
-        {
-        public:
-            Phong(float strength, float power);
+namespace Object::Brdf {
+    class Phong : public Base
+    {
+    public:
+        Phong(float strength, float power);
 
-            Math::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Math::Color &albedo) const override;
-            Math::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Color &albedo) const override;
+        Math::Color reflected(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut, const Math::Color &albedo) const override;
+        Math::Color transmitted(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Color &albedo) const override;
 
-            Math::Vector sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
-            float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
+        Math::Vector sample(Math::Sampler::Base &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
+        float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
 
-            void writeProxy(BrdfProxy &proxy) const override;
+        void writeProxy(BrdfProxy &proxy) const override;
 
-        private:
-            float mStrength;
-            float mPower;
-        };
-    }
+    private:
+        float mStrength;
+        float mPower;
+    };
 }
 
 #endif
