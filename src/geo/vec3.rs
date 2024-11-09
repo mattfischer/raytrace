@@ -102,9 +102,3 @@ impl std::ops::Neg for Vec3 {
         Self::new(-self.x, -self.y, -self.z)
     }
 }
-
-impl std::fmt::Display for Vec3 {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "({} {} {})", self.x, self.y, self.z)
-    }
-}

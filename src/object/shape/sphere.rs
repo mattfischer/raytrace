@@ -2,6 +2,7 @@ use crate::geo;
 use crate::object;
 use object::ShapeIntersection;
 
+#[derive(Debug)]
 pub struct Sphere {
     position : geo::Point3,
     radius : f32

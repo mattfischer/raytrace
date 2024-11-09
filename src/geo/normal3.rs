@@ -104,10 +104,3 @@ impl std::ops::Neg for Normal3 {
         Self::new(-self.x, -self.y, -self.z)
     }
 }
-
-
-impl std::fmt::Display for Normal3 {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "({} {} {})", self.x, self.y, self.z)
-    }
-}

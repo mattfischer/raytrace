@@ -48,10 +48,3 @@ impl std::ops::SubAssign<Vec3> for Point3 {
         *self = Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
     }
 }
-
-
-impl std::fmt::Display for Point3 {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "({} {} {})", self.x, self.y, self.z)
-    }
-}

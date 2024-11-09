@@ -1,12 +1,16 @@
-use crate::geo;
-
-pub struct ShapeIntersection {
-    pub distance : f32,
-    pub normal : geo::Normal3
-}
-
-pub trait Shape {
-    fn intersect(self, ray : &geo::Ray, isect : &mut ShapeIntersection, closest : bool) -> bool;
-}
-
+pub mod albedo;
 pub mod shape;
+
+mod traits;
+pub use traits::Shape;
+pub use traits::ShapeIntersection;
+pub use traits::Albedo;
+
+mod color;
+pub use color::Color;
+
+mod primitive;
+pub use primitive::Primitive;
+
+mod surface;
+pub use surface::Surface;
