@@ -1,3 +1,5 @@
+use crate::geo::Vec3;
+
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub struct Point3 {
     pub x: f32,
@@ -10,8 +12,6 @@ impl Point3 {
         Point3 {x, y, z}
     }
 }
-
-use super::Vec3;
 
 impl std::ops::Add<Vec3> for Point3 {
     type Output = Self;

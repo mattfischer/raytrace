@@ -1,7 +1,6 @@
-use super::Vec3;
-use super::Point3;
+use crate::geo;
 
 pub struct Ray {
-    pub origin : Point3,
-    pub direction : Vec3
+    pub origin : geo::Point3,
+    pub direction : geo::Vec3
 }

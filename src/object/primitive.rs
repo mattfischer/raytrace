@@ -1,5 +1,7 @@
-use super::Shape;
-use super::Surface;
+use crate::object;
+
+use object::Shape;
+use object::Surface;
 
 #[derive(Debug)]
 pub struct Primitive {

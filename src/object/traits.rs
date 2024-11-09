@@ -10,3 +10,6 @@ pub trait Shape : std::fmt::Debug {
 
 pub trait Albedo : std::fmt::Debug {
 }
+
+pub trait Brdf : std::fmt::Debug {
+}

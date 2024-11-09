@@ -1,4 +1,4 @@
-use super::Vec3;
+use crate::geo::Vec3;
 
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub struct Normal3 {
