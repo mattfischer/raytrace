@@ -14,6 +14,9 @@ pub use camera::Camera;
 mod color;
 pub use color::Color;
 
+mod intersection;
+pub use intersection::Intersection;
+
 mod primitive;
 pub use primitive::Primitive;
 

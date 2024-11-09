@@ -1,11 +1,17 @@
-mod vec3;
-pub use vec3::Vec3;
+mod beam;
+pub use beam::Beam;
 
-mod normal3;
-pub use normal3::Normal3;
+mod bivec;
+pub use bivec::Bivec3;
 
-mod point3;
-pub use point3::Point3;
+mod normal;
+pub use normal::Normal3;
+
+mod point;
+pub use point::Point3;
 
 mod ray;
 pub use ray::Ray;
+
+mod vec;
+pub use vec::Vec3;
