@@ -15,6 +15,10 @@ impl Normal3 {
     pub fn from_vec3(v : Vec3) -> Normal3 {
         Self::new(v.x, v.y, v.z)
     }
+
+    pub fn to_vec3(&self) -> Vec3 {
+        Vec3::new(self.x, self.y, self.z)
+    }
 }
 
 impl std::ops::Add for Normal3 {
@@ -50,6 +54,22 @@ impl std::ops::Mul for Normal3 {
 
     fn mul(self, other: Normal3) -> f32 {
         self.x * other.x + self.y * other.y + self.z * other.z
+    }
+}
+
+impl std::ops::Mul<Vec3> for Normal3 {
+    type Output = f32;
+
+    fn mul(self, other: Vec3) -> f32 {
+        self * Self::from_vec3(other)
+    }
+}
+
+impl std::ops::Mul<Normal3> for Vec3 {
+    type Output = f32;
+
+    fn mul(self, other: Normal3) -> f32 {
+        Normal3::from_vec3(self) * other
     }
 }
 

@@ -5,7 +5,10 @@ pub struct Color {
     pub blue: f32
 }
 
-impl Color {
+impl Color { 
+    pub const ZERO : Color = Color{red: 0.0, green: 0.0, blue: 0.0};
+    pub const ONE : Color = Color{red: 1.0, green: 1.0, blue: 1.0};
+
     pub fn new(red: f32, green: f32, blue: f32) -> Color {
         Color {red, green, blue}
     }

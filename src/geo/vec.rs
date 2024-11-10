@@ -13,6 +13,10 @@ impl Vec3 {
     pub fn mag2(self) -> f32 {
         self * self
     }
+
+    pub fn normalize(self) -> Vec3 {
+        self / self.mag2().sqrt()
+    }
 }
 
 impl std::ops::Add for Vec3 {

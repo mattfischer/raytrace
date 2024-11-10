@@ -5,8 +5,8 @@ use object::Surface;
 
 #[derive(Debug)]
 pub struct Primitive {
-    shape : Box<dyn Shape>,
-    surface : Surface
+    pub shape : Box<dyn Shape>,
+    pub surface : Surface
 }
 
 impl Primitive {

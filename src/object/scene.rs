@@ -19,9 +19,17 @@ impl Scene {
         Scene {camera, primitives}
     }
 
-    pub fn intersect(beam : &Beam, max_distance : f32, closest : bool) -> Intersection {
-        let shape_isect = ShapeIntersection::new();
+    pub fn intersect<'a, 'b>(&'a self, beam : &'b Beam, max_distance : f32, closest : bool) -> Intersection<'a, 'b> {
+        let mut shape_isect = ShapeIntersection::new();
+        let mut primitive : Option<&Primitive> = None;
 
-        return Intersection::new(shape_isect);
+        shape_isect.distance = max_distance;
+        for p in self.primitives.iter() {
+            if p.shape.intersect(&beam.ray, &mut shape_isect, closest) {
+                primitive = Some(&p);
+            }
+        }
+
+        return Intersection::new(self, primitive, beam, shape_isect);
     }
 }

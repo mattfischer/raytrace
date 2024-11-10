@@ -4,9 +4,9 @@ use geo::Ray;
 use geo::Bivec3;
 
 pub struct Beam {
-    ray : Ray,
-    origin_diff : Bivec3,
-    direction_diff : Bivec3
+    pub ray : Ray,
+    pub origin_diff : Bivec3,
+    pub direction_diff : Bivec3
 }
 
 impl Beam {
