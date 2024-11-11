@@ -1,4 +1,7 @@
-use crate::geo::Vec3;
+use crate::geo;
+
+use geo::Transformation;
+use geo::Vec3;
 
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub struct Point3 {
@@ -10,6 +13,14 @@ pub struct Point3 {
 impl Point3 {
     pub fn new(x: f32, y: f32, z: f32) -> Point3 {
         Point3 {x, y, z}
+    }
+
+    pub fn transform(self, xform : &Transformation) -> Point3 {
+        return xform.matrix * self;
+    }
+
+    pub fn inverse_transform(self, xform : &Transformation) -> Point3 {
+        return xform.inverse_matrix * self;
     }
 }
 

@@ -1,3 +1,7 @@
+use crate::geo;
+
+use geo::Transformation;
+
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub struct Vec3 {
     pub x: f32,
@@ -16,6 +20,14 @@ impl Vec3 {
 
     pub fn normalize(self) -> Vec3 {
         self / self.mag2().sqrt()
+    }
+
+    pub fn transform(self, xform : &Transformation) -> Vec3 {
+        return xform.matrix * self;
+    }
+
+    pub fn inverse_transform(self, xform : &Transformation) -> Vec3 {
+        return xform.inverse_matrix * self;
     }
 }
 

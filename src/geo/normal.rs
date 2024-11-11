@@ -1,4 +1,7 @@
-use crate::geo::Vec3;
+use crate::geo;
+
+use geo::Transformation;
+use geo::Vec3;
 
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub struct Normal3 {
@@ -18,6 +21,14 @@ impl Normal3 {
 
     pub fn to_vec3(&self) -> Vec3 {
         Vec3::new(self.x, self.y, self.z)
+    }
+
+    pub fn transform(self, xform : &Transformation) -> Normal3 {
+        return self * xform.inverse_matrix;
+    }
+
+    pub fn inverse_transform(self, xform : &Transformation) -> Normal3 {
+        return self * xform.matrix;
     }
 }
 
