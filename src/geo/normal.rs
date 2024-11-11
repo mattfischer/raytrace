@@ -12,7 +12,7 @@ pub struct Normal3 {
 
 impl Normal3 {
     pub fn new(x: f32, y: f32, z: f32) -> Normal3 {
-        Normal3 {x, y, z}
+        return Normal3 {x, y, z};
     }
 
     pub fn from_vec3(v : Vec3) -> Normal3 {
@@ -20,7 +20,7 @@ impl Normal3 {
     }
 
     pub fn to_vec3(&self) -> Vec3 {
-        Vec3::new(self.x, self.y, self.z)
+        return Vec3::new(self.x, self.y, self.z);
     }
 
     pub fn transform(self, xform : &Transformation) -> Normal3 {
@@ -36,7 +36,7 @@ impl std::ops::Add for Normal3 {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Self::new(self.x + other.x, self.y + other.y, self.z + other.z)
+        return Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
     }
 }
 
@@ -50,7 +50,7 @@ impl std::ops::Sub for Normal3 {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self::new(self.x - other.x, self.y - other.y, self.z - other.z)
+        return Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
     }
 }
 
@@ -63,8 +63,8 @@ impl std::ops::SubAssign for Normal3 {
 impl std::ops::Mul for Normal3 {
     type Output = f32;
 
-    fn mul(self, other: Normal3) -> f32 {
-        self.x * other.x + self.y * other.y + self.z * other.z
+    fn mul(self, other: Self) -> f32 {
+        return self.x * other.x + self.y * other.y + self.z * other.z;
     }
 }
 
@@ -72,7 +72,7 @@ impl std::ops::Mul<Vec3> for Normal3 {
     type Output = f32;
 
     fn mul(self, other: Vec3) -> f32 {
-        self * Self::from_vec3(other)
+        return self * Self::from_vec3(other);
     }
 }
 
@@ -80,7 +80,7 @@ impl std::ops::Mul<Normal3> for Vec3 {
     type Output = f32;
 
     fn mul(self, other: Normal3) -> f32 {
-        Normal3::from_vec3(self) * other
+        return Normal3::from_vec3(self) * other;
     }
 }
 
@@ -88,7 +88,7 @@ impl std::ops::Mul<f32> for Normal3 {
     type Output = Self;
 
     fn mul(self, f: f32) -> Self {
-        Self::new(self.x * f, self.y * f, self.z * f)
+        return Self::new(self.x * f, self.y * f, self.z * f);
     }
 }
 
@@ -102,7 +102,7 @@ impl std::ops::Mul<Normal3> for f32 {
     type Output = Normal3;
 
     fn mul(self, v: Normal3) -> Normal3 {
-        Normal3::new(self * v.x, self * v.y, self * v.z)
+        return Normal3::new(self * v.x, self * v.y, self * v.z);
     }
 }
 
@@ -110,7 +110,7 @@ impl std::ops::Div<f32> for Normal3 {
     type Output = Self;
 
     fn div(self, f: f32) -> Self {
-        Self::new(self.x / f, self.y / f, self.z / f)
+        return Self::new(self.x / f, self.y / f, self.z / f);
     }
 }
 
@@ -122,16 +122,18 @@ impl std::ops::DivAssign<f32> for Normal3 {
 
 impl std::ops::Rem for Normal3 {
     type Output = Self;
-    fn rem(self, other: Normal3) -> Self {
-        Self::new(self.y * other.z - self.z * other.y,
-                  self.z * other.x - self.x * other.z,
-                  self.x * other.y - self.y * other.x)
+
+    fn rem(self, other: Self) -> Self {
+        return Self::new(self.y * other.z - self.z * other.y,
+                         self.z * other.x - self.x * other.z,
+                         self.x * other.y - self.y * other.x);
     }
 }
 
 impl std::ops::Neg for Normal3 {
     type Output = Self;
-    fn neg(self) -> Normal3 {
-        Self::new(-self.x, -self.y, -self.z)
+
+    fn neg(self) -> Self {
+        return Self::new(-self.x, -self.y, -self.z);
     }
 }

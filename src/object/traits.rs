@@ -1,9 +1,12 @@
 use crate::geo;
 use crate::object;
 
+use geo::Bivec2;
 use geo::Normal3;
+use geo::Point2;
 use geo::Ray;
 use geo::Vec3;
+
 use object::Color;
 
 pub struct ShapeIntersection {
@@ -22,6 +25,7 @@ pub trait Shape : std::fmt::Debug {
 }
 
 pub trait Albedo : std::fmt::Debug {
+    fn color(&self, surface_point : Point2, surface_projection : Bivec2) -> Color;
 }
 
 pub trait Brdf : std::fmt::Debug {

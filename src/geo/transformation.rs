@@ -55,7 +55,7 @@ impl Transformation {
     }
 
     pub fn uniform_scale(f : f32) -> Transformation {
-        Self::scale(Vec3::new(f, f, f))
+        return Self::scale(Vec3::new(f, f, f));
     }
 
     pub fn rotate(v : Vec3) -> Transformation {

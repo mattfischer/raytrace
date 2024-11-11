@@ -25,3 +25,6 @@ pub use scene::Scene;
 
 mod surface;
 pub use surface::Surface;
+
+mod texture;
+pub use texture::Texture;

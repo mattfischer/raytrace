@@ -2,6 +2,7 @@ mod beam;
 pub use beam::Beam;
 
 mod bivec;
+pub use bivec::Bivec2;
 pub use bivec::Bivec3;
 
 mod matrix;
@@ -11,6 +12,7 @@ mod normal;
 pub use normal::Normal3;
 
 mod point;
+pub use point::Point2;
 pub use point::Point3;
 
 mod ray;
@@ -20,4 +22,5 @@ mod transformation;
 pub use transformation::Transformation;
 
 mod vec;
+pub use vec::Vec2;
 pub use vec::Vec3;

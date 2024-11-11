@@ -1,4 +1,10 @@
+use crate::geo;
 use crate::object;
+
+use geo::Bivec2;
+use geo::Point2;
+
+use object::Color;
 
 #[derive(Debug)]
 pub struct Solid {
@@ -12,5 +18,9 @@ impl Solid {
 }
 
 impl object::Albedo for Solid {
+    fn color(&self, _surface_point : Point2, _surface_projection : Bivec2) -> Color
+    {
+        return self.color;
+    }
 
 }

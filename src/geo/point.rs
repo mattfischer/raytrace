@@ -1,6 +1,7 @@
 use crate::geo;
 
 use geo::Transformation;
+use geo::Vec2;
 use geo::Vec3;
 
 #[derive(PartialEq, Clone, Copy, Debug)]
@@ -12,7 +13,7 @@ pub struct Point3 {
 
 impl Point3 {
     pub fn new(x: f32, y: f32, z: f32) -> Point3 {
-        Point3 {x, y, z}
+        return Point3 {x, y, z};
     }
 
     pub fn transform(self, xform : &Transformation) -> Point3 {
@@ -28,7 +29,7 @@ impl std::ops::Add<Vec3> for Point3 {
     type Output = Self;
 
     fn add(self, other: Vec3) -> Self {
-        Self::new(self.x + other.x, self.y + other.y, self.z + other.z)
+        return Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
     }
 }
 
@@ -42,7 +43,7 @@ impl std::ops::Sub<Vec3> for Point3 {
     type Output = Self;
 
     fn sub(self, other: Vec3) -> Self {
-        Self::new(self.x - other.x, self.y - other.y, self.z - other.z)
+        return Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
     }
 }
 
@@ -50,12 +51,46 @@ impl std::ops::Sub for Point3 {
     type Output = Vec3;
 
     fn sub(self, other: Self) -> Vec3 {
-        Vec3::new(self.x - other.x, self.y - other.y, self.z - other.z)
+        return Vec3::new(self.x - other.x, self.y - other.y, self.z - other.z);
     }
 }
 
 impl std::ops::SubAssign<Vec3> for Point3 {
     fn sub_assign(&mut self, other: Vec3) {
         *self = Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
+    }
+}
+
+#[derive(PartialEq, Clone, Copy, Debug)]
+pub struct Point2 {
+    pub u: f32,
+    pub v: f32,
+}
+
+impl Point2 {
+    pub fn new(u: f32, v: f32) -> Point2 {
+        return Point2 {u, v};
+    }
+}
+
+impl std::ops::Add<Vec2> for Point2 {
+    type Output = Self;
+
+    fn add(self, other: Vec2) -> Self {
+        return Self::new(self.u + other.u, self.v + other.v);
+    }
+}
+
+impl std::ops::AddAssign<Vec2> for Point2 {
+    fn add_assign(&mut self, other: Vec2) {
+        *self = Self::new(self.u + other.u, self.v + other.v);
+    }
+}
+
+impl std::ops::Sub<Vec2> for Point2 {
+    type Output = Self;
+
+    fn sub(self, other: Vec2) -> Self {
+        return Self::new(self.u - other.u, self.v - other.v);
     }
 }
