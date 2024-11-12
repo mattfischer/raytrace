@@ -19,6 +19,7 @@ impl Shape for Transformed {
 
         if self.shape.intersect(&transformed_ray, shape_isect, closest) {
             shape_isect.normal = shape_isect.normal.transform(&self.xform);
+            shape_isect.tangent = shape_isect.tangent.transform(&self.xform);
             return true;
         }
 

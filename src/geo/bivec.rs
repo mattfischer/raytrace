@@ -1,5 +1,6 @@
 use crate::geo;
 
+use geo::Transformation;
 use geo::Vec2;
 use geo::Vec3;
 
@@ -10,8 +11,18 @@ pub struct Bivec3 {
 }
 
 impl Bivec3 {
+    pub const ZERO : Bivec3 = Bivec3 {u: Vec3::ZERO, v: Vec3::ZERO};
+  
     pub fn new(u : Vec3, v : Vec3) -> Bivec3 {
         return Bivec3{u, v};
+    }
+
+    pub fn transform(&self, xform : &Transformation) -> Bivec3 {
+        return Self::new(self.u.transform(xform), self.v.transform(xform));
+    }
+
+    pub fn inverse_transform(&self, xform : &Transformation) -> Bivec3 {
+        return Self::new(self.u.inverse_transform(xform), self.v.inverse_transform(xform));
     }
 }
 
@@ -102,6 +113,8 @@ pub struct Bivec2 {
 }
 
 impl Bivec2 {
+    pub const ZERO : Bivec2 = Bivec2 {u: Vec2::ZERO, v: Vec2::ZERO};
+  
     pub fn new(u : Vec2, v : Vec2) -> Bivec2 {
         return Bivec2{u, v};
     }

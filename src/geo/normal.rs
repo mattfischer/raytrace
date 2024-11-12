@@ -11,6 +11,8 @@ pub struct Normal3 {
 }
 
 impl Normal3 {
+    pub const ZERO : Normal3 = Normal3 {x: 0.0, y: 0.0, z: 0.0};
+  
     pub fn new(x: f32, y: f32, z: f32) -> Normal3 {
         return Normal3 {x, y, z};
     }

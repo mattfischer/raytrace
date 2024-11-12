@@ -1,7 +1,9 @@
 use crate::geo;
 use crate::object;
 
+use geo::Bivec3;
 use geo::Normal3;
+use geo::Point2;
 use geo::Point3;
 use geo::Ray;
 use geo::Vec3;
@@ -35,6 +37,8 @@ impl Shape for Quad {
             if u >= 0.0 && u <= 1.0 && v >= 0.0 && v <= 1.0 {
                 shape_isect.distance = distance;
                 shape_isect.normal = self.normal;
+                shape_isect.tangent = Bivec3::new(self.side1, self.side2);
+                shape_isect.surface_point = Point2::new(u, v);
                 return true;
             }
         }

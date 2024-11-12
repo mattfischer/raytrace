@@ -12,6 +12,8 @@ pub struct Point3 {
 }
 
 impl Point3 {
+    pub const ZERO : Point3 = Point3 {x: 0.0, y: 0.0, z: 0.0};
+  
     pub fn new(x: f32, y: f32, z: f32) -> Point3 {
         return Point3 {x, y, z};
     }
@@ -68,6 +70,8 @@ pub struct Point2 {
 }
 
 impl Point2 {
+    pub const ZERO : Point2 = Point2 {u: 0.0, v: 0.0};
+  
     pub fn new(u: f32, v: f32) -> Point2 {
         return Point2 {u, v};
     }
