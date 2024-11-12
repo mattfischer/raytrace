@@ -10,9 +10,9 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    pub const ZERO : Vec3 = Vec3 {x: 0.0, y: 0.0, z: 0.0};
+    pub const ZERO : Vec3 = Vec3::new(0.0, 0.0, 0.0);
   
-    pub fn new(x: f32, y: f32, z: f32) -> Vec3 {
+    pub const fn new(x: f32, y: f32, z: f32) -> Vec3 {
         return Vec3 {x, y, z};
     }
 
@@ -20,15 +20,19 @@ impl Vec3 {
         return self * self;
     }
 
+    pub fn mag(self) -> f32 {
+        return self.mag2().sqrt();
+    }
+
     pub fn normalize(self) -> Vec3 {
         return self / self.mag2().sqrt();
     }
 
-    pub fn transform(self, xform : &Transformation) -> Vec3 {
+    pub fn transform(self, xform : Transformation) -> Vec3 {
         return xform.matrix * self;
     }
 
-    pub fn inverse_transform(self, xform : &Transformation) -> Vec3 {
+    pub fn inverse_transform(self, xform : Transformation) -> Vec3 {
         return xform.inverse_matrix * self;
     }
 }
@@ -128,9 +132,9 @@ pub struct Vec2 {
 }
 
 impl Vec2 {
-    pub const ZERO : Vec2 = Vec2 {u: 0.0, v: 0.0};
+    pub const ZERO : Vec2 = Vec2::new(0.0, 0.0);
   
-    pub fn new(u: f32, v: f32) -> Vec2 {
+    pub const fn new(u: f32, v: f32) -> Vec2 {
         return Vec2 {u, v};
     }
 

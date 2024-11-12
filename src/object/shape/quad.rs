@@ -1,3 +1,5 @@
+use std::ops::Bound;
+
 use crate::geo;
 use crate::object;
 
@@ -6,8 +8,10 @@ use geo::Normal3;
 use geo::Point2;
 use geo::Point3;
 use geo::Ray;
+use geo::Transformation;
 use geo::Vec3;
 
+use object::BoundingVolume;
 use object::Shape;
 use object::ShapeIntersection;
 
@@ -44,5 +48,15 @@ impl Shape for Quad {
         }
 
         return false;
+    }
+
+    fn bounding_volume(&self, xform : Transformation) -> BoundingVolume {
+        let mut volume = BoundingVolume::new();
+        for point in [self.position, self.position + self.side1, self.position + self.side2, self.position + self.side1 + self.side2] {
+            volume.include_point(point.transform(xform));
+        }
+
+        return volume;
+   
     }
 }

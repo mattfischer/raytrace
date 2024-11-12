@@ -4,7 +4,9 @@ use crate::object;
 use geo::Normal3;
 use geo::Point3;
 use geo::Ray;
+use geo::Transformation;
 
+use object::BoundingVolume;
 use object::Shape;
 use object::ShapeIntersection;
 
@@ -41,6 +43,21 @@ impl Shape for Sphere {
         }
 
         return false;
+    }
 
+    fn bounding_volume(&self, xform : Transformation) -> BoundingVolume {
+        let mut mins = [0.0; BoundingVolume::NUM_VECTORS];
+        let mut maxes = [0.0; BoundingVolume::NUM_VECTORS];
+
+        for i in 0..BoundingVolume::NUM_VECTORS {
+            let vector = BoundingVolume::VECTORS[i];
+            let x = self.position.to_vec3() * vector;
+            let y = self.radius * vector.mag();
+
+            mins[i] = x - y;
+            maxes[i] = x + y;
+        }
+
+        return BoundingVolume::with_mins_maxes(mins, maxes);
     }
 }

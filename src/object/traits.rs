@@ -1,4 +1,5 @@
 use crate::geo;
+use crate::geo::Transformation;
 use crate::object;
 
 use geo::Bivec2;
@@ -8,6 +9,7 @@ use geo::Point2;
 use geo::Ray;
 use geo::Vec3;
 
+use object::BoundingVolume;
 use object::Color;
 
 pub struct ShapeIntersection {
@@ -25,6 +27,7 @@ impl ShapeIntersection {
 
 pub trait Shape : std::fmt::Debug {
     fn intersect(&self, ray : &Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool;
+    fn bounding_volume(&self, xform : Transformation) -> BoundingVolume;
 }
 
 pub trait Albedo : std::fmt::Debug {

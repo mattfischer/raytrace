@@ -8,11 +8,11 @@ pub struct Ray {
 }
 
 impl Ray {
-    pub fn transform(&self, xform : &Transformation) -> Ray {
+    pub fn transform(&self, xform : Transformation) -> Ray {
         return Ray {origin : self.origin.transform(xform), direction: self.direction.transform(xform)};
     }
 
-    pub fn inverse_transform(&self, xform : &Transformation) -> Ray {
+    pub fn inverse_transform(&self, xform : Transformation) -> Ray {
         return Ray {origin : self.origin.inverse_transform(xform), direction: self.direction.inverse_transform(xform)};
     }
 }

@@ -12,18 +12,26 @@ pub struct Point3 {
 }
 
 impl Point3 {
-    pub const ZERO : Point3 = Point3 {x: 0.0, y: 0.0, z: 0.0};
+    pub const ZERO : Point3 = Point3::new(0.0, 0.0, 0.0);
   
-    pub fn new(x: f32, y: f32, z: f32) -> Point3 {
+    pub const fn new(x: f32, y: f32, z: f32) -> Point3 {
         return Point3 {x, y, z};
     }
 
-    pub fn transform(self, xform : &Transformation) -> Point3 {
+    pub fn transform(self, xform : Transformation) -> Point3 {
         return xform.matrix * self;
     }
 
-    pub fn inverse_transform(self, xform : &Transformation) -> Point3 {
+    pub fn inverse_transform(self, xform : Transformation) -> Point3 {
         return xform.inverse_matrix * self;
+    }
+
+    pub fn from_vec3(v : Vec3) -> Point3 {
+        Self::new(v.x, v.y, v.z)
+    }
+
+    pub fn to_vec3(&self) -> Vec3 {
+        return Vec3::new(self.x, self.y, self.z);
     }
 }
 
@@ -70,9 +78,9 @@ pub struct Point2 {
 }
 
 impl Point2 {
-    pub const ZERO : Point2 = Point2 {u: 0.0, v: 0.0};
+    pub const ZERO : Point2 = Point2::new(0.0, 0.0);
   
-    pub fn new(u: f32, v: f32) -> Point2 {
+    pub const fn new(u: f32, v: f32) -> Point2 {
         return Point2 {u, v};
     }
 }

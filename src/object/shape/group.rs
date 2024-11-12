@@ -2,7 +2,9 @@ use crate::geo;
 use crate::object;
 
 use geo::Ray;
+use geo::Transformation;
 
+use object::BoundingVolume;
 use object::Shape;
 use object::ShapeIntersection;
 
@@ -31,5 +33,15 @@ impl Shape for Group {
         }
         
         return result;
+    }
+
+    fn bounding_volume(&self, xform : Transformation) -> BoundingVolume {
+        let mut volume = BoundingVolume::new();
+
+        for shape in self.shapes.iter() {
+            volume.include_volume(shape.bounding_volume(xform));
+        }
+        
+        return volume;
     }
 }

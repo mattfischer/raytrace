@@ -2,11 +2,8 @@ pub mod albedo;
 pub mod brdf;
 pub mod shape;
 
-mod traits;
-pub use traits::Shape;
-pub use traits::ShapeIntersection;
-pub use traits::Albedo;
-pub use traits::Brdf;
+mod bounding_volume;
+pub use bounding_volume::BoundingVolume;
 
 mod camera;
 pub use camera::Camera;
@@ -28,3 +25,9 @@ pub use surface::Surface;
 
 mod texture;
 pub use texture::Texture;
+
+mod traits;
+pub use traits::Shape;
+pub use traits::ShapeIntersection;
+pub use traits::Albedo;
+pub use traits::Brdf;

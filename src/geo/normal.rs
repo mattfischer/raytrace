@@ -11,9 +11,9 @@ pub struct Normal3 {
 }
 
 impl Normal3 {
-    pub const ZERO : Normal3 = Normal3 {x: 0.0, y: 0.0, z: 0.0};
+    pub const ZERO : Normal3 = Normal3::new(0.0, 0.0, 0.0);
   
-    pub fn new(x: f32, y: f32, z: f32) -> Normal3 {
+    pub const fn new(x: f32, y: f32, z: f32) -> Normal3 {
         return Normal3 {x, y, z};
     }
 
@@ -25,11 +25,11 @@ impl Normal3 {
         return Vec3::new(self.x, self.y, self.z);
     }
 
-    pub fn transform(self, xform : &Transformation) -> Normal3 {
+    pub fn transform(self, xform : Transformation) -> Normal3 {
         return self * xform.inverse_matrix;
     }
 
-    pub fn inverse_transform(self, xform : &Transformation) -> Normal3 {
+    pub fn inverse_transform(self, xform : Transformation) -> Normal3 {
         return self * xform.matrix;
     }
 }
