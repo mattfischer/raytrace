@@ -49,6 +49,20 @@ impl std::ops::AddAssign<Vec3> for Point3 {
     }
 }
 
+impl std::ops::AddAssign for Point3 {
+    fn add_assign(&mut self, other: Point3) {
+        *self = Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+    }
+}
+
+impl std::ops::Add for Point3 {
+    type Output = Self;
+
+    fn add(self, other: Point3) -> Self {
+        return Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+    }
+}
+
 impl std::ops::Sub<Vec3> for Point3 {
     type Output = Self;
 
@@ -68,6 +82,15 @@ impl std::ops::Sub for Point3 {
 impl std::ops::SubAssign<Vec3> for Point3 {
     fn sub_assign(&mut self, other: Vec3) {
         *self = Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
+    }
+}
+
+
+impl std::ops::Div<f32> for Point3 {
+    type Output = Self;
+
+    fn div(self, f: f32) -> Self {
+        return Self::new(self.x / f, self.y / f, self.z / f);
     }
 }
 

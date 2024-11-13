@@ -19,3 +19,6 @@ pub use transformed::Transformed;
 
 mod triangle;
 pub use triangle::Triangle;
+
+mod triangle_mesh;
+pub use triangle_mesh::TriangleMesh;
