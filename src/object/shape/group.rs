@@ -20,7 +20,7 @@ impl Group {
 }
 
 impl Shape for Group {
-    fn intersect(&self, ray : &Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool {
+    fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool {
         let mut result = false;
 
         for shape in self.shapes.iter() {

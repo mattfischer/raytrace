@@ -31,7 +31,7 @@ impl Quad {
 }
 
 impl Shape for Quad {
-    fn intersect(&self, ray : &Ray, shape_isect : &mut ShapeIntersection, _closest : bool) -> bool {
+    fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, _closest : bool) -> bool {
         let distance = (ray.origin - self.position) * self.normal / (ray.direction * -self.normal);
         
         if distance >= 0.0 && distance < shape_isect.distance {

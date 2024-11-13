@@ -26,7 +26,7 @@ impl ShapeIntersection {
 }
 
 pub trait Shape : std::fmt::Debug {
-    fn intersect(&self, ray : &Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool;
+    fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool;
     fn bounding_volume(&self, xform : Transformation) -> BoundingVolume;
 }
 

@@ -15,10 +15,10 @@ pub struct Transformed {
 }
 
 impl Shape for Transformed {
-    fn intersect(&self, ray : &Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool {
+    fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool {
         let transformed_ray = ray.inverse_transform(self.xform);
 
-        if self.shape.intersect(&transformed_ray, shape_isect, closest) {
+        if self.shape.intersect(transformed_ray, shape_isect, closest) {
             shape_isect.normal = shape_isect.normal.transform(self.xform);
             shape_isect.tangent = shape_isect.tangent.transform(self.xform);
             return true;

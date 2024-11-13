@@ -23,7 +23,7 @@ impl Sphere {
 }
 
 impl Shape for Sphere {
-    fn intersect(&self, ray : &Ray, shape_isect : &mut ShapeIntersection, _closest : bool) -> bool {
+    fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, _closest : bool) -> bool {
         let a = ray.direction.mag2();
         let b = 2.0 * (ray.origin - self.position) * ray.direction;
         let c = (ray.origin - self.position).mag2() - self.radius * self.radius;

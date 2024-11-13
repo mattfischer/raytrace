@@ -8,9 +8,9 @@ use object::BoundingVolume;
 use object::RayData;
 
 #[derive(Debug)]
-struct Node {
-    volume : BoundingVolume,
-    index : i32
+pub struct BvhNode {
+    pub volume : BoundingVolume,
+    pub index : i32
 }
 
 struct TreeNode {
@@ -19,7 +19,7 @@ struct TreeNode {
 
 #[derive(Debug)]
 pub struct BoundingVolumeHierarchy {
-    nodes : Vec<Node>
+    nodes : Vec<BvhNode>
 }
 
 const NUM_SPLIT_PLANES : usize = 3;
@@ -47,10 +47,10 @@ fn build_kd_tree(centroids : &[Point3], tree : &mut Vec<TreeNode>, indices : &mu
     return node_index;
 }
 
-fn compute_bounds<F>(nodes : &mut Vec<Node>, tree : &[TreeNode], func : &F, tree_index : usize) -> usize
+fn compute_bounds<F>(nodes : &mut Vec<BvhNode>, tree : &[TreeNode], func : &F, tree_index : usize) -> usize
 where F: Fn(usize) -> BoundingVolume {
     let tree_node = &tree[tree_index];
-    nodes.push(Node{volume: BoundingVolume::new(), index: 0});
+    nodes.push(BvhNode{volume: BoundingVolume::new(), index: 0});
     let node_index = nodes.len() - 1;
  
     if tree_node.index <= 0 {
@@ -85,11 +85,15 @@ impl BoundingVolumeHierarchy {
         tree.reserve(points.len() * 2);
         build_kd_tree(&points, &mut tree, &mut indices[..], 0);
 
-        let mut nodes = Vec::<Node>::new();
+        let mut nodes = Vec::<BvhNode>::new();
         nodes.reserve(points.len() * 2);
         compute_bounds(&mut nodes, &tree, func, 0);   
 
         return BoundingVolumeHierarchy {nodes}; 
+    }
+
+    pub fn with_nodes(nodes : Vec<BvhNode>) -> BoundingVolumeHierarchy {
+        return BoundingVolumeHierarchy {nodes};
     }
 
     pub fn intersect<F>(&self, raydata : RayData, max_distance : &mut f32, closest : bool, func : &mut F) -> bool

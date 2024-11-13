@@ -85,6 +85,14 @@ impl Point2 {
     }
 }
 
+impl std::ops::Add<Point2> for Point2 {
+    type Output = Self;
+
+    fn add(self, other: Point2) -> Self {
+        return Self::new(self.u + other.u, self.v + other.v);
+    }
+}
+
 impl std::ops::Add<Vec2> for Point2 {
     type Output = Self;
 
@@ -104,5 +112,13 @@ impl std::ops::Sub<Vec2> for Point2 {
 
     fn sub(self, other: Vec2) -> Self {
         return Self::new(self.u - other.u, self.v - other.v);
+    }
+}
+
+impl std::ops::Mul<f32> for Point2 {
+    type Output = Self;
+
+    fn mul(self, f: f32) -> Self {
+        return Self::new(self.u * f, self.u * f);
     }
 }

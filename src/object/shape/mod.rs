@@ -1,3 +1,10 @@
+mod bezier_patch;
+pub use bezier_patch::BezierPatch;
+
+mod grid;
+pub use grid::Grid;
+pub use grid::GridVertex;
+
 mod group;
 pub use group::Group;
 
@@ -9,3 +16,6 @@ pub use sphere::Sphere;
 
 mod transformed;
 pub use transformed::Transformed;
+
+mod triangle;
+pub use triangle::Triangle;

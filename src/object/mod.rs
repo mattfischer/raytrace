@@ -8,6 +8,7 @@ pub use bounding_volume::RayData;
 
 mod bounding_volume_hierarchy;
 pub use bounding_volume_hierarchy::BoundingVolumeHierarchy;
+pub use bounding_volume_hierarchy::BvhNode;
 
 mod camera;
 pub use camera::Camera;
