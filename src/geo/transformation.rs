@@ -18,6 +18,10 @@ impl Transformation {
         return Transformation {matrix: xform.matrix * self.matrix, inverse_matrix: self.inverse_matrix * xform.inverse_matrix};
     }
     
+    pub fn identity() -> Transformation {
+        return Transformation {matrix: Matrix4::IDENTITY, inverse_matrix: Matrix4::IDENTITY};
+    }
+
     pub fn translate(v : Vec3) -> Transformation {
         let matrix = Matrix4::new(
             [

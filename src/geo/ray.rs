@@ -2,6 +2,7 @@ use crate::geo;
 
 use geo::Transformation;
 
+#[derive(Copy, Clone)]
 pub struct Ray {
     pub origin : geo::Point3,
     pub direction : geo::Vec3

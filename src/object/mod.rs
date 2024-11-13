@@ -4,6 +4,10 @@ pub mod shape;
 
 mod bounding_volume;
 pub use bounding_volume::BoundingVolume;
+pub use bounding_volume::RayData;
+
+mod bounding_volume_hierarchy;
+pub use bounding_volume_hierarchy::BoundingVolumeHierarchy;
 
 mod camera;
 pub use camera::Camera;

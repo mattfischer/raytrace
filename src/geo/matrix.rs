@@ -10,7 +10,15 @@ pub struct Matrix4{
 }
 
 impl Matrix4 {
-    pub fn new(values : [f32; 16]) -> Matrix4 {
+    pub const IDENTITY : Matrix4 = Matrix4::new(
+        [
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0
+        ]);
+
+    pub const fn new(values : [f32; 16]) -> Matrix4 {
         Matrix4 {values}
     }
 
