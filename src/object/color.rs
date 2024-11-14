@@ -68,6 +68,14 @@ impl std::ops::Mul<Color> for f32 {
     }
 }
 
+impl std::ops::Mul for Color {
+    type Output = Self;
+
+    fn mul(self, other: Color) -> Self {
+        Self::new(self.red * other.red, self.green * other.green, self.blue * other.blue)
+    }
+}
+
 impl std::ops::Div<f32> for Color {
     type Output = Self;
 
