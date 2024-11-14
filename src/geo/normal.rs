@@ -32,6 +32,18 @@ impl Normal3 {
     pub fn inverse_transform(self, xform : Transformation) -> Normal3 {
         return self * xform.matrix;
     }
+
+    pub fn mag2(self) -> f32 {
+        return self * self;
+    }
+
+    pub fn mag(self) -> f32 {
+        return self.mag2().sqrt();
+    }
+
+    pub fn normalize(self) -> Normal3 {
+        return self / self.mag2().sqrt();
+    }
 }
 
 impl std::ops::Add for Normal3 {

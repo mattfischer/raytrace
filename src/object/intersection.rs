@@ -24,11 +24,7 @@ pub struct Intersection<'a, 'b> {
 
 impl<'a, 'b> Intersection<'a, 'b> {
     pub fn new(scene : &'a Scene, primitive : Option<&'a Primitive>, beam : &'b Beam, shape_isect : ShapeIntersection) -> Intersection<'a, 'b> {
-        if primitive.is_some() {
-            let normal = shape_isect.normal;
-            let dir_out = -beam.ray.direction;
-            let facing_normal = (normal.to_vec3() * dir_out).signum() * normal;
-
+        if let Some(prim) = primitive {
             let projection = beam.project(shape_isect.distance, shape_isect.normal);
             let vv = shape_isect.tangent.u % shape_isect.tangent.v;
             let v = vv / vv.mag2();
@@ -36,7 +32,16 @@ impl<'a, 'b> Intersection<'a, 'b> {
             let dv = Vec2::new((projection.v % shape_isect.tangent.v) * v, (shape_isect.tangent.u % projection.v) * v);
             let surface_projection = Bivec2::new(du, dv);
 
-            let albedo = primitive.unwrap().surface.albedo.color(shape_isect.surface_point, surface_projection);
+            let normal = if let Some(normal_map) = &prim.surface.normal_map {
+                normal_map.perturb_normal(shape_isect.surface_point, surface_projection, shape_isect.normal, shape_isect.tangent)
+            } else {
+                shape_isect.normal
+            };
+            
+            let dir_out = -beam.ray.direction;
+            let facing_normal = (normal.to_vec3() * dir_out).signum() * normal;
+
+            let albedo = prim.surface.albedo.color(shape_isect.surface_point, surface_projection);
             
             return Intersection{scene, primitive, shape_isect, beam, normal, facing_normal, surface_projection, albedo};
         } else {

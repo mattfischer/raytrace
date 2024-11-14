@@ -19,6 +19,9 @@ pub use color::Color;
 mod intersection;
 pub use intersection::Intersection;
 
+mod normal_map;
+pub use normal_map::NormalMap;
+
 mod primitive;
 pub use primitive::Primitive;
 

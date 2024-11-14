@@ -6,9 +6,9 @@ use geo::Point2;
 use std::f32::consts::PI;
 
 #[derive(Debug)]
-struct MipMap<const N: usize> {
-    width : usize,
-    height : usize,
+pub struct MipMap<const N: usize> {
+    pub width : usize,
+    pub height : usize,
     values : Vec<f32>
 }
 
@@ -45,9 +45,9 @@ impl<const N: usize> MipMap<N> {
 
 #[derive(Debug)]
 pub struct Texture<const N: usize> {
-    width : usize,
-    height : usize,
-    mipmaps : Vec<MipMap<N>>
+    pub width : usize,
+    pub height : usize,
+    pub mipmaps : Vec<MipMap<N>>
 }
 
 fn next_power_of_two(x : usize) -> usize {

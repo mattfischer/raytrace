@@ -7,16 +7,18 @@ use object::Albedo;
 use object::Brdf;
 use object::Color;
 use object::Intersection;
+use object::NormalMap;
 
 #[derive(Debug)]
 pub struct Surface {
     pub albedo : Box<dyn Albedo>,
-    pub brdfs : Vec<Box<dyn Brdf>>
+    pub brdfs : Vec<Box<dyn Brdf>>,
+    pub normal_map : Option<NormalMap>
 }
 
 impl Surface {
-    pub fn new(albedo : Box<dyn Albedo>, brdfs : Vec<Box<dyn Brdf>>) -> Surface {
-        Surface{albedo, brdfs}
+    pub fn new(albedo : Box<dyn Albedo>, brdfs : Vec<Box<dyn Brdf>>, normal_map : Option<NormalMap>) -> Surface {
+        Surface{albedo, brdfs, normal_map}
     }
 
     pub fn reflected(&self, isect : &Intersection, dir_in : Vec3) -> Color {
