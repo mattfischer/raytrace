@@ -39,3 +39,14 @@ pub trait Brdf : std::fmt::Debug {
     fn transmitted(&self, dir_in : Vec3, nrm : Normal3, albedo : Color) -> Color;
     fn lambert(&self) -> f32;
 }
+
+pub trait Sampler : std::fmt::Debug {
+    fn start_sample_with_index(&mut self, index : usize);
+    fn start_sample_with_xys(&mut self, x : usize, y : usize, sample : usize);
+
+    fn get_value(&mut self) -> f32;
+
+    fn get_value2(&mut self) -> geo::Point2 {
+        return Point2::new(self.get_value(), self.get_value());
+    }
+}

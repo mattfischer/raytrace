@@ -1,6 +1,7 @@
 pub mod albedo;
 pub mod brdf;
 pub mod shape;
+pub mod sampler;
 
 mod bounding_volume;
 pub use bounding_volume::BoundingVolume;
@@ -39,3 +40,4 @@ pub use traits::Shape;
 pub use traits::ShapeIntersection;
 pub use traits::Albedo;
 pub use traits::Brdf;
+pub use traits::Sampler;
