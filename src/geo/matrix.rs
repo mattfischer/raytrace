@@ -57,6 +57,18 @@ impl std::ops::Mul<Vec3> for Matrix4 {
     }
 }
 
+impl std::ops::Mul<Matrix4> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, m : Matrix4) -> Vec3 {
+        let x = m.at(0, 0) * self.x + m.at(1, 0) * self.y + m.at(2, 0) * self.z;
+        let y = m.at(0, 1) * self.x + m.at(1, 1) * self.y + m.at(2, 1) * self.z;
+        let z = m.at(0, 2) * self.x + m.at(1, 2) * self.y + m.at(2, 2) * self.z;
+        
+        return Vec3::new(x, y, z);
+    }
+}
+
 impl std::ops::Mul<Matrix4> for Normal3 {
     type Output = Normal3;
 

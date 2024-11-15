@@ -12,6 +12,7 @@ use geo::Transformation;
 use geo::Vec3;
 
 use object::BoundingVolume;
+use object::Sampler;
 use object::Shape;
 use object::ShapeIntersection;
 
@@ -57,6 +58,21 @@ impl Shape for Quad {
         }
 
         return volume;
-   
+    }
+
+    fn sample(&self, sampler : &mut dyn Sampler) -> Option<(Point3, Normal3, f32)> {
+        let pnt_surface = sampler.get_value2();
+        let pnt = self.position + self.side1 * pnt_surface.u + self.side2 * pnt_surface.v;
+        let nrm = self.normal;
+
+        let surface_area = (self.side1 % self.side2).mag();
+        let pdf = 1.0 / surface_area;
+
+        return Some((pnt, nrm, pdf));        
+    }
+
+    fn sample_pdf(&self, _pnt : Point3) -> f32 {
+        let surface_area = (self.side1 % self.side2).mag();
+        return 1.0 / surface_area;
     }
 }

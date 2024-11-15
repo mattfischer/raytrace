@@ -16,6 +16,10 @@ impl Vec3 {
         return Vec3 {x, y, z};
     }
 
+    pub fn from_polar(phi : f32, theta : f32, r : f32) -> Vec3 {
+        return Vec3::new(r * phi.cos() * theta.cos(), r * phi.sin() * theta.cos(), r * theta.sin());
+    }
+
     pub fn mag2(self) -> f32 {
         return self * self;
     }
