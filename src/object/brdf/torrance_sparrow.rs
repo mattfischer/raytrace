@@ -88,4 +88,8 @@ impl object::Brdf for TorranceSparrow {
 
         return pdf.min(1000.0);
     }
+
+    fn opaque(&self) -> bool {
+        return false;
+    }
 }

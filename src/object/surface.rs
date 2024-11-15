@@ -8,17 +8,27 @@ use object::Brdf;
 use object::Color;
 use object::Intersection;
 use object::NormalMap;
+use object::Sampler;
 
 #[derive(Debug)]
 pub struct Surface {
     pub albedo : Box<dyn Albedo>,
     pub brdfs : Vec<Box<dyn Brdf>>,
-    pub normal_map : Option<NormalMap>
+    pub transmit_ior : f32,
+    pub normal_map : Option<NormalMap>,
+    pub opaque : bool
 }
 
 impl Surface {
-    pub fn new(albedo : Box<dyn Albedo>, brdfs : Vec<Box<dyn Brdf>>, normal_map : Option<NormalMap>) -> Surface {
-        Surface{albedo, brdfs, normal_map}
+    pub fn new(albedo : Box<dyn Albedo>, brdfs : Vec<Box<dyn Brdf>>, transmit_ior : f32, normal_map : Option<NormalMap>) -> Surface {
+        let mut opaque = false;
+        for brdf in brdfs.iter() {
+            if brdf.opaque() {
+                opaque = true;
+            }
+        }
+
+        Surface{albedo, brdfs, transmit_ior, normal_map, opaque}
     }
 
     pub fn reflected(&self, isect : &Intersection, dir_in : Vec3) -> Color {
@@ -41,5 +51,59 @@ impl Surface {
         }
 
         return color_transmit;
+    }
+
+    pub fn sample(&self, isect : &Intersection, sampler : &mut dyn Sampler) -> (Color, Vec3, Option<f32>) {
+        let dir_out = -isect.beam.ray.direction;
+        let nrm_facing = isect.facing_normal;
+
+        let mut transmit_threshold = 0.0;
+        if !self.opaque {
+            let reverse = (isect.normal * dir_out < 0.0);
+
+            let mut ratio = 1.0 / self.transmit_ior;
+            if reverse {
+                ratio = 1.0 / ratio;
+            }
+
+            let c1 = dir_out * nrm_facing;
+            let c2 = (1.0 - ratio.powi(2) * (1.0 - c1.powi(2))).sqrt();
+
+            let dir_in = nrm_facing.to_vec3() * (ratio * c1 - c2) - dir_out * ratio;
+            let throughput = self.transmitted(isect, -dir_out);
+            transmit_threshold = throughput.max_component().min(1.0);
+            let roulette = sampler.get_value();
+
+            if roulette < transmit_threshold {
+                let color = self.transmitted(isect, dir_in) / (dir_out * nrm_facing * transmit_threshold);
+                return (color, dir_in, None);
+            }
+        }
+
+        let mut idx = 0;
+        if self.brdfs.len() > 1 {
+            let sample = sampler.get_value();
+            idx = (((self.brdfs.len() as f32) * sample).floor() as usize).min(self.brdfs.len() - 1);
+        }
+        let brdf = &self.brdfs[idx];
+
+        let dir_in = brdf.sample(sampler, nrm_facing, dir_out);
+        let pdf = self.pdf(isect, dir_in);
+        let color = self.reflected(isect, dir_in) / (1.0 - transmit_threshold);
+
+        return (color, dir_in, Some(pdf));
+    }
+
+    pub fn pdf(&self, isect : &Intersection, dir_in : Vec3) -> f32 {
+        let dir_out = -isect.beam.ray.direction;
+        let nrm_facing = isect.facing_normal;
+
+        let mut total_pdf = 0.0;
+        for brdf in self.brdfs.iter() {
+            total_pdf += brdf.pdf(dir_in, nrm_facing, dir_out);
+        }
+        total_pdf /= self.brdfs.len() as f32;
+
+        return total_pdf;
     }
 }

@@ -61,4 +61,8 @@ pub trait Brdf : std::fmt::Debug {
 
     fn sample(&self, sampler : &mut dyn Sampler, nrm : Normal3, dir_out : Vec3) -> Vec3;
     fn pdf(&self, dir_in : Vec3, nrm : Normal3, dir_out : Vec3) -> f32;
+
+    fn opaque(&self) -> bool {
+        return true;
+    }
 }

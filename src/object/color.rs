@@ -16,6 +16,10 @@ impl Color {
     pub fn mag2(self) -> f32 {
         self.red * self.red + self.green * self.green + self.blue * self.blue
     }
+
+    pub fn max_component(self) -> f32 {
+        return self.red.max(self.green.max(self.blue));
+    }
 }
 
 impl std::ops::Add for Color {
