@@ -23,8 +23,14 @@ pub use intersection::Intersection;
 mod normal_map;
 pub use normal_map::NormalMap;
 
+mod point_light;
+pub use point_light::PointLight;
+
 mod primitive;
 pub use primitive::Primitive;
+
+mod radiance;
+pub use radiance::Radiance;
 
 mod scene;
 pub use scene::Scene;

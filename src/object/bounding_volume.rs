@@ -1,5 +1,4 @@
 use crate::geo;
-use crate::object;
 
 use geo::Point3;
 use geo::Ray;

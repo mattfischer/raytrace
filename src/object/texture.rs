@@ -51,7 +51,7 @@ pub struct Texture<const N: usize> {
 }
 
 fn next_power_of_two(x : usize) -> usize {
-    let mut pot = 0;
+    let mut pot: usize;
     let mut y = x;
 
     let mut i = 0;

@@ -63,7 +63,7 @@ impl BezierPatch {
                 }
 
                 let vertex = GridVertex{point: Point3::from_vec3(p), tangent: Bivec3::new(ds, dt), normal: Normal3::from_vec3((ds % dt).normalize())};
-                vertices.push(vertex);;
+                vertices.push(vertex);
             }
         }
         

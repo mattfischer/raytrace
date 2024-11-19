@@ -79,7 +79,7 @@ impl object::Brdf for TorranceSparrow {
         let axis = (dir_in + dir_out).normalize();
 
         let cos_theta = axis * nrm.to_vec3();
-        let sin_theta = ((1.0 - cos_theta.powi(2)).max(0.0).sqrt());
+        let sin_theta = (1.0 - cos_theta.powi(2)).max(0.0).sqrt();
         let tan_theta = sin_theta / cos_theta;
 
         let m2 = self.roughness.powi(2);

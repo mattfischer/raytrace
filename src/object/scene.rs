@@ -9,18 +9,22 @@ use object::BoundingVolume;
 use object::BoundingVolumeHierarchy;
 use object::Camera;
 use object::Intersection;
+use object::PointLight;
 use object::Primitive;
+use object::Radiance;
 use object::ShapeIntersection;
 
 #[derive(Debug)]
 pub struct Scene {
     camera : object::Camera,
     primitives : Vec<Primitive>,
+    point_lights : Vec<PointLight>,
+    sky_radiance : Radiance,
     bvh : BoundingVolumeHierarchy
 }
 
 impl Scene {
-    pub fn new(camera : Camera, primitives : Vec<Primitive>) -> Scene {
+    pub fn new(camera : Camera, primitives : Vec<Primitive>, point_lights : Vec<PointLight>, sky_radiance : Radiance) -> Scene {
         let mut centroids = Vec::<Point3>::new();
         let xform = Transformation::identity();
         for primitive in primitives.iter() {
@@ -32,7 +36,7 @@ impl Scene {
         };
         let bvh = BoundingVolumeHierarchy::with_volumes(&centroids[..], &func);
 
-        return Scene {camera, primitives, bvh}
+        return Scene {camera, primitives, point_lights, sky_radiance, bvh}
     }
 
     pub fn intersect<'a, 'b>(&'a self, beam : &'b Beam, max_distance : f32, closest : bool) -> Intersection<'a, 'b> {

@@ -14,6 +14,12 @@ pub struct Transformed {
     xform : Transformation
 }
 
+impl Transformed {
+    pub fn new(shape : Box<dyn Shape>, xform : Transformation) -> Transformed {
+        return Transformed {shape, xform};
+    }
+}
+
 impl Shape for Transformed {
     fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool {
         let transformed_ray = ray.inverse_transform(self.xform);

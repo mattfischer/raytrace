@@ -1,9 +1,7 @@
 use crate::geo;
-use crate::object;
 
 use geo::Ray;
 use geo::Point3;
-use geo::Point2;
 
 pub struct Triangle;
 

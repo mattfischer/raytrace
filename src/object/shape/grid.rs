@@ -1,5 +1,3 @@
-use std::ops::Bound;
-
 use crate::geo;
 use crate::geo::Transformation;
 use crate::object;
@@ -78,7 +76,7 @@ impl Grid {
     }
 
     pub fn vertex(&self, u : usize, v : usize) -> GridVertex {
-        return self.vertices[v * self.width + v];
+        return self.vertices[v * self.width + u];
     }
 }
 

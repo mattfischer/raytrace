@@ -8,6 +8,7 @@ use object::Brdf;
 use object::Color;
 use object::Intersection;
 use object::NormalMap;
+use object::Radiance;
 use object::Sampler;
 
 #[derive(Debug)]
@@ -15,12 +16,13 @@ pub struct Surface {
     pub albedo : Box<dyn Albedo>,
     pub brdfs : Vec<Box<dyn Brdf>>,
     pub transmit_ior : f32,
+    pub radiance : Radiance,
     pub normal_map : Option<NormalMap>,
     pub opaque : bool
 }
 
 impl Surface {
-    pub fn new(albedo : Box<dyn Albedo>, brdfs : Vec<Box<dyn Brdf>>, transmit_ior : f32, normal_map : Option<NormalMap>) -> Surface {
+    pub fn new(albedo : Box<dyn Albedo>, brdfs : Vec<Box<dyn Brdf>>, transmit_ior : f32, radiance : Radiance, normal_map : Option<NormalMap>) -> Surface {
         let mut opaque = false;
         for brdf in brdfs.iter() {
             if brdf.opaque() {
@@ -28,7 +30,7 @@ impl Surface {
             }
         }
 
-        Surface{albedo, brdfs, transmit_ior, normal_map, opaque}
+        Surface{albedo, brdfs, transmit_ior, radiance, normal_map, opaque}
     }
 
     pub fn reflected(&self, isect : &Intersection, dir_in : Vec3) -> Color {
@@ -59,7 +61,7 @@ impl Surface {
 
         let mut transmit_threshold = 0.0;
         if !self.opaque {
-            let reverse = (isect.normal * dir_out < 0.0);
+            let reverse = isect.normal * dir_out < 0.0;
 
             let mut ratio = 1.0 / self.transmit_ior;
             if reverse {
