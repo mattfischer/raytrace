@@ -2,7 +2,7 @@ use crate::geo;
 use crate::input;
 use crate::object;
 
-use input::BmpLoader;
+use input::TextureLoader;
 use input::ModelLoader;
 
 use chumsky::prelude::*;
@@ -88,15 +88,18 @@ impl SceneParser {
             choice((
                 text::keyword("color")
                 .ignore_then(color.clone())
-                .map(|color| -> Box<dyn object::Albedo> {
-                    return Box::new(object::albedo::Solid::new(color));
+                .map(|color| -> Option<Box<dyn object::Albedo>> {
+                    return Some(Box::new(object::albedo::Solid::new(color)));
                 })
             ,
                 text::keyword("texture")
                 .ignore_then(string.clone())
-                .map(|filename| -> Box<dyn object::Albedo> {
-                    let texture = BmpLoader::load(filename);
-                    return Box::new(object::albedo::Texture::new(texture));
+                .map(|filename| -> Option<Box<dyn object::Albedo>> {
+                    if let Some(texture) = TextureLoader::load(filename) {
+                        return Some(Box::new(object::albedo::Texture::new(texture)));
+                    } else {
+                        return None;
+                    }
                 })
             ));
 
@@ -132,10 +135,10 @@ impl SceneParser {
             ));
 
         enum SurfaceItem {
-            Albedo(Box<dyn object::Albedo>),
+            Albedo(Option<Box<dyn object::Albedo>>),
             Brdfs(Vec<Box<dyn object::Brdf>>),
             Radiance(object::Radiance),
-            NormalMap(object::NormalMap),
+            NormalMap(Option<object::NormalMap>),
             TransmitIor(f32)
         }
 
@@ -162,9 +165,12 @@ impl SceneParser {
                 .ignore_then(string.clone())
                 .then(float.clone())
                 .map(|(filename, magnitude)| {
-                    let texture = BmpLoader::load(filename);
-                    let normal_map = object::NormalMap::new(texture, magnitude);
-                    return SurfaceItem::NormalMap(normal_map);
+                    if let Some(texture) = TextureLoader::load(filename) {
+                        let normal_map = object::NormalMap::new(texture, magnitude);
+                        return SurfaceItem::NormalMap(Some(normal_map));    
+                    } else {
+                        return SurfaceItem::NormalMap(None);
+                    }
                 })
             ,
                 text::keyword("transmit_ior")
@@ -187,16 +193,16 @@ impl SceneParser {
 
                 for item in items {
                     match item {
-                        SurfaceItem::Albedo(a) => albedo = Some(a),
+                        SurfaceItem::Albedo(a) => albedo = a,
                         SurfaceItem::Brdfs(b) => brdfs = b,
                         SurfaceItem::TransmitIor(i) => transmit_ior = i,
-                        SurfaceItem::NormalMap(n) => normal_map = Some(n),
+                        SurfaceItem::NormalMap(n) => normal_map = n,
                         SurfaceItem::Radiance(r) => radiance = r
                     }
                 }
                 
-                if let Some(a) = albedo {
-                    let surface = object::Surface::new(a, brdfs, transmit_ior, radiance, normal_map);
+                if let Some(albedo) = albedo {
+                    let surface = object::Surface::new(albedo, brdfs, transmit_ior, radiance, normal_map);
                     return Some(surface);
                 } else {
                     return None;
@@ -225,7 +231,7 @@ impl SceneParser {
                 .delimited_by(just('{'), just('}'))
             ).map(|((center, radius), modifiers)| {
                 let sphere: Box<dyn object::Shape> = Box::new(object::shape::Sphere::new(center, radius));
-                return (sphere, modifiers);
+                return (Some(sphere), modifiers);
             });
 
         let quad =
@@ -238,7 +244,7 @@ impl SceneParser {
                 .delimited_by(just('{'), just('}'))
             ).map(|(((position, side1), side2), modifiers)| {
                 let quad: Box<dyn object::Shape> = Box::new(object::shape::Quad::new(position, side1, side2));
-                return (quad, modifiers);
+                return (Some(quad), modifiers);
             });
 
         let model =
@@ -254,19 +260,24 @@ impl SceneParser {
 
         let primitive =
             choice((sphere, quad, model))
-            .map(|(s, modifiers)| {
-                let default_albedo = object::albedo::Solid::new(object::Color::ONE);
-                let default_brdfs = Vec::<Box<dyn object::Brdf>>::new();
-                let mut surface = object::Surface::new(Box::new(default_albedo), default_brdfs, 1.0, object::Radiance::ZERO, None);
-                let mut shape = s;
-                for modifier in modifiers {
-                    match modifier {
-                        PrimitiveModifier::Surface(Some(s)) => surface = s,
-                        PrimitiveModifier::Surface(None) => (),
-                        PrimitiveModifier::Transform(t) => shape = Box::new(object::shape::Transformed::new(shape, t))
+            .map(|(shape, modifiers)| {
+                let mut primitive = None;
+                let mut surface = None;
+                if let Some(shape) = shape {
+                    let mut shape = shape;
+                    for modifier in modifiers {
+                        match modifier {
+                            PrimitiveModifier::Surface(s) => surface = s,
+                            PrimitiveModifier::Transform(t) => shape = Box::new(object::shape::Transformed::new(shape, t))
+                        }
+                    }
+
+                    if let Some(s) = surface {
+                        primitive = Some(object::Primitive::new(shape, s));
                     }
                 }
-                return object::Primitive::new(shape, surface);
+
+                return primitive;
             });
 
         let point_light =
@@ -300,7 +311,7 @@ impl SceneParser {
             });
 
         enum Object {
-            Primitive(object::Primitive),
+            Primitive(Option<object::Primitive>),
             PointLight(object::PointLight),
             Sky(object::Radiance),
             Camera(object::Camera)
@@ -329,7 +340,8 @@ impl SceneParser {
 
                 for object in objects {
                     match object {
-                        Object::Primitive(p) => primitives.push(p),
+                        Object::Primitive(Some(p)) => primitives.push(p),
+                        Object::Primitive(None) => (),
                         Object::Camera(c) => camera = c,
                         Object::PointLight(p) => point_lights.push(p),
                         Object::Sky(r) => sky_radiance = r,
