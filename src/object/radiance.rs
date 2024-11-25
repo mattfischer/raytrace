@@ -15,6 +15,14 @@ impl Radiance {
     pub fn new(red : f32, green : f32, blue : f32) -> Radiance {
         return Radiance {red, green, blue};
     }
+
+    pub fn mag2(self) -> f32 {
+        return self * self;
+    }
+
+    pub fn mag(self) -> f32 {
+        return self.mag2().sqrt();
+    }
 }
 
 impl std::ops::Add for Radiance {
@@ -44,6 +52,14 @@ impl std::ops::Mul<Color> for Radiance {
 
     fn mul(self, c: Color) -> Self {
         return Self::new(self.red * c.red, self.green * c.green, self.blue * c.blue);
+    }
+}
+
+impl std::ops::Mul for Radiance {
+    type Output = f32;
+
+    fn mul(self, other : Radiance) -> f32 {
+        return self.red * other.red + self.green * other.green + self.blue * other.blue;
     }
 }
 

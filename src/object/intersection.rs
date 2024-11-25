@@ -12,6 +12,7 @@ use object::Primitive;
 use object::ShapeIntersection;
 use object::Scene;
 
+#[derive(Copy, Clone)]
 pub struct Intersection<'a, 'b> {
     pub scene : &'a Scene,
     pub primitive : Option<&'a Primitive>,

@@ -24,6 +24,8 @@ pub trait Sampler : std::fmt::Debug {
         return Point2::new(self.get_value(), self.get_value());
     }
 }
+
+#[derive(Copy, Clone)]
 pub struct ShapeIntersection {
     pub distance : f32,
     pub normal : Normal3,

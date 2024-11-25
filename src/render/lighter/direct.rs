@@ -8,9 +8,7 @@ use geo::Ray;
 
 use render::Lighter;
 
-pub struct Direct {
-
-}
+pub struct Direct;
 
 impl Lighter for Direct {
     fn light(isect : &object::Intersection, sampler : &mut dyn object::Sampler) -> object::Radiance {
