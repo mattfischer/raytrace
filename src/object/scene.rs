@@ -16,10 +16,10 @@ use object::ShapeIntersection;
 
 #[derive(Debug)]
 pub struct Scene {
-    camera : object::Camera,
-    primitives : Vec<Primitive>,
-    point_lights : Vec<PointLight>,
-    sky_radiance : Radiance,
+    pub camera : object::Camera,
+    pub primitives : Vec<Primitive>,
+    pub point_lights : Vec<PointLight>,
+    pub sky_radiance : Radiance,
     bvh : BoundingVolumeHierarchy
 }
 

@@ -1,3 +1,7 @@
+use crate::object;
+
+use object::Color;
+
 #[derive(Copy, Clone, Debug)]
 pub struct Radiance {
     pub red : f32,
@@ -12,3 +16,42 @@ impl Radiance {
         return Radiance {red, green, blue};
     }
 }
+
+impl std::ops::Add for Radiance {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self::Output {
+        return Self::new(self.red + other.red, self.green + other.green, self.blue + other.blue);
+    }
+}
+
+impl std::ops::AddAssign for Radiance {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self::new(self.red + other.red, self.green + other.green, self.blue + other.blue); 
+    }
+}
+
+impl std::ops::Mul<f32> for Radiance {
+    type Output = Self;
+
+    fn mul(self, f: f32) -> Self::Output {
+        return Self::new(self.red * f, self.green * f, self.blue * f);
+    }
+}
+
+impl std::ops::Mul<Color> for Radiance {
+    type Output = Self;
+
+    fn mul(self, c: Color) -> Self {
+        return Self::new(self.red * c.red, self.green * c.green, self.blue * c.blue);
+    }
+}
+
+impl std::ops::Div<f32> for Radiance {
+    type Output = Self;
+
+    fn div(self, f: f32) -> Self::Output {
+        return Self::new(self.red / f, self.green / f, self.blue / f);
+    }
+}
+

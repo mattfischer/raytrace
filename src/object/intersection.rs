@@ -4,6 +4,7 @@ use crate::object;
 use geo::Beam;
 use geo::Bivec2;
 use geo::Normal3;
+use geo::Point3;
 use geo::Vec2;
 
 use object::Color;
@@ -15,6 +16,7 @@ pub struct Intersection<'a, 'b> {
     pub scene : &'a Scene,
     pub primitive : Option<&'a Primitive>,
     pub shape_isect : ShapeIntersection,
+    pub point : Point3,
     pub beam : &'b Beam,
     pub normal : Normal3,
     pub facing_normal : Normal3,
@@ -31,7 +33,8 @@ impl<'a, 'b> Intersection<'a, 'b> {
             let du = Vec2::new((projection.u % shape_isect.tangent.v) * v, (shape_isect.tangent.u % projection.u) * v);
             let dv = Vec2::new((projection.v % shape_isect.tangent.v) * v, (shape_isect.tangent.u % projection.v) * v);
             let surface_projection = Bivec2::new(du, dv);
-
+            let point = beam.ray.origin + beam.ray.direction * shape_isect.distance;
+        
             let normal = if let Some(normal_map) = &prim.surface.normal_map {
                 normal_map.perturb_normal(shape_isect.surface_point, surface_projection, shape_isect.normal, shape_isect.tangent)
             } else {
@@ -43,9 +46,13 @@ impl<'a, 'b> Intersection<'a, 'b> {
 
             let albedo = prim.surface.albedo.color(shape_isect.surface_point, surface_projection);
             
-            return Intersection{scene, primitive, shape_isect, beam, normal, facing_normal, surface_projection, albedo};
+            return Intersection{scene, primitive, shape_isect, point, beam, normal, facing_normal, surface_projection, albedo};
         } else {
-            return Intersection{scene, primitive, shape_isect, beam, normal: Normal3::ZERO, facing_normal: Normal3::ZERO, surface_projection: Bivec2::ZERO, albedo: Color::ZERO};
+            return Intersection{scene, primitive, shape_isect, point: Point3::ZERO, beam, normal: Normal3::ZERO, facing_normal: Normal3::ZERO, surface_projection: Bivec2::ZERO, albedo: Color::ZERO};
         }
+    }
+
+    pub fn valid(&self) -> bool {
+        return self.primitive.is_some();
     }
 }
