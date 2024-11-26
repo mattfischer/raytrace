@@ -37,7 +37,7 @@ fn build_kd_tree(centroids : &[Point3], tree : &mut Vec<TreeNode>, indices : &mu
         
         let split_point = indices.len() / 2;
         indices.select_nth_unstable_by(split_point, |a, b| 
-            (centroids[*a as usize].to_vec3() * split_plane).total_cmp(&(centroids[*b as usize].to_vec3() * split_plane))
+            (centroids[*a].to_vec3() * split_plane).total_cmp(&(centroids[*b].to_vec3() * split_plane))
         );
 
         build_kd_tree(centroids, tree, &mut indices[..split_point], (split_index + 1) % NUM_SPLIT_PLANES);
@@ -55,17 +55,17 @@ where F: Fn(usize) -> BoundingVolume {
  
     if tree_node.index <= 0 {
         let index = -tree_node.index as usize;
-        nodes[node_index].index = index as i32;
+        nodes[node_index].index = -(index as i32);
         nodes[node_index].volume = func(index);
     } else {
         compute_bounds(nodes, tree, func, tree_index + 1);
         let volume0 = nodes[node_index + 1].volume;
         nodes[node_index].volume.include_volume(volume0);
     
-        let new_index = compute_bounds(nodes, tree, func, tree_node.index as usize) as i32;
-        nodes[node_index].index = new_index;
+        let new_index = compute_bounds(nodes, tree, func, tree_node.index as usize);
+        nodes[node_index].index = new_index as i32;
 
-        let volume1 = nodes[new_index as usize].volume;
+        let volume1 = nodes[new_index].volume;
         nodes[node_index].volume.include_volume(volume1);
     }
 
@@ -97,7 +97,7 @@ impl BoundingVolumeHierarchy {
     where F : FnMut(usize, f32) -> Option<f32> {
         #[derive(Copy, Clone)]
         struct StackEntry {
-            node_index : i32,
+            node_index : usize,
             min_distance : f32
         }
 
@@ -110,7 +110,7 @@ impl BoundingVolumeHierarchy {
 
         while n > 0 {
             n -= 1;
-            let node_index = stack[n].node_index as usize;
+            let node_index = stack[n].node_index;
             let node = &self.nodes[node_index];
             let node_min = stack[n].min_distance;
 
@@ -143,7 +143,7 @@ impl BoundingVolumeHierarchy {
                 for i in 0..2 {
                     let j = if min_distances[0] >= min_distances[1] { i } else { 1 - i };
                     if max_distances[j] > 0.0 {
-                        stack[n].node_index = indices[j] as i32;
+                        stack[n].node_index = indices[j];
                         stack[n].min_distance = min_distances[j];
                         n += 1;
                     }
