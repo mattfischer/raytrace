@@ -19,16 +19,21 @@ pub struct Scene {
     pub camera : object::Camera,
     pub primitives : Vec<Primitive>,
     pub point_lights : Vec<PointLight>,
+    pub area_lights : Vec<usize>,
     pub sky_radiance : Radiance,
     bvh : BoundingVolumeHierarchy
 }
 
 impl Scene {
     pub fn new(camera : Camera, primitives : Vec<Primitive>, point_lights : Vec<PointLight>, sky_radiance : Radiance) -> Scene {
-        let mut centroids = Vec::<Point3>::new();
+        let mut centroids = Vec::new();
+        let mut area_lights = Vec::new();
         let xform = Transformation::identity();
-        for primitive in primitives.iter() {
-            centroids.push(primitive.shape.bounding_volume(xform).centroid())
+        for (idx, primitive) in primitives.iter().enumerate() {
+            centroids.push(primitive.shape.bounding_volume(xform).centroid());
+            if primitive.surface.radiance.mag2() > 0.0 {
+                area_lights.push(idx);
+            }
         }
 
         let func = |idx : usize| -> BoundingVolume {
@@ -36,7 +41,7 @@ impl Scene {
         };
         let bvh = BoundingVolumeHierarchy::with_volumes(&centroids[..], &func);
 
-        return Scene {camera, primitives, point_lights, sky_radiance, bvh}
+        return Scene {camera, primitives, point_lights, area_lights, sky_radiance, bvh}
     }
 
     pub fn intersect<'a, 'b>(&'a self, beam : &'b Beam, max_distance : f32, closest : bool) -> Intersection<'a, 'b> {

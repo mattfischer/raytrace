@@ -27,8 +27,8 @@ impl Lighter for UniPath {
             let dir_out = -isect.beam.ray.direction;
 
             let pnt_offset = isect.point + nrm_facing.to_vec3() * 0.01;
-            let area_lights = Vec::<&object::Primitive>::new();
-            for light in area_lights {
+            for idx in scene.area_lights.iter() {
+                let light = &scene.primitives[*idx];
                 let rad2 = light.surface.radiance;
 
                 if let Some((pnt2, nrm2, pdf)) = light.shape.sample(sampler) {
