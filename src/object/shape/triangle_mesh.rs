@@ -31,7 +31,7 @@ pub struct TriangleMesh {
 
 impl TriangleMesh {
     fn compute_bvh(vertices : &[TriangleMeshVertex], triangles : &[TriangleMeshTriangle]) -> BoundingVolumeHierarchy {
-        let mut centroids =Vec::<Point3>::with_capacity(triangles.len());
+        let mut centroids = Vec::with_capacity(triangles.len());
         for triangle in triangles {
             let mut centroid = Point3::ZERO;
             for j in 0..3 {

@@ -27,7 +27,7 @@ impl ModelLoader {
         if reader.read_line(&mut line).is_ok() {
             for (i, part) in line.split(' ').enumerate() {
                 if i < N {
-                    result[i] = part.parse::<T>().unwrap_or(T::default());
+                    result[i] = part.parse().unwrap_or(T::default());
                 }
             }
         }

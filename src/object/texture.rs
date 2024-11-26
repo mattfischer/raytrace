@@ -79,9 +79,8 @@ fn resample_mipmap<const N : usize>(mipmap : MipMap<N>, new_size : usize, horizo
         (mipmap.width, new_size, mipmap.width, mipmap.height)
     };
 
-    let mut values = Vec::<f32>::new();
+    let mut values = Vec::new();
     values.resize(new_width * new_height * N, 0.0);
-
     for j in 0..fixed_size {
         for i in 0..new_size {
             let x = if horizontal { i } else { j };
@@ -112,12 +111,12 @@ fn resample_mipmap<const N : usize>(mipmap : MipMap<N>, new_size : usize, horizo
         }
     }
 
-    return MipMap::<N>{width: new_width, height: new_height, values};
+    return MipMap {width: new_width, height: new_height, values};
 }
 
 impl<const N: usize> Texture<N> {
     pub fn new(width : usize, height : usize, values : Vec<f32>) -> Texture<N> {
-        let mut base_map = MipMap::<N>::new(width, height, values);
+        let mut base_map = MipMap::new(width, height, values);
 
         let width_pot = next_power_of_two(width);
         let height_pot = next_power_of_two(height);
@@ -159,8 +158,7 @@ impl<const N: usize> Texture<N> {
             let width = (last_level.width / 2).max(1);
             let height = (last_level.height / 2).max(1);
 
-            let mut values = Vec::<f32>::new();
-            values.resize(width * height * N, 0.0);
+            let mut values = Vec::with_capacity(width * height * N);
             for y in 0..height {
                 for x in 0..width {
                     let (x0, x1) = (x*2, x*2 + 1);
@@ -168,12 +166,12 @@ impl<const N: usize> Texture<N> {
 
                     for c in 0..N {
                         let s = last_level.at(x0, y0, c) + last_level.at(x1, y0, c) + last_level.at(x0, y1, c) + last_level.at(x1, y1, c);
-                        values[(y * width + x) * N + c] = s / 4.0;
+                        values.push(s / 4.0);
                     }
                 }
             }
 
-            let mipmap = MipMap::<N>::new(width, height, values);
+            let mipmap = MipMap::new(width, height, values);
             self.mipmaps.push(mipmap);
         }
     }

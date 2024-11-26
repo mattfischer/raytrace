@@ -17,8 +17,7 @@ pub struct NormalMap {
 impl NormalMap {
     pub fn new(texture : Texture<3>, magnitude : f32) -> NormalMap {
         let map = &texture.mipmaps[0];
-        let mut values = Vec::<f32>::new();
-        values.resize(map.width * map.height * 2, 0.0);
+        let mut values = Vec::with_capacity(map.width * map.height * 2);
         for j in 0..map.height {
             for i in 0..map.width {
                 let mut s = 0.0;
@@ -30,12 +29,12 @@ impl NormalMap {
                     sv += map.at(i, if j == map.height { 0 } else { j + 1 }, c) / 3.0;
                 }
 
-                values[(j * map.width + i) * 2 + 0]  = -(su - s) * (map.width as f32) * magnitude;
-                values[(j * map.width + i) * 2 + 1] = -(sv - s) * (map.height as f32) * magnitude;
+                values.push(-(su - s) * (map.width as f32) * magnitude);
+                values.push(-(sv - s) * (map.height as f32) * magnitude);
             }
         }
 
-        let mut ntexture = Texture::<2>::new(map.width, map.height, values);
+        let mut ntexture = Texture::new(map.width, map.height, values);
         ntexture.generate_mipmaps();
 
         return NormalMap {texture: ntexture};

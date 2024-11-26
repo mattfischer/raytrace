@@ -75,18 +75,15 @@ where F: Fn(usize) -> BoundingVolume {
 impl BoundingVolumeHierarchy {
     pub fn with_volumes<F>(points : &[Point3], func : &F) -> BoundingVolumeHierarchy
     where F: Fn(usize) -> BoundingVolume {
-        let mut indices = Vec::<usize>::new();
-        indices.resize(points.len(), 0);
-        for i in 0..indices.len() {
-            indices[i] = i;
+        let mut indices = Vec::with_capacity(points.len());
+        for i in 0..points.len() {
+            indices.push(i);
         }
 
-        let mut tree = Vec::<TreeNode>::new();
-        tree.reserve(points.len() * 2);
+        let mut tree = Vec::with_capacity(points.len() * 2);
         build_kd_tree(&points, &mut tree, &mut indices[..], 0);
 
-        let mut nodes = Vec::<BvhNode>::new();
-        nodes.reserve(points.len() * 2);
+        let mut nodes = Vec::with_capacity(points.len() * 2);
         compute_bounds(&mut nodes, &tree, func, 0);   
 
         return BoundingVolumeHierarchy {nodes}; 

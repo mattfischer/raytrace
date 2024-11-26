@@ -17,7 +17,7 @@ pub struct BezierPatch {
 
 impl BezierPatch {
     pub fn new(width : usize, height : usize, control_points : [Point3; 16]) -> BezierPatch {
-        let mut vertices = Vec::<GridVertex>::new();
+        let mut vertices = Vec::new();
 
         for j in 0..height {
             for i in 0..width {

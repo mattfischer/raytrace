@@ -83,11 +83,11 @@ impl Halton {
         let sample_stride = (width_aligned * height_aligned) as usize;
         
         let mut prime_indices = vec![0; PRIMES.len()];
-        let mut scrambled_digits = Vec::<usize>::new();
-        let mut scrambled_digits_start = Vec::<usize>::new();
+        let mut scrambled_digits = Vec::new();
+        let mut scrambled_digits_start = Vec::new();
         for i in 0..PRIMES.len() {
             prime_indices[i] = i;
-            let mut digits = Vec::<usize>::with_capacity(PRIMES[i]);
+            let mut digits = Vec::with_capacity(PRIMES[i]);
             digits.resize(PRIMES[i], 0);
             for j in 0..PRIMES[i] {
                 digits[j] = j;

@@ -186,7 +186,7 @@ impl SceneParser {
                 .delimited_by(just('{'), just('}'))
             ).map(|items| {
                 let mut albedo : Option<Box<dyn object::Albedo>> = None;
-                let mut brdfs = Vec::<Box<dyn object::Brdf>>::new();
+                let mut brdfs = Vec::new();
                 let mut transmit_ior = 1.0;
                 let mut normal_map : Option<object::NormalMap> = None;
                 let mut radiance = object::Radiance::ZERO;
@@ -333,9 +333,9 @@ impl SceneParser {
             .repeated()
             .then_ignore(end())
             .map(|objects| {
-                let mut primitives = Vec::<object::Primitive>::new();
+                let mut primitives = Vec::new();
                 let mut camera = object::Camera::new(geo::Point3::ZERO, geo::Vec3::new(0.0, 0.0, 1.0), geo::Vec3::new(0.0, 1.0, 0.0), 60.0, 1.0, 1.0);
-                let mut point_lights = Vec::<object::PointLight>::new();
+                let mut point_lights = Vec::new();
                 let mut sky_radiance = object::Radiance::ZERO;
 
                 for object in objects {

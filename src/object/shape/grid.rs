@@ -67,7 +67,7 @@ impl Grid {
     }
 
     pub fn new(width : usize, height : usize, vertices : Vec<GridVertex>) -> Grid {
-        let mut nodes = Vec::<BvhNode>::new();
+        let mut nodes = Vec::new();
         nodes.reserve(width * height * 2);
         Self::compute_bounds(&vertices[..], width, height, &mut nodes, 0, 0, width - 1, height - 1);
 
