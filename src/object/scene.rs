@@ -47,20 +47,18 @@ impl Scene {
     pub fn intersect<'a, 'b>(&'a self, beam : &'b Beam, max_distance : f32, closest : bool) -> Option<Intersection<'a, 'b>> {
         let mut isect = None;
 
-        let mut func = |index : usize, max_distance : &mut f32| {
+        let mut func = |index : usize, max_distance : f32| {
             let primitive = &self.primitives[index];
-            if let Some(shape_isect) = primitive.shape.intersect(beam.ray, *max_distance, closest) {
-                *max_distance = shape_isect.distance;
+            if let Some(shape_isect) = primitive.shape.intersect(beam.ray, max_distance, closest) {
                 isect = Some(Intersection::new(self, primitive, beam, shape_isect));
-                return true;
+                return Some(shape_isect.distance);
             } else {
-                return false;
+                return None;
             }
         };
 
         let raydata = BoundingVolume::get_raydata(beam.ray);
-        let mut distance = max_distance;
-        self.bvh.intersect(raydata, &mut distance, closest, &mut func);
+        self.bvh.intersect(raydata, max_distance, closest, &mut func);
 
         return isect;
     }

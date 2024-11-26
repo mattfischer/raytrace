@@ -93,8 +93,8 @@ impl BoundingVolumeHierarchy {
         return BoundingVolumeHierarchy {nodes};
     }
 
-    pub fn intersect<F>(&self, raydata : RayData, max_distance : &mut f32, closest : bool, func : &mut F) -> bool
-    where F : FnMut(usize, &mut f32) -> bool {
+    pub fn intersect<F>(&self, raydata : RayData, max_distance : f32, closest : bool, func : &mut F)
+    where F : FnMut(usize, f32) -> Option<f32> {
         #[derive(Copy, Clone)]
         struct StackEntry {
             node_index : i32,
@@ -103,7 +103,7 @@ impl BoundingVolumeHierarchy {
 
         let mut stack = [StackEntry{node_index : 0, min_distance: 0.0}; 64];
 
-        let mut result = false;
+        let mut distance = max_distance;
         let mut n = 0;
         stack[n] = StackEntry{node_index: 0, min_distance: 0.0};
         n += 1;
@@ -114,14 +114,14 @@ impl BoundingVolumeHierarchy {
             let node = &self.nodes[node_index];
             let node_min = stack[n].min_distance;
 
-            if node_min > *max_distance {
+            if node_min > distance {
                 continue;
             }
 
             if node.index <= 0 {
                 let index = (-node.index) as usize;
-                if func(index, max_distance) {
-                    result = true;
+                if let Some(new_distance) = func(index, distance) {
+                    distance = new_distance;
                     if !closest {
                         break;
                     }
@@ -150,7 +150,5 @@ impl BoundingVolumeHierarchy {
                 }
             }
         }
-
-        return result;
     }
 }

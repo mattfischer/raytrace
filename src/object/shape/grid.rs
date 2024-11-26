@@ -96,8 +96,10 @@ impl Shape for Grid {
         let raydata = BoundingVolume::get_raydata(ray);
         let mut shape_isect = None;
 
-        let mut func = |index : usize, max_distance : &mut f32| {
-            let mut result = false;
+        let mut func = |index : usize, max_distance : f32| {
+            let mut result = None;
+            let mut distance = max_distance;
+
             let u = index % self.width;
             let v = index / self.width;
             let vertex0 = self.vertex(u, v);
@@ -109,26 +111,30 @@ impl Shape for Grid {
             let vertex3 = self.vertex(u + 1, v + 1);
             let surface_point3 = Point2::new(((u + 1) as f32) / (self.width as f32), ((v + 1) as f32) / (self.height as f32));
             
-            if let Some((tu, tv)) = Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, max_distance) {
+            if let Some((tu, tv, d)) = Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, distance) {
                 let normal = vertex0.normal * (1.0 - tu - tv) + vertex1.normal * tu + vertex2.normal * tv;
                 let tangent = vertex0.tangent * (1.0 - tu - tv) + vertex1.tangent * tu + vertex2.tangent * tv;
                 let surface_point = surface_point0 * (1.0 - tu - tv) + surface_point1 * tu + surface_point2 * tv;
-                shape_isect = Some(ShapeIntersection::new(*max_distance, normal, tangent, surface_point));
-                result = true;
+
+                distance = d;
+                shape_isect = Some(ShapeIntersection::new(distance, normal, tangent, surface_point));
+                result = Some(distance);
             }
-            if let Some((tu, tv)) = Triangle::intersect(ray, vertex3.point, vertex2.point, vertex1.point, max_distance) {
+
+            if let Some((tu, tv, d)) = Triangle::intersect(ray, vertex3.point, vertex2.point, vertex1.point, distance) {
                 let normal = vertex3.normal * (1.0 - tu - tv) + vertex2.normal * tu + vertex1.normal * tv;
                 let tangent = vertex3.tangent * (1.0 - tu - tv) + vertex2.tangent * tu + vertex1.tangent * tv;
                 let surface_point = surface_point3 * (1.0 - tu - tv) + surface_point2 * tu + surface_point1 * tv;
-                shape_isect = Some(ShapeIntersection::new(*max_distance, normal, tangent, surface_point));
-                result = true;
+
+                distance = d;
+                shape_isect = Some(ShapeIntersection::new(distance, normal, tangent, surface_point));
+                result = Some(distance);
             }
 
             return result;
         };
 
-        let mut distance = max_distance;
-        self.bvh.intersect(raydata, &mut distance, closest, &mut func);
+        self.bvh.intersect(raydata, max_distance, closest, &mut func);
 
         return shape_isect;
     }

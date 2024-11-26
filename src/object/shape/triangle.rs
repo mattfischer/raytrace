@@ -6,7 +6,7 @@ use geo::Point3;
 pub struct Triangle;
 
 impl Triangle {
-    pub fn intersect(ray : Ray, p : Point3, pu : Point3, pv : Point3, distance : &mut f32) -> Option<(f32, f32)> {
+    pub fn intersect(ray : Ray, p : Point3, pu : Point3, pv : Point3, max_distance : f32) -> Option<(f32, f32, f32)> {
         let e1 = pu - p;
         let e2 = pv - p;
         let pp = ray.direction % e2;
@@ -30,11 +30,10 @@ impl Triangle {
         }
 
         let d = (q * e2) * iden;
-        if d < 0.0 || d >= *distance {
+        if d < 0.0 || d >= max_distance {
             return None;
         }
 
-        *distance = d;
-        return Some((uu, vv));
+        return Some((uu, vv, d));
     }
 }

@@ -77,23 +77,22 @@ impl Shape for TriangleMesh {
         let raydata = BoundingVolume::get_raydata(ray);
         let mut shape_isect = None;
 
-        let mut func = |index : usize, max_distance : &mut f32| {
+        let mut func = |index : usize, max_distance : f32| {
             let triangle = &self.triangles[index];
 
             let vertex0 = &self.vertices[triangle.vertices[0]];
             let vertex1 = &self.vertices[triangle.vertices[1]];
             let vertex2 = &self.vertices[triangle.vertices[2]];
 
-            if let Some((_tu, _tv)) = Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, max_distance) {
-                shape_isect = Some(ShapeIntersection::new(*max_distance, triangle.normal, Bivec3::ZERO, Point2::ZERO));
-                return true;
+            if let Some((_tu, _tv, d)) = Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, max_distance) {
+                shape_isect = Some(ShapeIntersection::new(d, triangle.normal, Bivec3::ZERO, Point2::ZERO));
+                return Some(d);
             } else {
-                return false;
+                return None;
             }
         };
         
-        let mut distance = max_distance;
-        self.bvh.intersect(raydata, &mut distance, closest, &mut func);
+        self.bvh.intersect(raydata, max_distance, closest, &mut func);
         return shape_isect;
     }
 }
