@@ -18,11 +18,11 @@ impl Lighter for UniPath {
         let scene = isect.scene;
         let mut beam;
 
-        let mut rad = isect.primitive.unwrap().surface.radiance;
+        let mut rad = isect.primitive.surface.radiance;
         let mut throughput = Color::ONE;
 
         for generation in 0..10 {
-            let surface = &isect.primitive.unwrap().surface;
+            let surface = &isect.primitive.surface;
             let nrm_facing = isect.facing_normal;
             let dir_out = -isect.beam.ray.direction;
 
@@ -46,7 +46,7 @@ impl Lighter for UniPath {
                     let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
                     let isect2 = scene.intersect(&beam, d, false);
 
-                    if !isect2.valid() || std::ptr::eq(isect2.primitive.unwrap(), light) {
+                    if isect2.is_none() || std::ptr::eq(isect2.unwrap().primitive, light) {
                         let irad = rad2 * dot2 * dot / (d * d);
                         let pdf_brdf = surface.pdf(&isect, dir_in) * dot2 / (d * d);
                         let mis_weight = pdf * pdf / (pdf * pdf + pdf_brdf * pdf_brdf);
@@ -66,7 +66,7 @@ impl Lighter for UniPath {
                     let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
                     let isect2 = scene.intersect(&beam, d, false);
     
-                    if !isect2.valid() {
+                    if isect2.is_none() {
                         let irad = point_light.radiance * dot / (d * d);
                         rad += irad * surface.reflected(&isect, dir_in);
                     }
@@ -98,12 +98,12 @@ impl Lighter for UniPath {
             beam = Beam::new(reflect_ray, Bivec3::ZERO, Bivec3::ZERO);
             let isect2 = scene.intersect(&beam, f32::MAX, true);
 
-            if isect2.valid() {
-                let rad2 = isect2.primitive.unwrap().surface.radiance;
+            if let Some(isect2) = isect2 {
+                let rad2 = isect2.primitive.surface.radiance;
                 if rad2.mag() > 0.0 && pdf.is_some() {
                     let dot2 = -isect2.facing_normal * dir_in;
                     let pdf_area = pdf.unwrap_or(1.0) * dot2 / (isect2.shape_isect.distance * isect2.shape_isect.distance);
-                    let pdf_light = isect2.primitive.unwrap().shape.sample_pdf(isect2.point);
+                    let pdf_light = isect2.primitive.shape.sample_pdf(isect2.point);
                     let mis_weight = pdf_area * pdf_area / (pdf_area * pdf_area + pdf_light * pdf_light);
                     
                     rad += rad2 * throughput * mis_weight;

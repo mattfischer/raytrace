@@ -21,16 +21,16 @@ impl Transformed {
 }
 
 impl Shape for Transformed {
-    fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool {
+    fn intersect(&self, ray : Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection> {
         let transformed_ray = ray.inverse_transform(self.xform);
 
-        if self.shape.intersect(transformed_ray, shape_isect, closest) {
-            shape_isect.normal = shape_isect.normal.transform(self.xform);
-            shape_isect.tangent = shape_isect.tangent.transform(self.xform);
-            return true;
+        if let Some(shape_isect) = self.shape.intersect(transformed_ray, max_distance, closest) {
+            let normal = shape_isect.normal.transform(self.xform);
+            let tangent = shape_isect.tangent.transform(self.xform);
+            return Some(ShapeIntersection::new(shape_isect.distance, normal, tangent, shape_isect.surface_point));
         }
 
-        return false;
+        return None;
     }
 
     fn bounding_volume(&self, xform : Transformation) -> BoundingVolume {

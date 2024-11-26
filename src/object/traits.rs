@@ -34,13 +34,13 @@ pub struct ShapeIntersection {
 }
 
 impl ShapeIntersection {
-    pub fn new() -> ShapeIntersection {
-        ShapeIntersection {distance: 0.0, normal: Normal3::ZERO, tangent: Bivec3::ZERO, surface_point: Point2::ZERO}
+    pub fn new(distance : f32, normal : Normal3, tangent : Bivec3, surface_point : Point2) -> ShapeIntersection {
+        return ShapeIntersection {distance, normal, tangent, surface_point};
     }
 }
 
 pub trait Shape : std::fmt::Debug {
-    fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool;
+    fn intersect(&self, ray : Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection>;
     fn bounding_volume(&self, xform : Transformation) -> BoundingVolume;
 
     fn sample(&self, _sampler : &mut dyn Sampler) -> Option<(Point3, Normal3, f32)> {

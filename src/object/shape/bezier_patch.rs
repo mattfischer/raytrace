@@ -7,6 +7,7 @@ use geo::Point3;
 use geo::Vec3;
 
 use object::Shape;
+use object::ShapeIntersection;
 use object::shape::Grid;
 use object::shape::GridVertex;
 
@@ -77,7 +78,7 @@ impl Shape for BezierPatch {
         return self.grid.bounding_volume(xform);
     }
 
-    fn intersect(&self, ray : geo::Ray, shape_isect : &mut object::ShapeIntersection, closest : bool) -> bool {
-        return self.grid.intersect(ray, shape_isect, closest);
+    fn intersect(&self, ray : geo::Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection> {
+        return self.grid.intersect(ray, max_distance, closest);
     }
 }

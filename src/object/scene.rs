@@ -44,17 +44,14 @@ impl Scene {
         return Scene {camera, primitives, point_lights, area_lights, sky_radiance, bvh}
     }
 
-    pub fn intersect<'a, 'b>(&'a self, beam : &'b Beam, max_distance : f32, closest : bool) -> Intersection<'a, 'b> {
-        let mut shape_isect = ShapeIntersection::new();
-        let mut primitive : Option<&Primitive> = None;
-
-        shape_isect.distance = max_distance;
+    pub fn intersect<'a, 'b>(&'a self, beam : &'b Beam, max_distance : f32, closest : bool) -> Option<Intersection<'a, 'b>> {
+        let mut isect = None;
 
         let mut func = |index : usize, max_distance : &mut f32| {
-            let p = &self.primitives[index];
-            if p.shape.intersect(beam.ray, &mut shape_isect, closest) {
-                primitive = Some(p);
+            let primitive = &self.primitives[index];
+            if let Some(shape_isect) = primitive.shape.intersect(beam.ray, *max_distance, closest) {
                 *max_distance = shape_isect.distance;
+                isect = Some(Intersection::new(self, primitive, beam, shape_isect));
                 return true;
             } else {
                 return false;
@@ -65,6 +62,6 @@ impl Scene {
         let mut distance = max_distance;
         self.bvh.intersect(raydata, &mut distance, closest, &mut func);
 
-        return Intersection::new(self, primitive, beam, shape_isect);
+        return isect;
     }
 }

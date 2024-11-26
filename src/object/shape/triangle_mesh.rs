@@ -1,5 +1,6 @@
 use crate::geo;
 use crate::object;
+use crate::object::ShapeIntersection;
 
 use geo::Bivec3;
 use geo::Normal3;
@@ -72,27 +73,27 @@ impl Shape for TriangleMesh {
         return volume;
     }
 
-    fn intersect(&self, ray : geo::Ray, shape_isect : &mut object::ShapeIntersection, closest : bool) -> bool {
+    fn intersect(&self, ray : geo::Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection> {
         let raydata = BoundingVolume::get_raydata(ray);
+        let mut shape_isect = None;
 
         let mut func = |index : usize, max_distance : &mut f32| {
             let triangle = &self.triangles[index];
-            let mut result = false;
 
             let vertex0 = &self.vertices[triangle.vertices[0]];
             let vertex1 = &self.vertices[triangle.vertices[1]];
             let vertex2 = &self.vertices[triangle.vertices[2]];
 
             if let Some((_tu, _tv)) = Triangle::intersect(ray, vertex0.point, vertex1.point, vertex2.point, max_distance) {
-                shape_isect.normal = triangle.normal;
-                shape_isect.tangent = Bivec3::ZERO;
-                shape_isect.surface_point = Point2::ZERO;
-                result = true;
+                shape_isect = Some(ShapeIntersection::new(*max_distance, triangle.normal, Bivec3::ZERO, Point2::ZERO));
+                return true;
+            } else {
+                return false;
             }
-
-            return result;
         };
         
-        return self.bvh.intersect(raydata, &mut shape_isect.distance, closest, &mut func);
+        let mut distance = max_distance;
+        self.bvh.intersect(raydata, &mut distance, closest, &mut func);
+        return shape_isect;
     }
 }

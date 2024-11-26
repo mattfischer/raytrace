@@ -13,7 +13,7 @@ pub struct Direct;
 impl Lighter for Direct {
     fn light(isect : &object::Intersection, sampler : &mut dyn object::Sampler) -> object::Radiance {
         let scene = isect.scene;
-        let primitive = isect.primitive.unwrap();
+        let primitive = isect.primitive;
         let surface = &primitive.surface;
         let point = isect.point;
         let nrm_facing = isect.facing_normal;
@@ -37,7 +37,7 @@ impl Lighter for Direct {
                     let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
                     let isect2 = scene.intersect(&beam, d, false);
 
-                    if isect2.valid() || std::ptr::eq(primitive, light) {
+                    if isect2.is_none() || std::ptr::eq(isect2.unwrap().primitive, light) {
                         let irad = rad2 * dot_sample * dot / (d * d);
                         rad += irad * surface.reflected(isect, dir_in) / pdf;
                     }
@@ -56,7 +56,7 @@ impl Lighter for Direct {
                 let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
                 let isect2 = scene.intersect(&beam, d, false);
 
-                if !isect2.valid() {
+                if isect2.is_none() {
                     let irad = point_light.radiance * dot / (d * d);
                     rad += irad * surface.reflected(isect, dir_in);
                 }

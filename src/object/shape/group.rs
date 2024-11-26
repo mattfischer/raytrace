@@ -20,12 +20,13 @@ impl Group {
 }
 
 impl Shape for Group {
-    fn intersect(&self, ray : Ray, shape_isect : &mut ShapeIntersection, closest : bool) -> bool {
-        let mut result = false;
-
+    fn intersect(&self, ray : Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection> {
+        let mut result = None;
+        let mut distance = max_distance;
         for shape in self.shapes.iter() {
-            if shape.intersect(ray, shape_isect, closest) {
-                result = true;
+            if let Some(shape_isect) = shape.intersect(ray, distance, closest) {
+                result = Some(shape_isect);
+                distance = shape_isect.distance;
                 if !closest {
                     break;
                 }
