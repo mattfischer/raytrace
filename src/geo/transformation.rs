@@ -3,7 +3,7 @@ use crate::geo;
 use geo::Matrix4;
 use geo::Vec3;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct Transformation {
     pub matrix : Matrix4,
     pub inverse_matrix : Matrix4

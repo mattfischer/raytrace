@@ -4,7 +4,7 @@ use geo::Normal3;
 use geo::Point3;
 use geo::Vec3;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct Matrix4{
     values : [f32; 16]
 }

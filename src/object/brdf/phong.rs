@@ -10,7 +10,6 @@ use object::Sampler;
 
 use std::f32::consts::PI;
 
-#[derive(Debug)]
 pub struct Phong {
     strength : f32,
     power : f32

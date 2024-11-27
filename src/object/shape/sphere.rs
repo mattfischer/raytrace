@@ -12,7 +12,6 @@ use object::BoundingVolume;
 use object::Shape;
 use object::ShapeIntersection;
 
-#[derive(Debug)]
 pub struct Sphere {
     position : Point3,
     radius : f32

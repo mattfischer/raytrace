@@ -14,7 +14,6 @@ use object::Sampler;
 use object::Shape;
 use object::ShapeIntersection;
 
-#[derive(Debug)]
 pub struct Quad {
     position : Point3,
     side1 : Vec3,

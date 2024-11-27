@@ -12,18 +12,15 @@ use object::BoundingVolumeHierarchy;
 use object::Shape;
 use object::shape::Triangle;
 
-#[derive(Debug)]
 pub struct TriangleMeshVertex {
     pub point : Point3
 }
 
-#[derive(Debug)]
 pub struct TriangleMeshTriangle {
     pub vertices : [usize; 3],
     pub normal : Normal3
 }
 
-#[derive(Debug)]
 pub struct TriangleMesh {
     vertices : Vec<TriangleMeshVertex>,
     triangles : Vec<TriangleMeshTriangle>,

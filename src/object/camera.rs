@@ -3,7 +3,6 @@ use crate::geo;
 use geo::Point3;
 use geo::Vec3;
 
-#[derive(Debug)]
 pub struct Camera {
     pub position : Point3,
     pub direction : Vec3,

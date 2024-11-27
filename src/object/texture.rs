@@ -5,7 +5,6 @@ use geo::Point2;
 
 use std::f32::consts::PI;
 
-#[derive(Debug)]
 pub struct MipMap<const N: usize> {
     pub width : usize,
     pub height : usize,
@@ -43,7 +42,6 @@ impl<const N: usize> MipMap<N> {
     }
 }
 
-#[derive(Debug)]
 pub struct Texture<const N: usize> {
     pub width : usize,
     pub height : usize,

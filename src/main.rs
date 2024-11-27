@@ -5,6 +5,4 @@ mod render;
 
 fn main() {    
     let scene = input::SceneParser::parse_scene("foo".to_string());
-
-    println!("{scene:#?}");
 }

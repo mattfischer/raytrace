@@ -8,7 +8,6 @@ use object::BoundingVolume;
 use object::Shape;
 use object::ShapeIntersection;
 
-#[derive(Debug)]
 pub struct Group {
     shapes : Vec<Box<dyn Shape>>
 }

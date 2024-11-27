@@ -8,7 +8,6 @@ use object::Sampler;
 use rand::prelude::*;
 use rand::rngs::ThreadRng;
 
-#[derive(Debug)]
 pub struct Random {
     rng : ThreadRng
 }

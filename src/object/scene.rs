@@ -14,7 +14,6 @@ use object::Primitive;
 use object::Radiance;
 use object::ShapeIntersection;
 
-#[derive(Debug)]
 pub struct Scene {
     pub camera : object::Camera,
     pub primitives : Vec<Primitive>,

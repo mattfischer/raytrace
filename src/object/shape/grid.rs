@@ -15,14 +15,13 @@ use object::Shape;
 use object::ShapeIntersection;
 use object::shape::Triangle;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct GridVertex {
     pub point : Point3,
     pub normal : Normal3,
     pub tangent : Bivec3
 }
 
-#[derive(Debug)]
 pub struct Grid {
     width : usize,
     height : usize,

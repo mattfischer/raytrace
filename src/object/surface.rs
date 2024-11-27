@@ -11,7 +11,6 @@ use object::NormalMap;
 use object::Radiance;
 use object::Sampler;
 
-#[derive(Debug)]
 pub struct Surface {
     pub albedo : Box<dyn Albedo>,
     pub brdfs : Vec<Box<dyn Brdf>>,

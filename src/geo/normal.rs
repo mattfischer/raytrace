@@ -3,7 +3,7 @@ use crate::geo;
 use geo::Transformation;
 use geo::Vec3;
 
-#[derive(PartialEq, Clone, Copy, Debug)]
+#[derive(PartialEq, Clone, Copy)]
 pub struct Normal3 {
     pub x: f32,
     pub y: f32,

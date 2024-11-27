@@ -2,7 +2,7 @@ use crate::object;
 
 use object::Color;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct Radiance {
     pub red : f32,
     pub green : f32,

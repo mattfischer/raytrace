@@ -2,7 +2,7 @@ use crate::geo;
 
 use geo::Transformation;
 
-#[derive(PartialEq, Clone, Copy, Debug)]
+#[derive(PartialEq, Clone, Copy)]
 pub struct Vec3 {
     pub x: f32,
     pub y: f32,
@@ -129,7 +129,7 @@ impl std::ops::Neg for Vec3 {
     }
 }
 
-#[derive(PartialEq, Clone, Copy, Debug)]
+#[derive(PartialEq, Clone, Copy)]
 pub struct Vec2 {
     pub u: f32,
     pub v: f32,

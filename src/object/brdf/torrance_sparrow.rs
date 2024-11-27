@@ -10,7 +10,6 @@ use object::Sampler;
 
 use std::f32::consts::PI;
 
-#[derive(Debug)]
 pub struct TorranceSparrow {
     strength : f32,
     roughness : f32,

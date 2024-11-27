@@ -4,7 +4,7 @@ use geo::Transformation;
 use geo::Vec2;
 use geo::Vec3;
 
-#[derive(PartialEq, Clone, Copy, Debug)]
+#[derive(PartialEq, Clone, Copy)]
 pub struct Point3 {
     pub x: f32,
     pub y: f32,
@@ -94,7 +94,7 @@ impl std::ops::Div<f32> for Point3 {
     }
 }
 
-#[derive(PartialEq, Clone, Copy, Debug)]
+#[derive(PartialEq, Clone, Copy)]
 pub struct Point2 {
     pub u: f32,
     pub v: f32,

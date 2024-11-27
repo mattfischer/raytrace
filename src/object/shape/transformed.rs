@@ -8,7 +8,6 @@ use object::BoundingVolume;
 use object::Shape;
 use object::ShapeIntersection;
 
-#[derive(Debug)]
 pub struct Transformed {
     shape : Box<dyn Shape>,
     xform : Transformation

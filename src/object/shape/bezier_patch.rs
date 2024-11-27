@@ -11,7 +11,6 @@ use object::ShapeIntersection;
 use object::shape::Grid;
 use object::shape::GridVertex;
 
-#[derive(Debug)]
 pub struct BezierPatch {
     grid : Grid
 }

@@ -14,7 +14,7 @@ use object::BoundingVolume;
 use object::Color;
 
 
-pub trait Sampler : std::fmt::Debug {
+pub trait Sampler {
     fn start_sample_with_index(&mut self, index : usize);
     fn start_sample_with_xys(&mut self, x : usize, y : usize, sample : usize);
 
@@ -39,7 +39,7 @@ impl ShapeIntersection {
     }
 }
 
-pub trait Shape : std::fmt::Debug {
+pub trait Shape {
     fn intersect(&self, ray : Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection>;
     fn bounding_volume(&self, xform : Transformation) -> BoundingVolume;
 
@@ -52,11 +52,11 @@ pub trait Shape : std::fmt::Debug {
     }
 }
 
-pub trait Albedo : std::fmt::Debug {
+pub trait Albedo {
     fn color(&self, surface_point : Point2, surface_projection : Bivec2) -> Color;
 }
 
-pub trait Brdf : std::fmt::Debug {
+pub trait Brdf {
     fn reflected(&self, dir_in : Vec3, nrm : Normal3, dir_out : Vec3, albedo : Color) -> Color;
     fn transmitted(&self, dir_in : Vec3, nrm : Normal3, albedo : Color) -> Color;
     fn lambert(&self) -> f32;

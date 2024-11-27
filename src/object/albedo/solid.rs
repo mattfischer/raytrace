@@ -6,7 +6,6 @@ use geo::Point2;
 
 use object::Color;
 
-#[derive(Debug)]
 pub struct Solid {
     color : object::Color
 }

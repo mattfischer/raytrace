@@ -6,7 +6,6 @@ use geo::Point2;
 
 use object::Color;
 
-#[derive(Debug)]
 pub struct Texture {
     texture : object::Texture<3>
 }

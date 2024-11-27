@@ -5,7 +5,6 @@ use geo::Point3;
 
 use object::Radiance;
 
-#[derive(Debug)]
 pub struct PointLight {
     pub position : Point3,
     pub radiance : Radiance

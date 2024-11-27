@@ -7,7 +7,6 @@ use geo::Vec3;
 use object::BoundingVolume;
 use object::RayData;
 
-#[derive(Debug)]
 pub struct BvhNode {
     pub volume : BoundingVolume,
     pub index : i32
@@ -17,7 +16,6 @@ struct TreeNode {
     index : i32
 }
 
-#[derive(Debug)]
 pub struct BoundingVolumeHierarchy {
     nodes : Vec<BvhNode>
 }

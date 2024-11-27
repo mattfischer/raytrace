@@ -6,7 +6,6 @@ use object::Sampler;
 use rand::prelude::*;
 use rand::thread_rng;
 
-#[derive(Debug)]
 pub struct Halton {
     index : u64,
     next_dimension : usize,

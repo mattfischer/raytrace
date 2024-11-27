@@ -6,7 +6,7 @@ use geo::Vec3;
 
 pub const NUM_VECTORS : usize = 3;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct BoundingVolume {
     mins : [f32; NUM_VECTORS],
     maxes : [f32; NUM_VECTORS]

@@ -9,7 +9,6 @@ use geo::Vec2;
 
 use object::Texture;
 
-#[derive(Debug)]
 pub struct NormalMap {
     texture : Texture<2>
 }
