@@ -39,7 +39,7 @@ impl ShapeIntersection {
     }
 }
 
-pub trait Shape {
+pub trait Shape : Send + Sync {
     fn intersect(&self, ray : Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection>;
     fn bounding_volume(&self, xform : Transformation) -> BoundingVolume;
 
@@ -52,11 +52,11 @@ pub trait Shape {
     }
 }
 
-pub trait Albedo {
+pub trait Albedo : Send + Sync {
     fn color(&self, surface_point : Point2, surface_projection : Bivec2) -> Color;
 }
 
-pub trait Brdf {
+pub trait Brdf : Send + Sync {
     fn reflected(&self, dir_in : Vec3, nrm : Normal3, dir_out : Vec3, albedo : Color) -> Color;
     fn transmitted(&self, dir_in : Vec3, nrm : Normal3, albedo : Color) -> Color;
     fn lambert(&self) -> f32;

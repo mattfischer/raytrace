@@ -13,7 +13,7 @@ use render::Lighter;
 pub struct UniPath;
 
 impl Lighter for UniPath {
-    fn light(isect_base : &crate::object::Intersection, sampler : &mut dyn crate::object::Sampler) -> crate::object::Radiance {
+    fn light(&self, isect_base : &crate::object::Intersection, sampler : &mut dyn crate::object::Sampler) -> crate::object::Radiance {
         let mut isect = (*isect_base).clone();
         let scene = isect.scene;
         let mut beam;

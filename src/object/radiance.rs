@@ -25,6 +25,12 @@ impl Radiance {
     }
 }
 
+impl Default for Radiance {
+    fn default() -> Self {
+        return Self::ZERO;
+    }
+}
+
 impl std::ops::Add for Radiance {
     type Output = Self;
 

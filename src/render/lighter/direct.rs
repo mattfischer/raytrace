@@ -11,7 +11,7 @@ use render::Lighter;
 pub struct Direct;
 
 impl Lighter for Direct {
-    fn light(isect : &object::Intersection, sampler : &mut dyn object::Sampler) -> object::Radiance {
+    fn light(&self, isect : &object::Intersection, sampler : &mut dyn object::Sampler) -> object::Radiance {
         let scene = isect.scene;
         let primitive = isect.primitive;
         let surface = &primitive.surface;

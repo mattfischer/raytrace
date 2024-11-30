@@ -106,6 +106,10 @@ impl Point2 {
     pub const fn new(u: f32, v: f32) -> Point2 {
         return Point2 {u, v};
     }
+
+    pub fn to_vec2(&self) -> Vec2 {
+        return Vec2::new(self.u, self.v);
+    }
 }
 
 impl std::ops::Add<Point2> for Point2 {
