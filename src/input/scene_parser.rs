@@ -1,3 +1,5 @@
+use core::net;
+
 use crate::geo;
 use crate::input;
 use crate::object;
@@ -19,6 +21,7 @@ impl SceneParser {
                 .chain(text::digits(10))
                 .or_not()
             )
+            .padded()
             .collect::<String>()
             .from_str::<f32>()
             .unwrapped();
@@ -51,31 +54,34 @@ impl SceneParser {
             .padded()
             .collect::<String>();
         
+        let keyword = |name| text::keyword(name).padded();
+
         let transform_item =
             choice((
-                text::keyword("translate")
+                keyword("translate")
                 .ignore_then(vector.clone())
                 .map(|v| geo::Transformation::translate(v))
             ,
-                text::keyword("rotate")
+                keyword("rotate")
                 .ignore_then(vector.clone())
                 .map(|v| geo::Transformation::rotate(v))
             ,
-                text::keyword("scale")
+                keyword("scale")
                 .ignore_then(vector.clone())
                 .map(|v| geo::Transformation::scale(v))
             ,
-                text::keyword("uniform_scale")
+                keyword("uniform_scale")
                 .ignore_then(float.clone())
                 .map(|f| geo::Transformation::uniform_scale(f))
             ));
 
         let transform =
-            text::keyword("transform")
+            keyword("transform")
             .ignore_then(
                 transform_item
                 .repeated()
                 .delimited_by(just('{'), just('}'))
+                .padded()
             ).map(|transforms| {
                 let mut result = transforms[0];
                 for t in transforms[1..].iter() {
@@ -86,13 +92,13 @@ impl SceneParser {
 
         let albedo =
             choice((
-                text::keyword("color")
+                keyword("color")
                 .ignore_then(color.clone())
                 .map(|color| -> Option<Box<dyn object::Albedo>> {
                     return Some(Box::new(object::albedo::Solid::new(color)));
                 })
             ,
-                text::keyword("texture")
+                keyword("texture")
                 .ignore_then(string.clone())
                 .map(|filename| -> Option<Box<dyn object::Albedo>> {
                     if let Some(texture) = TextureLoader::load(filename) {
@@ -105,27 +111,27 @@ impl SceneParser {
 
         let brdf_item =
             choice((
-                text::keyword("lambert")
+                keyword("lambert")
                 .ignore_then(float.clone())
                 .map(|strength| -> Box<dyn object::Brdf> {
                     Box::new(object::brdf::Lambert::new(strength))
                 })
             ,
-                text::keyword("phong")
+                keyword("phong")
                 .ignore_then(float.clone())
                 .then(float.clone())
                 .map(|(strength, power)| -> Box<dyn object::Brdf> {
                     Box::new(object::brdf::Phong::new(strength, power))
                 })
             ,
-                text::keyword("oren_nayar")
+                keyword("oren_nayar")
                 .ignore_then(float.clone())
                 .then(float.clone())
                 .map(|(strength, roughness)| -> Box<dyn object::Brdf> {
                     Box::new(object::brdf::OrenNayar::new(strength, roughness))
                 })
             ,
-                text::keyword("torrance_sparrow")
+                keyword("torrance_sparrow")
                 .ignore_then(float.clone())
                 .then(float.clone())
                 .then(float.clone())
@@ -144,24 +150,26 @@ impl SceneParser {
 
         let surface_item =
             choice((
-                text::keyword("albedo")
+                keyword("albedo")
                 .ignore_then(
                     albedo
                     .delimited_by(just('{'), just('}'))
+                    .padded()
                 ).map(|albedo| SurfaceItem::Albedo(albedo))
             ,
-                text::keyword("brdf")
+                keyword("brdf")
                 .ignore_then(
                     brdf_item
                     .repeated()
                     .delimited_by(just('{'), just('}'))
+                    .padded()
                 ).map(|brdfs| SurfaceItem::Brdfs(brdfs))
             ,
-                text::keyword("radiance")
+                keyword("radiance")
                 .ignore_then(radiance.clone())
                 .map(|radiance| SurfaceItem::Radiance(radiance))
             ,
-                text::keyword("normal_map")
+                keyword("normal_map")
                 .ignore_then(string.clone())
                 .then(float.clone())
                 .map(|(filename, magnitude)| {
@@ -173,17 +181,18 @@ impl SceneParser {
                     }
                 })
             ,
-                text::keyword("transmit_ior")
+                keyword("transmit_ior")
                 .ignore_then(float.clone())
                 .map(|transmit_ior| SurfaceItem::TransmitIor(transmit_ior))
             ));
  
         let surface =
-            text::keyword("surface")
+            keyword("surface")
             .ignore_then(
                 surface_item
                 .repeated()
                 .delimited_by(just('{'), just('}'))
+                .padded()
             ).map(|items| {
                 let mut albedo : Option<Box<dyn object::Albedo>> = None;
                 let mut brdfs = Vec::new();
@@ -223,36 +232,39 @@ impl SceneParser {
             )).repeated();
 
         let sphere =
-            text::keyword("sphere")
+            keyword("sphere")
             .ignore_then(
                 point.clone()
                 .then(float.clone())
                 .then(primitive_modifiers.clone())
                 .delimited_by(just('{'), just('}'))
+                .padded()
             ).map(|((center, radius), modifiers)| {
                 let sphere: Box<dyn object::Shape> = Box::new(object::shape::Sphere::new(center, radius));
                 return (Some(sphere), modifiers);
             });
 
         let quad =
-            text::keyword("quad")
+            keyword("quad")
             .ignore_then(
                 point.clone()
                 .then(vector.clone())
                 .then(vector.clone())
                 .then(primitive_modifiers.clone())
                 .delimited_by(just('{'), just('}'))
+                .padded()
             ).map(|(((position, side1), side2), modifiers)| {
                 let quad: Box<dyn object::Shape> = Box::new(object::shape::Quad::new(position, side1, side2));
                 return (Some(quad), modifiers);
             });
 
         let model =
-            text::keyword("model")
+            keyword("model")
             .ignore_then(
                 string.clone()
                 .then(primitive_modifiers.clone())
                 .delimited_by(just('{'), just('}'))
+                .padded()
             ).map(|(filename, modifiers)| {
                 let model = ModelLoader::load(filename);
                 return (model, modifiers);
@@ -281,31 +293,35 @@ impl SceneParser {
             });
 
         let point_light =
-            text::keyword("point_light")
+            keyword("point_light")
             .ignore_then(
                 point.clone()
                 .then(radiance.clone())
-            ).delimited_by(just('{'), just('}'))
+                .delimited_by(just('{'), just('}'))
+                .padded()
+            )
             .map(|(position, radiance)| {
                 return object::PointLight::new(position, radiance);
             });
 
         let sky =
-            text::keyword("sky")
+            keyword("sky")
             .ignore_then(
                 radiance.clone()
                 .delimited_by(just('{'), just('}'))
+                .padded()
             );
 
         let camera =
-            text::keyword("camera")
+            keyword("camera")
             .ignore_then(
-                vector.clone().map(|v| geo::Point3::from_vec3(v))
-                .then(vector.clone().map(|v| geo::Point3::from_vec3(v)))
+                point.clone()
+                .then(point.clone())
                 .then(float.clone())
                 .then(float.clone())
-                )
-            .delimited_by(just('{'), just('}'))
+                .delimited_by(just('{'), just('}'))
+                .padded()
+            )
             .map(|(((position, look_at), focal_length), aperture_size)| {
                 return object::Camera::new(position, (look_at - position).normalize(), geo::Vec3::new(0.0, 1.0, 0.0), 60.0, focal_length, aperture_size);
             });
@@ -331,6 +347,7 @@ impl SceneParser {
         let scene =
             object
             .repeated()
+            .padded()
             .then_ignore(end())
             .map(|objects| {
                 let mut primitives = Vec::new();

@@ -23,9 +23,9 @@ use std::sync::Mutex;
 use std::collections::VecDeque;
 
 pub struct RendererSettings {
-    width : usize,
-    height : usize,
-    samples : usize
+    pub width : usize,
+    pub height : usize,
+    pub samples : usize
 }
 
 struct SharedState {
@@ -36,6 +36,7 @@ struct SharedState {
     framebuffer : Mutex<Framebuffer>,
     total_radiance : Mutex<Raster<Radiance>>,
     executor : Executor,
+    done_listener : Mutex<Option<Box<dyn FnOnce(f32) + 'static + Send + Sync>>>
 }
 
 pub struct Renderer {
@@ -57,8 +58,9 @@ impl Renderer {
 
         let jobs = Mutex::new(VecDeque::new());
 
-        let executor = Executor::new(8);
-        let shared_state = Arc::new(SharedState{framebuffer, scene, settings, lighter, total_radiance, jobs, executor});
+        let executor = Executor::new(1);
+        let done_listener = Mutex::new(None);
+        let shared_state = Arc::new(SharedState{framebuffer, scene, settings, lighter, total_radiance, jobs, executor, done_listener});
 
         let shared_state_clone = shared_state.clone();
         let job = Box::new(RasterJob::new(width, height, samples,
@@ -79,7 +81,12 @@ impl Renderer {
         return Renderer {shared_state};
     }
 
-    pub fn start(&self) {
+    pub fn start<F>(&self, done : F)
+    where F: FnOnce(f32) + 'static + Send + Sync {
+        if let Ok(mut done_listener) = self.shared_state.done_listener.lock() {
+            done_listener.replace(Box::new(done));
+        }
+
         if let Ok(mut jobs) = self.shared_state.jobs.lock() {
             if let Some(job) = jobs.pop_front() {
                 let shared_state_clone = self.shared_state.clone();
@@ -94,6 +101,14 @@ impl Renderer {
 
     pub fn running(&self) -> bool {
         return self.shared_state.executor.running();
+    }
+
+    pub fn framebuffer_ptr(&self) -> *const u8 {
+        if let Ok(framebuffer) = self.shared_state.framebuffer.lock() {
+            return framebuffer.bits.as_ptr();
+        } else {
+            return std::ptr::null();
+        }
     }
 
     fn render_pixel(data : &SharedState, x: usize, y: usize, sample: usize, sampler : &mut dyn Sampler) {
@@ -140,7 +155,11 @@ impl Renderer {
                 let shared_state_clone = shared_state.clone();
                 shared_state.executor.run_job(job, move || Self::job_done(shared_state_clone));
             } else {
-
+                if let Ok(mut done_listener) = shared_state.done_listener.lock() {
+                    if let Some(done_listener) = done_listener.take() {
+                        done_listener(0.0);
+                    }
+                }
             }
         }
     }

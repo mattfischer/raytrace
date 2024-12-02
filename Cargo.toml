@@ -8,3 +8,8 @@ rand = "0.8.5"
 chumsky = "0.9.3"
 image = "0.25.5"
 ply-rs = "0.1.3"
+pyo3-ffi = "0.23.2"
+
+[dependencies.pyo3]
+version = "0.23.2"
+features = ["auto-initialize"]

@@ -6,7 +6,7 @@ use object::Radiance;
 pub struct Framebuffer {
     pub width : usize,
     pub height : usize,
-    bits : Vec<u8>
+    pub bits : Vec<u8>
 }
 
 impl Framebuffer {

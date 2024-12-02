@@ -5,6 +5,7 @@ use std::sync::mpsc::Sender;
 use std::sync::mpsc::Receiver;
 use std::sync::Arc;
 use std::any::Any;
+use std::ops::DerefMut;
 
 pub trait ExecutorJob : Send + Sync {
     fn execute(&self, thread_local : &mut dyn Any) -> bool;
@@ -41,7 +42,7 @@ impl Executor {
                         let mut job_done = false;
                         let mut thread_local = job.create_thread_local();
                         while !job_done && thread_state.run_jobs.load(Ordering::SeqCst) {
-                            if !job.execute(&mut thread_local) {
+                            if !job.execute(thread_local.deref_mut()) {
                                 job_done = true;
                             }
                         }

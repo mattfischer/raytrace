@@ -10,6 +10,12 @@ use render::Lighter;
 
 pub struct Direct;
 
+impl Direct {
+    pub fn new() -> Direct {
+        return Direct {};
+    }
+}
+
 impl Lighter for Direct {
     fn light(&self, isect : &object::Intersection, sampler : &mut dyn object::Sampler) -> object::Radiance {
         let scene = isect.scene;

@@ -20,7 +20,8 @@ pub struct RasterJob<E, D, C> {
 impl<E, D, C, T> RasterJob<E, D, C>
 where E: Fn(usize, usize, usize, &mut T) + Sync + Send,
       D: Fn() + Sync + Send,
-      C: Fn() -> Box<T> + Sync + Send {
+      C: Fn() -> Box<T> + Sync + Send ,
+      T: 'static {
     pub fn new(width : usize, height : usize, iterations : usize, execute_func : E, done_func : D, create_thread_local_func : C) -> RasterJob<E, D, C> {
         let pixel_index = AtomicU64::new(0);
         return RasterJob {width, height, iterations, pixel_index, execute_func, done_func, create_thread_local_func};
