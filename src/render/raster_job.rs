@@ -39,7 +39,7 @@ where E: Fn(usize, usize, usize, &mut T) + Sync + Send,
         let y = ((pixel_index / (self.width as u64)) % (self.height as u64)) as usize;
         let x = (pixel_index % (self.width as u64)) as usize;
         
-        if iteration > self.iterations {
+        if iteration >= self.iterations {
             return false;
         }
         

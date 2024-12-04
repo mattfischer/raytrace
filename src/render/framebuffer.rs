@@ -12,7 +12,7 @@ pub struct Framebuffer {
 impl Framebuffer {
     pub fn new(width : usize, height : usize) -> Framebuffer {
         let mut bits = Vec::new();
-        bits.resize(width * height, 0);
+        bits.resize(width * height * 3, 0);
 
         return Framebuffer {width, height, bits};
     }

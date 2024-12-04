@@ -85,12 +85,9 @@ struct Framebuffer {
 
 #[pymethods]
 impl Framebuffer {
-    pub unsafe fn __getbuffer__(&self, buffer : *mut pyo3_ffi::Py_buffer, flags : i32) {
-        (*buffer).buf = self.bits as *mut c_void;
-        (*buffer).len = (self.width * self.height * 3) as isize;
-        (*buffer).itemsize = 1;
-        (*buffer).readonly = 1;
-
+    pub unsafe fn __getbuffer__(slf: PyRefMut<'_, Self>, buffer : *mut pyo3_ffi::Py_buffer, flags : i32) {
+        let size = (slf.width * slf.height * 3) as isize;
+        pyo3_ffi::PyBuffer_FillInfo(buffer, slf.as_ptr(), slf.bits as *mut c_void, size, 1, flags);
         println!("Get buffer");
     }
 

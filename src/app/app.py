@@ -40,13 +40,12 @@ class App(QtWidgets.QApplication):
 
     @Slot()
     def on_timer(self):
-        '''renderPainter = QtGui.QPainter(self.renderPixmap)
+        renderPainter = QtGui.QPainter(self.renderPixmap)
         renderPainter.drawImage(0, 0, self.renderImage)
         self.mainwindow.renderView.setPixmap(self.renderPixmap)
 
         if self.engine and not self.engine.rendering():
             self.timer.stop()
-        '''
 
     @Slot()
     def on_renderMethodIrradianceCaching_toggled(self, checked):
@@ -59,7 +58,7 @@ class App(QtWidgets.QApplication):
     @Slot()
     def on_renderButton_clicked(self):
         if self.engine and self.engine.rendering():
-            self.engine.stop()
+            self.engine.stop_render()
             self.mainwindow.renderButton.setText('Render')
         else:
             self.refreshSettings()
@@ -114,14 +113,13 @@ class App(QtWidgets.QApplication):
         self.settings.restir_candidates = self.mainwindow.restirCandidates.value()
 
     def updateFramebuffer(self):
-        '''dpr = self.mainwindow.renderView.devicePixelRatio()
+        dpr = self.mainwindow.renderView.devicePixelRatio()
         self.mainwindow.renderView.setMinimumSize(self.settings.width / dpr, self.settings.height / dpr)
         self.renderImage = QtGui.QImage(self.engine.render_framebuffer, self.engine.render_framebuffer.width, self.engine.render_framebuffer.height,
                         self.engine.render_framebuffer.width * 3, QtGui.QImage.Format_RGB888)
         self.renderImage.setDevicePixelRatio(dpr)
         self.renderPixmap = QtGui.QPixmap(self.engine.render_framebuffer.width, self.engine.render_framebuffer.height)
         self.renderPixmap.setDevicePixelRatio(dpr)
-        '''
 
     def on_render_done(self, total_time_seconds):
         seconds = total_time_seconds
