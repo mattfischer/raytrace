@@ -15,7 +15,7 @@ impl Transformation {
     }
 
     pub fn inverse_transform(&self, xform : Transformation) -> Transformation {
-        return Transformation {matrix: xform.matrix * self.matrix, inverse_matrix: self.inverse_matrix * xform.inverse_matrix};
+        return Transformation {matrix: self.inverse_matrix * xform.matrix, inverse_matrix: self.matrix * xform.inverse_matrix};
     }
     
     pub fn identity() -> Transformation {

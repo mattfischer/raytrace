@@ -25,7 +25,7 @@ impl ModelLoader {
         let mut line = String::new();
         let mut result = [T::default(); N];
         if reader.read_line(&mut line).is_ok() {
-            for (i, part) in line.split(' ').enumerate() {
+            for (i, part) in line.trim_end().split(' ').enumerate() {
                 if i < N {
                     result[i] = part.parse().unwrap_or(T::default());
                 }

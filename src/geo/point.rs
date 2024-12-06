@@ -146,6 +146,6 @@ impl std::ops::Mul<f32> for Point2 {
     type Output = Self;
 
     fn mul(self, f: f32) -> Self {
-        return Self::new(self.u * f, self.u * f);
+        return Self::new(self.u * f, self.v * f);
     }
 }

@@ -24,8 +24,8 @@ impl NormalMap {
                 let mut sv = 0.0;
                 for c in 0..3 {
                     s += map.at(i, j, c) / 3.0;
-                    su += map.at(if i == map.width { 0 } else { i + 1 }, j, c) / 3.0;
-                    sv += map.at(i, if j == map.height { 0 } else { j + 1 }, c) / 3.0;
+                    su += map.at(if i == (map.width - 1) { 0 } else { i + 1 }, j, c) / 3.0;
+                    sv += map.at(i, if j == (map.height - 1) { 0 } else { j + 1 }, c) / 3.0;
                 }
 
                 values.push(-(su - s) * (map.width as f32) * magnitude);

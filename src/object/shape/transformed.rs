@@ -24,7 +24,7 @@ impl Shape for Transformed {
         let transformed_ray = ray.inverse_transform(self.xform);
 
         if let Some(shape_isect) = self.shape.intersect(transformed_ray, max_distance, closest) {
-            let normal = shape_isect.normal.transform(self.xform);
+            let normal = shape_isect.normal.transform(self.xform).normalize();
             let tangent = shape_isect.tangent.transform(self.xform);
             return Some(ShapeIntersection::new(shape_isect.distance, normal, tangent, shape_isect.surface_point));
         }

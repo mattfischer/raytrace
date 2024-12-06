@@ -30,7 +30,7 @@ pub struct Grid {
 }
 
 impl Grid {
-    fn compute_bounds(vertices : &[GridVertex], width : usize, height : usize, nodes : &mut Vec<BvhNode>, u_min : usize, u_max : usize, v_min : usize, v_max : usize) -> usize {
+    fn compute_bounds(vertices : &[GridVertex], width : usize, height : usize, nodes : &mut Vec<BvhNode>, u_min : usize, v_min : usize, u_max : usize, v_max : usize) -> usize {
         nodes.push(BvhNode{volume: BoundingVolume::new(), index: 0});
         let node_index = nodes.len() - 1;
         if u_max - u_min == 1 && v_max - v_min == 1 {
@@ -85,7 +85,7 @@ impl Shape for Grid {
         let mut volume = BoundingVolume::new();
 
         for vertex in self.vertices.iter() {
-            volume.include_point(vertex.point);
+            volume.include_point(vertex.point.transform(xform));
         }
 
         return volume;
