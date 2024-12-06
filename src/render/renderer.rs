@@ -21,6 +21,7 @@ use render::RasterJob;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::collections::VecDeque;
+use std::time::Instant;
 
 pub struct RendererSettings {
     pub width : usize,
@@ -36,6 +37,7 @@ struct SharedState {
     framebuffer : Mutex<Framebuffer>,
     total_radiance : Mutex<Raster<Radiance>>,
     executor : Executor,
+    start_time : Mutex<Instant>,
     done_listener : Mutex<Option<Box<dyn FnOnce(f32) + 'static + Send + Sync>>>
 }
 
@@ -59,8 +61,9 @@ impl Renderer {
         let jobs = Mutex::new(VecDeque::new());
 
         let executor = Executor::new(8);
+        let start_time = Mutex::new(Instant::now());
         let done_listener = Mutex::new(None);
-        let shared_state = Arc::new(SharedState{framebuffer, scene, settings, lighter, total_radiance, jobs, executor, done_listener});
+        let shared_state = Arc::new(SharedState{framebuffer, scene, settings, lighter, total_radiance, jobs, executor, done_listener, start_time});
 
         let shared_state_clone = shared_state.clone();
         let job = Box::new(RasterJob::new(width, height, samples,
@@ -92,6 +95,10 @@ impl Renderer {
                 let shared_state_clone = self.shared_state.clone();
                 self.shared_state.executor.run_job(job, move || Self::job_done(shared_state_clone));
             }
+        }
+
+        if let Ok(mut start_time) = self.shared_state.start_time.lock() {
+            *start_time = Instant::now();
         }
     }
 
@@ -155,9 +162,12 @@ impl Renderer {
                 let shared_state_clone = shared_state.clone();
                 shared_state.executor.run_job(job, move || Self::job_done(shared_state_clone));
             } else {
+                let start_time = if let Ok(s) = shared_state.start_time.lock() { *s } else { Instant::now() };
+                let end_time = Instant::now();
+                let time_elapsed = end_time - start_time;
                 if let Ok(mut done_listener) = shared_state.done_listener.lock() {
                     if let Some(done_listener) = done_listener.take() {
-                        done_listener(0.0);
+                        done_listener(time_elapsed.as_secs_f32());
                     }
                 }
             }
