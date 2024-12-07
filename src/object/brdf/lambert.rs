@@ -36,19 +36,19 @@ impl object::Brdf for Lambert {
     fn sample(&self, sampler : &mut dyn Sampler, nrm : Normal3, _dir_out : Vec3) -> Vec3
     {
         let sample_point = sampler.get_value2();
-        let basis = OrthonormalBasis::new(nrm.to_vec3());
+        let basis = OrthonormalBasis::new(nrm.into());
 
         let phi = 2.0 * PI  * sample_point.u;
         let theta = f32::asin(sample_point.v.sqrt());
 
-        let dir_in = basis.local_to_world(Vec3::from_polar(phi, PI / 2.0 - theta, 1.0));
+        let dir_in = basis.local_to_world(Vec3::with_spherical(phi, PI / 2.0 - theta, 1.0));
         
         return dir_in;
     }
 
     fn pdf(&self, dir_in : Vec3, nrm : Normal3, _dir_out : Vec3) -> f32
     {
-        let cos_theta = (dir_in * nrm.to_vec3()).max(0.0);
+        let cos_theta = (dir_in * nrm).max(0.0);
         let pdf = cos_theta / PI;
 
         return pdf;

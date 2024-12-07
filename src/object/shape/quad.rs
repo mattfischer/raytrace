@@ -23,7 +23,7 @@ pub struct Quad {
 
 impl Quad {
     pub fn new(position : Point3, side1 : Vec3, side2 : Vec3) -> Quad {
-        let normal = Normal3::from_vec3((side1 % side2).normalize());
+        let normal = Normal3::from((side1 % side2).normalize());
         Quad{position, side1, side2, normal}
     }
 }

@@ -23,7 +23,7 @@ impl Phong {
 
 impl object::Brdf for Phong {
     fn reflected(&self, dir_in : Vec3, nrm : Normal3, dir_out : Vec3, _albedo : Color) -> Color {
-        let dir_reflect = -(dir_in - nrm.to_vec3() * (2.0 * nrm * dir_in));
+        let dir_reflect = -(dir_in - Vec3::from(nrm) * (2.0 * nrm * dir_in));
         let dot = dir_reflect * dir_out;
         let coeff = if dot > 0.0 { dot.powf(self.power) } else { 0.0 };
         
@@ -46,14 +46,14 @@ impl object::Brdf for Phong {
         
         let basis = OrthonormalBasis::new(dir_out);
 
-        let dir_reflect = basis.local_to_world(Vec3::from_polar(phi, PI / 2.0 - theta, 1.0));
-        let dir_in = -(dir_reflect - nrm.to_vec3() * (dir_reflect * nrm * 2.0));
+        let dir_reflect = basis.local_to_world(Vec3::with_spherical(phi, PI / 2.0 - theta, 1.0));
+        let dir_in = -(dir_reflect - Vec3::from(nrm) * (dir_reflect * nrm * 2.0));
         return dir_in;
     }
 
     fn pdf(&self, dir_in : Vec3, nrm : Normal3, dir_out : Vec3) -> f32 {
         let mut coeff = 0.0;
-        let dir_reflect = -(dir_in - nrm.to_vec3() * (dir_in * nrm * 2.0));
+        let dir_reflect = -(dir_in - Vec3::from(nrm) * (dir_in * nrm * 2.0));
         let dot = dir_reflect * dir_out;
         if dot > 0.0 {
             coeff = dot.powf(self.power);

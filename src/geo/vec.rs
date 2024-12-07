@@ -16,7 +16,7 @@ impl Vec3 {
         return Vec3 {x, y, z};
     }
 
-    pub fn from_polar(phi : f32, theta : f32, r : f32) -> Vec3 {
+    pub fn with_spherical(phi : f32, theta : f32, r : f32) -> Vec3 {
         return Vec3::new(r * phi.cos() * theta.cos(), r * phi.sin() * theta.cos(), r * theta.sin());
     }
 
@@ -38,6 +38,12 @@ impl Vec3 {
 
     pub fn inverse_transform(self, xform : Transformation) -> Vec3 {
         return xform.inverse_matrix * self;
+    }
+}
+
+impl std::default::Default for Vec3 {
+    fn default() -> Self {
+        Self::ZERO
     }
 }
 
@@ -148,6 +154,12 @@ impl Vec2 {
 
     pub fn normalize(self) -> Vec2 {
         return self / self.mag2().sqrt();
+    }
+}
+
+impl std::default::Default for Vec2 {
+    fn default() -> Self {
+        Self::ZERO
     }
 }
 

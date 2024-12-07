@@ -32,7 +32,7 @@ impl Camera {
     }
 
     fn create_ray(&self, image_point : Point2, aperture_point : Point2) -> (Ray, Bivec3) {
-        let mut direction = (self.direction + self.image_plane * image_point.to_vec2() * self.image_size);
+        let mut direction = (self.direction + self.image_plane * Vec2::from(image_point) * self.image_size);
         let length = direction.mag();
         direction /= length;
 

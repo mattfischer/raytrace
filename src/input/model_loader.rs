@@ -83,7 +83,7 @@ impl ModelLoader {
                     let u = points[indices[1]].point - points[indices[0]].point;
                     let v = points[indices[2]].point - points[indices[0]].point;
                     
-                    let normal = Normal3::from_vec3(u % v);
+                    let normal = Normal3::from(u % v);
                     triangles.push(TriangleMeshTriangle{vertices: indices, normal: normal});
                 }
 

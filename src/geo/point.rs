@@ -25,13 +25,23 @@ impl Point3 {
     pub fn inverse_transform(self, xform : Transformation) -> Point3 {
         return xform.inverse_matrix * self;
     }
+}
 
-    pub fn from_vec3(v : Vec3) -> Point3 {
-        Self::new(v.x, v.y, v.z)
+impl std::default::Default for Point3 {
+    fn default() -> Self {
+        Self::ZERO
     }
+}
 
-    pub fn to_vec3(&self) -> Vec3 {
-        return Vec3::new(self.x, self.y, self.z);
+impl std::convert::From<Vec3> for Point3 {
+    fn from(value: Vec3) -> Self {
+        Self::new(value.x, value.y, value.z)
+    }
+}
+
+impl std::convert::From<Point3> for Vec3 {
+    fn from(value: Point3) -> Self {
+        Self::new(value.x, value.y, value.z)
     }
 }
 
@@ -106,9 +116,17 @@ impl Point2 {
     pub const fn new(u: f32, v: f32) -> Point2 {
         return Point2 {u, v};
     }
+}
 
-    pub fn to_vec2(&self) -> Vec2 {
-        return Vec2::new(self.u, self.v);
+impl std::default::Default for Point2 {
+    fn default() -> Self {
+        Self::ZERO
+    }
+}
+
+impl std::convert::From<Point2> for Vec2 {
+    fn from(value: Point2) -> Self {
+        Self::new(value.u, value.v)
     }
 }
 

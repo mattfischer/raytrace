@@ -5,6 +5,7 @@ use crate::render;
 use geo::Beam;
 use geo::Bivec3;
 use geo::Ray;
+use geo::Vec3;
 
 use render::Lighter;
 
@@ -25,7 +26,7 @@ impl Lighter for Direct {
         let nrm_facing = isect.facing_normal;
 
         let mut rad = surface.radiance;
-        let pnt_offset = isect.point + nrm_facing.to_vec3() * 0.01;
+        let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
         for idx in scene.area_lights.iter() {
             let light = &scene.primitives[*idx];

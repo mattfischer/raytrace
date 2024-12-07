@@ -44,7 +44,7 @@ impl BezierPatch {
 
                 for k in 0..4 {
                     for l in 0..4 {
-                        let c = control_points[k*4 + l].to_vec3();
+                        let c : Vec3 = control_points[k*4 + l].into();
 
                         p += c * (bs[l] * bt[k]);
                         ds += c * (bds[l] * bt[k]);
@@ -62,7 +62,7 @@ impl BezierPatch {
                     dt = dt1;
                 }
 
-                let vertex = GridVertex{point: Point3::from_vec3(p), tangent: Bivec3::new(ds, dt), normal: Normal3::from_vec3((ds % dt).normalize())};
+                let vertex = GridVertex{point: p.into(), tangent: Bivec3::new(ds, dt), normal: Normal3::from((ds % dt).normalize())};
                 vertices.push(vertex);
             }
         }

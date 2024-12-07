@@ -35,7 +35,7 @@ fn build_kd_tree(centroids : &[Point3], tree : &mut Vec<TreeNode>, indices : &mu
         
         let split_point = indices.len() / 2;
         indices.select_nth_unstable_by(split_point, |a, b| 
-            (centroids[*a].to_vec3() * split_plane).total_cmp(&(centroids[*b].to_vec3() * split_plane))
+            (Vec3::from(centroids[*a]) * split_plane).total_cmp(&(Vec3::from(centroids[*b]) * split_plane))
         );
 
         build_kd_tree(centroids, tree, &mut indices[..split_point], (split_index + 1) % NUM_SPLIT_PLANES);

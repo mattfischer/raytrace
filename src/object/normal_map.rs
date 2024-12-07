@@ -42,6 +42,6 @@ impl NormalMap {
     pub fn perturb_normal(&self, surface_point : Point2, surface_projection : Bivec2, nrm : Normal3, tangent : Bivec3) -> Normal3 {
         let value = self.texture.sample(surface_point, surface_projection);
         let offset = tangent * Vec2::new(value[0], value[1]);
-        return (nrm + Normal3::from_vec3(offset)).normalize();
+        return (nrm + Normal3::from(offset)).normalize();
     }
 }

@@ -32,7 +32,7 @@ impl BoundingVolume {
 
     pub fn include_point(&mut self, point : Point3) {
         for i in 0..NUM_VECTORS {
-            let dist = point.to_vec3() * Self::VECTORS[i];
+            let dist = Vec3::from(point) * Self::VECTORS[i];
             self.mins[i] = self.mins[i].min(dist);
             self.maxes[i] = self.maxes[i].max(dist);
         }
@@ -56,7 +56,7 @@ impl BoundingVolume {
 
         let d = v0 * (v1 % v2);
         
-        return Point3::from_vec3((v1 % v2) * (d0 / d) + (v2 % v0) * (d1 / d) + (v0 % v1) * (d2 / d));    
+        return Point3::from((v1 % v2) * (d0 / d) + (v2 % v0) * (d1 / d) + (v0 % v1) * (d2 / d));    
     }
 
     pub fn get_raydata(ray : Ray) -> RayData {
@@ -64,7 +64,7 @@ impl BoundingVolume {
         let mut dots = [0.0; NUM_VECTORS];
         
         for i in 0..NUM_VECTORS {
-            offsets[i] = ray.origin.to_vec3() * Self::VECTORS[i];
+            offsets[i] = Vec3::from(ray.origin) * Self::VECTORS[i];
             dots[i] = ray.direction * Self::VECTORS[i];
         }
 

@@ -26,6 +26,12 @@ impl Bivec3 {
     }
 }
 
+impl std::default::Default for Bivec3 {
+    fn default() -> Self {
+        Self::ZERO
+    }
+}
+
 impl std::ops::Add for Bivec3 {
     type Output = Self;
 
@@ -117,6 +123,12 @@ impl Bivec2 {
   
     pub const fn new(u : Vec2, v : Vec2) -> Bivec2 {
         return Bivec2{u, v};
+    }
+}
+
+impl std::default::Default for Bivec2 {
+    fn default() -> Self {
+        Self::ZERO
     }
 }
 

@@ -7,6 +7,7 @@ use geo::Point2;
 use geo::Point3;
 use geo::Ray;
 use geo::Transformation;
+use geo::Vec3;
 
 use object::BoundingVolume;
 use object::Shape;
@@ -36,7 +37,7 @@ impl Shape for Sphere {
             for distance in [dist0, dist1] {
                 if distance >= 0.0 && distance < max_distance {
                     let point = ray.origin + ray.direction * distance;
-                    let normal = Normal3::from_vec3(point - self.position) / self.radius;
+                    let normal = Normal3::from(point - self.position) / self.radius;
                 
                     return Some(ShapeIntersection::new(distance, normal, Bivec3::ZERO, Point2::ZERO));
                 }    
@@ -52,7 +53,7 @@ impl Shape for Sphere {
 
         for i in 0..BoundingVolume::NUM_VECTORS {
             let vector = BoundingVolume::VECTORS[i];
-            let x = self.position.to_vec3() * vector;
+            let x = Vec3::from(self.position) * vector;
             let y = self.radius * vector.mag();
 
             mins[i] = x - y;

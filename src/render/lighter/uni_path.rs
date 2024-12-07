@@ -2,9 +2,10 @@ use crate::geo;
 use crate::object;
 use crate::render;
 
+use geo::Beam;
 use geo::Bivec3;
 use geo::Ray;
-use geo::Beam;
+use geo::Vec3;
 
 use object::Color;
 
@@ -32,7 +33,7 @@ impl Lighter for UniPath {
             let nrm_facing = isect.facing_normal;
             let dir_out = -isect.beam.ray.direction;
 
-            let pnt_offset = isect.point + nrm_facing.to_vec3() * 0.01;
+            let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
             for idx in scene.area_lights.iter() {
                 let light = &scene.primitives[*idx];
                 let rad2 = light.surface.radiance;
@@ -83,7 +84,7 @@ impl Lighter for UniPath {
             let reverse = if dir_in * nrm_facing > 0.0 { 1.0 } else { -1.0 };
             let dot = dir_in * nrm_facing * reverse;
 
-            let pnt_offset = isect.point + nrm_facing.to_vec3() * 0.01 * reverse;
+            let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01 * reverse;
             if dot <= 0.0 {
                 break;
             }

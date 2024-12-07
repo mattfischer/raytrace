@@ -42,7 +42,7 @@ impl<'a, 'b> Intersection<'a, 'b> {
         };
         
         let dir_out = -beam.ray.direction;
-        let facing_normal = (normal.to_vec3() * dir_out).signum() * normal;
+        let facing_normal = (normal * dir_out).signum() * normal;
 
         let albedo = primitive.surface.albedo.color(shape_isect.surface_point, surface_projection);
         

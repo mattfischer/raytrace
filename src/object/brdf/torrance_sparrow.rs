@@ -65,9 +65,9 @@ impl object::Brdf for TorranceSparrow {
         let tan_theta = (-self.roughness.powi(2) * (1.0 - sample_point.v).ln()).sqrt();
         let theta = tan_theta.atan();
 
-        let basis = OrthonormalBasis::new(nrm.to_vec3());
+        let basis = OrthonormalBasis::new(nrm.into());
         
-        let axis = basis.local_to_world(Vec3::from_polar(phi, PI / 2.0 - theta, 1.0));
+        let axis = basis.local_to_world(Vec3::with_spherical(phi, PI / 2.0 - theta, 1.0));
         let dir_in = -(dir_out - axis * (dir_out * axis * 2.0));
 
         return dir_in;
@@ -77,7 +77,7 @@ impl object::Brdf for TorranceSparrow {
     {
         let axis = (dir_in + dir_out).normalize();
 
-        let cos_theta = axis * nrm.to_vec3();
+        let cos_theta = axis * nrm;
         let sin_theta = (1.0 - cos_theta.powi(2)).max(0.0).sqrt();
         let tan_theta = sin_theta / cos_theta;
 

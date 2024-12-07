@@ -70,7 +70,7 @@ impl Surface {
             let c1 = dir_out * nrm_facing;
             let c2 = (1.0 - ratio.powi(2) * (1.0 - c1.powi(2))).sqrt();
 
-            let dir_in = nrm_facing.to_vec3() * (ratio * c1 - c2) - dir_out * ratio;
+            let dir_in = Vec3::from(nrm_facing) * (ratio * c1 - c2) - dir_out * ratio;
             let throughput = self.transmitted(isect, -dir_out);
             transmit_threshold = throughput.max_component().min(1.0);
             let roulette = sampler.get_value();

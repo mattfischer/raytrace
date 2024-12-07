@@ -17,14 +17,6 @@ impl Normal3 {
         return Normal3 {x, y, z};
     }
 
-    pub fn from_vec3(v : Vec3) -> Normal3 {
-        Self::new(v.x, v.y, v.z)
-    }
-
-    pub fn to_vec3(&self) -> Vec3 {
-        return Vec3::new(self.x, self.y, self.z);
-    }
-
     pub fn transform(self, xform : Transformation) -> Normal3 {
         return self * xform.inverse_matrix;
     }
@@ -43,6 +35,24 @@ impl Normal3 {
 
     pub fn normalize(self) -> Normal3 {
         return self / self.mag2().sqrt();
+    }
+}
+
+impl std::default::Default for Normal3 {
+    fn default() -> Self {
+        Self::ZERO
+    }
+}
+
+impl std::convert::From<Vec3> for Normal3 {
+    fn from(value: Vec3) -> Self {
+        Self::new(value.x, value.y, value.z)
+    }
+}
+
+impl std::convert::From<Normal3> for Vec3 {
+    fn from(value: Normal3) -> Self {
+        Self::new(value.x, value.y, value.z)
     }
 }
 
@@ -86,7 +96,7 @@ impl std::ops::Mul<Vec3> for Normal3 {
     type Output = f32;
 
     fn mul(self, other: Vec3) -> f32 {
-        return self * Self::from_vec3(other);
+        return self * Self::from(other);
     }
 }
 
@@ -94,7 +104,7 @@ impl std::ops::Mul<Normal3> for Vec3 {
     type Output = f32;
 
     fn mul(self, other: Normal3) -> f32 {
-        return Normal3::from_vec3(self) * other;
+        return Normal3::from(self) * other;
     }
 }
 
