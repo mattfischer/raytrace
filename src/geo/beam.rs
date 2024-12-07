@@ -11,8 +11,8 @@ pub struct Beam {
 }
 
 impl Beam {
-    pub fn new(ray : Ray, origin_diff : Bivec3, direction_diff : Bivec3) -> Beam {
-        Beam{ray, origin_diff, direction_diff}
+    pub fn new(ray : Ray, origin_diff : Bivec3, direction_diff : Bivec3) -> Self {
+        Self {ray, origin_diff, direction_diff}
     }
 
     pub fn project(&self, distance : f32, nrm : Normal3) -> Bivec3 {

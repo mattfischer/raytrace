@@ -10,34 +10,34 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    pub const ZERO : Vec3 = Vec3::new(0.0, 0.0, 0.0);
+    pub const ZERO : Self = Self::new(0.0, 0.0, 0.0);
   
-    pub const fn new(x: f32, y: f32, z: f32) -> Vec3 {
-        return Vec3 {x, y, z};
+    pub const fn new(x: f32, y: f32, z: f32) -> Self {
+        Vec3 {x, y, z}
     }
 
-    pub fn with_spherical(phi : f32, theta : f32, r : f32) -> Vec3 {
-        return Vec3::new(r * phi.cos() * theta.cos(), r * phi.sin() * theta.cos(), r * theta.sin());
+    pub fn with_spherical(phi : f32, theta : f32, r : f32) -> Self {
+        Vec3::new(r * phi.cos() * theta.cos(), r * phi.sin() * theta.cos(), r * theta.sin())
     }
 
     pub fn mag2(self) -> f32 {
-        return self * self;
+        self * self
     }
 
     pub fn mag(self) -> f32 {
-        return self.mag2().sqrt();
+        self.mag2().sqrt()
     }
 
-    pub fn normalize(self) -> Vec3 {
-        return self / self.mag2().sqrt();
+    pub fn normalize(self) -> Self {
+        self / self.mag2().sqrt()
     }
 
-    pub fn transform(self, xform : Transformation) -> Vec3 {
-        return xform.matrix * self;
+    pub fn transform(self, xform : Transformation) -> Self {
+        xform.matrix * self
     }
 
-    pub fn inverse_transform(self, xform : Transformation) -> Vec3 {
-        return xform.inverse_matrix * self;
+    pub fn inverse_transform(self, xform : Transformation) -> Self {
+        xform.inverse_matrix * self
     }
 }
 
@@ -50,88 +50,88 @@ impl std::default::Default for Vec3 {
 impl std::ops::Add for Vec3 {
     type Output = Self;
 
-    fn add(self, other: Self) -> Self {
-        return Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+    fn add(self, rhs: Self) -> Self {
+        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
 impl std::ops::AddAssign for Vec3 {
-    fn add_assign(&mut self, other: Self) {
-        *self = Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+    fn add_assign(&mut self, rhs: Self) {
+        *self = Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z);
     }
 }
 
 impl std::ops::Sub for Vec3 {
     type Output = Self;
 
-    fn sub(self, other: Self) -> Self {
-        return Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
+    fn sub(self, rhs: Self) -> Self {
+        Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 }
 
 impl std::ops::SubAssign for Vec3 {
-    fn sub_assign(&mut self, other: Self) {
-        *self = Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z);
     }
 }
 
 impl std::ops::Mul for Vec3 {
     type Output = f32;
 
-    fn mul(self, other: Self) -> f32 {
-        return self.x * other.x + self.y * other.y + self.z * other.z;
+    fn mul(self, rhs: Self) -> f32 {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 }
 
 impl std::ops::Mul<f32> for Vec3 {
     type Output = Self;
 
-    fn mul(self, f: f32) -> Self {
-        return Self::new(self.x * f, self.y * f, self.z * f);
+    fn mul(self, rhs: f32) -> Self {
+        Self::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 }
 
 impl std::ops::MulAssign<f32> for Vec3 {
-    fn mul_assign(&mut self, f: f32) {
-        *self = Self::new(self.x * f, self.y * f, self.z * f);
+    fn mul_assign(&mut self, rhs: f32) {
+        *self = Self::new(self.x * rhs, self.y * rhs, self.z * rhs);
     }
 }
 
 impl std::ops::Mul<Vec3> for f32 {
     type Output = Vec3;
 
-    fn mul(self, v: Vec3) -> Vec3 {
-        return Vec3::new(self * v.x, self * v.y, self * v.z);
+    fn mul(self, rhs: Vec3) -> Vec3 {
+        Vec3::new(self * rhs.x, self * rhs.y, self * rhs.z)
     }
 }
 
 impl std::ops::Div<f32> for Vec3 {
     type Output = Self;
 
-    fn div(self, f: f32) -> Self {
-        return Self::new(self.x / f, self.y / f, self.z / f);
+    fn div(self, rhs: f32) -> Self {
+        Self::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
 }
 
 impl std::ops::DivAssign<f32> for Vec3 {
-    fn div_assign(&mut self, f: f32) {
-        *self = Self::new(self.x / f, self.y / f, self.z / f);
+    fn div_assign(&mut self, rhs: f32) {
+        *self = Self::new(self.x / rhs, self.y / rhs, self.z / rhs);
     }
 }
 
 impl std::ops::Rem for Vec3 {
     type Output = Self;
-    fn rem(self, other: Vec3) -> Self {
-        return Self::new(self.y * other.z - self.z * other.y,
-                         self.z * other.x - self.x * other.z,
-                         self.x * other.y - self.y * other.x);
+    fn rem(self, rhs: Vec3) -> Self {
+        Self::new(self.y * rhs.z - self.z * rhs.y,
+                  self.z * rhs.x - self.x * rhs.z,
+                  self.x * rhs.y - self.y * rhs.x)
     }
 }
 
 impl std::ops::Neg for Vec3 {
     type Output = Self;
     fn neg(self) -> Self {
-        return Self::new(-self.x, -self.y, -self.z);
+        Self::new(-self.x, -self.y, -self.z)
     }
 }
 
@@ -142,18 +142,18 @@ pub struct Vec2 {
 }
 
 impl Vec2 {
-    pub const ZERO : Vec2 = Vec2::new(0.0, 0.0);
+    pub const ZERO : Vec2 = Self::new(0.0, 0.0);
   
     pub const fn new(u: f32, v: f32) -> Vec2 {
-        return Vec2 {u, v};
+        Self {u, v}
     }
 
     pub fn mag2(self) -> f32 {
-        return self * self;
+        self * self
     }
 
     pub fn normalize(self) -> Vec2 {
-        return self / self.mag2().sqrt();
+        self / self.mag2().sqrt()
     }
 }
 
@@ -166,44 +166,44 @@ impl std::default::Default for Vec2 {
 impl std::ops::Add for Vec2 {
     type Output = Self;
 
-    fn add(self, other: Self) -> Self {
-        return Self::new(self.u + other.u, self.v + other.v);
+    fn add(self, rhs: Self) -> Self {
+        Self::new(self.u + rhs.u, self.v + rhs.v)
     }
 }
 
 impl std::ops::AddAssign for Vec2 {
-    fn add_assign(&mut self, other: Self) {
-        *self = Self::new(self.u + other.u, self.v + other.v);
+    fn add_assign(&mut self, rhs: Self) {
+        *self = Self::new(self.u + rhs.u, self.v + rhs.v);
     }
 }
 
 impl std::ops::Sub for Vec2 {
     type Output = Self;
 
-    fn sub(self, other: Self) -> Self {
-        return Self::new(self.u - other.u, self.v - other.v);
+    fn sub(self, rhs: Self) -> Self {
+        Self::new(self.u - rhs.u, self.v - rhs.v)
     }
 }
 
 impl std::ops::SubAssign for Vec2 {
-    fn sub_assign(&mut self, other: Self) {
-        *self = Self::new(self.u - other.u, self.v - other.v);
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = Self::new(self.u - rhs.u, self.v - rhs.v);
     }
 }
 
 impl std::ops::Mul for Vec2 {
     type Output = f32;
 
-    fn mul(self, other: Self) -> f32 {
-        return self.u * other.u + self.v * other.v;
+    fn mul(self, rhs: Self) -> f32 {
+        self.u * rhs.u + self.v * rhs.v
     }
 }
 
 impl std::ops::Mul<f32> for Vec2 {
     type Output = Self;
 
-    fn mul(self, f: f32) -> Self {
-        return Self::new(self.u * f, self.v * f);
+    fn mul(self, rhs: f32) -> Self {
+        Self::new(self.u * rhs, self.v * rhs)
     }
 }
 
@@ -216,35 +216,35 @@ impl std::ops::MulAssign<f32> for Vec2 {
 impl std::ops::Mul<Vec2> for f32 {
     type Output = Vec2;
 
-    fn mul(self, v: Vec2) -> Vec2 {
-        return Vec2::new(self * v.u, self * v.v);
+    fn mul(self, rhs: Vec2) -> Vec2 {
+        Vec2::new(self * rhs.u, self * rhs.v)
     }
 }
 
 impl std::ops::Div<f32> for Vec2 {
     type Output = Self;
 
-    fn div(self, f: f32) -> Self {
-        return Self::new(self.u / f, self.v / f);
+    fn div(self, rhs: f32) -> Self {
+        Self::new(self.u / rhs, self.v / rhs)
     }
 }
 
 impl std::ops::DivAssign<f32> for Vec2 {
-    fn div_assign(&mut self, f: f32) {
-        *self = Self::new(self.u / f, self.v / f);
+    fn div_assign(&mut self, rhs: f32) {
+        *self = Self::new(self.u / rhs, self.v / rhs);
     }
 }
 
 impl std::ops::Rem for Vec2 {
     type Output = f32;
-    fn rem(self, other: Self) -> f32 {
-        return self.u * other.v - other.u * self.v;
+    fn rem(self, rhs: Self) -> f32 {
+        self.u * rhs.v - rhs.u * self.v
     }
 }
 
 impl std::ops::Neg for Vec2 {
     type Output = Self;
     fn neg(self) -> Self {
-        return Self::new(-self.u, -self.v);
+        Self::new(-self.u, -self.v)
     }
 }

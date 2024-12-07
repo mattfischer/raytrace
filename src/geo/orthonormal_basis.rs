@@ -8,7 +8,7 @@ pub struct OrthonormalBasis {
 }
 
 impl OrthonormalBasis {
-    pub fn new(z : Vec3) -> OrthonormalBasis {
+    pub fn new(z : Vec3) -> Self {
         let sign = z.z.signum();
         let a = -1.0 / (sign + z.z);
         let b = z.x * z.y * a;
@@ -24,14 +24,14 @@ impl OrthonormalBasis {
             ]
         );
 
-        return OrthonormalBasis {matrix};
+        return Self {matrix};
     }
 
     pub fn world_to_local(&self, world : Vec3) -> Vec3 {
-        return world * self.matrix;
+        world * self.matrix
     }
 
     pub fn local_to_world(&self, local : Vec3) -> Vec3 {
-        return self.matrix * local;
+        self.matrix * local
     }
 }

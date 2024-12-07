@@ -10,19 +10,19 @@ pub struct Transformation {
 }
 
 impl Transformation {
-    pub fn transform(&self, xform : Transformation) -> Transformation {
-        return Transformation {matrix: self.matrix * xform.matrix, inverse_matrix: xform.inverse_matrix * self.inverse_matrix};
+    pub fn transform(&self, xform : Self) -> Self {
+        Self {matrix: self.matrix * xform.matrix, inverse_matrix: xform.inverse_matrix * self.inverse_matrix}
     }
 
-    pub fn inverse_transform(&self, xform : Transformation) -> Transformation {
-        return Transformation {matrix: self.inverse_matrix * xform.matrix, inverse_matrix: self.matrix * xform.inverse_matrix};
+    pub fn inverse_transform(&self, xform : Self) -> Self {
+        Transformation {matrix: self.inverse_matrix * xform.matrix, inverse_matrix: self.matrix * xform.inverse_matrix}
     }
     
-    pub fn identity() -> Transformation {
-        return Transformation {matrix: Matrix4::IDENTITY, inverse_matrix: Matrix4::IDENTITY};
+    pub fn identity() -> Self {
+        Self {matrix: Matrix4::IDENTITY, inverse_matrix: Matrix4::IDENTITY}
     }
 
-    pub fn translate(v : Vec3) -> Transformation {
+    pub fn translate(v : Vec3) -> Self {
         let matrix = Matrix4::new(
             [
                 1.0, 0.0, 0.0, v.x,
@@ -41,10 +41,10 @@ impl Transformation {
             ]
         );
 
-        return Transformation {matrix, inverse_matrix}
+        return Self {matrix, inverse_matrix};
     }
 
-    pub fn scale(v : Vec3) -> Transformation {
+    pub fn scale(v : Vec3) -> Self {
         let matrix = Matrix4::new(
             [
                 v.x, 0.0, 0.0, 0.0,
@@ -63,14 +63,14 @@ impl Transformation {
             ]
         );
 
-        return Transformation {matrix, inverse_matrix}
+        return Self {matrix, inverse_matrix};
     }
 
-    pub fn uniform_scale(f : f32) -> Transformation {
-        return Self::scale(Vec3::new(f, f, f));
+    pub fn uniform_scale(f : f32) -> Self {
+        Self::scale(Vec3::new(f, f, f))
     }
 
-    pub fn rotate(v : Vec3) -> Transformation {
+    pub fn rotate(v : Vec3) -> Self {
         let rx = v.x.to_radians();
         let ry = v.y.to_radians();
         let rz = v.z.to_radians();
@@ -132,6 +132,6 @@ impl Transformation {
         let matrix = matrix_x * matrix_y * matrix_z;
         let inverse_matrix = matrix_zi * matrix_yi * matrix_xi;
         
-        return Transformation {matrix, inverse_matrix}
+        return Self {matrix, inverse_matrix};
     }
 }

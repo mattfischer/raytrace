@@ -10,7 +10,7 @@ pub struct Matrix4{
 }
 
 impl Matrix4 {
-    pub const IDENTITY : Matrix4 = Matrix4::new(
+    pub const IDENTITY : Self = Self::new(
         [
             1.0, 0.0, 0.0, 0.0,
             0.0, 1.0, 0.0, 0.0,
@@ -18,12 +18,12 @@ impl Matrix4 {
             0.0, 0.0, 0.0, 1.0
         ]);
 
-    pub const fn new(values : [f32; 16]) -> Matrix4 {
+    pub const fn new(values : [f32; 16]) -> Self {
         Matrix4 {values}
     }
 
     pub fn at(&self, row : usize, col : usize) -> f32 {
-        return self.values[row * 4 + col];
+        self.values[row * 4 + col]
     }
 }
 
@@ -31,53 +31,53 @@ impl Matrix4 {
 impl std::ops::Mul for Matrix4 {
     type Output = Matrix4;
 
-    fn mul(self, other : Matrix4) -> Matrix4 {
+    fn mul(self, rhs : Self) -> Self {
         let mut values = [0.0; 16];
         for col in 0..4 {
             for row in 0..4 {
                 for i in 0..4 {
-                    values[row * 4 + col] += self.at(row, i) * other.at(i, col);
+                    values[row * 4 + col] += self.at(row, i) * rhs.at(i, col);
                 }
             }
         }
 
-        Self::new(values)
+        return Self::new(values);
     }
 }
 
 impl std::ops::Mul<Vec3> for Matrix4 {
     type Output = Vec3;
 
-    fn mul(self, v : Vec3) -> Vec3 {
-        let x = self.at(0, 0) * v.x + self.at(0, 1) * v.y + self.at(0, 2) * v.z;
-        let y = self.at(1, 0) * v.x + self.at(1, 1) * v.y + self.at(1, 2) * v.z;
-        let z = self.at(2, 0) * v.x + self.at(2, 1) * v.y + self.at(2, 2) * v.z;
+    fn mul(self, rhs : Vec3) -> Vec3 {
+        let x = self.at(0, 0) * rhs.x + self.at(0, 1) * rhs.y + self.at(0, 2) * rhs.z;
+        let y = self.at(1, 0) * rhs.x + self.at(1, 1) * rhs.y + self.at(1, 2) * rhs.z;
+        let z = self.at(2, 0) * rhs.x + self.at(2, 1) * rhs.y + self.at(2, 2) * rhs.z;
         
         return Vec3::new(x, y, z);
     }
 }
 
 impl std::ops::Mul<Matrix4> for Vec3 {
-    type Output = Vec3;
+    type Output = Self;
 
-    fn mul(self, m : Matrix4) -> Vec3 {
+    fn mul(self, m : Matrix4) -> Self {
         let x = m.at(0, 0) * self.x + m.at(1, 0) * self.y + m.at(2, 0) * self.z;
         let y = m.at(0, 1) * self.x + m.at(1, 1) * self.y + m.at(2, 1) * self.z;
         let z = m.at(0, 2) * self.x + m.at(1, 2) * self.y + m.at(2, 2) * self.z;
         
-        return Vec3::new(x, y, z);
+        return Self::new(x, y, z);
     }
 }
 
 impl std::ops::Mul<Matrix4> for Normal3 {
-    type Output = Normal3;
+    type Output = Self;
 
-    fn mul(self, m : Matrix4) -> Normal3 {
+    fn mul(self, m : Matrix4) -> Self {
         let x = m.at(0, 0) * self.x + m.at(1, 0) * self.y + m.at(2, 0) * self.z;
         let y = m.at(0, 1) * self.x + m.at(1, 1) * self.y + m.at(2, 1) * self.z;
         let z = m.at(0, 2) * self.x + m.at(1, 2) * self.y + m.at(2, 2) * self.z;
         
-        return Normal3::new(x, y, z);
+        return Self::new(x, y, z);
     }
 }
 

@@ -12,18 +12,18 @@ pub struct Point3 {
 }
 
 impl Point3 {
-    pub const ZERO : Point3 = Point3::new(0.0, 0.0, 0.0);
+    pub const ZERO : Self = Self::new(0.0, 0.0, 0.0);
   
-    pub const fn new(x: f32, y: f32, z: f32) -> Point3 {
-        return Point3 {x, y, z};
+    pub const fn new(x: f32, y: f32, z: f32) -> Self {
+        Self {x, y, z}
     }
 
-    pub fn transform(self, xform : Transformation) -> Point3 {
-        return xform.matrix * self;
+    pub fn transform(self, xform : Transformation) -> Self {
+        xform.matrix * self
     }
 
-    pub fn inverse_transform(self, xform : Transformation) -> Point3 {
-        return xform.inverse_matrix * self;
+    pub fn inverse_transform(self, xform : Transformation) -> Self {
+        xform.inverse_matrix * self
     }
 }
 
@@ -48,50 +48,50 @@ impl std::convert::From<Point3> for Vec3 {
 impl std::ops::Add<Vec3> for Point3 {
     type Output = Self;
 
-    fn add(self, other: Vec3) -> Self {
-        return Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+    fn add(self, rhs: Vec3) -> Self {
+        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
 impl std::ops::AddAssign<Vec3> for Point3 {
-    fn add_assign(&mut self, other: Vec3) {
-        *self = Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+    fn add_assign(&mut self, rhs: Vec3) {
+        *self = Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z);
     }
 }
 
 impl std::ops::AddAssign for Point3 {
-    fn add_assign(&mut self, other: Point3) {
-        *self = Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+    fn add_assign(&mut self, rhs: Point3) {
+        *self = Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z);
     }
 }
 
 impl std::ops::Add for Point3 {
     type Output = Self;
 
-    fn add(self, other: Point3) -> Self {
-        return Self::new(self.x + other.x, self.y + other.y, self.z + other.z);
+    fn add(self, rhs: Point3) -> Self {
+        Self::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
 impl std::ops::Sub<Vec3> for Point3 {
     type Output = Self;
 
-    fn sub(self, other: Vec3) -> Self {
-        return Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
+    fn sub(self, rhs: Vec3) -> Self {
+        Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 }
 
 impl std::ops::Sub for Point3 {
     type Output = Vec3;
 
-    fn sub(self, other: Self) -> Vec3 {
-        return Vec3::new(self.x - other.x, self.y - other.y, self.z - other.z);
+    fn sub(self, rhs: Self) -> Vec3 {
+        Vec3::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 }
 
 impl std::ops::SubAssign<Vec3> for Point3 {
-    fn sub_assign(&mut self, other: Vec3) {
-        *self = Self::new(self.x - other.x, self.y - other.y, self.z - other.z);
+    fn sub_assign(&mut self, rhs: Vec3) {
+        *self = Self::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z);
     }
 }
 
@@ -99,8 +99,8 @@ impl std::ops::SubAssign<Vec3> for Point3 {
 impl std::ops::Div<f32> for Point3 {
     type Output = Self;
 
-    fn div(self, f: f32) -> Self {
-        return Self::new(self.x / f, self.y / f, self.z / f);
+    fn div(self, rhs: f32) -> Self {
+        Self::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
 }
 
@@ -133,30 +133,30 @@ impl std::convert::From<Point2> for Vec2 {
 impl std::ops::Add<Point2> for Point2 {
     type Output = Self;
 
-    fn add(self, other: Point2) -> Self {
-        return Self::new(self.u + other.u, self.v + other.v);
+    fn add(self, rhs: Point2) -> Self {
+        Self::new(self.u + rhs.u, self.v + rhs.v)
     }
 }
 
 impl std::ops::Add<Vec2> for Point2 {
     type Output = Self;
 
-    fn add(self, other: Vec2) -> Self {
-        return Self::new(self.u + other.u, self.v + other.v);
+    fn add(self, rhs: Vec2) -> Self {
+        Self::new(self.u + rhs.u, self.v + rhs.v)
     }
 }
 
 impl std::ops::AddAssign<Vec2> for Point2 {
-    fn add_assign(&mut self, other: Vec2) {
-        *self = Self::new(self.u + other.u, self.v + other.v);
+    fn add_assign(&mut self, rhs: Vec2) {
+        *self = Self::new(self.u + rhs.u, self.v + rhs.v);
     }
 }
 
 impl std::ops::Sub<Vec2> for Point2 {
     type Output = Self;
 
-    fn sub(self, other: Vec2) -> Self {
-        return Self::new(self.u - other.u, self.v - other.v);
+    fn sub(self, rhs: Vec2) -> Self {
+        Self::new(self.u - rhs.u, self.v - rhs.v)
     }
 }
 
@@ -164,6 +164,6 @@ impl std::ops::Mul<f32> for Point2 {
     type Output = Self;
 
     fn mul(self, f: f32) -> Self {
-        return Self::new(self.u * f, self.v * f);
+        Self::new(self.u * f, self.v * f)
     }
 }
