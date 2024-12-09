@@ -1,11 +1,16 @@
 use pyo3::prelude::*;
 use pyo3::exceptions::PyValueError;
 
+use crate::geo;
 use crate::input;
 use crate::object;
 use crate::render;
 
+use geo::Point2;
+
 use input::SceneParser;
+
+use render::LightProbe;
 use render::Renderer;
 use render::RendererSettings;
 
@@ -143,7 +148,24 @@ impl Engine {
         return self.renderer.running();
     }
 
-    pub fn render_probe(&self) {
+    pub fn render_probe(&self, py: Python, x: usize, y: usize) -> Vec<((f32, f32, f32), f32, f32)> {
+        let width = self.render_framebuffer.borrow(py).width;
+        let height = self.render_framebuffer.borrow(py).height;
+
+        return self.renderer.run_with_scene(|scene| {
+            let beam = scene.camera.create_pixel_beam(Point2::new(x as f32, y as f32), width, height, Point2::ZERO);
+            let mut result = Vec::new();
+            if let Some(isect) = scene.intersect(&beam, f32::MAX, true) {
+                let mut probe = LightProbe::new(&isect);
+    
+                for _ in 0..1000 {
+                    let (azimuth, elevation, color) = probe.get_sample();
+        
+                    result.push(((color.red, color.green, color.blue), azimuth, elevation));
+                }
+            }
+            return result;
+        });
     }
 }
 

@@ -7,6 +7,9 @@ pub use executor::Executor;
 mod framebuffer;
 pub use framebuffer::Framebuffer;
 
+mod light_probe;
+pub use light_probe::LightProbe;
+
 mod raster;
 pub use raster::Raster;
 

@@ -118,6 +118,12 @@ impl Renderer {
         }
     }
 
+    pub fn run_with_scene<F, R>(&self, func: F) -> R
+    where F: FnOnce(&Scene) -> R {
+        let scene = &self.shared_state.scene;
+        return func(scene);
+    }
+
     fn render_pixel(data : &SharedState, x: usize, y: usize, sample: usize, sampler : &mut dyn Sampler) {
         sampler.start_sample_with_xys(x, y, sample);
         let image_point = Point2::new(x as f32, y as f32) + sampler.get_value2();
