@@ -1,0 +1,46 @@
+camera {
+    <0,0,-30> <0,0,0> 28 0.75
+}
+
+sky { <4,4,4> }
+
+model {
+	"dragon.ply"
+	transform { translate <0,-12.75,0> uniform_scale 50 rotate <0,15,0> }
+	surface {
+		albedo { color <1,0.5,0.25> }
+                brdf { torrance_sparrow 0.1 0.05 10 lambert 0.9 }
+	}
+}
+
+quad {
+	<-15,-10,-15> <0,0,30> <30,0,0>
+	surface {
+		albedo { color <1,1,1> }
+                brdf { oren_nayar 0.9 0.5 }
+	}
+}
+
+quad {
+    <-10,-15,-15> <0,25,0> <0,0,30>
+	surface {
+		albedo { color <1,0,0> }
+                brdf { oren_nayar 0.9 0.5 }
+	}
+}
+
+quad {
+    <10,-15,-15> <0,0,30> <0,25,0>
+	surface {
+		albedo { color <0,0,1> }
+                brdf { oren_nayar 0.9 0.5 }
+	}
+}
+
+quad {
+        <-15,-15,10> <0,25,0> <30,0,0>
+	surface {
+		albedo { color <1,1,1> }
+                brdf { oren_nayar 0.9 0.5 }
+	}
+}
