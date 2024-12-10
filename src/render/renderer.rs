@@ -60,7 +60,7 @@ impl Renderer {
 
         let jobs = Mutex::new(VecDeque::new());
 
-        let executor = Executor::new(8);
+        let executor = Executor::new();
         let start_time = Mutex::new(Instant::now());
         let done_listener = Mutex::new(None);
         let shared_state = Arc::new(SharedState{framebuffer, scene, settings, lighter, total_radiance, jobs, executor, done_listener, start_time});

@@ -61,10 +61,15 @@ impl Executor {
         }
     }
 
-    pub fn new(num_threads : usize) -> Executor {
+    pub fn new() -> Executor {
         let mut threads = Vec::new();
         let shared_state = Arc::new(SharedState {num_running: AtomicUsize::new(0), run_jobs: AtomicBool::new(true)});
     
+        let num_threads = match std::thread::available_parallelism() {
+            Ok(num) => num.into(),
+            Err(_) => 1
+        };
+
         for _ in 0..num_threads {
             let (sender, receiver) = std::sync::mpsc::channel();
             let ss = shared_state.clone();
