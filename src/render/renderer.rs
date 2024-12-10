@@ -130,7 +130,7 @@ impl Renderer {
         let aperture_point = sampler.get_value2();
         let beam = data.scene.camera.create_pixel_beam(image_point, data.settings.width, data.settings.height, aperture_point);
 
-        let isect = data.scene.intersect(&beam, f32::MAX, true);
+        let isect = data.scene.intersect(beam, f32::MAX, true);
 
         let color;
         if let Some(lighter) = &data.lighter {

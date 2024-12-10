@@ -31,7 +31,7 @@ impl Lighter for UniPath {
         for generation in 0..10 {
             let surface = &isect.primitive.surface;
             let nrm_facing = isect.facing_normal;
-            let dir_out = -isect.beam.ray.direction;
+            let dir_out = -isect.ray.direction;
 
             let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
             for idx in scene.area_lights.iter() {
@@ -51,7 +51,7 @@ impl Lighter for UniPath {
 
                     let ray = Ray::new(pnt_offset, dir_in);
                     let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-                    let isect2 = scene.intersect(&beam, d, false);
+                    let isect2 = scene.intersect(beam, d, false);
 
                     if isect2.is_none() || std::ptr::eq(isect2.unwrap().primitive, light) {
                         let irad = rad2 * dot2 * dot / (d * d);
@@ -71,7 +71,7 @@ impl Lighter for UniPath {
                 if dot > 0.0 {
                     let ray = Ray::new(pnt_offset, dir_in);
                     let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-                    let isect2 = scene.intersect(&beam, d, false);
+                    let isect2 = scene.intersect(beam, d, false);
     
                     if isect2.is_none() {
                         let irad = point_light.radiance * dot / (d * d);
@@ -103,7 +103,7 @@ impl Lighter for UniPath {
 
             let reflect_ray = Ray::new(pnt_offset, dir_in);
             beam = Beam::new(reflect_ray, Bivec3::ZERO, Bivec3::ZERO);
-            let isect2 = scene.intersect(&beam, f32::MAX, true);
+            let isect2 = scene.intersect(beam, f32::MAX, true);
 
             if let Some(isect2) = isect2 {
                 let rad2 = isect2.primitive.surface.radiance;

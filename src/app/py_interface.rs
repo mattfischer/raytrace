@@ -155,7 +155,7 @@ impl Engine {
         return self.renderer.run_with_scene(|scene| {
             let beam = scene.camera.create_pixel_beam(Point2::new(x as f32, y as f32), width, height, Point2::ZERO);
             let mut result = Vec::new();
-            if let Some(isect) = scene.intersect(&beam, f32::MAX, true) {
+            if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
                 let mut probe = LightProbe::new(&isect);
     
                 for _ in 0..1000 {

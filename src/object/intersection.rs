@@ -5,6 +5,7 @@ use geo::Beam;
 use geo::Bivec2;
 use geo::Normal3;
 use geo::Point3;
+use geo::Ray;
 use geo::Vec2;
 
 use object::Color;
@@ -13,20 +14,19 @@ use object::ShapeIntersection;
 use object::Scene;
 
 #[derive(Copy, Clone)]
-pub struct Intersection<'a, 'b> {
+pub struct Intersection<'a> {
     pub scene : &'a Scene,
     pub primitive : &'a Primitive,
     pub shape_isect : ShapeIntersection,
     pub point : Point3,
-    pub beam : &'b Beam,
+    pub ray : Ray,
     pub normal : Normal3,
     pub facing_normal : Normal3,
-    pub surface_projection : Bivec2,
     pub albedo : Color
 }
 
-impl<'a, 'b> Intersection<'a, 'b> {
-    pub fn new(scene : &'a Scene, primitive : &'a Primitive, beam : &'b Beam, shape_isect : ShapeIntersection) -> Intersection<'a, 'b> {
+impl<'a> Intersection<'a> {
+    pub fn new(scene : &'a Scene, primitive : &'a Primitive, beam : Beam, shape_isect : ShapeIntersection) -> Intersection<'a> {
         let projection = beam.project(shape_isect.distance, shape_isect.normal);
         let vv = shape_isect.tangent.u % shape_isect.tangent.v;
         let v = vv / vv.mag2();
@@ -41,11 +41,12 @@ impl<'a, 'b> Intersection<'a, 'b> {
             shape_isect.normal
         };
         
-        let dir_out = -beam.ray.direction;
+        let ray = beam.ray;
+        let dir_out = -ray.direction;
         let facing_normal = (normal * dir_out).signum() * normal;
 
         let albedo = primitive.surface.albedo.color(shape_isect.surface_point, surface_projection);
         
-        return Intersection{scene, primitive, shape_isect, point, beam, normal, facing_normal, surface_projection, albedo};
+        return Intersection{scene, primitive, shape_isect, point, ray, normal, facing_normal, albedo};
     }
 }

@@ -43,7 +43,7 @@ impl Scene {
         return Scene {camera, primitives, point_lights, area_lights, sky_radiance, bvh}
     }
 
-    pub fn intersect<'a, 'b>(&'a self, beam : &'b Beam, max_distance : f32, closest : bool) -> Option<Intersection<'a, 'b>> {
+    pub fn intersect<'a>(&'a self, beam : Beam, max_distance : f32, closest : bool) -> Option<Intersection<'a>> {
         let mut isect = None;
 
         let mut func = |index : usize, max_distance : f32| {

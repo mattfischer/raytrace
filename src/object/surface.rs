@@ -37,7 +37,7 @@ impl Surface {
         let mut color_transmit = Color::ONE;
 
         for brdf in self.brdfs.iter() {
-            color += color_transmit * brdf.reflected(dir_in, isect.facing_normal, -isect.beam.ray.direction, isect.albedo);
+            color += color_transmit * brdf.reflected(dir_in, isect.facing_normal, -isect.ray.direction, isect.albedo);
             color_transmit = color_transmit * brdf.transmitted(dir_in, isect.facing_normal, isect.albedo);
         }
 
@@ -55,7 +55,7 @@ impl Surface {
     }
 
     pub fn sample(&self, isect : &Intersection, sampler : &mut dyn Sampler) -> (Color, Vec3, Option<f32>) {
-        let dir_out = -isect.beam.ray.direction;
+        let dir_out = -isect.ray.direction;
         let nrm_facing = isect.facing_normal;
 
         let mut transmit_threshold = 0.0;
@@ -96,7 +96,7 @@ impl Surface {
     }
 
     pub fn pdf(&self, isect : &Intersection, dir_in : Vec3) -> f32 {
-        let dir_out = -isect.beam.ray.direction;
+        let dir_out = -isect.ray.direction;
         let nrm_facing = isect.facing_normal;
 
         let mut total_pdf = 0.0;

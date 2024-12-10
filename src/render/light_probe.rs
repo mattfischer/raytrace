@@ -19,15 +19,15 @@ use render::lighter::UniPath;
 use render::Lighter;
 use render::Framebuffer;
 
-pub struct LightProbe<'a, 'b, 'c> {
-    isect : &'a Intersection<'b, 'c>,
+pub struct LightProbe<'a, 'b> {
+    isect : &'a Intersection<'b>,
     basis : OrthonormalBasis,
     sampler : Random,
     lighter : UniPath
 }
 
-impl<'a, 'b, 'c> LightProbe<'a, 'b, 'c> {
-    pub fn new(isect: &'a Intersection<'b, 'c>) -> LightProbe<'a, 'b, 'c> {
+impl<'a, 'b> LightProbe<'a, 'b> {
+    pub fn new(isect: &'a Intersection<'b>) -> LightProbe<'a, 'b> {
         let basis = OrthonormalBasis::new(isect.facing_normal.into());
         let sampler = Random::new();
         let lighter = UniPath::new();
@@ -44,7 +44,7 @@ impl<'a, 'b, 'c> LightProbe<'a, 'b, 'c> {
         let ray = Ray::new(pnt_offset, dir_in);
         let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
        
-        let isect2 = self.isect.scene.intersect(&beam, f32::MAX, true);
+        let isect2 = self.isect.scene.intersect(beam, f32::MAX, true);
         let irad = match isect2 {
             Some(isect2) => self.lighter.light(&isect2, &mut self.sampler) * dot,
             None => Radiance::ZERO

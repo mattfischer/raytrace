@@ -4,6 +4,7 @@ use geo::Ray;
 use geo::Bivec3;
 use geo::Normal3;
 
+#[derive(Clone, Copy)]
 pub struct Beam {
     pub ray : Ray,
     pub origin_diff : Bivec3,
