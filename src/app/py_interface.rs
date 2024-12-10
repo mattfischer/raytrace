@@ -93,11 +93,6 @@ impl Framebuffer {
     pub unsafe fn __getbuffer__(slf: PyRefMut<'_, Self>, buffer : *mut pyo3_ffi::Py_buffer, flags : i32) {
         let size = (slf.width * slf.height * 3) as isize;
         pyo3_ffi::PyBuffer_FillInfo(buffer, slf.as_ptr(), slf.bits as *mut c_void, size, 1, flags);
-        println!("Get buffer");
-    }
-
-    pub unsafe fn __releasebuffer__(&self, buffer : *mut pyo3_ffi::Py_buffer) {
-        println!("Release buffer");
     }
 }
 
@@ -118,7 +113,7 @@ impl Engine {
             let render_settings = RendererSettings {width: settings.width, height: settings.height, samples: settings.samples};
             let lighter : Option<Box<dyn render::Lighter>> = match settings.render_method.as_str() {
                 "directLighting" => Some(Box::new(render::lighter::Direct::new())),
-                "pathTracingCpu" => Some(Box::new(render::lighter::UniPath::new())),
+                "pathTracing" => Some(Box::new(render::lighter::UniPath::new())),
                 _ => None
             };
 
