@@ -1,12 +1,18 @@
 use crate::geo;
 
-use geo::Ray;
 use geo::Point3;
+use geo::Ray;
 
 pub struct Triangle;
 
 impl Triangle {
-    pub fn intersect(ray : Ray, p : Point3, pu : Point3, pv : Point3, max_distance : f32) -> Option<(f32, f32, f32)> {
+    pub fn intersect(
+        ray: Ray,
+        p: Point3,
+        pu: Point3,
+        pv: Point3,
+        max_distance: f32,
+    ) -> Option<(f32, f32, f32)> {
         let e1 = pu - p;
         let e2 = pv - p;
         let pp = ray.direction % e2;

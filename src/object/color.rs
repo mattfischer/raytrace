@@ -2,15 +2,23 @@
 pub struct Color {
     pub red: f32,
     pub green: f32,
-    pub blue: f32
+    pub blue: f32,
 }
 
-impl Color { 
-    pub const ZERO : Color = Color{red: 0.0, green: 0.0, blue: 0.0};
-    pub const ONE : Color = Color{red: 1.0, green: 1.0, blue: 1.0};
+impl Color {
+    pub const ZERO: Color = Color {
+        red: 0.0,
+        green: 0.0,
+        blue: 0.0,
+    };
+    pub const ONE: Color = Color {
+        red: 1.0,
+        green: 1.0,
+        blue: 1.0,
+    };
 
     pub fn new(red: f32, green: f32, blue: f32) -> Color {
-        Color {red, green, blue}
+        Color { red, green, blue }
     }
 
     pub fn mag2(self) -> f32 {
@@ -26,13 +34,21 @@ impl std::ops::Add for Color {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Self::new(self.red + other.red, self.green + other.green, self.blue + other.blue)
+        Self::new(
+            self.red + other.red,
+            self.green + other.green,
+            self.blue + other.blue,
+        )
     }
 }
 
 impl std::ops::AddAssign for Color {
     fn add_assign(&mut self, other: Self) {
-        *self = Self::new(self.red + other.red, self.green + other.green, self.blue + other.blue);
+        *self = Self::new(
+            self.red + other.red,
+            self.green + other.green,
+            self.blue + other.blue,
+        );
     }
 }
 
@@ -40,13 +56,21 @@ impl std::ops::Sub for Color {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self::new(self.red - other.red, self.green - other.green, self.blue - other.blue)
+        Self::new(
+            self.red - other.red,
+            self.green - other.green,
+            self.blue - other.blue,
+        )
     }
 }
 
 impl std::ops::SubAssign for Color {
     fn sub_assign(&mut self, other: Self) {
-        *self = Self::new(self.red - other.red, self.green - other.green, self.blue - other.blue);
+        *self = Self::new(
+            self.red - other.red,
+            self.green - other.green,
+            self.blue - other.blue,
+        );
     }
 }
 
@@ -76,7 +100,11 @@ impl std::ops::Mul for Color {
     type Output = Self;
 
     fn mul(self, other: Color) -> Self {
-        Self::new(self.red * other.red, self.green * other.green, self.blue * other.blue)
+        Self::new(
+            self.red * other.red,
+            self.green * other.green,
+            self.blue * other.blue,
+        )
     }
 }
 

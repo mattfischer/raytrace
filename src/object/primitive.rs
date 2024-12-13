@@ -4,12 +4,12 @@ use object::Shape;
 use object::Surface;
 
 pub struct Primitive {
-    pub shape : Box<dyn Shape>,
-    pub surface : Surface
+    pub shape: Box<dyn Shape>,
+    pub surface: Surface,
 }
 
 impl Primitive {
-    pub fn new(shape : Box<dyn Shape>, surface : Surface) -> Primitive {
-        Primitive{shape, surface}
+    pub fn new(shape: Box<dyn Shape>, surface: Surface) -> Primitive {
+        Primitive { shape, surface }
     }
 }

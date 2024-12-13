@@ -1,8 +1,8 @@
 pub mod lighter;
 
 mod executor;
-pub use executor::ExecutorJob;
 pub use executor::Executor;
+pub use executor::ExecutorJob;
 
 mod framebuffer;
 pub use framebuffer::Framebuffer;

@@ -2,20 +2,20 @@ use crate::object;
 
 use object::Texture;
 
-use image::ImageReader;
 use image::DynamicImage;
+use image::ImageReader;
 
 pub struct TextureLoader;
 
 impl TextureLoader {
-    pub fn load(filename : String) -> Option<Texture<3>> {
+    pub fn load(filename: String) -> Option<Texture<3>> {
         let mut rgb_image = None;
 
         if let Ok(reader) = ImageReader::open(filename) {
             if let Ok(buffer) = reader.decode() {
                 match buffer {
                     DynamicImage::ImageRgb8(rgb) => rgb_image = Some(rgb),
-                    _ => ()
+                    _ => (),
                 }
             }
         }

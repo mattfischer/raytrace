@@ -9,17 +9,17 @@ use object::Shape;
 use object::ShapeIntersection;
 
 pub struct Group {
-    shapes : Vec<Box<dyn Shape>>
+    shapes: Vec<Box<dyn Shape>>,
 }
 
 impl Group {
-    pub fn new(shapes : Vec<Box<dyn Shape>>) -> Group {
-        Group{shapes}
+    pub fn new(shapes: Vec<Box<dyn Shape>>) -> Group {
+        Group { shapes }
     }
 }
 
 impl Shape for Group {
-    fn intersect(&self, ray : Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection> {
+    fn intersect(&self, ray: Ray, max_distance: f32, closest: bool) -> Option<ShapeIntersection> {
         let mut result = None;
         let mut distance = max_distance;
         for shape in self.shapes.iter() {
@@ -31,17 +31,17 @@ impl Shape for Group {
                 }
             }
         }
-        
+
         return result;
     }
 
-    fn bounding_volume(&self, xform : Transformation) -> BoundingVolume {
+    fn bounding_volume(&self, xform: Transformation) -> BoundingVolume {
         let mut volume = BoundingVolume::new();
 
         for shape in self.shapes.iter() {
             volume.include_volume(shape.bounding_volume(xform));
         }
-        
+
         return volume;
     }
 }

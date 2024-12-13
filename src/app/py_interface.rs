@@ -1,5 +1,5 @@
-use pyo3::prelude::*;
 use pyo3::exceptions::PyValueError;
+use pyo3::prelude::*;
 
 use crate::geo;
 use crate::input;
@@ -19,31 +19,31 @@ use std::ffi::c_void;
 #[pyclass]
 struct Settings {
     #[pyo3(get, set)]
-    pub width : usize,
+    pub width: usize,
 
     #[pyo3(get, set)]
-    pub height : usize,
+    pub height: usize,
 
     #[pyo3(get, set)]
-    pub samples : usize,
+    pub samples: usize,
 
     #[pyo3(get, set)]
-    pub irradiance_cache_samples : usize,
+    pub irradiance_cache_samples: usize,
 
     #[pyo3(get, set)]
-    pub irradiance_cache_threshold : f32,
+    pub irradiance_cache_threshold: f32,
 
     #[pyo3(get, set)]
-    pub restir_indirect_samples : usize,
+    pub restir_indirect_samples: usize,
 
     #[pyo3(get, set)]
-    pub restir_radius : usize,
+    pub restir_radius: usize,
 
     #[pyo3(get, set)]
-    pub restir_candidates : usize,
+    pub restir_candidates: usize,
 
     #[pyo3(get, set)]
-    pub render_method : String
+    pub render_method: String,
 }
 
 #[pymethods]
@@ -59,33 +59,34 @@ impl Settings {
             restir_indirect_samples: 0,
             restir_radius: 0,
             restir_candidates: 0,
-            render_method: String::new()};
+            render_method: String::new(),
+        };
     }
 }
 
 #[pyclass]
 struct Scene {
-    scene : Option<object::Scene>
+    scene: Option<object::Scene>,
 }
 
 #[pymethods]
 impl Scene {
     #[new]
-    pub fn new(filename : String) -> Scene {
+    pub fn new(filename: String) -> Scene {
         let scene = SceneParser::parse_scene(filename);
-        return Scene {scene};
+        return Scene { scene };
     }
 }
 
 #[pyclass]
 struct Framebuffer {
     #[pyo3(get, set)]
-    width : usize,
+    width: usize,
 
     #[pyo3(get, set)]
-    height : usize,
+    height: usize,
 
-    bits : *const u8
+    bits: *const u8,
 }
 
 unsafe impl Send for Framebuffer {}
@@ -93,36 +94,66 @@ unsafe impl Sync for Framebuffer {}
 
 #[pymethods]
 impl Framebuffer {
-    pub unsafe fn __getbuffer__(slf: PyRefMut<'_, Self>, buffer : *mut pyo3_ffi::Py_buffer, flags : i32) {
+    pub unsafe fn __getbuffer__(
+        slf: PyRefMut<'_, Self>,
+        buffer: *mut pyo3_ffi::Py_buffer,
+        flags: i32,
+    ) {
         let size = (slf.width * slf.height * 3) as isize;
-        pyo3_ffi::PyBuffer_FillInfo(buffer, slf.as_ptr(), slf.bits as *mut c_void, size, 1, flags);
+        pyo3_ffi::PyBuffer_FillInfo(
+            buffer,
+            slf.as_ptr(),
+            slf.bits as *mut c_void,
+            size,
+            1,
+            flags,
+        );
     }
 }
 
 #[pyclass]
 struct Engine {
-    renderer : Renderer,
+    renderer: Renderer,
 
     #[pyo3(get)]
-    pub render_framebuffer : Py<Framebuffer>
+    pub render_framebuffer: Py<Framebuffer>,
 }
 
 #[pymethods]
 impl Engine {
     #[new]
-    pub fn new(py : Python<'_>, scene : &Bound<'_, Scene>, settings : &Bound<'_, Settings>) -> PyResult<Engine> {
+    pub fn new(
+        py: Python<'_>,
+        scene: &Bound<'_, Scene>,
+        settings: &Bound<'_, Settings>,
+    ) -> PyResult<Engine> {
         if let Some(scene) = scene.borrow_mut().scene.take() {
             let settings = settings.borrow();
-            let render_settings = RendererSettings {width: settings.width, height: settings.height, samples: settings.samples};
-            let lighter : Option<Box<dyn render::Lighter>> = match settings.render_method.as_str() {
+            let render_settings = RendererSettings {
+                width: settings.width,
+                height: settings.height,
+                samples: settings.samples,
+            };
+            let lighter: Option<Box<dyn render::Lighter>> = match settings.render_method.as_str() {
                 "directLighting" => Some(Box::new(render::lighter::Direct::new())),
                 "pathTracing" => Some(Box::new(render::lighter::UniPath::new())),
-                _ => None
+                _ => None,
             };
 
             let renderer = Renderer::new(scene, render_settings, lighter);
-            let render_framebuffer = Py::new(py, Framebuffer{width: settings.width, height: settings.height, bits: renderer.framebuffer_ptr()}).unwrap();
-            return Ok(Engine {renderer, render_framebuffer });
+            let render_framebuffer = Py::new(
+                py,
+                Framebuffer {
+                    width: settings.width,
+                    height: settings.height,
+                    bits: renderer.framebuffer_ptr(),
+                },
+            )
+            .unwrap();
+            return Ok(Engine {
+                renderer,
+                render_framebuffer,
+            });
         } else {
             return Err(PyValueError::new_err("No scene"));
         }
@@ -151,14 +182,19 @@ impl Engine {
         let height = self.render_framebuffer.borrow(py).height;
 
         return self.renderer.run_with_scene(|scene| {
-            let beam = scene.camera.create_pixel_beam(Point2::new(x as f32, y as f32), width, height, Point2::ZERO);
+            let beam = scene.camera.create_pixel_beam(
+                Point2::new(x as f32, y as f32),
+                width,
+                height,
+                Point2::ZERO,
+            );
             let mut result = Vec::new();
             if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
                 let mut probe = LightProbe::new(&isect);
-    
+
                 for _ in 0..1000 {
                     let (azimuth, elevation, color) = probe.get_sample();
-        
+
                     result.push(((color.red, color.green, color.blue), azimuth, elevation));
                 }
             }

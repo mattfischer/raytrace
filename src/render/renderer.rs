@@ -6,9 +6,9 @@ use crate::render;
 
 use geo::Point2;
 
+use object::sampler::Halton;
 use object::Radiance;
 use object::Sampler;
-use object::sampler::Halton;
 use object::Scene;
 
 use render::Executor;
@@ -18,39 +18,43 @@ use render::Lighter;
 use render::Raster;
 use render::RasterJob;
 
+use std::collections::VecDeque;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::collections::VecDeque;
 use std::time::Instant;
 
 pub struct RendererSettings {
-    pub width : usize,
-    pub height : usize,
-    pub samples : usize
+    pub width: usize,
+    pub height: usize,
+    pub samples: usize,
 }
 
 struct SharedState {
-    scene : Scene,
-    settings : RendererSettings,
-    lighter : Option<Box<dyn Lighter>>,
-    jobs : Mutex<VecDeque<Box<dyn ExecutorJob>>>,
-    framebuffer : Mutex<Framebuffer>,
-    total_radiance : Mutex<Raster<Radiance>>,
-    executor : Executor,
-    start_time : Mutex<Instant>,
-    done_listener : Mutex<Option<Box<dyn FnOnce(f32) + 'static + Send + Sync>>>
+    scene: Scene,
+    settings: RendererSettings,
+    lighter: Option<Box<dyn Lighter>>,
+    jobs: Mutex<VecDeque<Box<dyn ExecutorJob>>>,
+    framebuffer: Mutex<Framebuffer>,
+    total_radiance: Mutex<Raster<Radiance>>,
+    executor: Executor,
+    start_time: Mutex<Instant>,
+    done_listener: Mutex<Option<Box<dyn FnOnce(f32) + 'static + Send + Sync>>>,
 }
 
 pub struct Renderer {
-    shared_state : Arc<SharedState>
+    shared_state: Arc<SharedState>,
 }
 
 struct ThreadLocal {
-    sampler : Halton
+    sampler: Halton,
 }
 
 impl Renderer {
-    pub fn new(scene : Scene, settings : RendererSettings, lighter : Option<Box<dyn Lighter>>) -> Renderer {
+    pub fn new(
+        scene: Scene,
+        settings: RendererSettings,
+        lighter: Option<Box<dyn Lighter>>,
+    ) -> Renderer {
         let width = settings.width;
         let height = settings.height;
         let samples = settings.samples;
@@ -63,29 +67,44 @@ impl Renderer {
         let executor = Executor::new();
         let start_time = Mutex::new(Instant::now());
         let done_listener = Mutex::new(None);
-        let shared_state = Arc::new(SharedState{framebuffer, scene, settings, lighter, total_radiance, jobs, executor, done_listener, start_time});
+        let shared_state = Arc::new(SharedState {
+            framebuffer,
+            scene,
+            settings,
+            lighter,
+            total_radiance,
+            jobs,
+            executor,
+            done_listener,
+            start_time,
+        });
 
         let shared_state_clone = shared_state.clone();
-        let job = Box::new(RasterJob::new(width, height, samples,
+        let job = Box::new(RasterJob::new(
+            width,
+            height,
+            samples,
             move |x, y, sample, thread_local: &mut ThreadLocal| {
                 Self::render_pixel(&shared_state_clone, x, y, sample, &mut thread_local.sampler);
             },
-            || {
-            },
+            || {},
             move || {
                 let sampler = Halton::new(width as i32, height as i32);
-                return Box::new(ThreadLocal {sampler});
-            }));
+                return Box::new(ThreadLocal { sampler });
+            },
+        ));
 
         if let Ok(mut jobs) = shared_state.jobs.lock() {
             jobs.push_back(job as Box<dyn ExecutorJob>);
         }
 
-        return Renderer {shared_state};
+        return Renderer { shared_state };
     }
 
-    pub fn start<F>(&self, done : F)
-    where F: FnOnce(f32) + 'static + Send + Sync {
+    pub fn start<F>(&self, done: F)
+    where
+        F: FnOnce(f32) + 'static + Send + Sync,
+    {
         if let Ok(mut done_listener) = self.shared_state.done_listener.lock() {
             done_listener.replace(Box::new(done));
         }
@@ -93,7 +112,9 @@ impl Renderer {
         if let Ok(mut jobs) = self.shared_state.jobs.lock() {
             if let Some(job) = jobs.pop_front() {
                 let shared_state_clone = self.shared_state.clone();
-                self.shared_state.executor.run_job(job, move || Self::job_done(shared_state_clone));
+                self.shared_state
+                    .executor
+                    .run_job(job, move || Self::job_done(shared_state_clone));
             }
         }
 
@@ -119,16 +140,29 @@ impl Renderer {
     }
 
     pub fn run_with_scene<F, R>(&self, func: F) -> R
-    where F: FnOnce(&Scene) -> R {
+    where
+        F: FnOnce(&Scene) -> R,
+    {
         let scene = &self.shared_state.scene;
         return func(scene);
     }
 
-    fn render_pixel(data : &SharedState, x: usize, y: usize, sample: usize, sampler : &mut dyn Sampler) {
+    fn render_pixel(
+        data: &SharedState,
+        x: usize,
+        y: usize,
+        sample: usize,
+        sampler: &mut dyn Sampler,
+    ) {
         sampler.start_sample_with_xys(x, y, sample);
         let image_point = Point2::new(x as f32, y as f32) + sampler.get_value2();
         let aperture_point = sampler.get_value2();
-        let beam = data.scene.camera.create_pixel_beam(image_point, data.settings.width, data.settings.height, aperture_point);
+        let beam = data.scene.camera.create_pixel_beam(
+            image_point,
+            data.settings.width,
+            data.settings.height,
+            aperture_point,
+        );
 
         let isect = data.scene.intersect(beam, f32::MAX, true);
 
@@ -162,13 +196,19 @@ impl Renderer {
         }
     }
 
-    fn job_done(shared_state : Arc<SharedState>) {
+    fn job_done(shared_state: Arc<SharedState>) {
         if let Ok(mut jobs) = shared_state.jobs.lock() {
             if let Some(job) = jobs.pop_front() {
                 let shared_state_clone = shared_state.clone();
-                shared_state.executor.run_job(job, move || Self::job_done(shared_state_clone));
+                shared_state
+                    .executor
+                    .run_job(job, move || Self::job_done(shared_state_clone));
             } else {
-                let start_time = if let Ok(s) = shared_state.start_time.lock() { *s } else { Instant::now() };
+                let start_time = if let Ok(s) = shared_state.start_time.lock() {
+                    *s
+                } else {
+                    Instant::now()
+                };
                 let end_time = Instant::now();
                 let time_elapsed = end_time - start_time;
                 if let Ok(mut done_listener) = shared_state.done_listener.lock() {

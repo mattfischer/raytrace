@@ -4,33 +4,40 @@ use geo::Point3;
 use geo::Ray;
 use geo::Vec3;
 
-pub const NUM_VECTORS : usize = 3;
+pub const NUM_VECTORS: usize = 3;
 
 #[derive(Copy, Clone)]
 pub struct BoundingVolume {
-    mins : [f32; NUM_VECTORS],
-    maxes : [f32; NUM_VECTORS]
+    mins: [f32; NUM_VECTORS],
+    maxes: [f32; NUM_VECTORS],
 }
 
 #[derive(Copy, Clone)]
 pub struct RayData {
-    offsets : [f32; NUM_VECTORS],
-    dots : [f32; NUM_VECTORS]
+    offsets: [f32; NUM_VECTORS],
+    dots: [f32; NUM_VECTORS],
 }
 
 impl BoundingVolume {
-    pub const NUM_VECTORS : usize = NUM_VECTORS;
-    pub const VECTORS : [Vec3; NUM_VECTORS] = [Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0), Vec3::new(0.0, 0.0, 1.0)];
+    pub const NUM_VECTORS: usize = NUM_VECTORS;
+    pub const VECTORS: [Vec3; NUM_VECTORS] = [
+        Vec3::new(1.0, 0.0, 0.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        Vec3::new(0.0, 0.0, 1.0),
+    ];
 
     pub fn new() -> BoundingVolume {
-        return BoundingVolume {mins: [f32::MAX; NUM_VECTORS], maxes: [-f32::MAX; NUM_VECTORS]};
+        return BoundingVolume {
+            mins: [f32::MAX; NUM_VECTORS],
+            maxes: [-f32::MAX; NUM_VECTORS],
+        };
     }
 
-    pub fn with_mins_maxes(mins: [f32; NUM_VECTORS], maxes : [f32; NUM_VECTORS]) -> BoundingVolume {
-        return BoundingVolume {mins, maxes};
+    pub fn with_mins_maxes(mins: [f32; NUM_VECTORS], maxes: [f32; NUM_VECTORS]) -> BoundingVolume {
+        return BoundingVolume { mins, maxes };
     }
 
-    pub fn include_point(&mut self, point : Point3) {
+    pub fn include_point(&mut self, point: Point3) {
         for i in 0..NUM_VECTORS {
             let dist = Vec3::from(point) * Self::VECTORS[i];
             self.mins[i] = self.mins[i].min(dist);
@@ -38,7 +45,7 @@ impl BoundingVolume {
         }
     }
 
-    pub fn include_volume(&mut self, volume : BoundingVolume) {
+    pub fn include_volume(&mut self, volume: BoundingVolume) {
         for i in 0..NUM_VECTORS {
             self.mins[i] = self.mins[i].min(volume.mins[i]);
             self.maxes[i] = self.maxes[i].max(volume.maxes[i]);
@@ -49,29 +56,29 @@ impl BoundingVolume {
         let d0 = (self.mins[0] + self.maxes[0]) / 2.0;
         let d1 = (self.mins[1] + self.maxes[1]) / 2.0;
         let d2 = (self.mins[2] + self.maxes[2]) / 2.0;
-        
+
         let v0 = Self::VECTORS[0];
         let v1 = Self::VECTORS[1];
         let v2 = Self::VECTORS[2];
 
         let d = v0 * (v1 % v2);
-        
-        return Point3::from((v1 % v2) * (d0 / d) + (v2 % v0) * (d1 / d) + (v0 % v1) * (d2 / d));    
+
+        return Point3::from((v1 % v2) * (d0 / d) + (v2 % v0) * (d1 / d) + (v0 % v1) * (d2 / d));
     }
 
-    pub fn get_raydata(ray : Ray) -> RayData {
+    pub fn get_raydata(ray: Ray) -> RayData {
         let mut offsets = [0.0; NUM_VECTORS];
         let mut dots = [0.0; NUM_VECTORS];
-        
+
         for i in 0..NUM_VECTORS {
             offsets[i] = Vec3::from(ray.origin) * Self::VECTORS[i];
             dots[i] = ray.direction * Self::VECTORS[i];
         }
 
-        return RayData {offsets, dots};
+        return RayData { offsets, dots };
     }
 
-    pub fn intersect_ray(&self, raydata : RayData) -> Option<(f32, f32)> {
+    pub fn intersect_ray(&self, raydata: RayData) -> Option<(f32, f32)> {
         let mut current_min = -f32::MAX;
         let mut current_max = f32::MAX;
 
@@ -79,8 +86,8 @@ impl BoundingVolume {
             let offset = raydata.offsets[i];
             let dot = raydata.dots[i];
 
-            let min : f32;
-            let max : f32;
+            let min: f32;
+            let max: f32;
 
             if dot < 0.0 {
                 max = (self.mins[i] - offset) / dot;
@@ -93,7 +100,7 @@ impl BoundingVolume {
                 }
             } else {
                 min = (self.mins[i] - offset) / dot;
-                max = (self.maxes[i] - offset) / dot; 
+                max = (self.maxes[i] - offset) / dot;
             }
 
             current_min = current_min.max(min);

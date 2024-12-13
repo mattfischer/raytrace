@@ -8,21 +8,21 @@ use geo::Vec3;
 pub struct Point3 {
     pub x: f32,
     pub y: f32,
-    pub z: f32
+    pub z: f32,
 }
 
 impl Point3 {
-    pub const ZERO : Self = Self::new(0.0, 0.0, 0.0);
-  
+    pub const ZERO: Self = Self::new(0.0, 0.0, 0.0);
+
     pub const fn new(x: f32, y: f32, z: f32) -> Self {
-        Self {x, y, z}
+        Self { x, y, z }
     }
 
-    pub fn transform(self, xform : Transformation) -> Self {
+    pub fn transform(self, xform: Transformation) -> Self {
         xform.matrix * self
     }
 
-    pub fn inverse_transform(self, xform : Transformation) -> Self {
+    pub fn inverse_transform(self, xform: Transformation) -> Self {
         xform.inverse_matrix * self
     }
 }
@@ -95,7 +95,6 @@ impl std::ops::SubAssign<Vec3> for Point3 {
     }
 }
 
-
 impl std::ops::Div<f32> for Point3 {
     type Output = Self;
 
@@ -111,10 +110,10 @@ pub struct Point2 {
 }
 
 impl Point2 {
-    pub const ZERO : Point2 = Point2::new(0.0, 0.0);
-  
+    pub const ZERO: Point2 = Point2::new(0.0, 0.0);
+
     pub const fn new(u: f32, v: f32) -> Point2 {
-        return Point2 {u, v};
+        return Point2 { u, v };
     }
 }
 

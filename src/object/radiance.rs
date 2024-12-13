@@ -4,16 +4,20 @@ use object::Color;
 
 #[derive(Copy, Clone)]
 pub struct Radiance {
-    pub red : f32,
-    pub green : f32,
-    pub blue : f32
+    pub red: f32,
+    pub green: f32,
+    pub blue: f32,
 }
 
 impl Radiance {
-    pub const ZERO : Radiance = Radiance{red: 0.0, green: 0.0, blue: 0.0};
-    
-    pub fn new(red : f32, green : f32, blue : f32) -> Radiance {
-        return Radiance {red, green, blue};
+    pub const ZERO: Radiance = Radiance {
+        red: 0.0,
+        green: 0.0,
+        blue: 0.0,
+    };
+
+    pub fn new(red: f32, green: f32, blue: f32) -> Radiance {
+        return Radiance { red, green, blue };
     }
 
     pub fn mag2(self) -> f32 {
@@ -35,13 +39,21 @@ impl std::ops::Add for Radiance {
     type Output = Self;
 
     fn add(self, other: Self) -> Self::Output {
-        return Self::new(self.red + other.red, self.green + other.green, self.blue + other.blue);
+        return Self::new(
+            self.red + other.red,
+            self.green + other.green,
+            self.blue + other.blue,
+        );
     }
 }
 
 impl std::ops::AddAssign for Radiance {
     fn add_assign(&mut self, other: Self) {
-        *self = Self::new(self.red + other.red, self.green + other.green, self.blue + other.blue); 
+        *self = Self::new(
+            self.red + other.red,
+            self.green + other.green,
+            self.blue + other.blue,
+        );
     }
 }
 
@@ -64,7 +76,7 @@ impl std::ops::Mul<Color> for Radiance {
 impl std::ops::Mul for Radiance {
     type Output = f32;
 
-    fn mul(self, other : Radiance) -> f32 {
+    fn mul(self, other: Radiance) -> f32 {
         return self.red * other.red + self.green * other.green + self.blue * other.blue;
     }
 }
@@ -76,4 +88,3 @@ impl std::ops::Div<f32> for Radiance {
         return Self::new(self.red / f, self.green / f, self.blue / f);
     }
 }
-

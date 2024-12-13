@@ -1,39 +1,42 @@
+use std::any::Any;
+use std::ops::DerefMut;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
-use std::sync::mpsc::Sender;
 use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
 use std::sync::Arc;
-use std::any::Any;
-use std::ops::DerefMut;
 
-pub trait ExecutorJob : Send + Sync {
-    fn execute(&self, thread_local : &mut dyn Any) -> bool;
+pub trait ExecutorJob: Send + Sync {
+    fn execute(&self, thread_local: &mut dyn Any) -> bool;
     fn create_thread_local(&self) -> Box<dyn Any>;
     fn done(&self);
 }
 
 enum Command {
-    RunJob(Arc<Box<dyn ExecutorJob>>, Arc<Box<dyn FnOnce() + Send + Sync>>),
-    Exit
+    RunJob(
+        Arc<Box<dyn ExecutorJob>>,
+        Arc<Box<dyn FnOnce() + Send + Sync>>,
+    ),
+    Exit,
 }
 
 struct ThreadInfo {
-    handle : std::thread::JoinHandle<()>,
-    sender : Sender<Command>
+    handle: std::thread::JoinHandle<()>,
+    sender: Sender<Command>,
 }
 
 struct SharedState {
-    num_running : AtomicUsize,
-    run_jobs : AtomicBool
+    num_running: AtomicUsize,
+    run_jobs: AtomicBool,
 }
 pub struct Executor {
-    threads : Vec<ThreadInfo>,
-    shared_state : Arc<SharedState>
+    threads: Vec<ThreadInfo>,
+    shared_state: Arc<SharedState>,
 }
 
 impl Executor {
-    fn run_thread(receiver : Receiver<Command>, thread_state : Arc<SharedState>) {
+    fn run_thread(receiver: Receiver<Command>, thread_state: Arc<SharedState>) {
         loop {
             if let Ok(command) = receiver.recv() {
                 match command {
@@ -54,8 +57,8 @@ impl Executor {
                             }
                         }
                     }
-                    
-                    Command::Exit => break
+
+                    Command::Exit => break,
                 }
             }
         }
@@ -63,11 +66,14 @@ impl Executor {
 
     pub fn new() -> Executor {
         let mut threads = Vec::new();
-        let shared_state = Arc::new(SharedState {num_running: AtomicUsize::new(0), run_jobs: AtomicBool::new(true)});
-    
+        let shared_state = Arc::new(SharedState {
+            num_running: AtomicUsize::new(0),
+            run_jobs: AtomicBool::new(true),
+        });
+
         let num_threads = match std::thread::available_parallelism() {
             Ok(num) => num.into(),
-            Err(_) => 1
+            Err(_) => 1,
         };
 
         for _ in 0..num_threads {
@@ -76,14 +82,19 @@ impl Executor {
             let handle = std::thread::spawn(move || {
                 Self::run_thread(receiver, ss);
             });
-            threads.push(ThreadInfo {handle, sender});
+            threads.push(ThreadInfo { handle, sender });
         }
 
-        return Executor {threads, shared_state};
+        return Executor {
+            threads,
+            shared_state,
+        };
     }
 
     pub fn run_job<D>(&self, job: Box<dyn ExecutorJob>, done: D)
-    where D : FnOnce() + Send + Sync + 'static {
+    where
+        D: FnOnce() + Send + Sync + 'static,
+    {
         self.shared_state.run_jobs.store(true, Ordering::SeqCst);
         let j = Arc::new(job);
         let d = Arc::new(Box::new(done) as Box<dyn FnOnce() + Send + Sync>);

@@ -13,10 +13,9 @@ use geo::Vec3;
 use object::BoundingVolume;
 use object::Color;
 
-
 pub trait Sampler {
-    fn start_sample_with_index(&mut self, index : usize);
-    fn start_sample_with_xys(&mut self, x : usize, y : usize, sample : usize);
+    fn start_sample_with_index(&mut self, index: usize);
+    fn start_sample_with_xys(&mut self, x: usize, y: usize, sample: usize);
 
     fn get_value(&mut self) -> f32;
 
@@ -27,42 +26,52 @@ pub trait Sampler {
 
 #[derive(Copy, Clone)]
 pub struct ShapeIntersection {
-    pub distance : f32,
-    pub normal : Normal3,
-    pub tangent : Bivec3,
-    pub surface_point : Point2
+    pub distance: f32,
+    pub normal: Normal3,
+    pub tangent: Bivec3,
+    pub surface_point: Point2,
 }
 
 impl ShapeIntersection {
-    pub fn new(distance : f32, normal : Normal3, tangent : Bivec3, surface_point : Point2) -> ShapeIntersection {
-        return ShapeIntersection {distance, normal, tangent, surface_point};
+    pub fn new(
+        distance: f32,
+        normal: Normal3,
+        tangent: Bivec3,
+        surface_point: Point2,
+    ) -> ShapeIntersection {
+        return ShapeIntersection {
+            distance,
+            normal,
+            tangent,
+            surface_point,
+        };
     }
 }
 
-pub trait Shape : Send + Sync {
-    fn intersect(&self, ray : Ray, max_distance : f32, closest : bool) -> Option<ShapeIntersection>;
-    fn bounding_volume(&self, xform : Transformation) -> BoundingVolume;
+pub trait Shape: Send + Sync {
+    fn intersect(&self, ray: Ray, max_distance: f32, closest: bool) -> Option<ShapeIntersection>;
+    fn bounding_volume(&self, xform: Transformation) -> BoundingVolume;
 
-    fn sample(&self, _sampler : &mut dyn Sampler) -> Option<(Point3, Normal3, f32)> {
+    fn sample(&self, _sampler: &mut dyn Sampler) -> Option<(Point3, Normal3, f32)> {
         return None;
     }
 
-    fn sample_pdf(&self, _pnt : Point3) -> f32 {
+    fn sample_pdf(&self, _pnt: Point3) -> f32 {
         return 0.0;
     }
 }
 
-pub trait Albedo : Send + Sync {
-    fn color(&self, surface_point : Point2, surface_projection : Bivec2) -> Color;
+pub trait Albedo: Send + Sync {
+    fn color(&self, surface_point: Point2, surface_projection: Bivec2) -> Color;
 }
 
-pub trait Brdf : Send + Sync {
-    fn reflected(&self, dir_in : Vec3, nrm : Normal3, dir_out : Vec3, albedo : Color) -> Color;
-    fn transmitted(&self, dir_in : Vec3, nrm : Normal3, albedo : Color) -> Color;
+pub trait Brdf: Send + Sync {
+    fn reflected(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3, albedo: Color) -> Color;
+    fn transmitted(&self, dir_in: Vec3, nrm: Normal3, albedo: Color) -> Color;
     fn lambert(&self) -> f32;
 
-    fn sample(&self, sampler : &mut dyn Sampler, nrm : Normal3, dir_out : Vec3) -> Vec3;
-    fn pdf(&self, dir_in : Vec3, nrm : Normal3, dir_out : Vec3) -> f32;
+    fn sample(&self, sampler: &mut dyn Sampler, nrm: Normal3, dir_out: Vec3) -> Vec3;
+    fn pdf(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3) -> f32;
 
     fn opaque(&self) -> bool {
         return true;

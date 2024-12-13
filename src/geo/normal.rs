@@ -7,21 +7,21 @@ use geo::Vec3;
 pub struct Normal3 {
     pub x: f32,
     pub y: f32,
-    pub z: f32
+    pub z: f32,
 }
 
 impl Normal3 {
-    pub const ZERO : Self = Self::new(0.0, 0.0, 0.0);
-  
+    pub const ZERO: Self = Self::new(0.0, 0.0, 0.0);
+
     pub const fn new(x: f32, y: f32, z: f32) -> Self {
-        Self {x, y, z}
+        Self { x, y, z }
     }
 
-    pub fn transform(self, xform : Transformation) -> Self {
+    pub fn transform(self, xform: Transformation) -> Self {
         self * xform.inverse_matrix
     }
 
-    pub fn inverse_transform(self, xform : Transformation) -> Self {
+    pub fn inverse_transform(self, xform: Transformation) -> Self {
         self * xform.matrix
     }
 
@@ -148,9 +148,11 @@ impl std::ops::Rem for Normal3 {
     type Output = Self;
 
     fn rem(self, rhs: Self) -> Self {
-        Self::new(self.y * rhs.z - self.z * rhs.y,
-                  self.z * rhs.x - self.x * rhs.z,
-                  self.x * rhs.y - self.y * rhs.x)
+        Self::new(
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x,
+        )
     }
 }
 

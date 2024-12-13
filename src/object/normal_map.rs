@@ -10,11 +10,11 @@ use geo::Vec2;
 use object::Texture;
 
 pub struct NormalMap {
-    texture : Texture<2>
+    texture: Texture<2>,
 }
 
 impl NormalMap {
-    pub fn new(texture : Texture<3>, magnitude : f32) -> NormalMap {
+    pub fn new(texture: Texture<3>, magnitude: f32) -> NormalMap {
         let map = &texture.mipmaps[0];
         let mut values = Vec::with_capacity(map.width * map.height * 2);
         for j in 0..map.height {
@@ -36,10 +36,16 @@ impl NormalMap {
         let mut ntexture = Texture::new(map.width, map.height, values);
         ntexture.generate_mipmaps();
 
-        return NormalMap {texture: ntexture};
+        return NormalMap { texture: ntexture };
     }
 
-    pub fn perturb_normal(&self, surface_point : Point2, surface_projection : Bivec2, nrm : Normal3, tangent : Bivec3) -> Normal3 {
+    pub fn perturb_normal(
+        &self,
+        surface_point: Point2,
+        surface_projection: Bivec2,
+        nrm: Normal3,
+        tangent: Bivec3,
+    ) -> Normal3 {
         let value = self.texture.sample(surface_point, surface_projection);
         let offset = tangent * Vec2::new(value[0], value[1]);
         return (nrm + Normal3::from(offset)).normalize();

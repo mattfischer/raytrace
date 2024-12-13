@@ -22,5 +22,5 @@ pub use triangle::Triangle;
 
 mod triangle_mesh;
 pub use triangle_mesh::TriangleMesh;
-pub use triangle_mesh::TriangleMeshVertex;
 pub use triangle_mesh::TriangleMeshTriangle;
+pub use triangle_mesh::TriangleMeshVertex;

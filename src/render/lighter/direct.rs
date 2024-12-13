@@ -18,7 +18,11 @@ impl Direct {
 }
 
 impl Lighter for Direct {
-    fn light(&self, isect : &object::Intersection, sampler : &mut dyn object::Sampler) -> object::Radiance {
+    fn light(
+        &self,
+        isect: &object::Intersection,
+        sampler: &mut dyn object::Sampler,
+    ) -> object::Radiance {
         let scene = isect.scene;
         let primitive = isect.primitive;
         let surface = &primitive.surface;
@@ -70,6 +74,6 @@ impl Lighter for Direct {
             }
         }
 
-        return rad; 
+        return rad;
     }
 }

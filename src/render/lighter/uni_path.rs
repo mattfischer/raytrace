@@ -20,7 +20,11 @@ impl UniPath {
 }
 
 impl Lighter for UniPath {
-    fn light(&self, isect_base : &crate::object::Intersection, sampler : &mut dyn crate::object::Sampler) -> crate::object::Radiance {
+    fn light(
+        &self,
+        isect_base: &crate::object::Intersection,
+        sampler: &mut dyn crate::object::Sampler,
+    ) -> crate::object::Radiance {
         let mut isect = (*isect_base).clone();
         let scene = isect.scene;
         let mut beam;
@@ -57,7 +61,8 @@ impl Lighter for UniPath {
                         let irad = rad2 * dot2 * dot / (d * d);
                         let pdf_brdf = surface.pdf(&isect, dir_in) * dot2 / (d * d);
                         let mis_weight = pdf * pdf / (pdf * pdf + pdf_brdf * pdf_brdf);
-                        rad += irad * surface.reflected(&isect, dir_in) * throughput * mis_weight / pdf;
+                        rad += irad * surface.reflected(&isect, dir_in) * throughput * mis_weight
+                            / pdf;
                     }
                 }
             }
@@ -66,20 +71,20 @@ impl Lighter for UniPath {
                 let mut dir_in = point_light.position - pnt_offset;
                 let d = dir_in.mag();
                 dir_in = dir_in / d;
-    
+
                 let dot = dir_in * nrm_facing;
                 if dot > 0.0 {
                     let ray = Ray::new(pnt_offset, dir_in);
                     let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
                     let isect2 = scene.intersect(beam, d, false);
-    
+
                     if isect2.is_none() {
                         let irad = point_light.radiance * dot / (d * d);
                         rad += irad * surface.reflected(&isect, dir_in);
                     }
                 }
             }
-    
+
             let (reflected, dir_in, pdf) = surface.sample(&isect, sampler);
             let reverse = if dir_in * nrm_facing > 0.0 { 1.0 } else { -1.0 };
             let dot = dir_in * nrm_facing * reverse;
@@ -109,10 +114,12 @@ impl Lighter for UniPath {
                 let rad2 = isect2.primitive.surface.radiance;
                 if rad2.mag() > 0.0 && pdf.is_some() {
                     let dot2 = -isect2.facing_normal * dir_in;
-                    let pdf_area = pdf.unwrap_or(1.0) * dot2 / (isect2.shape_isect.distance * isect2.shape_isect.distance);
+                    let pdf_area = pdf.unwrap_or(1.0) * dot2
+                        / (isect2.shape_isect.distance * isect2.shape_isect.distance);
                     let pdf_light = isect2.primitive.shape.sample_pdf(isect2.point);
-                    let mis_weight = pdf_area * pdf_area / (pdf_area * pdf_area + pdf_light * pdf_light);
-                    
+                    let mis_weight =
+                        pdf_area * pdf_area / (pdf_area * pdf_area + pdf_light * pdf_light);
+
                     rad += rad2 * throughput * mis_weight;
                 }
 
@@ -123,6 +130,6 @@ impl Lighter for UniPath {
             }
         }
 
-        return rad; 
+        return rad;
     }
 }
