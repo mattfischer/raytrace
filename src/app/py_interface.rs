@@ -85,8 +85,11 @@ struct Framebuffer {
     #[pyo3(get, set)]
     height : usize,
 
-    bits : usize
+    bits : *const u8
 }
+
+unsafe impl Send for Framebuffer {}
+unsafe impl Sync for Framebuffer {}
 
 #[pymethods]
 impl Framebuffer {
@@ -118,7 +121,7 @@ impl Engine {
             };
 
             let renderer = Renderer::new(scene, render_settings, lighter);
-            let render_framebuffer = Py::new(py, Framebuffer{width: settings.width, height: settings.height, bits: renderer.framebuffer_ptr() as usize}).unwrap();
+            let render_framebuffer = Py::new(py, Framebuffer{width: settings.width, height: settings.height, bits: renderer.framebuffer_ptr()}).unwrap();
             return Ok(Engine {renderer, render_framebuffer });
         } else {
             return Err(PyValueError::new_err("No scene"));
