@@ -30,7 +30,7 @@ pub struct RendererSettings {
 }
 
 struct SharedState {
-    scene: Scene,
+    scene: Arc<Scene>,
     settings: RendererSettings,
     lighter: Option<Box<dyn Lighter>>,
     jobs: Mutex<VecDeque<Box<dyn ExecutorJob>>>,
@@ -51,7 +51,7 @@ struct ThreadLocal {
 
 impl Renderer {
     pub fn new(
-        scene: Scene,
+        scene: Arc<Scene>,
         settings: RendererSettings,
         lighter: Option<Box<dyn Lighter>>,
     ) -> Renderer {
@@ -101,12 +101,10 @@ impl Renderer {
         return Renderer { shared_state };
     }
 
-    pub fn start<F>(&self, done: F)
-    where
-        F: FnOnce(f32) + 'static + Send + Sync,
+    pub fn start(&self, done: Box<dyn FnOnce(f32) + 'static + Send + Sync>)
     {
         if let Ok(mut done_listener) = self.shared_state.done_listener.lock() {
-            done_listener.replace(Box::new(done));
+            done_listener.replace(done);
         }
 
         if let Ok(mut jobs) = self.shared_state.jobs.lock() {
@@ -137,14 +135,6 @@ impl Renderer {
         } else {
             return std::ptr::null();
         }
-    }
-
-    pub fn run_with_scene<F, R>(&self, func: F) -> R
-    where
-        F: FnOnce(&Scene) -> R,
-    {
-        let scene = &self.shared_state.scene;
-        return func(scene);
     }
 
     fn render_pixel(

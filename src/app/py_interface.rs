@@ -15,6 +15,7 @@ use render::Renderer;
 use render::RendererSettings;
 
 use std::ffi::c_void;
+use std::sync::Arc;
 
 #[pyclass]
 struct Settings {
@@ -66,15 +67,18 @@ impl Settings {
 
 #[pyclass]
 struct Scene {
-    scene: Option<object::Scene>,
+    scene: Option<Arc<object::Scene>>,
 }
 
 #[pymethods]
 impl Scene {
     #[new]
     pub fn new(filename: String) -> Scene {
-        let scene = SceneParser::parse_scene(filename);
-        return Scene { scene };
+        if let Some(scene) = SceneParser::parse_scene(filename) {
+            return Scene { scene: Some(Arc::new(scene)) };
+        } else {
+            return Scene { scene: None };
+        }
     }
 }
 
@@ -114,6 +118,7 @@ impl Framebuffer {
 #[pyclass]
 struct Engine {
     renderer: Renderer,
+    scene: Arc<object::Scene>,
 
     #[pyo3(get)]
     pub render_framebuffer: Py<Framebuffer>,
@@ -127,7 +132,8 @@ impl Engine {
         scene: &Bound<'_, Scene>,
         settings: &Bound<'_, Settings>,
     ) -> PyResult<Engine> {
-        if let Some(scene) = scene.borrow_mut().scene.take() {
+        if let Some(scene) = &scene.borrow().scene {
+            let scene = scene.clone();
             let settings = settings.borrow();
             let render_settings = RendererSettings {
                 width: settings.width,
@@ -140,7 +146,7 @@ impl Engine {
                 _ => None,
             };
 
-            let renderer = Renderer::new(scene, render_settings, lighter);
+            let renderer = Renderer::new(scene.clone(), render_settings, lighter);
             let render_framebuffer = Py::new(
                 py,
                 Framebuffer {
@@ -152,6 +158,7 @@ impl Engine {
             .unwrap();
             return Ok(Engine {
                 renderer,
+                scene,
                 render_framebuffer,
             });
         } else {
@@ -160,13 +167,15 @@ impl Engine {
     }
 
     pub fn start_render(&mut self, listener: PyObject) {
-        self.renderer.start(move |time| {
+        let done = move |time| {
             Python::with_gil(|py| {
                 if let Ok(func) = listener.getattr(py, "on_render_done") {
                     let _ = func.call1(py, (time,));
                 }
             });
-        });
+        };
+
+        self.renderer.start(Box::new(done));
     }
 
     pub fn stop_render(&self) {
@@ -181,25 +190,23 @@ impl Engine {
         let width = self.render_framebuffer.borrow(py).width;
         let height = self.render_framebuffer.borrow(py).height;
 
-        return self.renderer.run_with_scene(|scene| {
-            let beam = scene.camera.create_pixel_beam(
-                Point2::new(x as f32, y as f32),
-                width,
-                height,
-                Point2::ZERO,
-            );
-            let mut result = Vec::new();
-            if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
-                let mut probe = LightProbe::new(&isect);
+        let beam = self.scene.camera.create_pixel_beam(
+            Point2::new(x as f32, y as f32),
+            width,
+            height,
+            Point2::ZERO,
+        );
+        let mut result = Vec::new();
+        if let Some(isect) = self.scene.intersect(beam, f32::MAX, true) {
+            let mut probe = LightProbe::new(&isect);
 
-                for _ in 0..1000 {
-                    let (azimuth, elevation, color) = probe.get_sample();
+            for _ in 0..1000 {
+                let (azimuth, elevation, color) = probe.get_sample();
 
-                    result.push(((color.red, color.green, color.blue), azimuth, elevation));
-                }
+                result.push(((color.red, color.green, color.blue), azimuth, elevation));
             }
-            return result;
-        });
+        }
+        return result;
     }
 }
 
