@@ -12,8 +12,8 @@ use input::SceneParser;
 
 use render::LightProbe;
 use render::Renderer;
-use render::RendererLighter;
-use render::RendererSettings;
+use render::renderer::Simple;
+use render::renderer::SimpleSettings;
 
 use std::ffi::c_void;
 use std::sync::Arc;
@@ -136,7 +136,7 @@ impl Engine {
         if let Some(scene) = &scene.borrow().scene {
             let scene = scene.clone();
             let settings = settings.borrow();
-            let render_settings = RendererSettings {
+            let render_settings = SimpleSettings {
                 width: settings.width,
                 height: settings.height,
                 samples: settings.samples,
@@ -147,7 +147,7 @@ impl Engine {
                 _ => None,
             };
 
-            let renderer = Box::new(RendererLighter::new(scene.clone(), render_settings, lighter));
+            let renderer = Box::new(Simple::new(scene.clone(), render_settings, lighter));
             let render_framebuffer = Py::new(
                 py,
                 Framebuffer {

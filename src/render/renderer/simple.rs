@@ -24,7 +24,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Instant;
 
-pub struct RendererSettings {
+pub struct SimpleSettings {
     pub width: usize,
     pub height: usize,
     pub samples: usize,
@@ -32,7 +32,7 @@ pub struct RendererSettings {
 
 struct SharedState {
     scene: Arc<Scene>,
-    settings: RendererSettings,
+    settings: SimpleSettings,
     lighter: Option<Box<dyn Lighter>>,
     jobs: Mutex<VecDeque<Box<dyn ExecutorJob>>>,
     framebuffer: Mutex<Framebuffer>,
@@ -42,7 +42,7 @@ struct SharedState {
     done_listener: Mutex<Option<Box<dyn FnOnce(f32) + 'static + Send + Sync>>>,
 }
 
-pub struct RendererLighter {
+pub struct Simple {
     shared_state: Arc<SharedState>,
 }
 
@@ -50,12 +50,12 @@ struct ThreadLocal {
     sampler: Halton,
 }
 
-impl RendererLighter {
+impl Simple {
     pub fn new(
         scene: Arc<Scene>,
-        settings: RendererSettings,
+        settings: SimpleSettings,
         lighter: Option<Box<dyn Lighter>>,
-    ) -> RendererLighter {
+    ) -> Simple {
         let width = settings.width;
         let height = settings.height;
         let samples = settings.samples;
@@ -99,7 +99,7 @@ impl RendererLighter {
             jobs.push_back(job as Box<dyn ExecutorJob>);
         }
 
-        return RendererLighter { shared_state };
+        return Simple { shared_state };
     }
 
     fn render_pixel(
@@ -176,7 +176,7 @@ impl RendererLighter {
     }
 }
 
-impl Renderer for RendererLighter {
+impl Renderer for Simple {
     fn start(&self, done: Box<dyn FnOnce(f32) + 'static + Send + Sync>)
     {
         if let Ok(mut done_listener) = self.shared_state.done_listener.lock() {

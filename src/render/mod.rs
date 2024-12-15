@@ -16,9 +16,7 @@ pub use raster::Raster;
 mod raster_job;
 pub use raster_job::RasterJob;
 
-mod renderer;
-pub use renderer::RendererLighter;
-pub use renderer::RendererSettings;
+pub mod renderer;
 
 mod traits;
 pub use traits::Lighter;
