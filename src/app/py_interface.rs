@@ -12,6 +12,7 @@ use input::SceneParser;
 
 use render::LightProbe;
 use render::Renderer;
+use render::RendererLighter;
 use render::RendererSettings;
 
 use std::ffi::c_void;
@@ -117,7 +118,7 @@ impl Framebuffer {
 
 #[pyclass]
 struct Engine {
-    renderer: Renderer,
+    renderer: Box<dyn Renderer>,
     scene: Arc<object::Scene>,
 
     #[pyo3(get)]
@@ -146,7 +147,7 @@ impl Engine {
                 _ => None,
             };
 
-            let renderer = Renderer::new(scene.clone(), render_settings, lighter);
+            let renderer = Box::new(RendererLighter::new(scene.clone(), render_settings, lighter));
             let render_framebuffer = Py::new(
                 py,
                 Framebuffer {

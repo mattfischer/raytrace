@@ -17,6 +17,7 @@ use render::Framebuffer;
 use render::Lighter;
 use render::Raster;
 use render::RasterJob;
+use render::Renderer;
 
 use std::collections::VecDeque;
 use std::sync::Arc;
@@ -41,7 +42,7 @@ struct SharedState {
     done_listener: Mutex<Option<Box<dyn FnOnce(f32) + 'static + Send + Sync>>>,
 }
 
-pub struct Renderer {
+pub struct RendererLighter {
     shared_state: Arc<SharedState>,
 }
 
@@ -49,12 +50,12 @@ struct ThreadLocal {
     sampler: Halton,
 }
 
-impl Renderer {
+impl RendererLighter {
     pub fn new(
         scene: Arc<Scene>,
         settings: RendererSettings,
         lighter: Option<Box<dyn Lighter>>,
-    ) -> Renderer {
+    ) -> RendererLighter {
         let width = settings.width;
         let height = settings.height;
         let samples = settings.samples;
@@ -98,43 +99,7 @@ impl Renderer {
             jobs.push_back(job as Box<dyn ExecutorJob>);
         }
 
-        return Renderer { shared_state };
-    }
-
-    pub fn start(&self, done: Box<dyn FnOnce(f32) + 'static + Send + Sync>)
-    {
-        if let Ok(mut done_listener) = self.shared_state.done_listener.lock() {
-            done_listener.replace(done);
-        }
-
-        if let Ok(mut jobs) = self.shared_state.jobs.lock() {
-            if let Some(job) = jobs.pop_front() {
-                let shared_state_clone = self.shared_state.clone();
-                self.shared_state
-                    .executor
-                    .run_job(job, move || Self::job_done(shared_state_clone));
-            }
-        }
-
-        if let Ok(mut start_time) = self.shared_state.start_time.lock() {
-            *start_time = Instant::now();
-        }
-    }
-
-    pub fn stop(&self) {
-        self.shared_state.executor.stop();
-    }
-
-    pub fn running(&self) -> bool {
-        return self.shared_state.executor.running();
-    }
-
-    pub fn framebuffer_ptr(&self) -> *const u8 {
-        if let Ok(framebuffer) = self.shared_state.framebuffer.lock() {
-            return framebuffer.bits.as_ptr();
-        } else {
-            return std::ptr::null();
-        }
+        return RendererLighter { shared_state };
     }
 
     fn render_pixel(
@@ -207,6 +172,44 @@ impl Renderer {
                     }
                 }
             }
+        }
+    }
+}
+
+impl Renderer for RendererLighter {
+    fn start(&self, done: Box<dyn FnOnce(f32) + 'static + Send + Sync>)
+    {
+        if let Ok(mut done_listener) = self.shared_state.done_listener.lock() {
+            done_listener.replace(done);
+        }
+
+        if let Ok(mut jobs) = self.shared_state.jobs.lock() {
+            if let Some(job) = jobs.pop_front() {
+                let shared_state_clone = self.shared_state.clone();
+                self.shared_state
+                    .executor
+                    .run_job(job, move || Self::job_done(shared_state_clone));
+            }
+        }
+
+        if let Ok(mut start_time) = self.shared_state.start_time.lock() {
+            *start_time = Instant::now();
+        }
+    }
+
+    fn stop(&self) {
+        self.shared_state.executor.stop();
+    }
+
+    fn running(&self) -> bool {
+        return self.shared_state.executor.running();
+    }
+
+    fn framebuffer_ptr(&self) -> *const u8 {
+        if let Ok(framebuffer) = self.shared_state.framebuffer.lock() {
+            return framebuffer.bits.as_ptr();
+        } else {
+            return std::ptr::null();
         }
     }
 }
