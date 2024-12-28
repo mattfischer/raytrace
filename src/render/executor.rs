@@ -36,23 +36,23 @@ pub struct Executor {
 }
 
 impl Executor {
-    fn run_thread(receiver: Receiver<Command>, thread_state: Arc<SharedState>) {
+    fn run_thread(receiver: Receiver<Command>, shared_state: Arc<SharedState>) {
         loop {
             if let Ok(command) = receiver.recv() {
                 match command {
                     Command::RunJob(job, done) => {
-                        thread_state.num_running.fetch_add(1, Ordering::SeqCst);
+                        shared_state.num_running.fetch_add(1, Ordering::SeqCst);
                         let mut job_done = false;
                         let mut thread_local = job.create_thread_local();
-                        while !job_done && thread_state.run_jobs.load(Ordering::SeqCst) {
+                        while !job_done && shared_state.run_jobs.load(Ordering::SeqCst) {
                             if !job.execute(thread_local.deref_mut()) {
                                 job_done = true;
                             }
                         }
-                        thread_state.num_running.fetch_sub(1, Ordering::SeqCst);
+                        shared_state.num_running.fetch_sub(1, Ordering::SeqCst);
                         if job_done {
-                            job.done();
                             if let Some(done) = Arc::into_inner(done) {
+                                job.done();
                                 done();
                             }
                         }
@@ -78,9 +78,9 @@ impl Executor {
 
         for _ in 0..num_threads {
             let (sender, receiver) = std::sync::mpsc::channel();
-            let ss = shared_state.clone();
+            let shared_state = shared_state.clone();
             let handle = std::thread::spawn(move || {
-                Self::run_thread(receiver, ss);
+                Self::run_thread(receiver, shared_state);
             });
             threads.push(ThreadInfo { handle, sender });
         }

@@ -24,7 +24,7 @@ pub trait Sampler {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct ShapeIntersection {
     pub distance: f32,
     pub normal: Normal3,

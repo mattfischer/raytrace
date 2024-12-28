@@ -2,7 +2,7 @@ use crate::object;
 
 use object::Color;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct Radiance {
     pub red: f32,
     pub green: f32,
@@ -29,12 +29,6 @@ impl Radiance {
     }
 }
 
-impl Default for Radiance {
-    fn default() -> Self {
-        return Self::ZERO;
-    }
-}
-
 impl std::ops::Add for Radiance {
     type Output = Self;
 
@@ -53,6 +47,18 @@ impl std::ops::AddAssign for Radiance {
             self.red + other.red,
             self.green + other.green,
             self.blue + other.blue,
+        );
+    }
+}
+
+impl std::ops::Sub for Radiance {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self::Output {
+        return Self::new(
+            self.red - other.red,
+            self.green - other.green,
+            self.blue - other.blue,
         );
     }
 }

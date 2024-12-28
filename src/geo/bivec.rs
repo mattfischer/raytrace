@@ -4,7 +4,7 @@ use geo::Transformation;
 use geo::Vec2;
 use geo::Vec3;
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Default, PartialEq)]
 pub struct Bivec3 {
     pub u: Vec3,
     pub v: Vec3,
@@ -26,12 +26,6 @@ impl Bivec3 {
             self.u.inverse_transform(xform),
             self.v.inverse_transform(xform),
         )
-    }
-}
-
-impl std::default::Default for Bivec3 {
-    fn default() -> Self {
-        Self::ZERO
     }
 }
 
@@ -115,7 +109,7 @@ impl std::ops::Neg for Bivec3 {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, Default, PartialEq)]
 pub struct Bivec2 {
     pub u: Vec2,
     pub v: Vec2,
@@ -126,12 +120,6 @@ impl Bivec2 {
 
     pub const fn new(u: Vec2, v: Vec2) -> Self {
         Self { u, v }
-    }
-}
-
-impl std::default::Default for Bivec2 {
-    fn default() -> Self {
-        Self::ZERO
     }
 }
 

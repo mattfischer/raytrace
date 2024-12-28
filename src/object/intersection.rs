@@ -17,6 +17,7 @@ use object::ShapeIntersection;
 pub struct Intersection<'a> {
     pub scene: &'a Scene,
     pub primitive: &'a Primitive,
+    pub primitive_idx: usize,
     pub shape_isect: ShapeIntersection,
     pub point: Point3,
     pub ray: Ray,
@@ -28,11 +29,12 @@ pub struct Intersection<'a> {
 impl<'a> Intersection<'a> {
     pub fn new(
         scene: &'a Scene,
-        primitive: &'a Primitive,
+        primitive_idx: usize,
         beam: Beam,
         shape_isect: ShapeIntersection,
     ) -> Intersection<'a> {
         let projection = beam.project(shape_isect.distance, shape_isect.normal);
+        let primitive = &scene.primitives[primitive_idx];
         let vv = shape_isect.tangent.u % shape_isect.tangent.v;
         let v = vv / vv.mag2();
         let du = Vec2::new(
@@ -69,12 +71,52 @@ impl<'a> Intersection<'a> {
         return Intersection {
             scene,
             primitive,
+            primitive_idx,
             shape_isect,
             point,
             ray,
             normal,
             facing_normal,
             albedo,
+        };
+    }
+
+    pub fn with_flat(flat: FlatIntersection, scene: &'a Scene) -> Intersection<'a> {
+        return Intersection {
+            scene: scene,
+            primitive: &scene.primitives[flat.primitive_idx],
+            primitive_idx: flat.primitive_idx,
+            shape_isect: flat.shape_isect,
+            point: flat.point,
+            ray: flat.ray,
+            normal: flat.normal,
+            facing_normal: flat.facing_normal,
+            albedo: flat.albedo
+        };
+    }
+}
+
+#[derive(Clone, Copy, Default)]
+pub struct FlatIntersection {
+    pub primitive_idx: usize,
+    pub shape_isect: ShapeIntersection,
+    pub point: Point3,
+    pub ray: Ray,
+    pub normal: Normal3,
+    pub facing_normal: Normal3,
+    pub albedo: Color,
+}
+
+impl<'a> From<Intersection<'a>> for FlatIntersection {
+    fn from(value: Intersection<'a>) -> Self {
+        return FlatIntersection {
+            primitive_idx: value.primitive_idx,
+            shape_isect: value.shape_isect,
+            point: value.point,
+            ray: value.ray,
+            normal: value.normal,
+            facing_normal: value.facing_normal,
+            albedo: value.albedo
         };
     }
 }

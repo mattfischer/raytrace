@@ -2,7 +2,7 @@ use crate::geo;
 
 use geo::Transformation;
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, Default, PartialEq)]
 pub struct Vec3 {
     pub x: f32,
     pub y: f32,
@@ -42,12 +42,6 @@ impl Vec3 {
 
     pub fn inverse_transform(self, xform: Transformation) -> Self {
         xform.inverse_matrix * self
-    }
-}
-
-impl std::default::Default for Vec3 {
-    fn default() -> Self {
-        Self::ZERO
     }
 }
 
@@ -141,7 +135,7 @@ impl std::ops::Neg for Vec3 {
     }
 }
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, Default, PartialEq)]
 pub struct Vec2 {
     pub u: f32,
     pub v: f32,
@@ -160,12 +154,6 @@ impl Vec2 {
 
     pub fn normalize(self) -> Vec2 {
         self / self.mag2().sqrt()
-    }
-}
-
-impl std::default::Default for Vec2 {
-    fn default() -> Self {
-        Self::ZERO
     }
 }
 

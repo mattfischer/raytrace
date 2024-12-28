@@ -14,6 +14,8 @@ use render::LightProbe;
 use render::Renderer;
 use render::renderer::Simple;
 use render::renderer::SimpleSettings;
+use render::renderer::ReSTIR;
+use render::renderer::ReSTIRSettings;
 
 use std::ffi::c_void;
 use std::sync::Arc;
@@ -136,18 +138,35 @@ impl Engine {
         if let Some(scene) = &scene.borrow().scene {
             let scene = scene.clone();
             let settings = settings.borrow();
-            let render_settings = SimpleSettings {
-                width: settings.width,
-                height: settings.height,
-                samples: settings.samples,
-            };
-            let lighter: Option<Box<dyn render::Lighter>> = match settings.render_method.as_str() {
-                "directLighting" => Some(Box::new(render::lighter::Direct::new())),
-                "pathTracing" => Some(Box::new(render::lighter::UniPath::new())),
-                _ => None,
-            };
+            
+            let renderer: Box<dyn Renderer> = 
+            match settings.render_method.as_str() {
+                "restir" => {
+                    let render_settings = ReSTIRSettings {
+                        width: settings.width,
+                        height: settings.height,
+                        samples: settings.samples,
+                        indirect_samples: settings.restir_indirect_samples,
+                        radius: settings.restir_radius,
+                        candidates: settings.restir_candidates
+                    };
+                    Box::new(ReSTIR::new(scene.clone(), render_settings))
+                },
+                _ => {
+                    let render_settings = SimpleSettings {
+                        width: settings.width,
+                        height: settings.height,
+                        samples: settings.samples,
+                    };
+                    let lighter: Option<Box<dyn render::Lighter>> = match settings.render_method.as_str() {
+                        "directLighting" => Some(Box::new(render::lighter::Direct::new())),
+                        "pathTracing" => Some(Box::new(render::lighter::UniPath::new())),
+                        _ => None,
+                    };
 
-            let renderer = Box::new(Simple::new(scene.clone(), render_settings, lighter));
+                    Box::new(Simple::new(scene.clone(), render_settings, lighter))
+                }
+            };
             let render_framebuffer = Py::new(
                 py,
                 Framebuffer {

@@ -4,7 +4,7 @@ use geo::Point3;
 use geo::Transformation;
 use geo::Vec3;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct Ray {
     pub origin: Point3,
     pub direction: Vec3,

@@ -18,6 +18,7 @@ mod color;
 pub use color::Color;
 
 mod intersection;
+pub use intersection::FlatIntersection;
 pub use intersection::Intersection;
 
 mod normal_map;

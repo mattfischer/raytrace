@@ -22,4 +22,8 @@ impl<T: Default + Clone> Raster<T> {
     pub fn get(&self, x: usize, y: usize) -> T {
         return self.elements[y * self.width + x].clone();
     }
+
+    pub fn get_mut(&mut self, x: usize, y: usize) -> &mut T {
+        return &mut self.elements[y * self.width + x];
+    }
 }

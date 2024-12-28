@@ -66,7 +66,7 @@ impl Scene {
         let mut func = |index: usize, max_distance: f32| {
             let primitive = &self.primitives[index];
             if let Some(shape_isect) = primitive.shape.intersect(beam.ray, max_distance, closest) {
-                isect = Some(Intersection::new(self, primitive, beam, shape_isect));
+                isect = Some(Intersection::new(self, index, beam, shape_isect));
                 return Some(shape_isect.distance);
             } else {
                 return None;

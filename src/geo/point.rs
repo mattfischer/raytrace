@@ -4,7 +4,7 @@ use geo::Transformation;
 use geo::Vec2;
 use geo::Vec3;
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, Default, PartialEq)]
 pub struct Point3 {
     pub x: f32,
     pub y: f32,
@@ -24,12 +24,6 @@ impl Point3 {
 
     pub fn inverse_transform(self, xform: Transformation) -> Self {
         xform.inverse_matrix * self
-    }
-}
-
-impl std::default::Default for Point3 {
-    fn default() -> Self {
-        Self::ZERO
     }
 }
 
@@ -103,7 +97,7 @@ impl std::ops::Div<f32> for Point3 {
     }
 }
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, Default, PartialEq)]
 pub struct Point2 {
     pub u: f32,
     pub v: f32,
@@ -114,12 +108,6 @@ impl Point2 {
 
     pub const fn new(u: f32, v: f32) -> Point2 {
         return Point2 { u, v };
-    }
-}
-
-impl std::default::Default for Point2 {
-    fn default() -> Self {
-        Self::ZERO
     }
 }
 

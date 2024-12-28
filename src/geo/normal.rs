@@ -3,7 +3,7 @@ use crate::geo;
 use geo::Transformation;
 use geo::Vec3;
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(Clone, Copy, Default, PartialEq)]
 pub struct Normal3 {
     pub x: f32,
     pub y: f32,
@@ -35,12 +35,6 @@ impl Normal3 {
 
     pub fn normalize(self) -> Self {
         self / self.mag2().sqrt()
-    }
-}
-
-impl std::default::Default for Normal3 {
-    fn default() -> Self {
-        Self::ZERO
     }
 }
 
