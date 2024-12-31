@@ -17,6 +17,7 @@ pub struct Surface {
     pub transmit_ior: f32,
     pub radiance: Radiance,
     pub normal_map: Option<NormalMap>,
+    pub lambert: f32,
     pub opaque: bool,
 }
 
@@ -29,9 +30,14 @@ impl Surface {
         normal_map: Option<NormalMap>,
     ) -> Surface {
         let mut opaque = false;
+        let mut lambert = 0.0;
         for brdf in brdfs.iter() {
             if brdf.opaque() {
                 opaque = true;
+            }
+
+            if brdf.lambert() > 0.0 {
+                lambert = brdf.lambert();
             }
         }
 
@@ -41,6 +47,7 @@ impl Surface {
             transmit_ior,
             radiance,
             normal_map,
+            lambert,
             opaque,
         }
     }

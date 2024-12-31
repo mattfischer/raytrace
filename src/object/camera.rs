@@ -81,4 +81,8 @@ impl Camera {
 
         return Beam::new(ray, Bivec3::ZERO, dv * pixel_size);
     }
+
+    pub fn project_size(&self, size: f32, distance: f32) -> f32 {
+        return size * self.image_size * distance;
+    }
 }

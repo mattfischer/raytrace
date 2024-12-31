@@ -27,6 +27,10 @@ impl Radiance {
     pub fn mag(self) -> f32 {
         return self.mag2().sqrt();
     }
+
+    pub fn clamp(self) -> Radiance {
+        return Radiance {red: self.red.max(0.0), green: self.green.max(0.0), blue: self.blue.max(0.0)};
+    }
 }
 
 impl std::ops::Add for Radiance {

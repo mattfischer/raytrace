@@ -35,7 +35,7 @@ struct SharedState {
     settings: SimpleSettings,
     lighter: Option<Box<dyn Lighter>>,
     jobs: Mutex<VecDeque<Box<dyn ExecutorJob>>>,
-    framebuffer: Mutex<Framebuffer>,
+    framebuffer: Arc<Mutex<Framebuffer>>,
     total_radiance: Mutex<Raster<Radiance>>,
     executor: Executor,
     start_time: Mutex<Instant>,
@@ -60,10 +60,16 @@ impl Simple {
         let height = settings.height;
         let samples = settings.samples;
 
-        let framebuffer = Mutex::new(Framebuffer::new(settings.width, settings.height));
+        let framebuffer = Arc::new(Mutex::new(Framebuffer::new(settings.width, settings.height)));
         let total_radiance = Mutex::new(Raster::new(settings.width, settings.height));
 
-        let jobs = Mutex::new(VecDeque::new());
+        let mut jobs = VecDeque::new();
+
+        if let Some(lighter) = &lighter {
+            jobs.extend(lighter.create_prerender_jobs(scene.clone(), framebuffer.clone()));
+        }
+
+        let jobs = Mutex::new(jobs);
 
         let executor = Executor::new();
         let start_time = Mutex::new(Instant::now());

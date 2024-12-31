@@ -28,6 +28,7 @@ class App(QtWidgets.QApplication):
         self.renderImage = None
         self.renderPixmap = None
 
+        self.mainwindow.renderMethodIrradianceCaching.toggled.connect(self.on_renderMethodIrradianceCaching_toggled)
         self.mainwindow.renderMethodRestir.toggled.connect(self.on_renderMethodRestir_toggled)
         self.mainwindow.renderButton.clicked.connect(self.on_renderButton_clicked)
         self.mainwindow.saveButton.clicked.connect(self.on_saveButton_clicked)
@@ -45,6 +46,10 @@ class App(QtWidgets.QApplication):
 
         if self.engine and not self.engine.rendering():
             self.timer.stop()
+
+    @Slot()
+    def on_renderMethodIrradianceCaching_toggled(self, checked):
+        self.mainwindow.groupIrradianceCaching.setEnabled(checked)
 
     @Slot()
     def on_renderMethodRestir_toggled(self, checked):
@@ -92,11 +97,15 @@ class App(QtWidgets.QApplication):
             (self.mainwindow.renderMethodDirectLighting, 'directLighting'),
             (self.mainwindow.renderMethodPathTracing, 'pathTracing'),
             (self.mainwindow.renderMethodRestir, 'restir'),
+            (self.mainwindow.renderMethodIrradianceCaching, 'irradianceCaching')
         ]
         for (widget, name) in render_methods:
             if widget.isChecked():
                 self.settings.render_method = name
                 break
+
+        self.settings.irradiance_cache_samples = self.mainwindow.irradianceCachingSamples.value()
+        self.settings.irradiance_cache_threshold = self.mainwindow.irradianceCachingThreshold.value()
 
         self.settings.restir_indirect_samples = self.mainwindow.restirIndirectSamples.value()
         self.settings.restir_radius = self.mainwindow.restirRadius.value()

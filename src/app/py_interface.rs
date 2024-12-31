@@ -161,6 +161,10 @@ impl Engine {
                     let lighter: Option<Box<dyn render::Lighter>> = match settings.render_method.as_str() {
                         "directLighting" => Some(Box::new(render::lighter::Direct::new())),
                         "pathTracing" => Some(Box::new(render::lighter::UniPath::new())),
+                        "irradianceCaching" => {
+                            let settings = render::lighter::IrradianceCachedSettings {indirect_samples: settings.irradiance_cache_samples, cache_threshold: settings.irradiance_cache_threshold};
+                            Some(Box::new(render::lighter::IrradianceCached::new(settings)))
+                        }
                         _ => None,
                     };
 
