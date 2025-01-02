@@ -47,8 +47,6 @@ impl<const N: usize> MipMap<N> {
 }
 
 pub struct Texture<const N: usize> {
-    pub width: usize,
-    pub height: usize,
     pub mipmaps: Vec<MipMap<N>>,
 }
 
@@ -147,8 +145,6 @@ impl<const N: usize> Texture<N> {
         let mipmaps = vec![base_map];
 
         return Texture {
-            width,
-            height,
             mipmaps,
         };
     }

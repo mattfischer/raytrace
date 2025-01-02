@@ -26,7 +26,6 @@ impl Lighter for Direct {
         let scene = isect.scene;
         let primitive = isect.primitive;
         let surface = &primitive.surface;
-        let point = isect.point;
         let nrm_facing = isect.facing_normal;
 
         let mut rad = surface.radiance;

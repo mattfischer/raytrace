@@ -14,8 +14,6 @@ pub struct Camera {
     pub position: Point3,
     pub direction: Vec3,
     pub image_plane: Bivec3,
-    pub vertical: Vec3,
-    pub fov: f32,
     pub focal_length: f32,
     pub aperture_size: f32,
     pub image_size: f32,
@@ -39,8 +37,6 @@ impl Camera {
             position,
             direction,
             image_plane,
-            vertical,
-            fov,
             focal_length,
             aperture_size,
             image_size,
@@ -49,7 +45,7 @@ impl Camera {
 
     fn create_ray(&self, image_point: Point2, aperture_point: Point2) -> (Ray, Bivec3) {
         let mut direction =
-            (self.direction + self.image_plane * Vec2::from(image_point) * self.image_size);
+            self.direction + self.image_plane * Vec2::from(image_point) * self.image_size;
         let length = direction.mag();
         direction /= length;
 

@@ -33,35 +33,35 @@ use std::time::Instant;
 #[derive(Clone, Copy, Default)]
 struct Reservoir<T> {
     sample: T,
-    W: f32,
-    M: usize,
+    w: f32,
+    m: usize,
     q: f32 
 }
 
 impl<T> Reservoir<T> {
-    pub fn add_sample(&mut self, sample_new: T, q_new: f32, pdf_new: f32, sampler: &mut dyn Sampler) {
-        self.combine(sample_new, q_new, 1.0 / pdf_new, 1, 1.0, sampler);
+    pub fn add_sample(&mut self, sample: T, q: f32, pdf: f32, sampler: &mut dyn Sampler) {
+        self.combine(sample, q, 1.0 / pdf, 1, 1.0, sampler);
     }
 
-    pub fn add_reservoir(&mut self, res_new: Reservoir<T>, q_new: f32, J: f32, sampler: &mut dyn Sampler) {
-        self.combine(res_new.sample, q_new, res_new.W, res_new.M, J, sampler);
+    pub fn add_reservoir(&mut self, res: Reservoir<T>, q: f32, j: f32, sampler: &mut dyn Sampler) {
+        self.combine(res.sample, q, res.w, res.m, j, sampler);
     }
 
-    fn combine(&mut self, sample_new: T, q_new: f32, W_new: f32, M_new: usize, J: f32, sampler: &mut dyn Sampler) {
-        let m0 = (self.M as f32) / ((self.M + M_new) as f32);
-        let m1 = (M_new as f32) / ((self.M + M_new) as f32);
+    fn combine(&mut self, sample_new: T, q: f32, w: f32, m: usize, j: f32, sampler: &mut dyn Sampler) {
+        let m0 = (self.m as f32) / ((self.m + m) as f32);
+        let m1 = (m as f32) / ((self.m + m) as f32);
 
-        let w0 = m0 * self.q * self.W;
-        let w1 = m1 * q_new * W_new * J;
+        let w0 = m0 * self.q * self.w;
+        let w1 = m1 * q * w * j;
         let w_sum = w0 + w1;
 
         if w0 == 0.0 || sampler.get_value() < w1 / w_sum {
             self.sample = sample_new;
-            self.q = q_new;
+            self.q = q;
         }
 
-        self.M += M_new;
-        self.W = w_sum / self.q;
+        self.m += m;
+        self.w = w_sum / self.q;
     }
 }
 
@@ -191,7 +191,7 @@ impl Inner {
                 0
             };
 
-            if(current_sample < self_2.settings.samples) {
+            if current_sample < self_2.settings.samples {
                 self_2.start_initial_sample_job();
             } else {
                 let start_time = if let Ok(s) = self_2.start_time.lock() {
@@ -325,10 +325,10 @@ impl Inner {
         let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
         let mut res = Reservoir::<DirectSample>::default();
-        let R = self.settings.radius as f32;
+        let r = self.settings.radius as f32;
         for _ in 0..self.settings.candidates {
             let mut s = sampler.get_value2();
-            s = s * R * 2.0 + Point2::new(-R, -R);
+            s = s * r * 2.0 + Point2::new(-r, -r);
             let sx = (s.u + x as f32).floor() as i32;
             let sy = (s.v + y as f32).floor() as i32;
             if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
@@ -363,7 +363,7 @@ impl Inner {
             res.add_reservoir(res_candidate, q, 1.0, sampler);
         }
 
-        if res.W > 0.0 {
+        if res.w > 0.0 {
             let mut dir_in = res.sample.point - pnt_offset;
             let d = dir_in.mag();
             dir_in = dir_in / d;
@@ -377,7 +377,7 @@ impl Inner {
                     if isect2.primitive_idx == res.sample.primitive_idx {
                         let irad = res.sample.radiance * dot2 * dot / (d * d);
                         let rad = irad * surface.reflected(&isect, dir_in);
-                        rad_direct = rad * res.W;
+                        rad_direct = rad * res.w;
                     }
                 }                        
             }
@@ -388,7 +388,7 @@ impl Inner {
     
     fn indirect_illuminate_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler, indirect_samples: &mut [Reservoir<IndirectSample>]) {
         let mut rad_indirect = Radiance::ZERO;
-        let N = self.settings.indirect_samples;
+        let n = self.settings.indirect_samples;
         let isect;
 
         if let Ok(primary_hits) = self.primary_hits.lock() {
@@ -408,10 +408,10 @@ impl Inner {
             *sample = Default::default();
         }
         
-        let R = self.settings.radius as f32;
+        let r = self.settings.radius as f32;
         for _ in 0..self.settings.candidates {
             let mut s = sampler.get_value2();
-            s = s * R * 2.0 + Point2::new(-R, -R);
+            s = s * r * 2.0 + Point2::new(-r, -r);
             let sx = (s.u + x as f32).floor() as i32;
             let sy = (s.v + y as f32).floor() as i32;
             if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
@@ -433,20 +433,19 @@ impl Inner {
                         continue;
                     }
 
-                    for i in 0..N {
+                    for i in 0..n {
                         let r = res_candidate.sample.point - isect.point;
                         let q = res_candidate.sample.point - isect_s.point;
                         let n = res_candidate.sample.normal;
-                        let J = ((n * r) * q.mag2() / ((n * q) * r.mag2())).abs();
-                        indirect_samples[i].add_reservoir(res_candidate, res_candidate.q, J, sampler);
+                        let j = ((n * r) * q.mag2() / ((n * q) * r.mag2())).abs();
+                        indirect_samples[i].add_reservoir(res_candidate, res_candidate.q, j, sampler);
                     }
                 }
             }
         }
 
-        for i in 0..N {
-            if indirect_samples[i].W > 0.0 {
-                let q = indirect_samples[i].sample.indirect_radiance.mag();
+        for i in 0..n {
+            if indirect_samples[i].w > 0.0 {
                 let mut dir_in = indirect_samples[i].sample.point - isect.point;
                 let d = dir_in.mag();
                 dir_in = dir_in / d;
@@ -454,12 +453,12 @@ impl Inner {
 
                 if dot > 0.0 {
                     let reflected = surface.reflected(&isect, dir_in);
-                    rad_indirect += indirect_samples[i].sample.indirect_radiance * dot * reflected * indirect_samples[i].W;
+                    rad_indirect += indirect_samples[i].sample.indirect_radiance * dot * reflected * indirect_samples[i].w;
                 }
             }
         }
         
-        self.add_radiance(x, y, sample, rad_indirect / (N as f32));
+        self.add_radiance(x, y, sample, rad_indirect / (n as f32));
     }
 
     fn add_radiance(&self, x: usize, y: usize, sample: usize, radiance: Radiance) {

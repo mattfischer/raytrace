@@ -1,10 +1,8 @@
-use crate::geo;
 use crate::object;
 
 use object::Sampler;
 
 use rand::prelude::*;
-use rand::thread_rng;
 
 pub struct Halton {
     index: u64,
@@ -131,13 +129,13 @@ impl Sampler for Halton {
         let mut ym = y as i32;
 
         let mut xr = 0 as i32;
-        for i in 0..self.width_exponent {
+        for _ in 0..self.width_exponent {
             xr = 2 * xr + xm % 2;
             xm /= 2;
         }
 
         let mut yr = 0 as i32;
-        for i in 0..self.height_exponent {
+        for _ in 0..self.height_exponent {
             yr = 3 * yr + ym % 3;
             ym /= 3;
         }

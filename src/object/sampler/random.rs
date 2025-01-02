@@ -1,7 +1,4 @@
-use crate::geo;
 use crate::object;
-
-use geo::Point2;
 
 use object::Sampler;
 

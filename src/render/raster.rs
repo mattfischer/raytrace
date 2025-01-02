@@ -4,7 +4,7 @@ pub struct Raster<T> {
     elements: Vec<T>,
 }
 
-impl<T: Default + Clone> Raster<T> {
+impl<T: Default + Copy> Raster<T> {
     pub fn new(width: usize, height: usize) -> Raster<T> {
         let mut elements = Vec::new();
         elements.resize(width * height, T::default());
@@ -16,11 +16,17 @@ impl<T: Default + Clone> Raster<T> {
     }
 
     pub fn set(&mut self, x: usize, y: usize, value: T) {
-        self.elements[y * self.width + x] = value;
+        if x < self.width && y < self.height {
+            self.elements[y * self.width + x] = value;
+        }
     }
 
     pub fn get(&self, x: usize, y: usize) -> T {
-        return self.elements[y * self.width + x].clone();
+        if x < self.width && y < self.height {
+            return self.elements[y * self.width + x];
+        } else {
+            return T::default();
+        }
     }
 
     pub fn get_mut(&mut self, x: usize, y: usize) -> &mut T {

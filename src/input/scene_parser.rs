@@ -1,5 +1,3 @@
-use core::net;
-
 use crate::geo;
 use crate::input;
 use crate::object;

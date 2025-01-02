@@ -52,7 +52,7 @@ impl Shape for Sphere {
         return None;
     }
 
-    fn bounding_volume(&self, xform: Transformation) -> BoundingVolume {
+    fn bounding_volume(&self, _xform: Transformation) -> BoundingVolume {
         let mut mins = [0.0; BoundingVolume::NUM_VECTORS];
         let mut maxes = [0.0; BoundingVolume::NUM_VECTORS];
 

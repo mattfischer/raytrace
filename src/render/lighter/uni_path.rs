@@ -35,7 +35,6 @@ impl Lighter for UniPath {
         for generation in 0..10 {
             let surface = &isect.primitive.surface;
             let nrm_facing = isect.facing_normal;
-            let dir_out = -isect.ray.direction;
 
             let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
             for idx in scene.area_lights.iter() {

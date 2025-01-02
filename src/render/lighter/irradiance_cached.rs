@@ -42,11 +42,7 @@ struct RadianceGradient {
 impl RadianceGradient {
     pub const ZERO: RadianceGradient = RadianceGradient {red: Vec3::ZERO, green: Vec3::ZERO, blue: Vec3::ZERO};
 
-    fn with_colors(red: Vec3, green: Vec3, blue: Vec3) -> Self {
-        Self {red, green, blue}
-    }
-
-    fn with_radiance(radiance: Radiance, vector: Vec3) -> Self {
+    fn new(radiance: Radiance, vector: Vec3) -> Self {
         Self {red: radiance.red * vector, green: radiance.green * vector, blue: radiance.blue * vector}
     }
 }
@@ -123,10 +119,10 @@ impl Cache {
 
     fn add(&self, entry: CacheEntry) {
         if let Ok(mut octree) = self.octree.write() {
-            let R = entry.radius * self.threshold;
+            let r = entry.radius * self.threshold;
             if octree.root.is_none() {
                 octree.root = Some(Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]}));
-                octree.size = R;
+                octree.size = r;
                 octree.origin = entry.point;
             }
 
@@ -134,7 +130,7 @@ impl Cache {
                 (entry.point.x - octree.origin.x).abs() > octree.size ||
                 (entry.point.y - octree.origin.y).abs() > octree.size ||
                 (entry.point.z - octree.origin.z).abs() > octree.size ||
-                octree.size < R {
+                octree.size < r {
                 let x = (entry.point.x - octree.origin.x).signum();
                 let y = (entry.point.y - octree.origin.y).signum();
                 let z = (entry.point.z - octree.origin.z).signum();
@@ -151,7 +147,7 @@ impl Cache {
             let mut origin = octree.origin;
             let mut size = octree.size;
             let mut node = octree.root.as_mut().unwrap();
-            while size > R * 2.0 {
+            while size > r * 2.0 {
                 let x = (entry.point.x - origin.x).signum();
                 let y = (entry.point.y - origin.y).signum();
                 let z = (entry.point.z - origin.z).signum();
@@ -181,7 +177,7 @@ impl Cache {
         return d >= -0.01 && weight > 1.0 / threshold;
     }
 
-    fn distance2_to_node(point: Point3, idx: usize, origin: Point3, size: f32) -> f32 {
+    fn distance2_to_node(point: Point3, origin: Point3, size: f32) -> f32 {
         let mut distance2 = 0.0;
         let mut d;
 
@@ -219,9 +215,9 @@ impl Cache {
     }
 
     fn get_child_node(origin: Point3, size: f32, idx: usize) -> (Point3, f32) {
-        let x = if (idx & 1 == 0) { -1.0 } else { 1.0 };
-        let y = if (idx & 2 == 0) { -1.0 } else { 1.0 };
-        let z = if (idx & 4 == 0) { -1.0 } else { 1.0 };
+        let x = if idx & 1 == 0 { -1.0 } else { 1.0 };
+        let y = if idx & 2 == 0 { -1.0 } else { 1.0 };
+        let z = if idx & 4 == 0 { -1.0 } else { 1.0 };
         
         let child_size = size / 2.0;
         return (origin + Vec3::new(x, y, z) * child_size, child_size);
@@ -238,7 +234,7 @@ impl Cache {
 
             for i in 0..8 {
                 let (child_origin, child_size) = Self::get_child_node(origin, size, i);
-                let distance2 = Self::distance2_to_node(point, i, child_origin, child_size);
+                let distance2 = Self::distance2_to_node(point, child_origin, child_size);
                 if distance2 < child_size * child_size {
                     if !Self::visit_octree_node(&node.children[i], child_origin, child_size, point, callback) {
                         return false;
@@ -350,16 +346,16 @@ impl Inner {
                     let mut mean = 0.0;
                     let mut den = 0;
                     let mut rad = Radiance::ZERO;
-                    let M = (self.settings.indirect_samples as f32).sqrt() as usize;
-                    let N = self.settings.indirect_samples / M;
-                    let mut samples = vec![Radiance::ZERO; M*N];
-                    let mut sample_distances = vec![0.0; M*N];
-                    for k in 0..N {
-                        for j in 0..M {
+                    let m = (self.settings.indirect_samples as f32).sqrt() as usize;
+                    let n = self.settings.indirect_samples / m;
+                    let mut samples = vec![Radiance::ZERO; m*n];
+                    let mut sample_distances = vec![0.0; m*n];
+                    for k in 0..n {
+                        for j in 0..m {
                             sampler.start_sample_with_index(0);
 
-                            let phi = 2.0 * PI * (k as f32 + sampler.get_value()) / (N as f32);
-                            let theta = (j as f32 + sampler.get_value()).sqrt().asin() / (M as f32);
+                            let phi = 2.0 * PI * (k as f32 + sampler.get_value()) / (n as f32);
+                            let theta = (j as f32 + sampler.get_value()).sqrt().asin() / (m as f32);
                             let dir_in = basis.local_to_world(Vec3::with_spherical(phi, theta, 1.0));
 
                             let pnt_offset = pnt + Vec3::from(nrm_facing) * 0.01;
@@ -372,12 +368,12 @@ impl Inner {
                                 let mut rad2 = self.unipath_lighter.light(&isect2, sampler);
                                 rad2 = rad2 - isect2.primitive.surface.radiance;
 
-                                samples[k*M + j] = rad2;
-                                sample_distances[k*M + j] = isect2.shape_isect.distance;
+                                samples[k*m + j] = rad2;
+                                sample_distances[k*m + j] = isect2.shape_isect.distance;
 
-                                rad += rad2 * PI / ((M * N) as f32);
+                                rad += rad2 * PI / ((m * n) as f32);
                             } else {
-                                sample_distances[k*M + j] = f32::MAX;
+                                sample_distances[k*m + j] = f32::MAX;
                             }
                         }
                     }
@@ -392,25 +388,25 @@ impl Inner {
                         let mut trans_grad = RadianceGradient::ZERO;
                         let mut rot_grad = RadianceGradient::ZERO;
 
-                        for k in 0..N {
-                            let k1 = if k > 0 { k - 1 } else { N - 1 };
-                            let phi = 2.0 * PI * (k as f32) / (N as f32);
+                        for k in 0..n {
+                            let k1 = if k > 0 { k - 1 } else { n - 1 };
+                            let phi = 2.0 * PI * (k as f32) / (n as f32);
                             let u = basis.local_to_world(Vec3::with_spherical(phi, 0.0, 1.0));
                             let v = basis.local_to_world(Vec3::with_spherical(phi + PI / 2.0, 0.0, 1.0));
 
-                            for j in 0..M {
-                                let theta_minus = ((j as f32) / (M as f32)).sqrt().asin();
-                                let theta_plus = (((j + 1) as f32) / (M as f32)).sqrt().asin();
+                            for j in 0..m {
+                                let theta_minus = ((j as f32) / (m as f32)).sqrt().asin();
+                                let theta_plus = (((j + 1) as f32) / (m as f32)).sqrt().asin();
                     
                                 if j > 0 {
                                     let j1 = j - 1;
-                                    let c = u * theta_minus.sin() * theta_minus.cos() * theta_minus.cos() * 2.0 * PI / ((N as f32) * sample_distances[k*M + j].min(sample_distances[k*M + j1]));
-                                    trans_grad += RadianceGradient::with_radiance(samples[k*M + j] - samples[k*M + j1], c);
+                                    let c = u * theta_minus.sin() * theta_minus.cos() * theta_minus.cos() * 2.0 * PI / ((n as f32) * sample_distances[k*m + j].min(sample_distances[k*m + j1]));
+                                    trans_grad += RadianceGradient::new(samples[k*m + j] - samples[k*m + j1], c);
                                 }
 
-                                let c = v * (theta_plus.sin() - theta_minus.sin()) / (sample_distances[k*M + j].min(sample_distances[k1*M + j]));
-                                trans_grad += RadianceGradient::with_radiance(samples[k*M + j] - samples[k1*M + j], c);
-                                rot_grad += RadianceGradient::with_radiance(samples[k*M + j], v) * theta_minus.tan() * PI / ((M*N) as f32);
+                                let c = v * (theta_plus.sin() - theta_minus.sin()) / (sample_distances[k*m + j].min(sample_distances[k1*m + j]));
+                                trans_grad += RadianceGradient::new(samples[k*m + j] - samples[k1*m + j], c);
+                                rot_grad += RadianceGradient::new(samples[k*m + j], v) * theta_minus.tan() * PI / ((m*n) as f32);
                             }
                         }
 

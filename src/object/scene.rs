@@ -3,7 +3,6 @@ use crate::geo::Transformation;
 use crate::object;
 
 use geo::Beam;
-use geo::Point3;
 
 use object::BoundingVolume;
 use object::BoundingVolumeHierarchy;
@@ -12,7 +11,6 @@ use object::Intersection;
 use object::PointLight;
 use object::Primitive;
 use object::Radiance;
-use object::ShapeIntersection;
 
 pub struct Scene {
     pub camera: object::Camera,
