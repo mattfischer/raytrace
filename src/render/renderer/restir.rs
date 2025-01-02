@@ -90,7 +90,7 @@ struct IndirectSample {
     indirect_radiance: Radiance
 }
 
-struct SharedState {
+struct Inner {
     scene: Arc<Scene>,
     settings: ReSTIRSettings,
     indirect_lighter: Box<dyn Lighter>,
@@ -105,69 +105,25 @@ struct SharedState {
     indirect_reservoirs: Mutex<Raster<Reservoir<IndirectSample>>>
 }
 
-struct ThreadLocal {
-    sampler: Halton,
-    indirect_samples: Vec<Reservoir<IndirectSample>>
-}
-
-pub struct ReSTIR {
-    shared_state: Arc<SharedState>,
-}
-
-impl ReSTIR {
-    pub fn new(
-        scene: Arc<Scene>,
-        settings: ReSTIRSettings
-    ) -> ReSTIR {
-        let framebuffer = Mutex::new(Framebuffer::new(settings.width, settings.height));
-        let total_radiance = Mutex::new(Raster::new(settings.width, settings.height));
-        let indirect_lighter = Box::new(UniPath::new());
-        let primary_hits = Mutex::new(Raster::new(settings.width, settings.height));
-
-        let executor = Executor::new();
-        let start_time = Mutex::new(Instant::now());
-        let done_listener = Mutex::new(None);
-        let current_sample = Mutex::new(0);
-
-        let direct_reservoirs = Mutex::new(Raster::new(settings.width, settings.height));
-        let indirect_reservoirs = Mutex::new(Raster::new(settings.width, settings.height));
-
-        let shared_state = Arc::new(SharedState {
-            framebuffer,
-            scene,
-            settings,
-            total_radiance,
-            indirect_lighter,
-            primary_hits,
-            executor,
-            done_listener,
-            start_time,
-            current_sample,
-            direct_reservoirs,
-            indirect_reservoirs
-        });
-
-        return ReSTIR {shared_state};
-    }
-
-    fn start_initial_sample_job(shared_state : Arc<SharedState>) {
-        let width = shared_state.settings.width;
-        let height = shared_state.settings.height;
-        let current_sample = match shared_state.current_sample.lock() {
+impl Inner {
+    fn start_initial_sample_job(self : &Arc<Inner>) {
+        let width = self.settings.width;
+        let height = self.settings.height;
+        let current_sample = match self.current_sample.lock() {
             Ok(current_sample) => *current_sample,
             _ => 0
         };
 
-        let shared_state_1 = shared_state.clone();
-        let shared_state_2 = shared_state.clone();
+        let self_1 = self.clone();
+        let self_2 = self.clone();
 
         let job = RasterJob::new(
             width, height, 1,
             move |x, y, _sample, thread_local : &mut ThreadLocal| {
-                Self::initial_sample_pixel(x, y, current_sample, &mut thread_local.sampler, &shared_state_1);
+                self_1.initial_sample_pixel(x, y, current_sample, &mut thread_local.sampler);
             },
             move || {
-                Self::start_direct_illuminate_job(shared_state_2.clone());
+                self_2.start_direct_illuminate_job();
             },
             move || {
                 let sampler = Halton::new(width as i32, height as i32);
@@ -176,29 +132,27 @@ impl ReSTIR {
             }
         );
         
-        shared_state
-            .executor
-            .run_job(Box::new(job), || {});
+        self.executor.run_job(Box::new(job), || {});
     }
 
-    fn start_direct_illuminate_job(shared_state : Arc<SharedState>) {
-        let width = shared_state.settings.width;
-        let height = shared_state.settings.height;
-        let current_sample = match shared_state.current_sample.lock() {
+    fn start_direct_illuminate_job(self : &Arc<Inner>) {
+        let width = self.settings.width;
+        let height = self.settings.height;
+        let current_sample = match self.current_sample.lock() {
             Ok(current_sample) => *current_sample,
             _ => 0
         };
 
-        let shared_state_1 = shared_state.clone();
-        let shared_state_2 = shared_state.clone();
+        let self_1 = self.clone();
+        let self_2 = self.clone();
 
         let job = RasterJob::new(
             width, height, 1,
             move |x, y, _sample, thread_local : &mut ThreadLocal| {
-                Self::direct_illuminate_pixel(x, y, current_sample, &mut thread_local.sampler, &shared_state_1);
+                self_1.direct_illuminate_pixel(x, y, current_sample, &mut thread_local.sampler);
             },
             move || {
-                Self::start_indirect_illuminate_job(shared_state_2.clone());
+                self_2.start_indirect_illuminate_job();
             },
             move || {
                 let sampler = Halton::new(width as i32, height as i32);
@@ -207,47 +161,45 @@ impl ReSTIR {
             }
         );
         
-        shared_state
-            .executor
-            .run_job(Box::new(job), || {});
+        self.executor.run_job(Box::new(job), || {});
     }
 
-    fn start_indirect_illuminate_job(shared_state : Arc<SharedState>) {
-        let width = shared_state.settings.width;
-        let height = shared_state.settings.height;
-        let current_sample = match shared_state.current_sample.lock() {
+    fn start_indirect_illuminate_job(self : &Arc<Inner>) {
+        let width = self.settings.width;
+        let height = self.settings.height;
+        let current_sample = match self.current_sample.lock() {
             Ok(current_sample) => *current_sample,
             _ => 0
         };
 
-        let shared_state_1 = shared_state.clone();
-        let shared_state_2 = shared_state.clone();
-        let shared_state_3 = shared_state.clone();
+        let self_1 = self.clone();
+        let self_2 = self.clone();
+        let self_3 = self.clone();
 
         let job = RasterJob::new(
             width, height, 1,
             move |x, y, _sample, thread_local : &mut ThreadLocal| {
-                Self::indirect_illuminate_pixel(x, y, current_sample, &mut thread_local.sampler, &mut thread_local.indirect_samples[..], &shared_state_1);
+                self_1.indirect_illuminate_pixel(x, y, current_sample, &mut thread_local.sampler, &mut thread_local.indirect_samples[..]);
             },
             move || {
-                let current_sample = if let Ok(mut current_sample) = shared_state_2.current_sample.lock() {                    
+                let current_sample = if let Ok(mut current_sample) = self_2.current_sample.lock() {                    
                     *current_sample += 1;
                     *current_sample
                 } else {
                     0
                 };
 
-                if(current_sample < shared_state_2.settings.samples) {
-                    Self::start_initial_sample_job(shared_state_2.clone());
+                if(current_sample < self_2.settings.samples) {
+                    self_2.start_initial_sample_job();
                 } else {
-                    let start_time = if let Ok(s) = shared_state_2.start_time.lock() {
+                    let start_time = if let Ok(s) = self_2.start_time.lock() {
                         *s
                     } else {
                         Instant::now()
                     };
                     let end_time = Instant::now();
                     let time_elapsed = end_time - start_time;
-                    if let Ok(mut done_listener) = shared_state_2.done_listener.lock() {
+                    if let Ok(mut done_listener) = self_2.done_listener.lock() {
                         if let Some(done_listener) = done_listener.take() {
                             done_listener(time_elapsed.as_secs_f32());
                         }
@@ -257,28 +209,26 @@ impl ReSTIR {
             move || {
                 let sampler = Halton::new(width as i32, height as i32);
                 let mut indirect_samples = Vec::new();
-                indirect_samples.resize(shared_state_3.settings.indirect_samples, Default::default());
+                indirect_samples.resize(self_3.settings.indirect_samples, Default::default());
                 return Box::new(ThreadLocal { sampler, indirect_samples });
             }
         );
         
-        shared_state
-            .executor
-            .run_job(Box::new(job), || {});
+        self.executor.run_job(Box::new(job), || {});
     }
 
-    fn initial_sample_pixel(x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler, shared_state : &SharedState) {
-        let scene = shared_state.scene.as_ref();
+    fn initial_sample_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler) {
+        let scene = self.scene.as_ref();
 
         sampler.start_sample_with_xys(x, y, sample);
         let pnt_image = Point2::new(x as f32, y as f32) + sampler.get_value2();
         let pnt_aperture = sampler.get_value2();
-        let beam = scene.camera.create_pixel_beam(pnt_image, shared_state.settings.width, shared_state.settings.height, pnt_aperture);
+        let beam = scene.camera.create_pixel_beam(pnt_image, self.settings.width, self.settings.height, pnt_aperture);
         
         let rad_emitted;
             
         if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
-            if let Ok(mut primary_hits) = shared_state.primary_hits.lock() {
+            if let Ok(mut primary_hits) = self.primary_hits.lock() {
                 primary_hits.set(x, y, Some(FlatIntersection::from(isect)));
             }
 
@@ -286,7 +236,7 @@ impl ReSTIR {
             let surface = &isect.primitive.surface;
             let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
-            if let Ok(mut direct_reservoirs) = shared_state.direct_reservoirs.lock() {
+            if let Ok(mut direct_reservoirs) = self.direct_reservoirs.lock() {
                 direct_reservoirs.set(x, y, Default::default());
             }
 
@@ -314,14 +264,14 @@ impl ReSTIR {
                             primitive_idx: scene.area_lights[light_index]
                         };
 
-                        if let Ok(mut direct_reservoirs) = shared_state.direct_reservoirs.lock() {
+                        if let Ok(mut direct_reservoirs) = self.direct_reservoirs.lock() {
                             direct_reservoirs.get_mut(x, y).add_sample(sample, q, pdf2, sampler);
                         }
                     }
                 }
             }
 
-            if let Ok(mut indirect_reservoirs) = shared_state.indirect_reservoirs.lock() {
+            if let Ok(mut indirect_reservoirs) = self.indirect_reservoirs.lock() {
                 indirect_reservoirs.set(x, y, Default::default());
             }
 
@@ -334,7 +284,7 @@ impl ReSTIR {
                     let ray_reflect = Ray::new(pnt_offset, dir_in);
                     let beam = Beam::new(ray_reflect, Bivec3::ZERO, Bivec3::ZERO);
                     if let Some(isect2) = scene.intersect(beam, f32::MAX, true) {
-                        let rad2 = shared_state.indirect_lighter.light(&isect2, sampler);
+                        let rad2 = self.indirect_lighter.light(&isect2, sampler);
                     
                         let sample = IndirectSample {
                             point: isect2.point,
@@ -343,7 +293,7 @@ impl ReSTIR {
                         };
 
                         let q = sample.indirect_radiance.mag();
-                        if let Ok(mut indirect_reservoirs) = shared_state.indirect_reservoirs.lock() {
+                        if let Ok(mut indirect_reservoirs) = self.indirect_reservoirs.lock() {
                             indirect_reservoirs.get_mut(x, y).add_sample(sample, q, pdf, sampler);
                         }
                     }
@@ -352,22 +302,22 @@ impl ReSTIR {
 
             rad_emitted = isect.primitive.surface.radiance;
         } else {
-            if let Ok(mut primary_hits) = shared_state.primary_hits.lock() {
+            if let Ok(mut primary_hits) = self.primary_hits.lock() {
                 primary_hits.set(x, y, None);
             }
             rad_emitted = scene.sky_radiance;
         }
 
-        Self::add_radiance(x, y, sample, rad_emitted, shared_state);
+        self.add_radiance(x, y, sample, rad_emitted);
     }
 
-    fn direct_illuminate_pixel(x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler, shared_state : &SharedState) {
+    fn direct_illuminate_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler) {
         let mut rad_direct = Radiance::ZERO;
 
         let isect;
-        if let Ok(primary_hits) = shared_state.primary_hits.lock() {
+        if let Ok(primary_hits) = self.primary_hits.lock() {
             if let Some(primary_hit) = primary_hits.get(x, y) {
-                isect = Intersection::with_flat(primary_hit, &shared_state.scene);
+                isect = Intersection::with_flat(primary_hit, &self.scene);
             } else {
                 return;
             }
@@ -380,18 +330,18 @@ impl ReSTIR {
         let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
         let mut res = Reservoir::<DirectSample>::default();
-        let R = shared_state.settings.radius as f32;
-        for _ in 0..shared_state.settings.candidates {
+        let R = self.settings.radius as f32;
+        for _ in 0..self.settings.candidates {
             let mut s = sampler.get_value2();
             s = s * R * 2.0 + Point2::new(-R, -R);
             let sx = (s.u + x as f32).floor() as i32;
             let sy = (s.v + y as f32).floor() as i32;
-            if sx < 0 || sy < 0 || sx >= (shared_state.settings.width as i32) || sy >= (shared_state.settings.height as i32) {
+            if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
                 continue;
             }
 
             let res_candidate = 
-            if let Ok(direct_reservoirs) = shared_state.direct_reservoirs.lock() {
+            if let Ok(direct_reservoirs) = self.direct_reservoirs.lock() {
                 direct_reservoirs.get(sx as usize, sy as usize)
             } else {
                 Default::default()
@@ -428,7 +378,7 @@ impl ReSTIR {
             if dot > 0.0 {
                 let ray = Ray::new(pnt_offset, dir_in);
                 let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-                if let Some(isect2) = shared_state.scene.intersect(beam, f32::MAX, true) {
+                if let Some(isect2) = self.scene.intersect(beam, f32::MAX, true) {
                     if isect2.primitive_idx == res.sample.primitive_idx {
                         let irad = res.sample.radiance * dot2 * dot / (d * d);
                         let rad = irad * surface.reflected(&isect, dir_in);
@@ -438,17 +388,17 @@ impl ReSTIR {
             }
         }
 
-        Self::add_radiance(x, y, sample, rad_direct, shared_state);
+        self.add_radiance(x, y, sample, rad_direct);
     }
     
-    fn indirect_illuminate_pixel(x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler, indirect_samples: &mut [Reservoir<IndirectSample>], shared_state : &SharedState) {
+    fn indirect_illuminate_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler, indirect_samples: &mut [Reservoir<IndirectSample>]) {
         let mut rad_indirect = Radiance::ZERO;
-        let N = shared_state.settings.indirect_samples;
+        let N = self.settings.indirect_samples;
         let isect;
 
-        if let Ok(primary_hits) = shared_state.primary_hits.lock() {
+        if let Ok(primary_hits) = self.primary_hits.lock() {
             if let Some(primary_hit) = primary_hits.get(x, y) {
-                isect = Intersection::with_flat(primary_hit, &shared_state.scene);
+                isect = Intersection::with_flat(primary_hit, &self.scene);
             } else {
                 return;
             }
@@ -463,22 +413,22 @@ impl ReSTIR {
             *sample = Default::default();
         }
         
-        let R = shared_state.settings.radius as f32;
-        for _ in 0..shared_state.settings.candidates {
+        let R = self.settings.radius as f32;
+        for _ in 0..self.settings.candidates {
             let mut s = sampler.get_value2();
             s = s * R * 2.0 + Point2::new(-R, -R);
             let sx = (s.u + x as f32).floor() as i32;
             let sy = (s.v + y as f32).floor() as i32;
-            if sx < 0 || sy < 0 || sx >= (shared_state.settings.width as i32) || sy >= (shared_state.settings.height as i32) {
+            if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
                 continue;
             }
 
-            if let Ok(primary_hits) = shared_state.primary_hits.lock() {
+            if let Ok(primary_hits) = self.primary_hits.lock() {
                 if let Some(flat_isect_s) = primary_hits.get(sx as usize, sy as usize) {
-                    let isect_s = Intersection::with_flat(flat_isect_s, &shared_state.scene);
+                    let isect_s = Intersection::with_flat(flat_isect_s, &self.scene);
 
                     let res_candidate = 
-                    if let Ok(indirect_reservoirs) = shared_state.indirect_reservoirs.lock() {
+                    if let Ok(indirect_reservoirs) = self.indirect_reservoirs.lock() {
                         indirect_reservoirs.get(sx as usize, sy as usize)
                     } else {
                         Default::default()
@@ -514,46 +464,92 @@ impl ReSTIR {
             }
         }
         
-        Self::add_radiance(x, y, sample, rad_indirect / (N as f32), shared_state);
+        self.add_radiance(x, y, sample, rad_indirect / (N as f32));
     }
 
-    fn add_radiance(x: usize, y: usize, sample: usize, radiance: Radiance, shared_state: &SharedState) {
-        if let Ok(mut total_radiance) = shared_state.total_radiance.lock() {
+    fn add_radiance(&self, x: usize, y: usize, sample: usize, radiance: Radiance) {
+        if let Ok(mut total_radiance) = self.total_radiance.lock() {
             let rad_total = total_radiance.get(x, y) + radiance;
             total_radiance.set(x, y, rad_total);
 
             let color = Framebuffer::tone_map(rad_total / ((sample + 1) as f32));
-            if let Ok(mut framebuffer) = shared_state.framebuffer.lock() {
+            if let Ok(mut framebuffer) = self.framebuffer.lock() {
                 framebuffer.set_pixel(x, y, color);
             }
         }
     }
 }
 
+struct ThreadLocal {
+    sampler: Halton,
+    indirect_samples: Vec<Reservoir<IndirectSample>>
+}
+
+pub struct ReSTIR {
+    inner: Arc<Inner>,
+}
+
+impl ReSTIR {
+    pub fn new(
+        scene: Arc<Scene>,
+        settings: ReSTIRSettings
+    ) -> ReSTIR {
+        let framebuffer = Mutex::new(Framebuffer::new(settings.width, settings.height));
+        let total_radiance = Mutex::new(Raster::new(settings.width, settings.height));
+        let indirect_lighter = Box::new(UniPath::new());
+        let primary_hits = Mutex::new(Raster::new(settings.width, settings.height));
+
+        let executor = Executor::new();
+        let start_time = Mutex::new(Instant::now());
+        let done_listener = Mutex::new(None);
+        let current_sample = Mutex::new(0);
+
+        let direct_reservoirs = Mutex::new(Raster::new(settings.width, settings.height));
+        let indirect_reservoirs = Mutex::new(Raster::new(settings.width, settings.height));
+
+        let inner = Arc::new(Inner {
+            framebuffer,
+            scene,
+            settings,
+            total_radiance,
+            indirect_lighter,
+            primary_hits,
+            executor,
+            done_listener,
+            start_time,
+            current_sample,
+            direct_reservoirs,
+            indirect_reservoirs
+        });
+
+        return ReSTIR {inner};
+    }
+}
+
 impl Renderer for ReSTIR {
     fn start(&self, done: Box<DoneFunc>)
     {
-        if let Ok(mut done_listener) = self.shared_state.done_listener.lock() {
+        if let Ok(mut done_listener) = self.inner.done_listener.lock() {
             done_listener.replace(done);
         }
 
-        if let Ok(mut start_time) = self.shared_state.start_time.lock() {
+        if let Ok(mut start_time) = self.inner.start_time.lock() {
             *start_time = Instant::now();
         }
 
-        Self::start_initial_sample_job(self.shared_state.clone());
+        self.inner.start_initial_sample_job();
     }
 
     fn stop(&self) {
-        self.shared_state.executor.stop();
+        self.inner.executor.stop();
     }
 
     fn running(&self) -> bool {
-        return self.shared_state.executor.running();
+        return self.inner.executor.running();
     }
 
     fn framebuffer_ptr(&self) -> *const u8 {
-        if let Ok(framebuffer) = self.shared_state.framebuffer.lock() {
+        if let Ok(framebuffer) = self.inner.framebuffer.lock() {
             return framebuffer.bits.as_ptr();
         } else {
             return std::ptr::null();

@@ -317,30 +317,15 @@ pub struct IrradianceCachedSettings {
     pub cache_threshold: f32
 }
 
-struct SharedState {
+struct Inner {
     settings: IrradianceCachedSettings,
     cache: Cache,
     direct_lighter: Direct,
     unipath_lighter: UniPath
 }
-pub struct IrradianceCached {
-    shared_state: Arc<SharedState>
-}
 
-struct ThreadLocal {
-    sampler: Random
-}
-
-impl IrradianceCached {
-    pub fn new(settings: IrradianceCachedSettings) -> IrradianceCached {
-        let direct_lighter = Direct::new();
-        let unipath_lighter = UniPath::new();
-        let cache = Cache::new(settings.cache_threshold);
-        let shared_state = Arc::new(SharedState {settings, direct_lighter, unipath_lighter, cache});
-        return IrradianceCached {shared_state};
-    }
-
-    fn prerender_pixel(x: usize, y: usize, framebuffer: &Mutex<Framebuffer>, scene: &Scene, sampler: &mut dyn Sampler, shared_state: &SharedState) {
+impl Inner {
+    fn prerender_pixel(&self, x: usize, y: usize, framebuffer: &Mutex<Framebuffer>, scene: &Scene, sampler: &mut dyn Sampler) {
         let width;
         let height;
         if let Ok(framebuffer) = framebuffer.lock() {
@@ -360,13 +345,13 @@ impl IrradianceCached {
                 let pnt = isect.point;
                 let nrm_facing = isect.facing_normal;
 
-                if !shared_state.cache.test(pnt, nrm_facing) {
+                if !self.cache.test(pnt, nrm_facing) {
                     let basis = OrthonormalBasis::new(nrm_facing.into());
                     let mut mean = 0.0;
                     let mut den = 0;
                     let mut rad = Radiance::ZERO;
-                    let M = (shared_state.settings.indirect_samples as f32).sqrt() as usize;
-                    let N = shared_state.settings.indirect_samples / M;
+                    let M = (self.settings.indirect_samples as f32).sqrt() as usize;
+                    let N = self.settings.indirect_samples / M;
                     let mut samples = vec![Radiance::ZERO; M*N];
                     let mut sample_distances = vec![0.0; M*N];
                     for k in 0..N {
@@ -384,7 +369,7 @@ impl IrradianceCached {
                             if let Some(isect2) = scene.intersect(beam, f32::MAX, true) {
                                 mean += 1.0 / isect2.shape_isect.distance;
                                 den += 1;
-                                let mut rad2 = shared_state.unipath_lighter.light(&isect2, sampler);
+                                let mut rad2 = self.unipath_lighter.light(&isect2, sampler);
                                 rad2 = rad2 - isect2.primitive.surface.radiance;
 
                                 samples[k*M + j] = rad2;
@@ -399,7 +384,7 @@ impl IrradianceCached {
 
                     if mean > 0.0 {
                         let projected_pixel_size = scene.camera.project_size(2.0 / (width as f32), isect.shape_isect.distance);
-                        let min_radius = 3.0 * projected_pixel_size / shared_state.cache.threshold;
+                        let min_radius = 3.0 * projected_pixel_size / self.cache.threshold;
                         let max_radius = 20.0 * min_radius;
                         let radius = (den as f32) / mean;
                         let entry_radius = radius.min(max_radius).max(min_radius);
@@ -434,7 +419,7 @@ impl IrradianceCached {
                         }
 
                         let new_entry = CacheEntry {point: pnt, normal: nrm_facing, radiance: rad, radius: entry_radius, rot_grad, trans_grad};
-                        shared_state.cache.add(new_entry);
+                        self.cache.add(new_entry);
                         pixel_color = Color::ONE;
                     }
                 }
@@ -446,6 +431,23 @@ impl IrradianceCached {
         }
     }
 }
+pub struct IrradianceCached {
+    inner: Arc<Inner>
+}
+
+struct ThreadLocal {
+    sampler: Random
+}
+
+impl IrradianceCached {
+    pub fn new(settings: IrradianceCachedSettings) -> IrradianceCached {
+        let direct_lighter = Direct::new();
+        let unipath_lighter = UniPath::new();
+        let cache = Cache::new(settings.cache_threshold);
+        let inner = Arc::new(Inner {settings, direct_lighter, unipath_lighter, cache});
+        return IrradianceCached {inner};
+    }
+}
 
 impl Lighter for IrradianceCached {
     fn light(&self, isect: &object::Intersection, sampler: &mut dyn object::Sampler) -> Radiance {
@@ -454,10 +456,10 @@ impl Lighter for IrradianceCached {
         let nrm_facing = isect.facing_normal;
         let albedo = isect.albedo;
 
-        let mut rad = self.shared_state.direct_lighter.light(isect, sampler);
+        let mut rad = self.inner.direct_lighter.light(isect, sampler);
 
         if surface.lambert > 0.0 {
-            let irad = self.shared_state.cache.interpolate(pnt, nrm_facing);
+            let irad = self.inner.cache.interpolate(pnt, nrm_facing);
             rad += irad * albedo * surface.lambert / PI;
         }
 
@@ -474,13 +476,13 @@ impl Lighter for IrradianceCached {
             return Vec::new();
         }
 
-        let shared_state = self.shared_state.clone();
+        let inner = self.inner.clone();
         let job = Box::new(RasterJob::new(
             width,
             height,
             1,
             move |x, y, _sample, thread_local: &mut ThreadLocal| {
-                Self::prerender_pixel(x, y, &framebuffer, &scene, &mut thread_local.sampler, &shared_state);
+                inner.prerender_pixel(x, y, &framebuffer, &scene, &mut thread_local.sampler);
             },
             || {},
             move || {

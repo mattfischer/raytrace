@@ -26,30 +26,26 @@ struct ThreadInfo {
     sender: Sender<Command>,
 }
 
-struct SharedState {
+struct Inner {
     num_running: AtomicUsize,
     run_jobs: AtomicBool,
 }
-pub struct Executor {
-    threads: Vec<ThreadInfo>,
-    shared_state: Arc<SharedState>,
-}
 
-impl Executor {
-    fn run_thread(receiver: Receiver<Command>, shared_state: Arc<SharedState>) {
+impl Inner {
+    fn run_thread(&self, receiver: Receiver<Command>) {
         loop {
             if let Ok(command) = receiver.recv() {
                 match command {
                     Command::RunJob(job, done) => {
-                        shared_state.num_running.fetch_add(1, Ordering::SeqCst);
+                        self.num_running.fetch_add(1, Ordering::SeqCst);
                         let mut job_done = false;
                         let mut thread_local = job.create_thread_local();
-                        while !job_done && shared_state.run_jobs.load(Ordering::SeqCst) {
+                        while !job_done && self.run_jobs.load(Ordering::SeqCst) {
                             if !job.execute(thread_local.deref_mut()) {
                                 job_done = true;
                             }
                         }
-                        shared_state.num_running.fetch_sub(1, Ordering::SeqCst);
+                        self.num_running.fetch_sub(1, Ordering::SeqCst);
                         if job_done {
                             if let Some(done) = Arc::into_inner(done) {
                                 job.done();
@@ -63,10 +59,17 @@ impl Executor {
             }
         }
     }
+}
 
+pub struct Executor {
+    threads: Vec<ThreadInfo>,
+    inner: Arc<Inner>,
+}
+
+impl Executor {
     pub fn new() -> Executor {
         let mut threads = Vec::new();
-        let shared_state = Arc::new(SharedState {
+        let inner = Arc::new(Inner {
             num_running: AtomicUsize::new(0),
             run_jobs: AtomicBool::new(true),
         });
@@ -78,16 +81,16 @@ impl Executor {
 
         for _ in 0..num_threads {
             let (sender, receiver) = std::sync::mpsc::channel();
-            let shared_state = shared_state.clone();
+            let inner = inner.clone();
             let handle = std::thread::spawn(move || {
-                Self::run_thread(receiver, shared_state);
+                inner.run_thread(receiver);
             });
             threads.push(ThreadInfo { handle, sender });
         }
 
         return Executor {
             threads,
-            shared_state,
+            inner,
         };
     }
 
@@ -95,7 +98,7 @@ impl Executor {
     where
         D: FnOnce() + Send + Sync + 'static,
     {
-        self.shared_state.run_jobs.store(true, Ordering::SeqCst);
+        self.inner.run_jobs.store(true, Ordering::SeqCst);
         let j = Arc::new(job);
         let d = Arc::new(Box::new(done) as Box<dyn FnOnce() + Send + Sync>);
         for thread in self.threads.iter() {
@@ -104,17 +107,17 @@ impl Executor {
     }
 
     pub fn stop(&self) {
-        self.shared_state.run_jobs.store(false, Ordering::SeqCst);
+        self.inner.run_jobs.store(false, Ordering::SeqCst);
     }
 
     pub fn running(&self) -> bool {
-        return self.shared_state.num_running.load(Ordering::SeqCst) > 0;
+        return self.inner.num_running.load(Ordering::SeqCst) > 0;
     }
 }
 
 impl Drop for Executor {
     fn drop(&mut self) {
-        self.shared_state.run_jobs.store(false, Ordering::SeqCst);
+        self.inner.run_jobs.store(false, Ordering::SeqCst);
         for thread in self.threads.drain(..) {
             let _ = thread.sender.send(Command::Exit);
             let _ = thread.handle.join();
