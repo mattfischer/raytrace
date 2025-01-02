@@ -110,10 +110,7 @@ impl Inner {
     fn start_initial_sample_job(self : &Arc<Inner>) {
         let width = self.settings.width;
         let height = self.settings.height;
-        let current_sample = match self.current_sample.lock() {
-            Ok(current_sample) => *current_sample,
-            _ => 0
-        };
+        let current_sample = *self.current_sample.lock().unwrap();
 
         let self_1 = self.clone();
         let self_2 = self.clone();
@@ -136,10 +133,7 @@ impl Inner {
     fn start_direct_illuminate_job(self : &Arc<Inner>) {
         let width = self.settings.width;
         let height = self.settings.height;
-        let current_sample = match self.current_sample.lock() {
-            Ok(current_sample) => *current_sample,
-            _ => 0
-        };
+        let current_sample = *self.current_sample.lock().unwrap();
 
         let self_1 = self.clone();
         let self_2 = self.clone();
@@ -162,10 +156,7 @@ impl Inner {
     fn start_indirect_illuminate_job(self : &Arc<Inner>) {
         let width = self.settings.width;
         let height = self.settings.height;
-        let current_sample = match self.current_sample.lock() {
-            Ok(current_sample) => *current_sample,
-            _ => 0
-        };
+        let current_sample = *self.current_sample.lock().unwrap();
 
         let self_1 = self.clone();
         let self_2 = self.clone();
@@ -185,27 +176,19 @@ impl Inner {
         );
         
         let done = move || {
-            let current_sample = if let Ok(mut current_sample) = self_2.current_sample.lock() {                    
-                *current_sample += 1;
-                *current_sample
-            } else {
-                0
-            };
+            {
+                let mut current_sample = self_2.current_sample.lock().unwrap();
+                *current_sample = *current_sample + 1;
+            }
 
-            if current_sample < self_2.settings.samples {
+            if *self_2.current_sample.lock().unwrap() < self_2.settings.samples {
                 self_2.start_initial_sample_job();
             } else {
-                let start_time = if let Ok(s) = self_2.start_time.lock() {
-                    *s
-                } else {
-                    Instant::now()
-                };
+                let start_time = *self_2.start_time.lock().unwrap();
                 let end_time = Instant::now();
                 let time_elapsed = end_time - start_time;
-                if let Ok(mut done_listener) = self_2.done_listener.lock() {
-                    if let Some(done_listener) = done_listener.take() {
-                        done_listener(time_elapsed.as_secs_f32());
-                    }
+                if let Some(done_listener) = self_2.done_listener.lock().unwrap().take() {
+                    done_listener(time_elapsed.as_secs_f32());
                 }
             }
         };
@@ -224,17 +207,13 @@ impl Inner {
         let rad_emitted;
             
         if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
-            if let Ok(mut primary_hits) = self.primary_hits.write() {
-                primary_hits.set(x, y, Some(FlatIntersection::from(isect)));
-            }
+            self.primary_hits.write().unwrap().set(x, y, Some(FlatIntersection::from(isect)));
 
             let nrm_facing = isect.facing_normal;
             let surface = &isect.primitive.surface;
             let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
-            if let Ok(mut direct_reservoirs) = self.direct_reservoirs.write() {
-                direct_reservoirs.set(x, y, Default::default());
-            }
+            self.direct_reservoirs.write().unwrap().set(x, y, Default::default());
 
             for _ in 0..1 {
                 let light_index = (sampler.get_value() * (scene.area_lights.len() as f32)) as usize;
@@ -260,16 +239,12 @@ impl Inner {
                             primitive_idx: scene.area_lights[light_index]
                         };
 
-                        if let Ok(mut direct_reservoirs) = self.direct_reservoirs.write() {
-                            direct_reservoirs.get_mut(x, y).add_sample(sample, q, pdf2, sampler);
-                        }
+                        self.direct_reservoirs.write().unwrap().get_mut(x, y).add_sample(sample, q, pdf2, sampler);
                     }
                 }
             }
 
-            if let Ok(mut indirect_reservoirs) = self.indirect_reservoirs.write() {
-                indirect_reservoirs.set(x, y, Default::default());
-            }
+            self.indirect_reservoirs.write().unwrap().set(x, y, Default::default());
 
             if let (_reflected, dir_in, Some(pdf)) = surface.sample(&isect, sampler) {
                 let reverse = (dir_in * nrm_facing).signum();
@@ -289,18 +264,14 @@ impl Inner {
                         };
 
                         let q = sample.indirect_radiance.mag();
-                        if let Ok(mut indirect_reservoirs) = self.indirect_reservoirs.write() {
-                            indirect_reservoirs.get_mut(x, y).add_sample(sample, q, pdf, sampler);
-                        }
+                        self.indirect_reservoirs.write().unwrap().get_mut(x, y).add_sample(sample, q, pdf, sampler);
                     }
                 }
             }
 
             rad_emitted = isect.primitive.surface.radiance;
         } else {
-            if let Ok(mut primary_hits) = self.primary_hits.write() {
-                primary_hits.set(x, y, None);
-            }
+            self.primary_hits.write().unwrap().set(x, y, None);
             rad_emitted = scene.sky_radiance;
         }
 
@@ -310,71 +281,64 @@ impl Inner {
     fn direct_illuminate_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler) {
         let mut rad_direct = Radiance::ZERO;
 
-        if let Ok(primary_hits) = self.primary_hits.read() {
-            if let Some(primary_hit) = primary_hits.get(x, y) {
-                let isect = Intersection::with_flat(primary_hit, &self.scene);
+        if let Some(primary_hit) = self.primary_hits.read().unwrap().get(x, y) {
+            let isect = Intersection::with_flat(primary_hit, &self.scene);
 
-                let nrm_facing = isect.facing_normal;
-                let surface = &isect.primitive.surface;
-                let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
+            let nrm_facing = isect.facing_normal;
+            let surface = &isect.primitive.surface;
+            let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
-                let mut res = Reservoir::<DirectSample>::default();
-                let r = self.settings.radius as f32;
-                for _ in 0..self.settings.candidates {
-                    let mut s = sampler.get_value2();
-                    s = s * r * 2.0 + Point2::new(-r, -r);
-                    let sx = (s.u + x as f32).floor() as i32;
-                    let sy = (s.v + y as f32).floor() as i32;
-                    if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
-                        continue;
-                    }
-
-                    let res_candidate = 
-                    if let Ok(direct_reservoirs) = self.direct_reservoirs.read() {
-                        direct_reservoirs.get(sx as usize, sy as usize)
-                    } else {
-                        Default::default()
-                    };
-
-                    if res_candidate.q == 0.0 {
-                        continue;
-                    }
-
-                    let mut dir_in = res_candidate.sample.point - pnt_offset;
-                    let d = dir_in.mag();
-                    dir_in = dir_in / d;
-                    let dot = dir_in * nrm_facing;
-                    let dot2 = (dir_in * res_candidate.sample.normal).abs();
-
-                    let q = if dot > 0.0 {
-                        let irad = res_candidate.sample.radiance * dot2 * dot / (d * d);
-                        let rad = irad * surface.reflected(&isect, dir_in);
-                        rad.mag()
-                    } else {
-                        0.0
-                    };
-
-                    res.add_reservoir(res_candidate, q, 1.0, sampler);
+            let mut res = Reservoir::<DirectSample>::default();
+            let r = self.settings.radius as f32;
+            for _ in 0..self.settings.candidates {
+                let mut s = sampler.get_value2();
+                s = s * r * 2.0 + Point2::new(-r, -r);
+                let sx = (s.u + x as f32).floor() as i32;
+                let sy = (s.v + y as f32).floor() as i32;
+                if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
+                    continue;
                 }
 
-                if res.w > 0.0 {
-                    let mut dir_in = res.sample.point - pnt_offset;
-                    let d = dir_in.mag();
-                    dir_in = dir_in / d;
-                    let dot = dir_in * nrm_facing;
-                    let dot2 = (dir_in * res.sample.normal).abs();
+                let res_candidate = self.direct_reservoirs.read().unwrap().get(sx as usize, sy as usize);
+                if res_candidate.q == 0.0 {
+                    continue;
+                }
 
-                    if dot > 0.0 {
-                        let ray = Ray::new(pnt_offset, dir_in);
-                        let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-                        if let Some(isect2) = self.scene.intersect(beam, f32::MAX, true) {
-                            if isect2.primitive_idx == res.sample.primitive_idx {
-                                let irad = res.sample.radiance * dot2 * dot / (d * d);
-                                let rad = irad * surface.reflected(&isect, dir_in);
-                                rad_direct = rad * res.w;
-                            }
-                        }                        
-                    }
+                let mut dir_in = res_candidate.sample.point - pnt_offset;
+                let d = dir_in.mag();
+                dir_in = dir_in / d;
+                let dot = dir_in * nrm_facing;
+                let dot2 = (dir_in * res_candidate.sample.normal).abs();
+
+                let q;
+                if dot > 0.0 {
+                    let irad = res_candidate.sample.radiance * dot2 * dot / (d * d);
+                    let rad = irad * surface.reflected(&isect, dir_in);
+                    q = rad.mag();
+                } else {
+                    q = 0.0;
+                };
+
+                res.add_reservoir(res_candidate, q, 1.0, sampler);
+            }
+
+            if res.w > 0.0 {
+                let mut dir_in = res.sample.point - pnt_offset;
+                let d = dir_in.mag();
+                dir_in = dir_in / d;
+                let dot = dir_in * nrm_facing;
+                let dot2 = (dir_in * res.sample.normal).abs();
+
+                if dot > 0.0 {
+                    let ray = Ray::new(pnt_offset, dir_in);
+                    let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
+                    if let Some(isect2) = self.scene.intersect(beam, f32::MAX, true) {
+                        if isect2.primitive_idx == res.sample.primitive_idx {
+                            let irad = res.sample.radiance * dot2 * dot / (d * d);
+                            let rad = irad * surface.reflected(&isect, dir_in);
+                            rad_direct = rad * res.w;
+                        }
+                    }                        
                 }
             }
         }
@@ -386,64 +350,52 @@ impl Inner {
         let mut rad_indirect = Radiance::ZERO;
         let n = self.settings.indirect_samples;
 
-        if let Ok(primary_hits) = self.primary_hits.read() {
-            if let Some(primary_hit) = primary_hits.get(x, y) {
-                let isect = Intersection::with_flat(primary_hit, &self.scene);
+        if let Some(primary_hit) = self.primary_hits.read().unwrap().get(x, y) {
+            let isect = Intersection::with_flat(primary_hit, &self.scene);
 
-                let nrm_facing = isect.facing_normal;
-                let surface = &isect.primitive.surface;
+            let nrm_facing = isect.facing_normal;
+            let surface = &isect.primitive.surface;
 
-                for sample in indirect_samples.iter_mut() {
-                    *sample = Default::default();
+            indirect_samples.fill(Default::default());
+
+            let r = self.settings.radius as f32;
+            for _ in 0..self.settings.candidates {
+                let mut s = sampler.get_value2();
+                s = s * r * 2.0 + Point2::new(-r, -r);
+                let sx = (s.u + x as f32).floor() as i32;
+                let sy = (s.v + y as f32).floor() as i32;
+                if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
+                    continue;
                 }
-                
-                let r = self.settings.radius as f32;
-                for _ in 0..self.settings.candidates {
-                    let mut s = sampler.get_value2();
-                    s = s * r * 2.0 + Point2::new(-r, -r);
-                    let sx = (s.u + x as f32).floor() as i32;
-                    let sy = (s.v + y as f32).floor() as i32;
-                    if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
+
+                if let Some(flat_isect_s) = self.primary_hits.read().unwrap().get(sx as usize, sy as usize) {
+                    let isect_s = Intersection::with_flat(flat_isect_s, &self.scene);
+
+                    let res_candidate = self.indirect_reservoirs.read().unwrap().get(sx as usize, sy as usize);
+                    if res_candidate.q == 0.0 {
                         continue;
                     }
 
-                    if let Ok(primary_hits) = self.primary_hits.read() {
-                        if let Some(flat_isect_s) = primary_hits.get(sx as usize, sy as usize) {
-                            let isect_s = Intersection::with_flat(flat_isect_s, &self.scene);
-
-                            let res_candidate = 
-                            if let Ok(indirect_reservoirs) = self.indirect_reservoirs.read() {
-                                indirect_reservoirs.get(sx as usize, sy as usize)
-                            } else {
-                                Default::default()
-                            };
-
-                            if res_candidate.q == 0.0 {
-                                continue;
-                            }
-
-                            for i in 0..n {
-                                let r = res_candidate.sample.point - isect.point;
-                                let q = res_candidate.sample.point - isect_s.point;
-                                let n = res_candidate.sample.normal;
-                                let j = ((n * r) * q.mag2() / ((n * q) * r.mag2())).abs();
-                                indirect_samples[i].add_reservoir(res_candidate, res_candidate.q, j, sampler);
-                            }
-                        }
+                    for i in 0..n {
+                        let r = res_candidate.sample.point - isect.point;
+                        let q = res_candidate.sample.point - isect_s.point;
+                        let n = res_candidate.sample.normal;
+                        let j = ((n * r) * q.mag2() / ((n * q) * r.mag2())).abs();
+                        indirect_samples[i].add_reservoir(res_candidate, res_candidate.q, j, sampler);
                     }
                 }
+            }
 
-                for i in 0..n {
-                    if indirect_samples[i].w > 0.0 {
-                        let mut dir_in = indirect_samples[i].sample.point - isect.point;
-                        let d = dir_in.mag();
-                        dir_in = dir_in / d;
-                        let dot = dir_in * nrm_facing;
+            for i in 0..n {
+                if indirect_samples[i].w > 0.0 {
+                    let mut dir_in = indirect_samples[i].sample.point - isect.point;
+                    let d = dir_in.mag();
+                    dir_in = dir_in / d;
+                    let dot = dir_in * nrm_facing;
 
-                        if dot > 0.0 {
-                            let reflected = surface.reflected(&isect, dir_in);
-                            rad_indirect += indirect_samples[i].sample.indirect_radiance * dot * reflected * indirect_samples[i].w;
-                        }
+                    if dot > 0.0 {
+                        let reflected = surface.reflected(&isect, dir_in);
+                        rad_indirect += indirect_samples[i].sample.indirect_radiance * dot * reflected * indirect_samples[i].w;
                     }
                 }
             }
@@ -453,15 +405,11 @@ impl Inner {
     }
 
     fn add_radiance(&self, x: usize, y: usize, sample: usize, radiance: Radiance) {
-        if let Ok(mut total_radiance) = self.total_radiance.lock() {
-            let rad_total = total_radiance.get(x, y) + radiance;
-            total_radiance.set(x, y, rad_total);
+        let rad_total = self.total_radiance.lock().unwrap().get(x, y) + radiance;
+        self.total_radiance.lock().unwrap().set(x, y, rad_total);
 
-            let color = Framebuffer::tone_map(rad_total / ((sample + 1) as f32));
-            if let Ok(mut framebuffer) = self.framebuffer.lock() {
-                framebuffer.set_pixel(x, y, color);
-            }
-        }
+        let color = Framebuffer::tone_map(rad_total / ((sample + 1) as f32));
+        self.framebuffer.lock().unwrap().set_pixel(x, y, color);
     }
 }
 
@@ -514,13 +462,8 @@ impl ReSTIR {
 impl Renderer for ReSTIR {
     fn start(&self, done: Box<DoneFunc>)
     {
-        if let Ok(mut done_listener) = self.inner.done_listener.lock() {
-            done_listener.replace(done);
-        }
-
-        if let Ok(mut start_time) = self.inner.start_time.lock() {
-            *start_time = Instant::now();
-        }
+        self.inner.done_listener.lock().unwrap().replace(done);
+        *self.inner.start_time.lock().unwrap() = Instant::now();
 
         self.inner.start_initial_sample_job();
     }
@@ -534,10 +477,6 @@ impl Renderer for ReSTIR {
     }
 
     fn framebuffer_ptr(&self) -> *const u8 {
-        if let Ok(framebuffer) = self.inner.framebuffer.lock() {
-            return framebuffer.bits.as_ptr();
-        } else {
-            return std::ptr::null();
-        }
+        return self.inner.framebuffer.lock().unwrap().bits.as_ptr();
     }
 }

@@ -100,9 +100,7 @@ impl Simple {
             },
         ));
 
-        if let Ok(mut jobs) = inner.jobs.lock() {
-            jobs.push_back(job as Box<dyn ExecutorJob>);
-        }
+        inner.jobs.lock().unwrap().push_back(job as Box<dyn ExecutorJob>);
 
         return Simple { inner };
     }
@@ -137,13 +135,10 @@ impl Inner {
                 rad = self.scene.sky_radiance;
             }
 
-            let rad_total;
-            if let Ok(mut total_radiance) = self.total_radiance.lock() {
-                rad_total = total_radiance.get(x, y) + rad;
-                total_radiance.set(x, y, rad_total);
-            } else {
-                rad_total = Radiance::ZERO;
-            }
+            let mut total_radiance = self.total_radiance.lock().unwrap();
+            let rad_total = total_radiance.get(x, y) + rad;
+            total_radiance.set(x, y, rad_total);
+            
             color = Framebuffer::tone_map(rad_total / (sample as f32 + 1.0));
         } else {
             if let Some(isect) = isect {
@@ -153,29 +148,19 @@ impl Inner {
             }
         }
 
-        if let Ok(mut framebuffer) = self.framebuffer.lock() {
-            framebuffer.set_pixel(x, y, color);
-        }
+        self.framebuffer.lock().unwrap().set_pixel(x, y, color);
     }
 
     fn job_done(self: &Arc<Inner>) {
-        if let Ok(mut jobs) = self.jobs.lock() {
-            if let Some(job) = jobs.pop_front() {
-                let self_1 = self.clone();
-                self.executor.run_job(job, move || self_1.job_done());
-            } else {
-                let start_time = if let Ok(s) = self.start_time.lock() {
-                    *s
-                } else {
-                    Instant::now()
-                };
-                let end_time = Instant::now();
-                let time_elapsed = end_time - start_time;
-                if let Ok(mut done_listener) = self.done_listener.lock() {
-                    if let Some(done_listener) = done_listener.take() {
-                        done_listener(time_elapsed.as_secs_f32());
-                    }
-                }
+        if let Some(job) = self.jobs.lock().unwrap().pop_front() {
+            let self_1 = self.clone();
+            self.executor.run_job(job, move || self_1.job_done());
+        } else {
+            let start_time = *self.start_time.lock().unwrap();
+            let end_time = Instant::now();
+            let time_elapsed = end_time - start_time;
+            if let Some(done_listener) = self.done_listener.lock().unwrap().take() {
+                done_listener(time_elapsed.as_secs_f32());
             }
         }
     }
@@ -184,22 +169,16 @@ impl Inner {
 impl Renderer for Simple {
     fn start(&self, done: Box<dyn FnOnce(f32) + 'static + Send + Sync>)
     {
-        if let Ok(mut done_listener) = self.inner.done_listener.lock() {
-            done_listener.replace(done);
+        self.inner.done_listener.lock().unwrap().replace(done);
+
+        if let Some(job) = self.inner.jobs.lock().unwrap().pop_front() {
+            let inner = self.inner.clone();
+            self.inner
+                .executor
+                .run_job(job, move || inner.job_done());
         }
 
-        if let Ok(mut jobs) = self.inner.jobs.lock() {
-            if let Some(job) = jobs.pop_front() {
-                let inner = self.inner.clone();
-                self.inner
-                    .executor
-                    .run_job(job, move || inner.job_done());
-            }
-        }
-
-        if let Ok(mut start_time) = self.inner.start_time.lock() {
-            *start_time = Instant::now();
-        }
+        *self.inner.start_time.lock().unwrap() = Instant::now();
     }
 
     fn stop(&self) {
@@ -211,10 +190,6 @@ impl Renderer for Simple {
     }
 
     fn framebuffer_ptr(&self) -> *const u8 {
-        if let Ok(framebuffer) = self.inner.framebuffer.lock() {
-            return framebuffer.bits.as_ptr();
-        } else {
-            return std::ptr::null();
-        }
+        return self.inner.framebuffer.lock().unwrap().bits.as_ptr();
     }
 }

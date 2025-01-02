@@ -118,53 +118,52 @@ impl Cache {
     }
 
     fn add(&self, entry: CacheEntry) {
-        if let Ok(mut octree) = self.octree.write() {
-            let r = entry.radius * self.threshold;
-            if octree.root.is_none() {
-                octree.root = Some(Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]}));
-                octree.size = r;
-                octree.origin = entry.point;
-            }
-
-            while 
-                (entry.point.x - octree.origin.x).abs() > octree.size ||
-                (entry.point.y - octree.origin.y).abs() > octree.size ||
-                (entry.point.z - octree.origin.z).abs() > octree.size ||
-                octree.size < r {
-                let x = (entry.point.x - octree.origin.x).signum();
-                let y = (entry.point.y - octree.origin.y).signum();
-                let z = (entry.point.z - octree.origin.z).signum();
-                
-                let idx = if x < 0.0 { 1 } else { 0 } + if y < 0.0 { 2 } else { 0 } + if z < 0.0 { 4 } else { 0 };
-                let mut new_root = Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]});
-                new_root.children[idx] = octree.root.take();
-                octree.root = Some(new_root);
-                let size = octree.size;
-                octree.origin += Vec3::new(x, y, z) * size;
-                octree.size *= 2.0;
-            }
-    
-            let mut origin = octree.origin;
-            let mut size = octree.size;
-            let mut node = octree.root.as_mut().unwrap();
-            while size > r * 2.0 {
-                let x = (entry.point.x - origin.x).signum();
-                let y = (entry.point.y - origin.y).signum();
-                let z = (entry.point.z - origin.z).signum();
-                
-                let idx = if x > 0.0 { 1 } else { 0 } + if y > 0.0 { 2 } else { 0 } + if z > 0.0 { 4 } else { 0 };
-                let new_origin = origin + Vec3::new(x, y, z) * size / 2.0;
-                if node.children[idx].is_none() {
-                    node.children[idx] = Some(Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]}));
-                }
-
-                origin = new_origin;
-                size /= 2.0;
-                node = node.children[idx].as_mut().unwrap();
-            }
-
-            node.entries.push(entry);
+        let mut octree = self.octree.write().unwrap();
+        let r = entry.radius * self.threshold;
+        if octree.root.is_none() {
+            octree.root = Some(Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]}));
+            octree.size = r;
+            octree.origin = entry.point;
         }
+
+        while 
+            (entry.point.x - octree.origin.x).abs() > octree.size ||
+            (entry.point.y - octree.origin.y).abs() > octree.size ||
+            (entry.point.z - octree.origin.z).abs() > octree.size ||
+            octree.size < r {
+            let x = (entry.point.x - octree.origin.x).signum();
+            let y = (entry.point.y - octree.origin.y).signum();
+            let z = (entry.point.z - octree.origin.z).signum();
+            
+            let idx = if x < 0.0 { 1 } else { 0 } + if y < 0.0 { 2 } else { 0 } + if z < 0.0 { 4 } else { 0 };
+            let mut new_root = Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]});
+            new_root.children[idx] = octree.root.take();
+            octree.root = Some(new_root);
+            let size = octree.size;
+            octree.origin += Vec3::new(x, y, z) * size;
+            octree.size *= 2.0;
+        }
+
+        let mut origin = octree.origin;
+        let mut size = octree.size;
+        let mut node = octree.root.as_mut().unwrap();
+        while size > r * 2.0 {
+            let x = (entry.point.x - origin.x).signum();
+            let y = (entry.point.y - origin.y).signum();
+            let z = (entry.point.z - origin.z).signum();
+            
+            let idx = if x > 0.0 { 1 } else { 0 } + if y > 0.0 { 2 } else { 0 } + if z > 0.0 { 4 } else { 0 };
+            let new_origin = origin + Vec3::new(x, y, z) * size / 2.0;
+            if node.children[idx].is_none() {
+                node.children[idx] = Some(Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]}));
+            }
+
+            origin = new_origin;
+            size /= 2.0;
+            node = node.children[idx].as_mut().unwrap();
+        }
+
+        node.entries.push(entry);
     }
 
     fn weight(entry: &CacheEntry, point: Point3, normal: Normal3) -> f32 {
@@ -249,62 +248,56 @@ impl Cache {
     pub fn test(&self, point: Point3, normal: Normal3) -> bool {
         let mut ret = false;
 
-        if let Ok(octree) = self.octree.read() {
-            let mut callback = |entry| {
-                let w = Self::weight(entry, point, normal);
-                if Self::is_entry_valid(entry, point, normal, w, self.threshold) {
-                    ret = true;
-                    return false;
-                }
-                return true;
-            };
+        let octree = self.octree.read().unwrap();
+        let mut callback = |entry| {
+            let w = Self::weight(entry, point, normal);
+            if Self::is_entry_valid(entry, point, normal, w, self.threshold) {
+                ret = true;
+                return false;
+            }
+            return true;
+        };
 
-            Self::visit_octree_node(&octree.root, octree.origin, octree.size, point, &mut callback);
-        }
+        Self::visit_octree_node(&octree.root, octree.origin, octree.size, point, &mut callback);
 
         return ret;
     }
 
     fn interpolate(&self, point: Point3, normal: Normal3) -> Radiance {
-        let mut result = Radiance::ZERO;
+        let octree = self.octree.read().unwrap();
+        let mut total_weight = 0.0;
+        let mut irradiance = Radiance::ZERO;
+        let mut threshold = self.threshold;
 
-        if let Ok(octree) = self.octree.read() {
-            let mut total_weight = 0.0;
-            let mut irradiance = Radiance::ZERO;
-            let mut threshold = self.threshold;
-
-            for _ in 0..3 {
-                let mut callback = |entry| {
-                    let w = Self::weight(entry, point, normal);
-                    if Self::is_entry_valid(entry, point, normal, w, threshold) {
-                        if w.is_infinite() {
-                            irradiance = entry.radiance;
-                            total_weight = 1.0;
-                            return false;
-                        } else {
-                            let cross = Vec3::from(normal % entry.normal);
-                            let dist = point - entry.point;
-                            irradiance += (entry.radiance + entry.rot_grad * cross + entry.trans_grad * dist) * w;
-                            total_weight += w;
-                        }
+        for _ in 0..3 {
+            let mut callback = |entry| {
+                let w = Self::weight(entry, point, normal);
+                if Self::is_entry_valid(entry, point, normal, w, threshold) {
+                    if w.is_infinite() {
+                        irradiance = entry.radiance;
+                        total_weight = 1.0;
+                        return false;
+                    } else {
+                        let cross = Vec3::from(normal % entry.normal);
+                        let dist = point - entry.point;
+                        irradiance += (entry.radiance + entry.rot_grad * cross + entry.trans_grad * dist) * w;
+                        total_weight += w;
                     }
-                    return true;
-                };
-
-                Self::visit_octree_node(&octree.root, octree.origin, octree.size, point, &mut callback);
-
-                if total_weight > 0.0 {
-                    irradiance = irradiance / total_weight;
-                    break;
-                } else {
-                    threshold *= 2.0;
                 }
-            }
+                return true;
+            };
 
-            result = irradiance.clamp();
+            Self::visit_octree_node(&octree.root, octree.origin, octree.size, point, &mut callback);
+
+            if total_weight > 0.0 {
+                irradiance = irradiance / total_weight;
+                break;
+            } else {
+                threshold *= 2.0;
+            }
         }
 
-        return result;
+        return irradiance.clamp();
     }
 }
 
@@ -322,14 +315,8 @@ struct Inner {
 
 impl Inner {
     fn prerender_pixel(&self, x: usize, y: usize, framebuffer: &Mutex<Framebuffer>, scene: &Scene, sampler: &mut dyn Sampler) {
-        let width;
-        let height;
-        if let Ok(framebuffer) = framebuffer.lock() {
-            width = framebuffer.width;
-            height = framebuffer.height;
-        } else {
-            return;
-        }
+        let width = framebuffer.lock().unwrap().width;
+        let height = framebuffer.lock().unwrap().height;
 
         sampler.start_sample_with_xys(x, y, 0);
         
@@ -422,9 +409,7 @@ impl Inner {
             }
         }
 
-        if let Ok(mut framebuffer) = framebuffer.lock() {
-            framebuffer.set_pixel(x, y, pixel_color);
-        }
+        framebuffer.lock().unwrap().set_pixel(x, y, pixel_color);
     }
 }
 pub struct IrradianceCached {
@@ -463,14 +448,8 @@ impl Lighter for IrradianceCached {
     }
 
     fn create_prerender_jobs(&self, scene: Arc<Scene>, framebuffer: Arc<Mutex<Framebuffer>>) -> Vec<Box<dyn ExecutorJob>> {
-        let width;
-        let height;
-        if let Ok(framebuffer) = framebuffer.lock() {
-            width = framebuffer.width;
-            height = framebuffer.height;
-        } else {
-            return Vec::new();
-        }
+        let width = framebuffer.lock().unwrap().width;
+        let height = framebuffer.lock().unwrap().height;
 
         let inner = self.inner.clone();
         let job = Box::new(RasterJob::new(
