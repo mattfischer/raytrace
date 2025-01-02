@@ -94,7 +94,6 @@ impl Simple {
             move |x, y, sample, thread_local: &mut ThreadLocal| {
                 inner_clone.render_pixel(x, y, sample, &mut thread_local.sampler);
             },
-            || {},
             move || {
                 let sampler = Halton::new(width as i32, height as i32);
                 return Box::new(ThreadLocal { sampler });

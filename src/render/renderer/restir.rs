@@ -123,16 +123,13 @@ impl Inner {
                 self_1.initial_sample_pixel(x, y, current_sample, &mut thread_local.sampler);
             },
             move || {
-                self_2.start_direct_illuminate_job();
-            },
-            move || {
                 let sampler = Halton::new(width as i32, height as i32);
                 let indirect_samples = Vec::new();
                 return Box::new(ThreadLocal { sampler, indirect_samples });
             }
         );
         
-        self.executor.run_job(Box::new(job), || {});
+        self.executor.run_job(Box::new(job), move || self_2.start_direct_illuminate_job() );
     }
 
     fn start_direct_illuminate_job(self : &Arc<Inner>) {
@@ -152,16 +149,13 @@ impl Inner {
                 self_1.direct_illuminate_pixel(x, y, current_sample, &mut thread_local.sampler);
             },
             move || {
-                self_2.start_indirect_illuminate_job();
-            },
-            move || {
                 let sampler = Halton::new(width as i32, height as i32);
                 let indirect_samples = Vec::new();
                 return Box::new(ThreadLocal { sampler, indirect_samples });
             }
         );
         
-        self.executor.run_job(Box::new(job), || {});
+        self.executor.run_job(Box::new(job), move || self_2.start_indirect_illuminate_job() );
     }
 
     fn start_indirect_illuminate_job(self : &Arc<Inner>) {
@@ -182,31 +176,6 @@ impl Inner {
                 self_1.indirect_illuminate_pixel(x, y, current_sample, &mut thread_local.sampler, &mut thread_local.indirect_samples[..]);
             },
             move || {
-                let current_sample = if let Ok(mut current_sample) = self_2.current_sample.lock() {                    
-                    *current_sample += 1;
-                    *current_sample
-                } else {
-                    0
-                };
-
-                if(current_sample < self_2.settings.samples) {
-                    self_2.start_initial_sample_job();
-                } else {
-                    let start_time = if let Ok(s) = self_2.start_time.lock() {
-                        *s
-                    } else {
-                        Instant::now()
-                    };
-                    let end_time = Instant::now();
-                    let time_elapsed = end_time - start_time;
-                    if let Ok(mut done_listener) = self_2.done_listener.lock() {
-                        if let Some(done_listener) = done_listener.take() {
-                            done_listener(time_elapsed.as_secs_f32());
-                        }
-                    }
-                }
-            },
-            move || {
                 let sampler = Halton::new(width as i32, height as i32);
                 let mut indirect_samples = Vec::new();
                 indirect_samples.resize(self_3.settings.indirect_samples, Default::default());
@@ -214,7 +183,33 @@ impl Inner {
             }
         );
         
-        self.executor.run_job(Box::new(job), || {});
+        let done = move || {
+            let current_sample = if let Ok(mut current_sample) = self_2.current_sample.lock() {                    
+                *current_sample += 1;
+                *current_sample
+            } else {
+                0
+            };
+
+            if(current_sample < self_2.settings.samples) {
+                self_2.start_initial_sample_job();
+            } else {
+                let start_time = if let Ok(s) = self_2.start_time.lock() {
+                    *s
+                } else {
+                    Instant::now()
+                };
+                let end_time = Instant::now();
+                let time_elapsed = end_time - start_time;
+                if let Ok(mut done_listener) = self_2.done_listener.lock() {
+                    if let Some(done_listener) = done_listener.take() {
+                        done_listener(time_elapsed.as_secs_f32());
+                    }
+                }
+            }
+        };
+
+        self.executor.run_job(Box::new(job), done);
     }
 
     fn initial_sample_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler) {

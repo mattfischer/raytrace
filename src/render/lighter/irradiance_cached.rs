@@ -484,7 +484,6 @@ impl Lighter for IrradianceCached {
             move |x, y, _sample, thread_local: &mut ThreadLocal| {
                 inner.prerender_pixel(x, y, &framebuffer, &scene, &mut thread_local.sampler);
             },
-            || {},
             move || {
                 let sampler = Random::new();
                 return Box::new(ThreadLocal { sampler });

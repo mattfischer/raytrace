@@ -10,7 +10,6 @@ use std::sync::Arc;
 pub trait ExecutorJob: Send + Sync {
     fn execute(&self, thread_local: &mut dyn Any) -> bool;
     fn create_thread_local(&self) -> Box<dyn Any>;
-    fn done(&self);
 }
 
 enum Command {
@@ -48,7 +47,6 @@ impl Inner {
                         self.num_running.fetch_sub(1, Ordering::SeqCst);
                         if job_done {
                             if let Some(done) = Arc::into_inner(done) {
-                                job.done();
                                 done();
                             }
                         }

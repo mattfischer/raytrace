@@ -7,20 +7,18 @@ use std::sync::atomic::Ordering;
 
 use std::any::Any;
 
-pub struct RasterJob<E, D, C> {
+pub struct RasterJob<E, C> {
     pub width: usize,
     pub height: usize,
     pub iterations: usize,
     pixel_index: AtomicU64,
     execute_func: E,
-    done_func: D,
     create_thread_local_func: C,
 }
 
-impl<E, D, C, T> RasterJob<E, D, C>
+impl<E, C, T> RasterJob<E, C>
 where
     E: Fn(usize, usize, usize, &mut T) + Sync + Send,
-    D: Fn() + Sync + Send,
     C: Fn() -> Box<T> + Sync + Send,
     T: 'static,
 {
@@ -29,9 +27,8 @@ where
         height: usize,
         iterations: usize,
         execute_func: E,
-        done_func: D,
         create_thread_local_func: C,
-    ) -> RasterJob<E, D, C> {
+    ) -> RasterJob<E, C> {
         let pixel_index = AtomicU64::new(0);
         return RasterJob {
             width,
@@ -39,16 +36,14 @@ where
             iterations,
             pixel_index,
             execute_func,
-            done_func,
             create_thread_local_func,
         };
     }
 }
 
-impl<E, D, C, T> ExecutorJob for RasterJob<E, D, C>
+impl<E, C, T> ExecutorJob for RasterJob<E, C>
 where
     E: Fn(usize, usize, usize, &mut T) + Sync + Send,
-    D: Fn() + Sync + Send,
     C: Fn() -> Box<T> + Sync + Send,
     T: 'static,
 {
@@ -67,10 +62,6 @@ where
         }
 
         return true;
-    }
-
-    fn done(&self) {
-        (self.done_func)();
     }
 
     fn create_thread_local(&self) -> Box<dyn Any> {
