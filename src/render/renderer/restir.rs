@@ -28,6 +28,7 @@ use render::lighter::UniPath;
 use core::f32;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::RwLock;
 use std::time::Instant;
 
 #[derive(Clone, Copy, Default)]
@@ -94,15 +95,15 @@ struct Inner {
     scene: Arc<Scene>,
     settings: ReSTIRSettings,
     indirect_lighter: Box<dyn Lighter>,
-    primary_hits: Mutex<Raster<Option<FlatIntersection>>>,
+    primary_hits: RwLock<Raster<Option<FlatIntersection>>>,
     framebuffer: Mutex<Framebuffer>,
     total_radiance: Mutex<Raster<Radiance>>,
     executor: Executor,
     start_time: Mutex<Instant>,
     done_listener: Mutex<Option<Box<DoneFunc>>>,
     current_sample: Mutex<usize>,
-    direct_reservoirs: Mutex<Raster<Reservoir<DirectSample>>>,
-    indirect_reservoirs: Mutex<Raster<Reservoir<IndirectSample>>>
+    direct_reservoirs: RwLock<Raster<Reservoir<DirectSample>>>,
+    indirect_reservoirs: RwLock<Raster<Reservoir<IndirectSample>>>
 }
 
 impl Inner {
@@ -223,7 +224,7 @@ impl Inner {
         let rad_emitted;
             
         if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
-            if let Ok(mut primary_hits) = self.primary_hits.lock() {
+            if let Ok(mut primary_hits) = self.primary_hits.write() {
                 primary_hits.set(x, y, Some(FlatIntersection::from(isect)));
             }
 
@@ -231,7 +232,7 @@ impl Inner {
             let surface = &isect.primitive.surface;
             let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
-            if let Ok(mut direct_reservoirs) = self.direct_reservoirs.lock() {
+            if let Ok(mut direct_reservoirs) = self.direct_reservoirs.write() {
                 direct_reservoirs.set(x, y, Default::default());
             }
 
@@ -259,14 +260,14 @@ impl Inner {
                             primitive_idx: scene.area_lights[light_index]
                         };
 
-                        if let Ok(mut direct_reservoirs) = self.direct_reservoirs.lock() {
+                        if let Ok(mut direct_reservoirs) = self.direct_reservoirs.write() {
                             direct_reservoirs.get_mut(x, y).add_sample(sample, q, pdf2, sampler);
                         }
                     }
                 }
             }
 
-            if let Ok(mut indirect_reservoirs) = self.indirect_reservoirs.lock() {
+            if let Ok(mut indirect_reservoirs) = self.indirect_reservoirs.write() {
                 indirect_reservoirs.set(x, y, Default::default());
             }
 
@@ -288,7 +289,7 @@ impl Inner {
                         };
 
                         let q = sample.indirect_radiance.mag();
-                        if let Ok(mut indirect_reservoirs) = self.indirect_reservoirs.lock() {
+                        if let Ok(mut indirect_reservoirs) = self.indirect_reservoirs.write() {
                             indirect_reservoirs.get_mut(x, y).add_sample(sample, q, pdf, sampler);
                         }
                     }
@@ -297,7 +298,7 @@ impl Inner {
 
             rad_emitted = isect.primitive.surface.radiance;
         } else {
-            if let Ok(mut primary_hits) = self.primary_hits.lock() {
+            if let Ok(mut primary_hits) = self.primary_hits.write() {
                 primary_hits.set(x, y, None);
             }
             rad_emitted = scene.sky_radiance;
@@ -309,77 +310,72 @@ impl Inner {
     fn direct_illuminate_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler) {
         let mut rad_direct = Radiance::ZERO;
 
-        let isect;
-        if let Ok(primary_hits) = self.primary_hits.lock() {
+        if let Ok(primary_hits) = self.primary_hits.read() {
             if let Some(primary_hit) = primary_hits.get(x, y) {
-                isect = Intersection::with_flat(primary_hit, &self.scene);
-            } else {
-                return;
-            }
-        } else {
-            return;
-        }
+                let isect = Intersection::with_flat(primary_hit, &self.scene);
 
-        let nrm_facing = isect.facing_normal;
-        let surface = &isect.primitive.surface;
-        let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
+                let nrm_facing = isect.facing_normal;
+                let surface = &isect.primitive.surface;
+                let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
-        let mut res = Reservoir::<DirectSample>::default();
-        let r = self.settings.radius as f32;
-        for _ in 0..self.settings.candidates {
-            let mut s = sampler.get_value2();
-            s = s * r * 2.0 + Point2::new(-r, -r);
-            let sx = (s.u + x as f32).floor() as i32;
-            let sy = (s.v + y as f32).floor() as i32;
-            if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
-                continue;
-            }
-
-            let res_candidate = 
-            if let Ok(direct_reservoirs) = self.direct_reservoirs.lock() {
-                direct_reservoirs.get(sx as usize, sy as usize)
-            } else {
-                Default::default()
-            };
-
-            if res_candidate.q == 0.0 {
-                continue;
-            }
-
-            let mut dir_in = res_candidate.sample.point - pnt_offset;
-            let d = dir_in.mag();
-            dir_in = dir_in / d;
-            let dot = dir_in * nrm_facing;
-            let dot2 = (dir_in * res_candidate.sample.normal).abs();
-
-            let q = if dot > 0.0 {
-                let irad = res_candidate.sample.radiance * dot2 * dot / (d * d);
-                let rad = irad * surface.reflected(&isect, dir_in);
-                rad.mag()
-            } else {
-                0.0
-            };
-
-            res.add_reservoir(res_candidate, q, 1.0, sampler);
-        }
-
-        if res.w > 0.0 {
-            let mut dir_in = res.sample.point - pnt_offset;
-            let d = dir_in.mag();
-            dir_in = dir_in / d;
-            let dot = dir_in * nrm_facing;
-            let dot2 = (dir_in * res.sample.normal).abs();
-
-            if dot > 0.0 {
-                let ray = Ray::new(pnt_offset, dir_in);
-                let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-                if let Some(isect2) = self.scene.intersect(beam, f32::MAX, true) {
-                    if isect2.primitive_idx == res.sample.primitive_idx {
-                        let irad = res.sample.radiance * dot2 * dot / (d * d);
-                        let rad = irad * surface.reflected(&isect, dir_in);
-                        rad_direct = rad * res.w;
+                let mut res = Reservoir::<DirectSample>::default();
+                let r = self.settings.radius as f32;
+                for _ in 0..self.settings.candidates {
+                    let mut s = sampler.get_value2();
+                    s = s * r * 2.0 + Point2::new(-r, -r);
+                    let sx = (s.u + x as f32).floor() as i32;
+                    let sy = (s.v + y as f32).floor() as i32;
+                    if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
+                        continue;
                     }
-                }                        
+
+                    let res_candidate = 
+                    if let Ok(direct_reservoirs) = self.direct_reservoirs.read() {
+                        direct_reservoirs.get(sx as usize, sy as usize)
+                    } else {
+                        Default::default()
+                    };
+
+                    if res_candidate.q == 0.0 {
+                        continue;
+                    }
+
+                    let mut dir_in = res_candidate.sample.point - pnt_offset;
+                    let d = dir_in.mag();
+                    dir_in = dir_in / d;
+                    let dot = dir_in * nrm_facing;
+                    let dot2 = (dir_in * res_candidate.sample.normal).abs();
+
+                    let q = if dot > 0.0 {
+                        let irad = res_candidate.sample.radiance * dot2 * dot / (d * d);
+                        let rad = irad * surface.reflected(&isect, dir_in);
+                        rad.mag()
+                    } else {
+                        0.0
+                    };
+
+                    res.add_reservoir(res_candidate, q, 1.0, sampler);
+                }
+
+                if res.w > 0.0 {
+                    let mut dir_in = res.sample.point - pnt_offset;
+                    let d = dir_in.mag();
+                    dir_in = dir_in / d;
+                    let dot = dir_in * nrm_facing;
+                    let dot2 = (dir_in * res.sample.normal).abs();
+
+                    if dot > 0.0 {
+                        let ray = Ray::new(pnt_offset, dir_in);
+                        let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
+                        if let Some(isect2) = self.scene.intersect(beam, f32::MAX, true) {
+                            if isect2.primitive_idx == res.sample.primitive_idx {
+                                let irad = res.sample.radiance * dot2 * dot / (d * d);
+                                let rad = irad * surface.reflected(&isect, dir_in);
+                                rad_direct = rad * res.w;
+                            }
+                        }                        
+                    }
+                }
             }
         }
 
@@ -389,71 +385,66 @@ impl Inner {
     fn indirect_illuminate_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler, indirect_samples: &mut [Reservoir<IndirectSample>]) {
         let mut rad_indirect = Radiance::ZERO;
         let n = self.settings.indirect_samples;
-        let isect;
 
-        if let Ok(primary_hits) = self.primary_hits.lock() {
+        if let Ok(primary_hits) = self.primary_hits.read() {
             if let Some(primary_hit) = primary_hits.get(x, y) {
-                isect = Intersection::with_flat(primary_hit, &self.scene);
-            } else {
-                return;
-            }
-        } else {
-            return;
-        }
+                let isect = Intersection::with_flat(primary_hit, &self.scene);
 
-        let nrm_facing = isect.facing_normal;
-        let surface = &isect.primitive.surface;
+                let nrm_facing = isect.facing_normal;
+                let surface = &isect.primitive.surface;
 
-        for sample in indirect_samples.iter_mut() {
-            *sample = Default::default();
-        }
-        
-        let r = self.settings.radius as f32;
-        for _ in 0..self.settings.candidates {
-            let mut s = sampler.get_value2();
-            s = s * r * 2.0 + Point2::new(-r, -r);
-            let sx = (s.u + x as f32).floor() as i32;
-            let sy = (s.v + y as f32).floor() as i32;
-            if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
-                continue;
-            }
-
-            if let Ok(primary_hits) = self.primary_hits.lock() {
-                if let Some(flat_isect_s) = primary_hits.get(sx as usize, sy as usize) {
-                    let isect_s = Intersection::with_flat(flat_isect_s, &self.scene);
-
-                    let res_candidate = 
-                    if let Ok(indirect_reservoirs) = self.indirect_reservoirs.lock() {
-                        indirect_reservoirs.get(sx as usize, sy as usize)
-                    } else {
-                        Default::default()
-                    };
-
-                    if res_candidate.q == 0.0 {
+                for sample in indirect_samples.iter_mut() {
+                    *sample = Default::default();
+                }
+                
+                let r = self.settings.radius as f32;
+                for _ in 0..self.settings.candidates {
+                    let mut s = sampler.get_value2();
+                    s = s * r * 2.0 + Point2::new(-r, -r);
+                    let sx = (s.u + x as f32).floor() as i32;
+                    let sy = (s.v + y as f32).floor() as i32;
+                    if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
                         continue;
                     }
 
-                    for i in 0..n {
-                        let r = res_candidate.sample.point - isect.point;
-                        let q = res_candidate.sample.point - isect_s.point;
-                        let n = res_candidate.sample.normal;
-                        let j = ((n * r) * q.mag2() / ((n * q) * r.mag2())).abs();
-                        indirect_samples[i].add_reservoir(res_candidate, res_candidate.q, j, sampler);
+                    if let Ok(primary_hits) = self.primary_hits.read() {
+                        if let Some(flat_isect_s) = primary_hits.get(sx as usize, sy as usize) {
+                            let isect_s = Intersection::with_flat(flat_isect_s, &self.scene);
+
+                            let res_candidate = 
+                            if let Ok(indirect_reservoirs) = self.indirect_reservoirs.read() {
+                                indirect_reservoirs.get(sx as usize, sy as usize)
+                            } else {
+                                Default::default()
+                            };
+
+                            if res_candidate.q == 0.0 {
+                                continue;
+                            }
+
+                            for i in 0..n {
+                                let r = res_candidate.sample.point - isect.point;
+                                let q = res_candidate.sample.point - isect_s.point;
+                                let n = res_candidate.sample.normal;
+                                let j = ((n * r) * q.mag2() / ((n * q) * r.mag2())).abs();
+                                indirect_samples[i].add_reservoir(res_candidate, res_candidate.q, j, sampler);
+                            }
+                        }
                     }
                 }
-            }
-        }
 
-        for i in 0..n {
-            if indirect_samples[i].w > 0.0 {
-                let mut dir_in = indirect_samples[i].sample.point - isect.point;
-                let d = dir_in.mag();
-                dir_in = dir_in / d;
-                let dot = dir_in * nrm_facing;
+                for i in 0..n {
+                    if indirect_samples[i].w > 0.0 {
+                        let mut dir_in = indirect_samples[i].sample.point - isect.point;
+                        let d = dir_in.mag();
+                        dir_in = dir_in / d;
+                        let dot = dir_in * nrm_facing;
 
-                if dot > 0.0 {
-                    let reflected = surface.reflected(&isect, dir_in);
-                    rad_indirect += indirect_samples[i].sample.indirect_radiance * dot * reflected * indirect_samples[i].w;
+                        if dot > 0.0 {
+                            let reflected = surface.reflected(&isect, dir_in);
+                            rad_indirect += indirect_samples[i].sample.indirect_radiance * dot * reflected * indirect_samples[i].w;
+                        }
+                    }
                 }
             }
         }
@@ -491,15 +482,15 @@ impl ReSTIR {
         let framebuffer = Mutex::new(Framebuffer::new(settings.width, settings.height));
         let total_radiance = Mutex::new(Raster::new(settings.width, settings.height));
         let indirect_lighter = Box::new(UniPath::new());
-        let primary_hits = Mutex::new(Raster::new(settings.width, settings.height));
+        let primary_hits = RwLock::new(Raster::new(settings.width, settings.height));
 
         let executor = Executor::new();
         let start_time = Mutex::new(Instant::now());
         let done_listener = Mutex::new(None);
         let current_sample = Mutex::new(0);
 
-        let direct_reservoirs = Mutex::new(Raster::new(settings.width, settings.height));
-        let indirect_reservoirs = Mutex::new(Raster::new(settings.width, settings.height));
+        let direct_reservoirs = RwLock::new(Raster::new(settings.width, settings.height));
+        let indirect_reservoirs = RwLock::new(Raster::new(settings.width, settings.height));
 
         let inner = Arc::new(Inner {
             framebuffer,
