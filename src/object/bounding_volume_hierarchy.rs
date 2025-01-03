@@ -184,7 +184,7 @@ impl BoundingVolumeHierarchy {
                     } else {
                         1 - i
                     };
-                    if max_distances[j] > 0.0 {
+                    if max_distances[j] >= 0.0 {
                         stack[n].node_index = indices[j];
                         stack[n].min_distance = min_distances[j];
                         n += 1;
