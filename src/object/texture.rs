@@ -144,9 +144,7 @@ impl<const N: usize> Texture<N> {
 
         let mipmaps = vec![base_map];
 
-        return Texture {
-            mipmaps,
-        };
+        return Texture { mipmaps };
     }
 
     pub fn sample(&self, sample_point: Point2, sample_projection: Bivec2) -> [f32; N] {

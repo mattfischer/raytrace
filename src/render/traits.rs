@@ -14,7 +14,11 @@ use std::sync::Mutex;
 
 pub trait Lighter: Send + Sync {
     fn light(&self, isect: &Intersection, sampler: &mut dyn Sampler) -> Radiance;
-    fn create_prerender_jobs(&self, _scene: Arc<Scene>, _framebuffer: Arc<Mutex<Framebuffer>>) -> Vec<Box<dyn ExecutorJob>> {
+    fn create_prerender_jobs(
+        &self,
+        _scene: Arc<Scene>,
+        _framebuffer: Arc<Mutex<Framebuffer>>,
+    ) -> Vec<Box<dyn ExecutorJob>> {
         return Vec::new();
     }
 }

@@ -29,7 +29,11 @@ impl Radiance {
     }
 
     pub fn clamp(self) -> Radiance {
-        return Radiance {red: self.red.max(0.0), green: self.green.max(0.0), blue: self.blue.max(0.0)};
+        return Radiance {
+            red: self.red.max(0.0),
+            green: self.green.max(0.0),
+            blue: self.blue.max(0.0),
+        };
     }
 }
 

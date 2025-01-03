@@ -86,10 +86,7 @@ impl Executor {
             threads.push(ThreadInfo { handle, sender });
         }
 
-        return Executor {
-            threads,
-            inner,
-        };
+        return Executor { threads, inner };
     }
 
     pub fn run_job<D>(&self, job: Box<dyn ExecutorJob>, done: D)

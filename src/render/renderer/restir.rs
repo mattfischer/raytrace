@@ -10,20 +10,20 @@ use geo::Point3;
 use geo::Ray;
 use geo::Vec3;
 
+use object::sampler::Halton;
 use object::FlatIntersection;
 use object::Intersection;
 use object::Radiance;
 use object::Sampler;
 use object::Scene;
-use object::sampler::Halton;
 
+use render::lighter::UniPath;
 use render::Executor;
 use render::Framebuffer;
 use render::Lighter;
 use render::Raster;
 use render::RasterJob;
 use render::Renderer;
-use render::lighter::UniPath;
 
 use core::f32;
 use std::sync::Arc;
@@ -36,7 +36,7 @@ struct Reservoir<T> {
     sample: T,
     w: f32,
     m: usize,
-    q: f32 
+    q: f32,
 }
 
 impl<T> Reservoir<T> {
@@ -48,7 +48,15 @@ impl<T> Reservoir<T> {
         self.combine(res.sample, q, res.w, res.m, j, sampler);
     }
 
-    fn combine(&mut self, sample_new: T, q: f32, w: f32, m: usize, j: f32, sampler: &mut dyn Sampler) {
+    fn combine(
+        &mut self,
+        sample_new: T,
+        q: f32,
+        w: f32,
+        m: usize,
+        j: f32,
+        sampler: &mut dyn Sampler,
+    ) {
         let m0 = (self.m as f32) / ((self.m + m) as f32);
         let m1 = (m as f32) / ((self.m + m) as f32);
 
@@ -67,12 +75,12 @@ impl<T> Reservoir<T> {
 }
 
 pub struct ReSTIRSettings {
-    pub width : usize,
-    pub height : usize,
-    pub samples : usize,
-    pub indirect_samples : usize,
-    pub radius : usize,
-    pub candidates : usize
+    pub width: usize,
+    pub height: usize,
+    pub samples: usize,
+    pub indirect_samples: usize,
+    pub radius: usize,
+    pub candidates: usize,
 }
 
 type DoneFunc = dyn FnOnce(f32) + 'static + Send + Sync;
@@ -82,13 +90,13 @@ struct DirectSample {
     radiance: Radiance,
     point: Point3,
     normal: Normal3,
-    primitive_idx: usize
+    primitive_idx: usize,
 }
 #[derive(Clone, Copy, Default)]
 struct IndirectSample {
     point: Point3,
     normal: Normal3,
-    indirect_radiance: Radiance
+    indirect_radiance: Radiance,
 }
 
 struct Inner {
@@ -103,11 +111,11 @@ struct Inner {
     done_listener: Mutex<Option<Box<DoneFunc>>>,
     current_sample: Mutex<usize>,
     direct_reservoirs: RwLock<Raster<Reservoir<DirectSample>>>,
-    indirect_reservoirs: RwLock<Raster<Reservoir<IndirectSample>>>
+    indirect_reservoirs: RwLock<Raster<Reservoir<IndirectSample>>>,
 }
 
 impl Inner {
-    fn start_initial_sample_job(self : &Arc<Inner>) {
+    fn start_initial_sample_job(self: &Arc<Inner>) {
         let width = self.settings.width;
         let height = self.settings.height;
         let current_sample = *self.current_sample.lock().unwrap();
@@ -116,21 +124,27 @@ impl Inner {
         let self_2 = self.clone();
 
         let job = RasterJob::new(
-            width, height, 1,
-            move |x, y, _sample, thread_local : &mut ThreadLocal| {
+            width,
+            height,
+            1,
+            move |x, y, _sample, thread_local: &mut ThreadLocal| {
                 self_1.initial_sample_pixel(x, y, current_sample, &mut thread_local.sampler);
             },
             move || {
                 let sampler = Halton::new(width as i32, height as i32);
                 let indirect_samples = Vec::new();
-                return Box::new(ThreadLocal { sampler, indirect_samples });
-            }
+                return Box::new(ThreadLocal {
+                    sampler,
+                    indirect_samples,
+                });
+            },
         );
-        
-        self.executor.run_job(Box::new(job), move || self_2.start_direct_illuminate_job() );
+
+        self.executor
+            .run_job(Box::new(job), move || self_2.start_direct_illuminate_job());
     }
 
-    fn start_direct_illuminate_job(self : &Arc<Inner>) {
+    fn start_direct_illuminate_job(self: &Arc<Inner>) {
         let width = self.settings.width;
         let height = self.settings.height;
         let current_sample = *self.current_sample.lock().unwrap();
@@ -139,21 +153,28 @@ impl Inner {
         let self_2 = self.clone();
 
         let job = RasterJob::new(
-            width, height, 1,
-            move |x, y, _sample, thread_local : &mut ThreadLocal| {
+            width,
+            height,
+            1,
+            move |x, y, _sample, thread_local: &mut ThreadLocal| {
                 self_1.direct_illuminate_pixel(x, y, current_sample, &mut thread_local.sampler);
             },
             move || {
                 let sampler = Halton::new(width as i32, height as i32);
                 let indirect_samples = Vec::new();
-                return Box::new(ThreadLocal { sampler, indirect_samples });
-            }
+                return Box::new(ThreadLocal {
+                    sampler,
+                    indirect_samples,
+                });
+            },
         );
-        
-        self.executor.run_job(Box::new(job), move || self_2.start_indirect_illuminate_job() );
+
+        self.executor.run_job(Box::new(job), move || {
+            self_2.start_indirect_illuminate_job()
+        });
     }
 
-    fn start_indirect_illuminate_job(self : &Arc<Inner>) {
+    fn start_indirect_illuminate_job(self: &Arc<Inner>) {
         let width = self.settings.width;
         let height = self.settings.height;
         let current_sample = *self.current_sample.lock().unwrap();
@@ -163,18 +184,29 @@ impl Inner {
         let self_3 = self.clone();
 
         let job = RasterJob::new(
-            width, height, 1,
-            move |x, y, _sample, thread_local : &mut ThreadLocal| {
-                self_1.indirect_illuminate_pixel(x, y, current_sample, &mut thread_local.sampler, &mut thread_local.indirect_samples[..]);
+            width,
+            height,
+            1,
+            move |x, y, _sample, thread_local: &mut ThreadLocal| {
+                self_1.indirect_illuminate_pixel(
+                    x,
+                    y,
+                    current_sample,
+                    &mut thread_local.sampler,
+                    &mut thread_local.indirect_samples[..],
+                );
             },
             move || {
                 let sampler = Halton::new(width as i32, height as i32);
                 let mut indirect_samples = Vec::new();
                 indirect_samples.resize(self_3.settings.indirect_samples, Default::default());
-                return Box::new(ThreadLocal { sampler, indirect_samples });
-            }
+                return Box::new(ThreadLocal {
+                    sampler,
+                    indirect_samples,
+                });
+            },
         );
-        
+
         let done = move || {
             {
                 let mut current_sample = self_2.current_sample.lock().unwrap();
@@ -196,24 +228,35 @@ impl Inner {
         self.executor.run_job(Box::new(job), done);
     }
 
-    fn initial_sample_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler) {
+    fn initial_sample_pixel(&self, x: usize, y: usize, sample: usize, sampler: &mut dyn Sampler) {
         let scene = self.scene.as_ref();
 
         sampler.start_sample_with_xys(x, y, sample);
         let pnt_image = Point2::new(x as f32, y as f32) + sampler.get_value2();
         let pnt_aperture = sampler.get_value2();
-        let beam = scene.camera.create_pixel_beam(pnt_image, self.settings.width, self.settings.height, pnt_aperture);
-        
+        let beam = scene.camera.create_pixel_beam(
+            pnt_image,
+            self.settings.width,
+            self.settings.height,
+            pnt_aperture,
+        );
+
         let rad_emitted;
-            
+
         if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
-            self.primary_hits.write().unwrap().set(x, y, Some(FlatIntersection::from(isect)));
+            self.primary_hits
+                .write()
+                .unwrap()
+                .set(x, y, Some(FlatIntersection::from(isect)));
 
             let nrm_facing = isect.facing_normal;
             let surface = &isect.primitive.surface;
             let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
-            self.direct_reservoirs.write().unwrap().set(x, y, Default::default());
+            self.direct_reservoirs
+                .write()
+                .unwrap()
+                .set(x, y, Default::default());
 
             for _ in 0..1 {
                 let light_index = (sampler.get_value() * (scene.area_lights.len() as f32)) as usize;
@@ -236,15 +279,22 @@ impl Inner {
                             point: pnt2,
                             radiance: rad2,
                             normal: nrm2,
-                            primitive_idx: scene.area_lights[light_index]
+                            primitive_idx: scene.area_lights[light_index],
                         };
 
-                        self.direct_reservoirs.write().unwrap().get_mut(x, y).add_sample(sample, q, pdf2, sampler);
+                        self.direct_reservoirs
+                            .write()
+                            .unwrap()
+                            .get_mut(x, y)
+                            .add_sample(sample, q, pdf2, sampler);
                     }
                 }
             }
 
-            self.indirect_reservoirs.write().unwrap().set(x, y, Default::default());
+            self.indirect_reservoirs
+                .write()
+                .unwrap()
+                .set(x, y, Default::default());
 
             if let (_reflected, dir_in, Some(pdf)) = surface.sample(&isect, sampler) {
                 let reverse = (dir_in * nrm_facing).signum();
@@ -256,15 +306,19 @@ impl Inner {
                     let beam = Beam::new(ray_reflect, Bivec3::ZERO, Bivec3::ZERO);
                     if let Some(isect2) = scene.intersect(beam, f32::MAX, true) {
                         let rad2 = self.indirect_lighter.light(&isect2, sampler);
-                    
+
                         let sample = IndirectSample {
                             point: isect2.point,
                             normal: isect2.facing_normal,
-                            indirect_radiance: rad2 - isect2.primitive.surface.radiance
+                            indirect_radiance: rad2 - isect2.primitive.surface.radiance,
                         };
 
                         let q = sample.indirect_radiance.mag();
-                        self.indirect_reservoirs.write().unwrap().get_mut(x, y).add_sample(sample, q, pdf, sampler);
+                        self.indirect_reservoirs
+                            .write()
+                            .unwrap()
+                            .get_mut(x, y)
+                            .add_sample(sample, q, pdf, sampler);
                     }
                 }
             }
@@ -278,7 +332,13 @@ impl Inner {
         self.add_radiance(x, y, sample, rad_emitted);
     }
 
-    fn direct_illuminate_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler) {
+    fn direct_illuminate_pixel(
+        &self,
+        x: usize,
+        y: usize,
+        sample: usize,
+        sampler: &mut dyn Sampler,
+    ) {
         let mut rad_direct = Radiance::ZERO;
 
         if let Some(primary_hit) = self.primary_hits.read().unwrap().get(x, y) {
@@ -295,11 +355,19 @@ impl Inner {
                 s = s * r * 2.0 + Point2::new(-r, -r);
                 let sx = (s.u + x as f32).floor() as i32;
                 let sy = (s.v + y as f32).floor() as i32;
-                if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
+                if sx < 0
+                    || sy < 0
+                    || sx >= (self.settings.width as i32)
+                    || sy >= (self.settings.height as i32)
+                {
                     continue;
                 }
 
-                let res_candidate = self.direct_reservoirs.read().unwrap().get(sx as usize, sy as usize);
+                let res_candidate = self
+                    .direct_reservoirs
+                    .read()
+                    .unwrap()
+                    .get(sx as usize, sy as usize);
                 if res_candidate.q == 0.0 {
                     continue;
                 }
@@ -338,15 +406,22 @@ impl Inner {
                             let rad = irad * surface.reflected(&isect, dir_in);
                             rad_direct = rad * res.w;
                         }
-                    }                        
+                    }
                 }
             }
         }
 
         self.add_radiance(x, y, sample, rad_direct);
     }
-    
-    fn indirect_illuminate_pixel(&self, x : usize, y : usize, sample : usize, sampler : &mut dyn Sampler, indirect_samples: &mut [Reservoir<IndirectSample>]) {
+
+    fn indirect_illuminate_pixel(
+        &self,
+        x: usize,
+        y: usize,
+        sample: usize,
+        sampler: &mut dyn Sampler,
+        indirect_samples: &mut [Reservoir<IndirectSample>],
+    ) {
         let mut rad_indirect = Radiance::ZERO;
         let n = self.settings.indirect_samples;
 
@@ -364,14 +439,27 @@ impl Inner {
                 s = s * r * 2.0 + Point2::new(-r, -r);
                 let sx = (s.u + x as f32).floor() as i32;
                 let sy = (s.v + y as f32).floor() as i32;
-                if sx < 0 || sy < 0 || sx >= (self.settings.width as i32) || sy >= (self.settings.height as i32) {
+                if sx < 0
+                    || sy < 0
+                    || sx >= (self.settings.width as i32)
+                    || sy >= (self.settings.height as i32)
+                {
                     continue;
                 }
 
-                if let Some(flat_isect_s) = self.primary_hits.read().unwrap().get(sx as usize, sy as usize) {
+                if let Some(flat_isect_s) = self
+                    .primary_hits
+                    .read()
+                    .unwrap()
+                    .get(sx as usize, sy as usize)
+                {
                     let isect_s = Intersection::with_flat(flat_isect_s, &self.scene);
 
-                    let res_candidate = self.indirect_reservoirs.read().unwrap().get(sx as usize, sy as usize);
+                    let res_candidate = self
+                        .indirect_reservoirs
+                        .read()
+                        .unwrap()
+                        .get(sx as usize, sy as usize);
                     if res_candidate.q == 0.0 {
                         continue;
                     }
@@ -381,7 +469,12 @@ impl Inner {
                         let q = res_candidate.sample.point - isect_s.point;
                         let n = res_candidate.sample.normal;
                         let j = ((n * r) * q.mag2() / ((n * q) * r.mag2())).abs();
-                        indirect_samples[i].add_reservoir(res_candidate, res_candidate.q, j, sampler);
+                        indirect_samples[i].add_reservoir(
+                            res_candidate,
+                            res_candidate.q,
+                            j,
+                            sampler,
+                        );
                     }
                 }
             }
@@ -395,12 +488,15 @@ impl Inner {
 
                     if dot > 0.0 {
                         let reflected = surface.reflected(&isect, dir_in);
-                        rad_indirect += indirect_samples[i].sample.indirect_radiance * dot * reflected * indirect_samples[i].w;
+                        rad_indirect += indirect_samples[i].sample.indirect_radiance
+                            * dot
+                            * reflected
+                            * indirect_samples[i].w;
                     }
                 }
             }
         }
-        
+
         self.add_radiance(x, y, sample, rad_indirect / (n as f32));
     }
 
@@ -415,7 +511,7 @@ impl Inner {
 
 struct ThreadLocal {
     sampler: Halton,
-    indirect_samples: Vec<Reservoir<IndirectSample>>
+    indirect_samples: Vec<Reservoir<IndirectSample>>,
 }
 
 pub struct ReSTIR {
@@ -423,10 +519,7 @@ pub struct ReSTIR {
 }
 
 impl ReSTIR {
-    pub fn new(
-        scene: Arc<Scene>,
-        settings: ReSTIRSettings
-    ) -> ReSTIR {
+    pub fn new(scene: Arc<Scene>, settings: ReSTIRSettings) -> ReSTIR {
         let framebuffer = Mutex::new(Framebuffer::new(settings.width, settings.height));
         let total_radiance = Mutex::new(Raster::new(settings.width, settings.height));
         let indirect_lighter = Box::new(UniPath::new());
@@ -452,16 +545,15 @@ impl ReSTIR {
             start_time,
             current_sample,
             direct_reservoirs,
-            indirect_reservoirs
+            indirect_reservoirs,
         });
 
-        return ReSTIR {inner};
+        return ReSTIR { inner };
     }
 }
 
 impl Renderer for ReSTIR {
-    fn start(&self, done: Box<DoneFunc>)
-    {
+    fn start(&self, done: Box<DoneFunc>) {
         self.inner.done_listener.lock().unwrap().replace(done);
         *self.inner.start_time.lock().unwrap() = Instant::now();
 

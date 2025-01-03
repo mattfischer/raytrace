@@ -11,11 +11,11 @@ use geo::Point3;
 use geo::Ray;
 use geo::Vec3;
 
+use object::sampler::Random;
 use object::Color;
 use object::Radiance;
 use object::Sampler;
 use object::Scene;
-use object::sampler::Random;
 
 use render::ExecutorJob;
 use render::Framebuffer;
@@ -34,16 +34,24 @@ use std::f32::consts::PI;
 
 #[derive(Clone, Copy, Default)]
 struct RadianceGradient {
-    red : Vec3,
-    green : Vec3,
-    blue : Vec3
+    red: Vec3,
+    green: Vec3,
+    blue: Vec3,
 }
 
 impl RadianceGradient {
-    pub const ZERO: RadianceGradient = RadianceGradient {red: Vec3::ZERO, green: Vec3::ZERO, blue: Vec3::ZERO};
+    pub const ZERO: RadianceGradient = RadianceGradient {
+        red: Vec3::ZERO,
+        green: Vec3::ZERO,
+        blue: Vec3::ZERO,
+    };
 
     fn new(radiance: Radiance, vector: Vec3) -> Self {
-        Self {red: radiance.red * vector, green: radiance.green * vector, blue: radiance.blue * vector}
+        Self {
+            red: radiance.red * vector,
+            green: radiance.green * vector,
+            blue: radiance.blue * vector,
+        }
     }
 }
 
@@ -51,7 +59,11 @@ impl std::ops::Add<RadianceGradient> for RadianceGradient {
     type Output = RadianceGradient;
 
     fn add(self, rhs: RadianceGradient) -> Self::Output {
-        Self {red: self.red + rhs.red, green: self.green + rhs.green, blue: self.blue + rhs.blue}
+        Self {
+            red: self.red + rhs.red,
+            green: self.green + rhs.green,
+            blue: self.blue + rhs.blue,
+        }
     }
 }
 
@@ -65,7 +77,11 @@ impl std::ops::Mul<f32> for RadianceGradient {
     type Output = RadianceGradient;
 
     fn mul(self, rhs: f32) -> Self::Output {
-        Self {red: self.red * rhs, green: self.green * rhs, blue: self.blue * rhs}
+        Self {
+            red: self.red * rhs,
+            green: self.green * rhs,
+            blue: self.blue * rhs,
+        }
     }
 }
 
@@ -73,7 +89,11 @@ impl std::ops::Div<f32> for RadianceGradient {
     type Output = RadianceGradient;
 
     fn div(self, rhs: f32) -> Self::Output {
-        Self {red: self.red / rhs, green: self.green / rhs, blue: self.blue / rhs}
+        Self {
+            red: self.red / rhs,
+            green: self.green / rhs,
+            blue: self.blue / rhs,
+        }
     }
 }
 
@@ -81,7 +101,11 @@ impl std::ops::Mul<Vec3> for RadianceGradient {
     type Output = Radiance;
 
     fn mul(self, rhs: Vec3) -> Self::Output {
-        Radiance {red: self.red * rhs, green: self.green * rhs, blue: self.blue * rhs}
+        Radiance {
+            red: self.red * rhs,
+            green: self.green * rhs,
+            blue: self.blue * rhs,
+        }
     }
 }
 
@@ -91,12 +115,12 @@ struct CacheEntry {
     radius: f32,
     radiance: Radiance,
     rot_grad: RadianceGradient,
-    trans_grad: RadianceGradient
+    trans_grad: RadianceGradient,
 }
 
 struct OctreeNode {
     entries: Vec<CacheEntry>,
-    children: [Option<Box<OctreeNode>>; 8]
+    children: [Option<Box<OctreeNode>>; 8],
 }
 
 struct Octree {
@@ -107,36 +131,48 @@ struct Octree {
 
 struct Cache {
     octree: RwLock<Octree>,
-    threshold: f32
+    threshold: f32,
 }
 
 impl Cache {
     fn new(threshold: f32) -> Cache {
-        let octree = RwLock::new(Octree {root: None, origin: Point3::ZERO, size: 0.0});
+        let octree = RwLock::new(Octree {
+            root: None,
+            origin: Point3::ZERO,
+            size: 0.0,
+        });
 
-        return Cache {octree, threshold};
+        return Cache { octree, threshold };
     }
 
     fn add(&self, entry: CacheEntry) {
         let mut octree = self.octree.write().unwrap();
         let r = entry.radius * self.threshold;
         if octree.root.is_none() {
-            octree.root = Some(Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]}));
+            octree.root = Some(Box::new(OctreeNode {
+                entries: Vec::new(),
+                children: [const { None }; 8],
+            }));
             octree.size = r;
             octree.origin = entry.point;
         }
 
-        while 
-            (entry.point.x - octree.origin.x).abs() > octree.size ||
-            (entry.point.y - octree.origin.y).abs() > octree.size ||
-            (entry.point.z - octree.origin.z).abs() > octree.size ||
-            octree.size < r {
+        while (entry.point.x - octree.origin.x).abs() > octree.size
+            || (entry.point.y - octree.origin.y).abs() > octree.size
+            || (entry.point.z - octree.origin.z).abs() > octree.size
+            || octree.size < r
+        {
             let x = (entry.point.x - octree.origin.x).signum();
             let y = (entry.point.y - octree.origin.y).signum();
             let z = (entry.point.z - octree.origin.z).signum();
-            
-            let idx = if x < 0.0 { 1 } else { 0 } + if y < 0.0 { 2 } else { 0 } + if z < 0.0 { 4 } else { 0 };
-            let mut new_root = Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]});
+
+            let idx = if x < 0.0 { 1 } else { 0 }
+                + if y < 0.0 { 2 } else { 0 }
+                + if z < 0.0 { 4 } else { 0 };
+            let mut new_root = Box::new(OctreeNode {
+                entries: Vec::new(),
+                children: [const { None }; 8],
+            });
             new_root.children[idx] = octree.root.take();
             octree.root = Some(new_root);
             let size = octree.size;
@@ -151,11 +187,16 @@ impl Cache {
             let x = (entry.point.x - origin.x).signum();
             let y = (entry.point.y - origin.y).signum();
             let z = (entry.point.z - origin.z).signum();
-            
-            let idx = if x > 0.0 { 1 } else { 0 } + if y > 0.0 { 2 } else { 0 } + if z > 0.0 { 4 } else { 0 };
+
+            let idx = if x > 0.0 { 1 } else { 0 }
+                + if y > 0.0 { 2 } else { 0 }
+                + if z > 0.0 { 4 } else { 0 };
             let new_origin = origin + Vec3::new(x, y, z) * size / 2.0;
             if node.children[idx].is_none() {
-                node.children[idx] = Some(Box::new(OctreeNode {entries: Vec::new(), children: [const { None }; 8]}));
+                node.children[idx] = Some(Box::new(OctreeNode {
+                    entries: Vec::new(),
+                    children: [const { None }; 8],
+                }));
             }
 
             origin = new_origin;
@@ -168,10 +209,18 @@ impl Cache {
 
     fn weight(entry: &CacheEntry, point: Point3, normal: Normal3) -> f32 {
         //return std::pow(std::max(double(0), 1.0f - (point - entry.point).magnitude2() / (1.0 * entry.radius * std::pow(normal * entry.normal, 4.0f))), 2);
-        return 1.0 / ((point - entry.point).mag() / entry.radius + (1.0 - (normal * entry.normal).min(1.0)).sqrt());
+        return 1.0
+            / ((point - entry.point).mag() / entry.radius
+                + (1.0 - (normal * entry.normal).min(1.0)).sqrt());
     }
 
-    fn is_entry_valid(entry: &CacheEntry, point: Point3, normal: Normal3, weight: f32, threshold: f32) -> bool {
+    fn is_entry_valid(
+        entry: &CacheEntry,
+        point: Point3,
+        normal: Normal3,
+        weight: f32,
+        threshold: f32,
+    ) -> bool {
         let d = (point - entry.point) * ((normal + entry.normal) / 2.0);
         return d >= -0.01 && weight > 1.0 / threshold;
     }
@@ -217,13 +266,21 @@ impl Cache {
         let x = if idx & 1 == 0 { -1.0 } else { 1.0 };
         let y = if idx & 2 == 0 { -1.0 } else { 1.0 };
         let z = if idx & 4 == 0 { -1.0 } else { 1.0 };
-        
+
         let child_size = size / 2.0;
         return (origin + Vec3::new(x, y, z) * child_size, child_size);
     }
 
-    fn visit_octree_node<'a, F>(node: &'a Option<Box<OctreeNode>>, origin: Point3, size: f32, point: Point3, callback: &mut F) -> bool 
-    where F: FnMut(&'a CacheEntry) -> bool {
+    fn visit_octree_node<'a, F>(
+        node: &'a Option<Box<OctreeNode>>,
+        origin: Point3,
+        size: f32,
+        point: Point3,
+        callback: &mut F,
+    ) -> bool
+    where
+        F: FnMut(&'a CacheEntry) -> bool,
+    {
         if let Some(node) = node {
             for entry in node.entries.iter() {
                 if !callback(entry) {
@@ -235,7 +292,13 @@ impl Cache {
                 let (child_origin, child_size) = Self::get_child_node(origin, size, i);
                 let distance2 = Self::distance2_to_node(point, child_origin, child_size);
                 if distance2 < child_size * child_size {
-                    if !Self::visit_octree_node(&node.children[i], child_origin, child_size, point, callback) {
+                    if !Self::visit_octree_node(
+                        &node.children[i],
+                        child_origin,
+                        child_size,
+                        point,
+                        callback,
+                    ) {
                         return false;
                     }
                 }
@@ -244,7 +307,7 @@ impl Cache {
 
         return true;
     }
-    
+
     pub fn test(&self, point: Point3, normal: Normal3) -> bool {
         let mut ret = false;
 
@@ -258,7 +321,13 @@ impl Cache {
             return true;
         };
 
-        Self::visit_octree_node(&octree.root, octree.origin, octree.size, point, &mut callback);
+        Self::visit_octree_node(
+            &octree.root,
+            octree.origin,
+            octree.size,
+            point,
+            &mut callback,
+        );
 
         return ret;
     }
@@ -280,14 +349,21 @@ impl Cache {
                     } else {
                         let cross = Vec3::from(normal % entry.normal);
                         let dist = point - entry.point;
-                        irradiance += (entry.radiance + entry.rot_grad * cross + entry.trans_grad * dist) * w;
+                        irradiance +=
+                            (entry.radiance + entry.rot_grad * cross + entry.trans_grad * dist) * w;
                         total_weight += w;
                     }
                 }
                 return true;
             };
 
-            Self::visit_octree_node(&octree.root, octree.origin, octree.size, point, &mut callback);
+            Self::visit_octree_node(
+                &octree.root,
+                octree.origin,
+                octree.size,
+                point,
+                &mut callback,
+            );
 
             if total_weight > 0.0 {
                 irradiance = irradiance / total_weight;
@@ -303,25 +379,37 @@ impl Cache {
 
 pub struct IrradianceCachedSettings {
     pub indirect_samples: usize,
-    pub cache_threshold: f32
+    pub cache_threshold: f32,
 }
 
 struct Inner {
     settings: IrradianceCachedSettings,
     cache: Cache,
     direct_lighter: Direct,
-    unipath_lighter: UniPath
+    unipath_lighter: UniPath,
 }
 
 impl Inner {
-    fn prerender_pixel(&self, x: usize, y: usize, framebuffer: &Mutex<Framebuffer>, scene: &Scene, sampler: &mut dyn Sampler) {
+    fn prerender_pixel(
+        &self,
+        x: usize,
+        y: usize,
+        framebuffer: &Mutex<Framebuffer>,
+        scene: &Scene,
+        sampler: &mut dyn Sampler,
+    ) {
         let width = framebuffer.lock().unwrap().width;
         let height = framebuffer.lock().unwrap().height;
 
         sampler.start_sample_with_xys(x, y, 0);
-        
+
         let mut pixel_color = Color::ZERO;
-        let beam = scene.camera.create_pixel_beam(Point2::new(x as f32, y as f32), width, height, Point2::ZERO);
+        let beam = scene.camera.create_pixel_beam(
+            Point2::new(x as f32, y as f32),
+            width,
+            height,
+            Point2::ZERO,
+        );
         if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
             let surface = &isect.primitive.surface;
             if surface.lambert > 0.0 {
@@ -335,43 +423,46 @@ impl Inner {
                     let mut rad = Radiance::ZERO;
                     let m = (self.settings.indirect_samples as f32).sqrt() as usize;
                     let n = self.settings.indirect_samples / m;
-                    let mut samples = vec![Radiance::ZERO; m*n];
-                    let mut sample_distances = vec![0.0; m*n];
+                    let mut samples = vec![Radiance::ZERO; m * n];
+                    let mut sample_distances = vec![0.0; m * n];
                     for k in 0..n {
                         for j in 0..m {
                             sampler.start_sample_with_index(0);
 
                             let phi = 2.0 * PI * (k as f32 + sampler.get_value()) / (n as f32);
                             let theta = (j as f32 + sampler.get_value()).sqrt().asin() / (m as f32);
-                            let dir_in = basis.local_to_world(Vec3::with_spherical(phi, theta, 1.0));
+                            let dir_in =
+                                basis.local_to_world(Vec3::with_spherical(phi, theta, 1.0));
 
                             let pnt_offset = pnt + Vec3::from(nrm_facing) * 0.01;
                             let ray = Ray::new(pnt_offset, dir_in);
                             let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-                            
+
                             if let Some(isect2) = scene.intersect(beam, f32::MAX, true) {
                                 mean += 1.0 / isect2.shape_isect.distance;
                                 den += 1;
                                 let mut rad2 = self.unipath_lighter.light(&isect2, sampler);
                                 rad2 = rad2 - isect2.primitive.surface.radiance;
 
-                                samples[k*m + j] = rad2;
-                                sample_distances[k*m + j] = isect2.shape_isect.distance;
+                                samples[k * m + j] = rad2;
+                                sample_distances[k * m + j] = isect2.shape_isect.distance;
 
                                 rad += rad2 * PI / ((m * n) as f32);
                             } else {
-                                sample_distances[k*m + j] = f32::MAX;
+                                sample_distances[k * m + j] = f32::MAX;
                             }
                         }
                     }
 
                     if mean > 0.0 {
-                        let projected_pixel_size = scene.camera.project_size(2.0 / (width as f32), isect.shape_isect.distance);
+                        let projected_pixel_size = scene
+                            .camera
+                            .project_size(2.0 / (width as f32), isect.shape_isect.distance);
                         let min_radius = 3.0 * projected_pixel_size / self.cache.threshold;
                         let max_radius = 20.0 * min_radius;
                         let radius = (den as f32) / mean;
                         let entry_radius = radius.min(max_radius).max(min_radius);
-                        
+
                         let mut trans_grad = RadianceGradient::ZERO;
                         let mut rot_grad = RadianceGradient::ZERO;
 
@@ -379,21 +470,44 @@ impl Inner {
                             let k1 = if k > 0 { k - 1 } else { n - 1 };
                             let phi = 2.0 * PI * (k as f32) / (n as f32);
                             let u = basis.local_to_world(Vec3::with_spherical(phi, 0.0, 1.0));
-                            let v = basis.local_to_world(Vec3::with_spherical(phi + PI / 2.0, 0.0, 1.0));
+                            let v = basis.local_to_world(Vec3::with_spherical(
+                                phi + PI / 2.0,
+                                0.0,
+                                1.0,
+                            ));
 
                             for j in 0..m {
                                 let theta_minus = ((j as f32) / (m as f32)).sqrt().asin();
                                 let theta_plus = (((j + 1) as f32) / (m as f32)).sqrt().asin();
-                    
+
                                 if j > 0 {
                                     let j1 = j - 1;
-                                    let c = u * theta_minus.sin() * theta_minus.cos() * theta_minus.cos() * 2.0 * PI / ((n as f32) * sample_distances[k*m + j].min(sample_distances[k*m + j1]));
-                                    trans_grad += RadianceGradient::new(samples[k*m + j] - samples[k*m + j1], c);
+                                    let c = u
+                                        * theta_minus.sin()
+                                        * theta_minus.cos()
+                                        * theta_minus.cos()
+                                        * 2.0
+                                        * PI
+                                        / ((n as f32)
+                                            * sample_distances[k * m + j]
+                                                .min(sample_distances[k * m + j1]));
+                                    trans_grad += RadianceGradient::new(
+                                        samples[k * m + j] - samples[k * m + j1],
+                                        c,
+                                    );
                                 }
 
-                                let c = v * (theta_plus.sin() - theta_minus.sin()) / (sample_distances[k*m + j].min(sample_distances[k1*m + j]));
-                                trans_grad += RadianceGradient::new(samples[k*m + j] - samples[k1*m + j], c);
-                                rot_grad += RadianceGradient::new(samples[k*m + j], v) * theta_minus.tan() * PI / ((m*n) as f32);
+                                let c = v * (theta_plus.sin() - theta_minus.sin())
+                                    / (sample_distances[k * m + j]
+                                        .min(sample_distances[k1 * m + j]));
+                                trans_grad += RadianceGradient::new(
+                                    samples[k * m + j] - samples[k1 * m + j],
+                                    c,
+                                );
+                                rot_grad += RadianceGradient::new(samples[k * m + j], v)
+                                    * theta_minus.tan()
+                                    * PI
+                                    / ((m * n) as f32);
                             }
                         }
 
@@ -401,7 +515,14 @@ impl Inner {
                             trans_grad = trans_grad * radius / min_radius;
                         }
 
-                        let new_entry = CacheEntry {point: pnt, normal: nrm_facing, radiance: rad, radius: entry_radius, rot_grad, trans_grad};
+                        let new_entry = CacheEntry {
+                            point: pnt,
+                            normal: nrm_facing,
+                            radiance: rad,
+                            radius: entry_radius,
+                            rot_grad,
+                            trans_grad,
+                        };
                         self.cache.add(new_entry);
                         pixel_color = Color::ONE;
                     }
@@ -413,11 +534,11 @@ impl Inner {
     }
 }
 pub struct IrradianceCached {
-    inner: Arc<Inner>
+    inner: Arc<Inner>,
 }
 
 struct ThreadLocal {
-    sampler: Random
+    sampler: Random,
 }
 
 impl IrradianceCached {
@@ -425,8 +546,13 @@ impl IrradianceCached {
         let direct_lighter = Direct::new();
         let unipath_lighter = UniPath::new();
         let cache = Cache::new(settings.cache_threshold);
-        let inner = Arc::new(Inner {settings, direct_lighter, unipath_lighter, cache});
-        return IrradianceCached {inner};
+        let inner = Arc::new(Inner {
+            settings,
+            direct_lighter,
+            unipath_lighter,
+            cache,
+        });
+        return IrradianceCached { inner };
     }
 }
 
@@ -447,7 +573,11 @@ impl Lighter for IrradianceCached {
         return rad;
     }
 
-    fn create_prerender_jobs(&self, scene: Arc<Scene>, framebuffer: Arc<Mutex<Framebuffer>>) -> Vec<Box<dyn ExecutorJob>> {
+    fn create_prerender_jobs(
+        &self,
+        scene: Arc<Scene>,
+        framebuffer: Arc<Mutex<Framebuffer>>,
+    ) -> Vec<Box<dyn ExecutorJob>> {
         let width = framebuffer.lock().unwrap().width;
         let height = framebuffer.lock().unwrap().height;
 
@@ -464,7 +594,7 @@ impl Lighter for IrradianceCached {
                 return Box::new(ThreadLocal { sampler });
             },
         ));
-        
+
         return vec![job];
     }
 }

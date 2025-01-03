@@ -60,7 +60,10 @@ impl Simple {
         let height = settings.height;
         let samples = settings.samples;
 
-        let framebuffer = Arc::new(Mutex::new(Framebuffer::new(settings.width, settings.height)));
+        let framebuffer = Arc::new(Mutex::new(Framebuffer::new(
+            settings.width,
+            settings.height,
+        )));
         let total_radiance = Mutex::new(Raster::new(settings.width, settings.height));
 
         let mut jobs = VecDeque::new();
@@ -100,20 +103,18 @@ impl Simple {
             },
         ));
 
-        inner.jobs.lock().unwrap().push_back(job as Box<dyn ExecutorJob>);
+        inner
+            .jobs
+            .lock()
+            .unwrap()
+            .push_back(job as Box<dyn ExecutorJob>);
 
         return Simple { inner };
     }
 }
 
 impl Inner {
-    fn render_pixel(
-        &self,
-        x: usize,
-        y: usize,
-        sample: usize,
-        sampler: &mut dyn Sampler,
-    ) {
+    fn render_pixel(&self, x: usize, y: usize, sample: usize, sampler: &mut dyn Sampler) {
         sampler.start_sample_with_xys(x, y, sample);
         let image_point = Point2::new(x as f32, y as f32) + sampler.get_value2();
         let aperture_point = sampler.get_value2();
@@ -138,7 +139,7 @@ impl Inner {
             let mut total_radiance = self.total_radiance.lock().unwrap();
             let rad_total = total_radiance.get(x, y) + rad;
             total_radiance.set(x, y, rad_total);
-            
+
             color = Framebuffer::tone_map(rad_total / (sample as f32 + 1.0));
         } else {
             if let Some(isect) = isect {
@@ -167,15 +168,12 @@ impl Inner {
 }
 
 impl Renderer for Simple {
-    fn start(&self, done: Box<dyn FnOnce(f32) + 'static + Send + Sync>)
-    {
+    fn start(&self, done: Box<dyn FnOnce(f32) + 'static + Send + Sync>) {
         self.inner.done_listener.lock().unwrap().replace(done);
 
         if let Some(job) = self.inner.jobs.lock().unwrap().pop_front() {
             let inner = self.inner.clone();
-            self.inner
-                .executor
-                .run_job(job, move || inner.job_done());
+            self.inner.executor.run_job(job, move || inner.job_done());
         }
 
         *self.inner.start_time.lock().unwrap() = Instant::now();

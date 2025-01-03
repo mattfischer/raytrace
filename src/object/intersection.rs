@@ -91,7 +91,7 @@ impl<'a> Intersection<'a> {
             ray: flat.ray,
             normal: flat.normal,
             facing_normal: flat.facing_normal,
-            albedo: flat.albedo
+            albedo: flat.albedo,
         };
     }
 }
@@ -116,7 +116,7 @@ impl<'a> From<Intersection<'a>> for FlatIntersection {
             ray: value.ray,
             normal: value.normal,
             facing_normal: value.facing_normal,
-            albedo: value.albedo
+            albedo: value.albedo,
         };
     }
 }

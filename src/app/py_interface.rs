@@ -10,12 +10,12 @@ use geo::Point2;
 
 use input::SceneParser;
 
-use render::LightProbe;
-use render::Renderer;
-use render::renderer::Simple;
-use render::renderer::SimpleSettings;
 use render::renderer::ReSTIR;
 use render::renderer::ReSTIRSettings;
+use render::renderer::Simple;
+use render::renderer::SimpleSettings;
+use render::LightProbe;
+use render::Renderer;
 
 use std::ffi::c_void;
 use std::sync::Arc;
@@ -78,7 +78,9 @@ impl Scene {
     #[new]
     pub fn new(filename: String) -> Scene {
         if let Some(scene) = SceneParser::parse_scene(filename) {
-            return Scene { scene: Some(Arc::new(scene)) };
+            return Scene {
+                scene: Some(Arc::new(scene)),
+            };
         } else {
             return Scene { scene: None };
         }
@@ -138,9 +140,8 @@ impl Engine {
         if let Some(scene) = &scene.borrow().scene {
             let scene = scene.clone();
             let settings = settings.borrow();
-            
-            let renderer: Box<dyn Renderer> = 
-            match settings.render_method.as_str() {
+
+            let renderer: Box<dyn Renderer> = match settings.render_method.as_str() {
                 "restir" => {
                     let render_settings = ReSTIRSettings {
                         width: settings.width,
@@ -148,25 +149,29 @@ impl Engine {
                         samples: settings.samples,
                         indirect_samples: settings.restir_indirect_samples,
                         radius: settings.restir_radius,
-                        candidates: settings.restir_candidates
+                        candidates: settings.restir_candidates,
                     };
                     Box::new(ReSTIR::new(scene.clone(), render_settings))
-                },
+                }
                 _ => {
                     let render_settings = SimpleSettings {
                         width: settings.width,
                         height: settings.height,
                         samples: settings.samples,
                     };
-                    let lighter: Option<Box<dyn render::Lighter>> = match settings.render_method.as_str() {
-                        "directLighting" => Some(Box::new(render::lighter::Direct::new())),
-                        "pathTracing" => Some(Box::new(render::lighter::UniPath::new())),
-                        "irradianceCaching" => {
-                            let settings = render::lighter::IrradianceCachedSettings {indirect_samples: settings.irradiance_cache_samples, cache_threshold: settings.irradiance_cache_threshold};
-                            Some(Box::new(render::lighter::IrradianceCached::new(settings)))
-                        }
-                        _ => None,
-                    };
+                    let lighter: Option<Box<dyn render::Lighter>> =
+                        match settings.render_method.as_str() {
+                            "directLighting" => Some(Box::new(render::lighter::Direct::new())),
+                            "pathTracing" => Some(Box::new(render::lighter::UniPath::new())),
+                            "irradianceCaching" => {
+                                let settings = render::lighter::IrradianceCachedSettings {
+                                    indirect_samples: settings.irradiance_cache_samples,
+                                    cache_threshold: settings.irradiance_cache_threshold,
+                                };
+                                Some(Box::new(render::lighter::IrradianceCached::new(settings)))
+                            }
+                            _ => None,
+                        };
 
                     Box::new(Simple::new(scene.clone(), render_settings, lighter))
                 }
