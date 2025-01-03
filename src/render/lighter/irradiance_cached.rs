@@ -430,7 +430,7 @@ impl Inner {
                             sampler.start_sample_with_index(0);
 
                             let phi = 2.0 * PI * (k as f32 + sampler.get_value()) / (n as f32);
-                            let theta = (j as f32 + sampler.get_value()).sqrt().asin() / (m as f32);
+                            let theta = ((j as f32 + sampler.get_value()) / (m as f32)).sqrt().asin();
                             let dir_in =
                                 basis.local_to_world(Vec3::with_spherical(phi, theta, 1.0));
 
