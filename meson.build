@@ -1,17 +1,5 @@
 project('raytrace', 'c', 'cpp', default_options: ['buildtype=debugoptimized'])
 
-flex = find_program('flex')
-bison = find_program('bison')
-
-flex_gen = generator(flex,
-                    output : '@BASENAME@_lex.c',
-                    arguments : ['-o', '@OUTPUT@', '-P', '@BASENAME@', '--nounistd', '@INPUT@'])
-bison_gen = generator(bison,
-                    output : ['@BASENAME@_yacc.c', '@BASENAME@_yacc.h'],
-                    arguments : ['-o', '@OUTPUT0@', '-p', '@BASENAME@', '--defines=@OUTPUT1@', '@INPUT@'])
-flex_c = flex_gen.process('Parse/Scene.l')
-bison_c = bison_gen.process('Parse/Scene.y')
-
 python = dependency('python3')
 opencl = dependency('OpenCL')
 
@@ -62,8 +50,8 @@ executable('raytrace',
     'Parse/BmpLoader.cpp',
     'Parse/BptLoader.cpp',
     'Parse/BvhFile.cpp',
-    'Parse/Parser.cpp',
     'Parse/PlyLoader.cpp',
+    'Parse/SceneParser.cpp',
     'Render/Framebuffer.cpp',
     'Render/LightProbe.cpp',
     'Render/Cpu/Executor.cpp',
@@ -77,7 +65,6 @@ executable('raytrace',
     'Render/Gpu/Renderer.cpp',
     'Render/Gpu/WorkQueue.cpp',
     'OpenCL.cpp',
-    flex_c, bison_c,
     cpp_args: ['/std:c++17'],
     dependencies: [python, opencl]
 )

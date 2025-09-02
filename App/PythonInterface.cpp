@@ -1,5 +1,5 @@
 #include "Object/Scene.hpp"
-#include "Parse/Parser.hpp"
+#include "Parse/SceneParser.hpp"
 
 #include "Render/Cpu/RendererLighter.hpp"
 #include "Render/Cpu/RendererReSTIR.hpp"
@@ -262,7 +262,8 @@ namespace App {
         if (!PyArg_ParseTuple(args, "s", &filename))
             return -1;
 
-        std::unique_ptr<Object::Scene> scene = Parse::Parser::parse(filename);
+        Parse::SceneParser parser(filename);
+        std::unique_ptr<Object::Scene> scene = parser.parse();
         sceneObject->scene = scene.release();
 
         return 0;

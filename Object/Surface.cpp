@@ -4,8 +4,6 @@
 #include "Object/Brdf/Base.hpp"
 #include "Object/Intersection.hpp"
 
-#include "Parse/AST.h"
-
 #include <cmath>
 
 namespace Object {
