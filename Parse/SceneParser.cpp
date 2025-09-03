@@ -202,7 +202,7 @@ namespace Parse {
     {
         std::unique_ptr<Object::Camera> camera;
         std::vector<std::unique_ptr<Object::Primitive>> primitives;
-        std::vector<std::unique_ptr<Object::PointLight>> pointLights;
+        std::vector<std::unique_ptr<Object::Light::Base>> lights;
         Math::Radiance skyRadiance;
 
         while(!matchEnd()) {
@@ -216,8 +216,8 @@ namespace Parse {
                 continue;
             }
 
-            if(auto pointLight = tryParsePointLight()) {
-                pointLights.push_back(std::move(pointLight));
+            if(auto light = tryParseLight()) {
+                lights.push_back(std::move(light));
                 continue;
             }
 
@@ -231,7 +231,7 @@ namespace Parse {
             throwUnexpected();
         }
 
-        return std::make_unique<Object::Scene>(std::move(camera), std::move(primitives), std::move(pointLights), skyRadiance);
+        return std::make_unique<Object::Scene>(std::move(camera), std::move(primitives), std::move(lights), skyRadiance);
     }
 
     std::unique_ptr<Object::Camera> SceneParser::tryParseCamera()
@@ -251,7 +251,7 @@ namespace Parse {
         return std::make_unique<Object::Camera>(position, (lookAt - position).normalize(), Math::Vector(0, 1, 0), 60.0f, focalLength, apertureSize);
     }
 
-    std::unique_ptr<Object::PointLight> SceneParser::tryParsePointLight()
+    std::unique_ptr<Object::Light::Base> SceneParser::tryParseLight()
     {
         if(!matchLiteral("point_light")) {
             return nullptr;
@@ -263,7 +263,7 @@ namespace Parse {
 
         expectRightBrace();
 
-        return std::make_unique<Object::PointLight>(position, radiance);
+        return std::make_unique<Object::Light::Point>(position, radiance);
     }
 
     std::unique_ptr<Object::Primitive> SceneParser::tryParsePrimitive()

@@ -42,7 +42,7 @@ namespace Parse {
 
         std::unique_ptr<Object::Scene> parseScene();
         std::unique_ptr<Object::Camera> tryParseCamera();
-        std::unique_ptr<Object::PointLight> tryParsePointLight();
+        std::unique_ptr<Object::Light::Base> tryParseLight();
 
         std::unique_ptr<Object::Primitive> tryParsePrimitive();
 

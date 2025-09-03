@@ -2,30 +2,39 @@
 
 #include "Object/Camera.hpp"
 #include "Object/Primitive.hpp"
-#include "Object/PointLight.hpp"
 
 #include "Object/Shape/Transformed.hpp"
 #include "Object/Albedo/Solid.hpp"
 #include "Object/Brdf/Lambert.hpp"
 #include "Object/Brdf/Phong.hpp"
 
+#include "Object/Light/Shape.hpp"
+#include "Object/Light/Point.hpp"
+
 #include <cfloat>
 
 namespace Object {
-    Scene::Scene(std::unique_ptr<Camera> &&camera, std::vector<std::unique_ptr<Primitive>> &&primitives, std::vector<std::unique_ptr<PointLight>> &&pointLights, const Math::Radiance &skyRadiance)
+    Scene::Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light::Base>> lights, const Math::Radiance &skyRadiance)
         : mCamera(std::move(camera))
         , mPrimitives(std::move(primitives))
-        , mPointLights(std::move(pointLights))
+        , mLights(std::move(lights))
         , mSkyRadiance(skyRadiance)
     {
         std::vector<Math::Point> centroids;
         centroids.reserve(mPrimitives.size());
+
+        for (std::unique_ptr<Object::Light::Base> &light : mLights) {
+            if(dynamic_cast<Object::Light::Point*>(light.get())) {
+                mPointLights.push_back(dynamic_cast<Object::Light::Point&>(*light));
+            }
+        }
 
         for (std::unique_ptr<Primitive> &primitive : mPrimitives) {
             centroids.push_back(primitive->boundingVolume().centroid());
 
             if (primitive->surface().radiance().magnitude() > 0) {
                 mAreaLights.push_back(static_cast<Object::Primitive&>(*primitive));
+                mLights.push_back(std::make_unique<Object::Light::Shape>(primitive->shape(), primitive->surface().radiance()));
             }
         }
 
@@ -46,14 +55,14 @@ namespace Object {
         return mPrimitives;
     }
 
+    const std::vector<std::unique_ptr<Object::Light::Base>> &Scene::lights() const
+    {
+        return mLights;
+    }
+
     const std::vector<std::reference_wrapper<Primitive>> &Scene::areaLights() const
     {
         return mAreaLights;
-    }
-
-    const std::vector<std::unique_ptr<PointLight>> &Scene::pointLights() const
-    {
-        return mPointLights;
     }
 
     const Math::Radiance &Scene::skyRadiance() const
@@ -112,7 +121,7 @@ namespace Object {
         proxy.numPointLights = mPointLights.size();
         proxy.pointLights = clAllocator.allocateArray<PointLightProxy>(proxy.numPointLights);
         for(int i=0; i<mPointLights.size(); i++) {
-            mPointLights[i]->writeProxy(proxy.pointLights[i]);
+            mPointLights[i].get().writeProxy(proxy.pointLights[i]);
         }
 
         mSkyRadiance.writeProxy(proxy.skyRadiance);
