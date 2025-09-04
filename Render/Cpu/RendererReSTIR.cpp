@@ -15,7 +15,7 @@ namespace Render::Cpu {
     {
         mRenderFramebuffer = std::make_unique<Render::Framebuffer>(settings.width, settings.height);
 
-        mIndirectLighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
+        mIndirectLighter = std::make_unique<Render::Cpu::Impl::Lighter::UniPath>();
     }
 
     void RendererReSTIR::start(Listener *listener)
@@ -106,7 +106,7 @@ namespace Render::Cpu {
         mExecutor.runJob(std::move(job));
     }
 
-    void RendererReSTIR::initialSamplePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
+    void RendererReSTIR::initialSamplePixel(int x, int y, int sample, Math::Sampler &sampler)
     {
         Math::Bivector dv;
         sampler.startSample(x, y, sample);
@@ -197,7 +197,7 @@ namespace Render::Cpu {
         addRadiance(x, y, sample, radEmitted);
     }
 
-    void RendererReSTIR::directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler)
+    void RendererReSTIR::directIlluminatePixel(int x, int y, int sample, Math::Sampler &sampler)
     {
         Math::Radiance radDirect;
         PrimaryHit &primaryHit = mPrimaryHits.at(x, y);
@@ -261,7 +261,7 @@ namespace Render::Cpu {
         addRadiance(x, y, sample, radDirect);
     }
 
-    void RendererReSTIR::indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler, Reservoir<IndirectSample> indirectSamples[])
+    void RendererReSTIR::indirectIlluminatePixel(int x, int y, int sample, Math::Sampler &sampler, Reservoir<IndirectSample> indirectSamples[])
     {
         Math::Radiance radIndirect;
         PrimaryHit &primaryHit = mPrimaryHits.at(x, y);

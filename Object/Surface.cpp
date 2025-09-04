@@ -1,13 +1,13 @@
 #include "Object/Surface.hpp"
 
-#include "Object/Albedo/Base.hpp"
-#include "Object/Brdf/Base.hpp"
+#include "Object/Albedo.hpp"
+#include "Object/Brdf.hpp"
 #include "Object/Intersection.hpp"
 
 #include <cmath>
 
 namespace Object {
-    Surface::Surface(std::unique_ptr<Albedo::Base> albedo, std::vector<std::unique_ptr<Brdf::Base>> brdfs, float transmitIor, const Math::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap)
+    Surface::Surface(std::unique_ptr<Object::Albedo> albedo, std::vector<std::unique_ptr<Object::Brdf>> brdfs, float transmitIor, const Math::Radiance &radiance, std::unique_ptr<Object::NormalMap> normalMap)
     {
         mAlbedo = std::move(albedo);
         mBrdfs = std::move(brdfs);
@@ -17,7 +17,7 @@ namespace Object {
 
         mLambert = 0;
         mOpaque = false;
-        for(const std::unique_ptr<Brdf::Base> &brdf : mBrdfs) {
+        for(const std::unique_ptr<Object::Brdf> &brdf : mBrdfs) {
             if(brdf->opaque()) {
                 mOpaque = true;
             }
@@ -30,7 +30,7 @@ namespace Object {
         mTransmitIor = transmitIor;        
     }
 
-    const Albedo::Base &Surface::albedo() const
+    const Object::Albedo &Surface::albedo() const
     {
         return *mAlbedo;
     }
@@ -74,7 +74,7 @@ namespace Object {
         return colTransmit;
     }
 
-    Math::Color Surface::sample(const Object::Intersection &isect, Math::Sampler::Base &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
+    Math::Color Surface::sample(const Object::Intersection &isect, Math::Sampler &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
         const Math::Normal &nrmFacing = isect.facingNormal();
@@ -109,7 +109,7 @@ namespace Object {
             float sample = sampler.getValue();
             idx = std::min((int)std::floor(mBrdfs.size() * sample), (int)mBrdfs.size() - 1);
         }
-        const Object::Brdf::Base &brdf = *mBrdfs[idx];
+        const Object::Brdf &brdf = *mBrdfs[idx];
        
         dirIn = brdf.sample(sampler, nrmFacing, dirOut);
         pdf = Surface::pdf(isect, dirIn);
@@ -123,7 +123,7 @@ namespace Object {
         const Math::Normal &nrmFacing = isect.facingNormal();
         
         float totalPdf = 0;
-        for(const std::unique_ptr<Object::Brdf::Base> &brdf : mBrdfs) {
+        for(const std::unique_ptr<Object::Brdf> &brdf : mBrdfs) {
             totalPdf += brdf->pdf(dirIn, nrmFacing, dirOut);
         }
         totalPdf /= (float)mBrdfs.size();

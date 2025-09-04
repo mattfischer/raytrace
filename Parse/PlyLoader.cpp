@@ -2,7 +2,7 @@
 
 #include "Parse/BvhFile.hpp"
 
-#include "Object/Shape/TriangleMesh.hpp"
+#include "Object/Impl/Shape/TriangleMesh.hpp"
 
 #include "Math/Point.hpp"
 
@@ -79,7 +79,7 @@ namespace Parse {
         }
     }
 
-    void loadPly(const std::string &filename, std::vector<Object::Shape::TriangleMesh::Vertex> &vertices, std::vector<Object::Shape::TriangleMesh::Triangle> &triangles)
+    void loadPly(const std::string &filename, std::vector<Object::Impl::Shape::TriangleMesh::Vertex> &vertices, std::vector<Object::Impl::Shape::TriangleMesh::Triangle> &triangles)
     {
         std::ifstream file(filename.c_str());
         std::string ply;
@@ -132,7 +132,7 @@ namespace Parse {
                         }
                     }
 
-                    Object::Shape::TriangleMesh::Vertex vertex;
+                    Object::Impl::Shape::TriangleMesh::Vertex vertex;
                     vertex.point = Math::Point(x, y, z);
                     vertices.push_back(vertex);
                 }
@@ -146,7 +146,7 @@ namespace Parse {
                 }
 
                 for (int i = 0; i < element.count; i++) {
-                    Object::Shape::TriangleMesh::Triangle triangle;
+                    Object::Impl::Shape::TriangleMesh::Triangle triangle;
                     for (int j = 0; j < element.properties.size(); j++) {
                         if (j == idxVertices) {
                             int count;
@@ -181,7 +181,7 @@ namespace Parse {
         }
     }
 
-    void loadBin(const std::string &filename, std::vector<Object::Shape::TriangleMesh::Vertex> &vertices, std::vector<Object::Shape::TriangleMesh::Triangle> &triangles)
+    void loadBin(const std::string &filename, std::vector<Object::Impl::Shape::TriangleMesh::Vertex> &vertices, std::vector<Object::Impl::Shape::TriangleMesh::Triangle> &triangles)
     {
         std::ifstream file(filename.c_str(), std::ios_base::binary);
 
@@ -189,30 +189,30 @@ namespace Parse {
 
         file.read((char*)&size, sizeof(size));
         vertices.resize(size);
-        file.read((char*)&vertices[0], vertices.size() * sizeof(Object::Shape::TriangleMesh::Vertex));
+        file.read((char*)&vertices[0], vertices.size() * sizeof(Object::Impl::Shape::TriangleMesh::Vertex));
 
         file.read((char*)&size, sizeof(size));
         triangles.resize(size);
-        file.read((char*)&triangles[0], triangles.size() * sizeof(Object::Shape::TriangleMesh::Triangle));
+        file.read((char*)&triangles[0], triangles.size() * sizeof(Object::Impl::Shape::TriangleMesh::Triangle));
     }
 
-    void saveBin(const std::string &filename, const std::vector<Object::Shape::TriangleMesh::Vertex> &vertices, const std::vector<Object::Shape::TriangleMesh::Triangle> &triangles)
+    void saveBin(const std::string &filename, const std::vector<Object::Impl::Shape::TriangleMesh::Vertex> &vertices, const std::vector<Object::Impl::Shape::TriangleMesh::Triangle> &triangles)
     {
         std::ofstream file(filename.c_str(), std::ios_base::binary);
 
         std::size_t size = vertices.size();
         file.write((const char *)&size, sizeof(size));
-        file.write((const char*)&vertices[0], vertices.size() * sizeof(Object::Shape::TriangleMesh::Vertex));
+        file.write((const char*)&vertices[0], vertices.size() * sizeof(Object::Impl::Shape::TriangleMesh::Vertex));
 
         size = triangles.size();
         file.write((const char *)&size, sizeof(size));
-        file.write((const char*)&triangles[0], triangles.size() * sizeof(Object::Shape::TriangleMesh::Triangle));
+        file.write((const char*)&triangles[0], triangles.size() * sizeof(Object::Impl::Shape::TriangleMesh::Triangle));
     }
 
-    std::unique_ptr<Object::Shape::Base> PlyLoader::load(const std::string &filename)
+    std::unique_ptr<Object::Shape> PlyLoader::load(const std::string &filename)
     {
-        std::vector<Object::Shape::TriangleMesh::Vertex> vertices;
-        std::vector<Object::Shape::TriangleMesh::Triangle> triangles;
+        std::vector<Object::Impl::Shape::TriangleMesh::Vertex> vertices;
+        std::vector<Object::Impl::Shape::TriangleMesh::Triangle> triangles;
 
         std::string binFilename = filename + ".bin";
         std::ifstream binFile(binFilename.c_str());
@@ -228,10 +228,10 @@ namespace Parse {
         std::ifstream bvhFile(bvhFilename);
         if (bvhFile.good()) {
             Object::BoundingVolumeHierarchy boundingVolumeHierarchy = BvhFile::load(bvhFilename);
-            return std::make_unique<Object::Shape::TriangleMesh>(std::move(vertices), std::move(triangles), std::move(boundingVolumeHierarchy));
+            return std::make_unique<Object::Impl::Shape::TriangleMesh>(std::move(vertices), std::move(triangles), std::move(boundingVolumeHierarchy));
         }
         else {
-            std::unique_ptr<Object::Shape::TriangleMesh> mesh = std::make_unique<Object::Shape::TriangleMesh>(std::move(vertices), std::move(triangles));
+            std::unique_ptr<Object::Impl::Shape::TriangleMesh> mesh = std::make_unique<Object::Impl::Shape::TriangleMesh>(std::move(vertices), std::move(triangles));
             BvhFile::save(bvhFilename, mesh->boundingVolumeHierarchy());
             return std::move(mesh);
         }

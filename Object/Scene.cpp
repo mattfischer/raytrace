@@ -3,18 +3,18 @@
 #include "Object/Camera.hpp"
 #include "Object/Primitive.hpp"
 
-#include "Object/Shape/Transformed.hpp"
-#include "Object/Albedo/Solid.hpp"
-#include "Object/Brdf/Lambert.hpp"
-#include "Object/Brdf/Phong.hpp"
+#include "Object/Impl/Shape/Transformed.hpp"
+#include "Object/Impl/Albedo/Solid.hpp"
+#include "Object/Impl/Brdf/Lambert.hpp"
+#include "Object/Impl/Brdf/Phong.hpp"
 
-#include "Object/Light/Shape.hpp"
-#include "Object/Light/Point.hpp"
+#include "Object/Impl/Light/Shape.hpp"
+#include "Object/Impl/Light/Point.hpp"
 
 #include <cfloat>
 
 namespace Object {
-    Scene::Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light::Base>> lights, const Math::Radiance &skyRadiance)
+    Scene::Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light>> lights, const Math::Radiance &skyRadiance)
         : mCamera(std::move(camera))
         , mPrimitives(std::move(primitives))
         , mLights(std::move(lights))
@@ -23,9 +23,9 @@ namespace Object {
         std::vector<Math::Point> centroids;
         centroids.reserve(mPrimitives.size());
 
-        for (std::unique_ptr<Object::Light::Base> &light : mLights) {
-            if(dynamic_cast<Object::Light::Point*>(light.get())) {
-                mPointLights.push_back(dynamic_cast<Object::Light::Point&>(*light));
+        for (std::unique_ptr<Object::Light> &light : mLights) {
+            if(dynamic_cast<Object::Impl::Light::Point*>(light.get())) {
+                mPointLights.push_back(dynamic_cast<Object::Impl::Light::Point&>(*light));
             }
         }
 
@@ -34,7 +34,7 @@ namespace Object {
 
             if (primitive->surface().radiance().magnitude() > 0) {
                 mAreaLights.push_back(static_cast<Object::Primitive&>(*primitive));
-                mLights.push_back(std::make_unique<Object::Light::Shape>(primitive->shape(), primitive->surface().radiance()));
+                mLights.push_back(std::make_unique<Object::Impl::Light::Shape>(primitive->shape(), primitive->surface().radiance()));
             }
         }
 
@@ -55,7 +55,7 @@ namespace Object {
         return mPrimitives;
     }
 
-    const std::vector<std::unique_ptr<Object::Light::Base>> &Scene::lights() const
+    const std::vector<std::unique_ptr<Object::Light>> &Scene::lights() const
     {
         return mLights;
     }
@@ -79,7 +79,7 @@ namespace Object {
     {
         Object::BoundingVolume::RayData rayData = Object::BoundingVolume::getRayData(beam.ray());
 
-        Object::Shape::Base::Intersection shapeIntersection;
+        Object::Shape::Intersection shapeIntersection;
         shapeIntersection.distance = maxDistance;
         Object::Primitive *primitive = 0;
 

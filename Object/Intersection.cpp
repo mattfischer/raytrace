@@ -11,7 +11,7 @@ namespace Object {
         mSurfaceProjectionValid = false;
     }
 
-    Intersection::Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection)
+    Intersection::Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Intersection &shapeIntersection)
         : mScene(&scene), mPrimitive(&primitive), mBeam(&beam), mShapeIntersection(shapeIntersection)
     {
         mPoint = mBeam->ray().origin() + mBeam->ray().direction() * mShapeIntersection.distance;
@@ -55,7 +55,7 @@ namespace Object {
         return mShapeIntersection.distance;
     }
 
-    const Object::Shape::Base::Intersection &Intersection::shapeIntersection() const
+    const Object::Shape::Intersection &Intersection::shapeIntersection() const
     {
         return mShapeIntersection;
     }

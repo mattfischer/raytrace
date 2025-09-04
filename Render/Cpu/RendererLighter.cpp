@@ -1,19 +1,19 @@
 #include "Render/Cpu/RendererLighter.hpp"
 #include "Render/Cpu/RasterJob.hpp"
 
-#include "Math/Sampler/Halton.hpp"
+#include "Math/Impl/Sampler/Halton.hpp"
 
 #include <atomic>
 #include <mutex>
 
 namespace Render::Cpu {
     struct ThreadLocal : public Executor::Job::ThreadLocal {
-        Math::Sampler::Halton sampler;
+        Math::Impl::Sampler::Halton sampler;
 
         ThreadLocal(int width, int height) : sampler(width, height) {}
     };
         
-    RendererLighter::RendererLighter(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter)
+    RendererLighter::RendererLighter(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Render::Cpu::Lighter> lighter)
     : mScene(scene)
     , mSettings(settings)
     , mLighter(std::move(lighter))
@@ -78,7 +78,7 @@ namespace Render::Cpu {
         }
     }
 
-    void RendererLighter::renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler)
+    void RendererLighter::renderPixel(int x, int y, int sample, Math::Sampler &sampler)
     {
         Math::Bivector dv;
         sampler.startSample(x, y, sample);

@@ -7,8 +7,8 @@
 #include "Render/Framebuffer.hpp"
 #include "Render/Raster.hpp"
 
-#include "Render/Cpu/Lighter/UniPath.hpp"
-#include "Math/Sampler/Halton.hpp"
+#include "Render/Cpu/Impl/Lighter/UniPath.hpp"
+#include "Math/Impl/Sampler/Halton.hpp"
 
 #include "Object/Scene.hpp"
 
@@ -49,18 +49,18 @@ namespace Render::Cpu {
                 q = 0;
             }
 
-            void addSample(const T &sampleNew, float qNew, float pdfNew, Math::Sampler::Base &sampler)
+            void addSample(const T &sampleNew, float qNew, float pdfNew, Math::Sampler &sampler)
             {
                 combine(sampleNew, qNew, 1.0f / pdfNew, 1, 1.0f, sampler);
             }
 
-            void addReservoir(const Reservoir<T> &resNew, float qNew, float J, Math::Sampler::Base &sampler)
+            void addReservoir(const Reservoir<T> &resNew, float qNew, float J, Math::Sampler &sampler)
             {
                 combine(resNew.sample, qNew, resNew.W, resNew.M, J, sampler);
             }
 
         private:
-            void combine(const T &sampleNew, float qNew, float WNew, int MNew, float J, Math::Sampler::Base &sampler)
+            void combine(const T &sampleNew, float qNew, float WNew, int MNew, float J, Math::Sampler &sampler)
             {
                 float m0 = (float)M / (float)(M + MNew);
                 float m1 = (float)MNew / (float)(M + MNew);
@@ -95,9 +95,9 @@ namespace Render::Cpu {
         void startInitialSampleJob();
         void startDirectIlluminateJob();
         void startIndirectIlluminateJob();
-        void initialSamplePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
-        void directIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler);
-        void indirectIlluminatePixel(int x, int y, int sample, Math::Sampler::Base &sampler, Reservoir<IndirectSample> indirectSamples[]);
+        void initialSamplePixel(int x, int y, int sample, Math::Sampler &sampler);
+        void directIlluminatePixel(int x, int y, int sample, Math::Sampler &sampler);
+        void indirectIlluminatePixel(int x, int y, int sample, Math::Sampler &sampler, Reservoir<IndirectSample> indirectSamples[]);
 
         void addRadiance(int x, int y, int sample, const Math::Radiance &radiance);
 
@@ -110,7 +110,7 @@ namespace Render::Cpu {
         Settings mSettings;
         std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
 
-        std::unique_ptr<Render::Cpu::Lighter::Base> mIndirectLighter;
+        std::unique_ptr<Render::Cpu::Lighter> mIndirectLighter;
 
         Render::Raster<Reservoir<DirectSample>> mDirectReservoirs;
         Render::Raster<Reservoir<IndirectSample>> mIndirectReservoirs;
@@ -124,7 +124,7 @@ namespace Render::Cpu {
         Render::Raster<Math::Radiance> mTotalRadiance;
 
         struct ThreadLocal : public Executor::Job::ThreadLocal {
-            Math::Sampler::Halton sampler;
+            Math::Impl::Sampler::Halton sampler;
             std::vector<Reservoir<IndirectSample>> indirectSamples;
 
             ThreadLocal(int width, int height, int numIndirectSamples)

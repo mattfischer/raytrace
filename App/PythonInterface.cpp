@@ -3,15 +3,13 @@
 
 #include "Render/Cpu/RendererLighter.hpp"
 #include "Render/Cpu/RendererReSTIR.hpp"
-#include "Render/Cpu/Lighter/Direct.hpp"
-#include "Render/Cpu/Lighter/UniPath.hpp"
-#include "Render/Cpu/Lighter/IrradianceCached.hpp"
+#include "Render/Cpu/Impl/Lighter/Direct.hpp"
+#include "Render/Cpu/Impl/Lighter/UniPath.hpp"
+#include "Render/Cpu/Impl/Lighter/IrradianceCached.hpp"
 
 #include "Render/Gpu/Renderer.hpp"
 
 #include "Render/LightProbe.hpp"
-
-#include "Math/Sampler/Random.hpp"
 
 #include "App/PythonInterface.hpp"
 
@@ -127,20 +125,20 @@ namespace App {
             settings.height = settingsObject->height;
             settings.samples = settingsObject->samples;
 
-            std::unique_ptr<Render::Cpu::Lighter::Base> lighter;
+            std::unique_ptr<Render::Cpu::Lighter> lighter;
             if(!wcscmp(renderMethod, L"noLighting")) {
                 lighter = nullptr;
             } else if(!wcscmp(renderMethod, L"directLighting")) {
-                lighter = std::make_unique<Render::Cpu::Lighter::Direct>();
+                lighter = std::make_unique<Render::Cpu::Impl::Lighter::Direct>();
             } else if(!wcscmp(renderMethod, L"pathTracingCpu")) {
-                lighter = std::make_unique<Render::Cpu::Lighter::UniPath>();
+                lighter = std::make_unique<Render::Cpu::Impl::Lighter::UniPath>();
             } else if(!wcscmp(renderMethod, L"irradianceCaching")) {
-                Render::Cpu::Lighter::IrradianceCached::Settings lighterSettings;
+                Render::Cpu::Impl::Lighter::IrradianceCached::Settings lighterSettings;
 
                 lighterSettings.indirectSamples = settingsObject->irradianceCacheSamples;
                 lighterSettings.cacheThreshold = settingsObject->irradianceCacheThreshold;
 
-                lighter = std::make_unique<Render::Cpu::Lighter::IrradianceCached>(lighterSettings);
+                lighter = std::make_unique<Render::Cpu::Impl::Lighter::IrradianceCached>(lighterSettings);
             }
             
             engineObject->renderer = new Render::Cpu::RendererLighter(*engineObject->sceneObject->scene, settings, std::move(lighter));

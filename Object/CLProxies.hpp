@@ -2,9 +2,9 @@
 #define OBJECT_CLPROXIES_HPP
 
 #include "Math/CLProxies.hpp"
-#include "Object/Albedo/CLProxies.hpp"
-#include "Object/Shape/CLProxies.hpp"
-#include "Object/Brdf/CLProxies.hpp"
+#include "Object/Impl/Albedo/CLProxies.hpp"
+#include "Object/Impl/Shape/CLProxies.hpp"
+#include "Object/Impl/Brdf/CLProxies.hpp"
 
 struct NormalMapProxy {
     TextureProxy texture;

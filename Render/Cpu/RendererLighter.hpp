@@ -7,7 +7,7 @@
 #include "Render/Framebuffer.hpp"
 #include "Render/Raster.hpp"
 
-#include "Render/Cpu/Lighter/Base.hpp"
+#include "Render/Cpu/Lighter.hpp"
 
 #include "Object/Scene.hpp"
 
@@ -23,7 +23,7 @@ namespace Render::Cpu {
             unsigned int height;
             unsigned int samples;
         };
-        RendererLighter(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Lighter::Base> lighter);
+        RendererLighter(const Object::Scene &scene, const Settings &settings, std::unique_ptr<Render::Cpu::Lighter> lighter);
 
         void start(Listener *listener) override;
         void stop() override;
@@ -33,7 +33,7 @@ namespace Render::Cpu {
 
     private:
         void jobDone();
-        void renderPixel(int x, int y, int sample, Math::Sampler::Base &sampler);
+        void renderPixel(int x, int y, int sample, Math::Sampler &sampler);
 
         Executor mExecutor;
         Listener *mListener;
@@ -45,7 +45,7 @@ namespace Render::Cpu {
         Settings mSettings;
         std::unique_ptr<Render::Framebuffer> mRenderFramebuffer;
 
-        std::unique_ptr<Render::Cpu::Lighter::Base> mLighter;
+        std::unique_ptr<Render::Cpu::Lighter> mLighter;
 
         Render::Raster<Math::Radiance> mTotalRadiance;
     };

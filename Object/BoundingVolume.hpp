@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "Object/Shape/CLProxies.hpp"
+#include "Object/Impl/Shape/CLProxies.hpp"
 
 namespace Object {
     class BoundingVolume

@@ -3,7 +3,7 @@
 #include "Render/Gpu/WorkQueue.hpp"
 #include "Render/Gpu/CLProxies.hpp"
 
-#include "Math/Sampler/Halton.hpp"
+#include "Math/Impl/Sampler/Halton.hpp"
 
 #include <memory>
 
@@ -37,7 +37,7 @@ namespace Render::Gpu {
         mContextProxy->settings.height = mSettings.height;
         mContextProxy->settings.samples = mSettings.samples;
 
-        Math::Sampler::Halton sampler(mSettings.width, mSettings.height);
+        Math::Impl::Sampler::Halton sampler(mSettings.width, mSettings.height);
         sampler.writeProxy(mContextProxy->sampler, mClConstAllocator);
         mContextProxy->items = mClRwAllocator.allocateArray<ItemProxy>(kSize);
 

@@ -3,9 +3,9 @@
 
 #include "Object/Scene.hpp"
 
-#include "Object/Shape/Sphere.hpp"
-#include "Object/Shape/Quad.hpp"
-#include "Object/Shape/TriangleMesh.hpp"
+#include "Object/Impl/Shape/Sphere.hpp"
+#include "Object/Impl/Shape/Quad.hpp"
+#include "Object/Impl/Shape/TriangleMesh.hpp"
 
 #include <string>
 #include <fstream>
@@ -42,13 +42,13 @@ namespace Parse {
 
         std::unique_ptr<Object::Scene> parseScene();
         std::unique_ptr<Object::Camera> tryParseCamera();
-        std::unique_ptr<Object::Light::Base> tryParseLight();
+        std::unique_ptr<Object::Light> tryParseLight();
 
         std::unique_ptr<Object::Primitive> tryParsePrimitive();
 
         std::unique_ptr<Object::Surface> tryParseSurface();
-        std::unique_ptr<Object::Albedo::Base> tryParseAlbedo();
-        bool tryParseBrdfs(std::vector<std::unique_ptr<Object::Brdf::Base>> &brdfs, float &transmitIor);
+        std::unique_ptr<Object::Albedo> tryParseAlbedo();
+        bool tryParseBrdfs(std::vector<std::unique_ptr<Object::Brdf>> &brdfs, float &transmitIor);
         std::unique_ptr<Object::NormalMap> tryParseNormalMap();
 
         bool tryParseTransformation(Math::Transformation &transformation);

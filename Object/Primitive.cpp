@@ -1,18 +1,18 @@
 #include "Object/Primitive.hpp"
 
 namespace Object {
-    Primitive::Primitive(std::unique_ptr<Shape::Base> shape, std::unique_ptr<Surface> surface)
+    Primitive::Primitive(std::unique_ptr<Object::Shape> shape, std::unique_ptr<Object::Surface> surface)
         : mShape(std::move(shape)), mSurface(std::move(surface))
     {
         mBoundingVolume = mShape->boundingVolume(Math::Transformation());
     }
 
-    const Shape::Base &Primitive::shape() const
+    const Object::Shape &Primitive::shape() const
     {
         return *mShape;
     }
 
-    const Surface &Primitive::surface() const
+    const Object::Surface &Primitive::surface() const
     {
         return *mSurface;
     }

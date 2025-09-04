@@ -9,7 +9,7 @@
 
 #include "Object/Primitive.hpp"
 
-#include "Object/Shape/Base.hpp"
+#include "Object/Shape.hpp"
 
 #include <vector>
 
@@ -19,7 +19,7 @@ namespace Object {
     {
     public:
         Intersection();
-        Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Base::Intersection &shapeIntersection);
+        Intersection(const Object::Scene &scene, const Object::Primitive &primitive, const Math::Beam &beam, const Object::Shape::Intersection &shapeIntersection);
 
         bool valid() const;
 
@@ -30,7 +30,7 @@ namespace Object {
         const Math::Ray &ray() const;
         const Math::Beam &beam() const;
         const Math::Point &point() const;
-        const Object::Shape::Base::Intersection &shapeIntersection() const;
+        const Object::Shape::Intersection &shapeIntersection() const;
 
         const Math::Normal &normal() const;
         const Math::Normal &facingNormal() const;
@@ -43,7 +43,7 @@ namespace Object {
         const Object::Scene *mScene;
         const Object::Primitive *mPrimitive;
         const Math::Beam *mBeam;
-        Object::Shape::Base::Intersection mShapeIntersection;
+        Object::Shape::Intersection mShapeIntersection;
         Math::Point mPoint;
 
         mutable bool mNormalValid;

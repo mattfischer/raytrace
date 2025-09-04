@@ -6,7 +6,7 @@
 #include <vector>
 #include <functional>
 
-#include "Object/Shape/CLProxies.hpp"
+#include "Object/Impl/Shape/CLProxies.hpp"
 
 namespace Object {
     class BoundingVolumeHierarchy

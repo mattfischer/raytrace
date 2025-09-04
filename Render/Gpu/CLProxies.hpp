@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "Math/CLProxies.hpp"
-#include "Math/Sampler/CLProxies.hpp"
+#include "Math/Impl/Sampler/CLProxies.hpp"
 #include "Object/CLProxies.hpp"
 
 struct SettingsProxy {

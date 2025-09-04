@@ -3,7 +3,7 @@
 
 #include "Object/Surface.hpp"
 #include "Object/BoundingVolume.hpp"
-#include "Object/Shape/Base.hpp"
+#include "Object/Shape.hpp"
 #include "Object/CLProxies.hpp"
 #include "OpenCL.hpp"
 
@@ -11,18 +11,18 @@ namespace Object {
     class Primitive
     {
     public:
-        Primitive(std::unique_ptr<Shape::Base> shape, std::unique_ptr<Surface> surface);
+        Primitive(std::unique_ptr<Object::Shape> shape, std::unique_ptr<Object::Surface> surface);
 
-        const Shape::Base &shape() const;
-        const Surface &surface() const;
-        const BoundingVolume &boundingVolume() const;
+        const Object::Shape &shape() const;
+        const Object::Surface &surface() const;
+        const Object::BoundingVolume &boundingVolume() const;
 
         void writeProxy(PrimitiveProxy &proxy, OpenCL::Allocator &clAllocator) const;
 
     protected:
-        std::unique_ptr<Shape::Base> mShape;
-        std::unique_ptr<Surface> mSurface;
-        BoundingVolume mBoundingVolume;
+        std::unique_ptr<Object::Shape> mShape;
+        std::unique_ptr<Object::Surface> mSurface;
+        Object::BoundingVolume mBoundingVolume;
     };
 }
 

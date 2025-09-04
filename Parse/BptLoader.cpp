@@ -1,13 +1,13 @@
 #include "Parse/BptLoader.hpp"
 
-#include "Object/Shape/BezierPatch.hpp"
-#include "Object/Shape/Group.hpp"
+#include "Object/Impl/Shape/BezierPatch.hpp"
+#include "Object/Impl/Shape/Group.hpp"
 #include <fstream>
 
 namespace Parse {
-    std::unique_ptr<Object::Shape::Base> BptLoader::load(const std::string &filename)
+    std::unique_ptr<Object::Shape> BptLoader::load(const std::string &filename)
     {
-        std::vector<std::unique_ptr<Object::Shape::Base>> patches;
+        std::vector<std::unique_ptr<Object::Shape>> patches;
 
         std::ifstream file(filename.c_str());
         int numPatches;
@@ -22,14 +22,14 @@ namespace Parse {
                 file >> x >> y >> z;
                 controlPoints.push_back(Math::Point(x, y, z));
             }
-            patches.push_back(std::make_unique<Object::Shape::BezierPatch>(16, 16, std::move(controlPoints)));
+            patches.push_back(std::make_unique<Object::Impl::Shape::BezierPatch>(16, 16, std::move(controlPoints)));
         }
 
         if (patches.size() == 1) {
             return std::move(patches[0]);
         }
         else {
-            return std::make_unique<Object::Shape::Group>(std::move(patches));
+            return std::make_unique<Object::Impl::Shape::Group>(std::move(patches));
         }
     }
 }

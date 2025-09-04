@@ -1,14 +1,14 @@
 #include "Parse/SceneParser.hpp"
 
-#include "Object/Shape/Transformed.hpp"
+#include "Object/Impl/Shape/Transformed.hpp"
 
-#include "Object/Albedo/Solid.hpp"
-#include "Object/Albedo/Texture.hpp"
+#include "Object/Impl/Albedo/Solid.hpp"
+#include "Object/Impl/Albedo/Texture.hpp"
 
-#include "Object/Brdf/Lambert.hpp"
-#include "Object/Brdf/Phong.hpp"
-#include "Object/Brdf/OrenNayar.hpp"
-#include "Object/Brdf/TorranceSparrow.hpp"
+#include "Object/Impl/Brdf/Lambert.hpp"
+#include "Object/Impl/Brdf/Phong.hpp"
+#include "Object/Impl/Brdf/OrenNayar.hpp"
+#include "Object/Impl/Brdf/TorranceSparrow.hpp"
 
 #include "Parse/BptLoader.hpp"
 #include "Parse/PlyLoader.hpp"
@@ -202,7 +202,7 @@ namespace Parse {
     {
         std::unique_ptr<Object::Camera> camera;
         std::vector<std::unique_ptr<Object::Primitive>> primitives;
-        std::vector<std::unique_ptr<Object::Light::Base>> lights;
+        std::vector<std::unique_ptr<Object::Light>> lights;
         Math::Radiance skyRadiance;
 
         while(!matchEnd()) {
@@ -251,7 +251,7 @@ namespace Parse {
         return std::make_unique<Object::Camera>(position, (lookAt - position).normalize(), Math::Vector(0, 1, 0), 60.0f, focalLength, apertureSize);
     }
 
-    std::unique_ptr<Object::Light::Base> SceneParser::tryParseLight()
+    std::unique_ptr<Object::Light> SceneParser::tryParseLight()
     {
         if(!matchLiteral("point_light")) {
             return nullptr;
@@ -263,25 +263,25 @@ namespace Parse {
 
         expectRightBrace();
 
-        return std::make_unique<Object::Light::Point>(position, radiance);
+        return std::make_unique<Object::Impl::Light::Point>(position, radiance);
     }
 
     std::unique_ptr<Object::Primitive> SceneParser::tryParsePrimitive()
     {
-        std::unique_ptr<Object::Shape::Base> shape;
+        std::unique_ptr<Object::Shape> shape;
         if(matchLiteral("sphere")) {
             expectLeftBrace();
 
             Math::Point position = parsePoint();
             float radius = parseFloat();
-            shape = std::make_unique<Object::Shape::Sphere>(position, radius);
+            shape = std::make_unique<Object::Impl::Shape::Sphere>(position, radius);
         } else if(matchLiteral("quad")) {
             expectLeftBrace();
 
             Math::Point position = parsePoint();
             Math::Vector side1 = parseVector();
             Math::Vector side2 = parseVector();
-            shape = std::make_unique<Object::Shape::Quad>(position, side1, side2);
+            shape = std::make_unique<Object::Impl::Shape::Quad>(position, side1, side2);
         } else if(matchLiteral("model")) {
             expectLeftBrace();
             
@@ -310,7 +310,7 @@ namespace Parse {
             }
 
             if(tryParseTransformation(transformation)) {
-                shape = std::make_unique<Object::Shape::Transformed>(std::move(shape), transformation);
+                shape = std::make_unique<Object::Impl::Shape::Transformed>(std::move(shape), transformation);
                 continue;
             }
 
@@ -327,8 +327,8 @@ namespace Parse {
         }
         expectLeftBrace();
         
-        std::unique_ptr<Object::Albedo::Base> albedo;
-        std::vector<std::unique_ptr<Object::Brdf::Base>> brdfs;
+        std::unique_ptr<Object::Albedo> albedo;
+        std::vector<std::unique_ptr<Object::Brdf>> brdfs;
         float transmitIor = 0.0f;
         Math::Radiance radiance;
         std::unique_ptr<Object::NormalMap> normalMap;
@@ -397,21 +397,21 @@ namespace Parse {
         return true;
     }
 
-    std::unique_ptr<Object::Albedo::Base> SceneParser::tryParseAlbedo()
+    std::unique_ptr<Object::Albedo> SceneParser::tryParseAlbedo()
     {
         if(!matchLiteral("albedo")) {
             return nullptr;
         }
         expectLeftBrace();
 
-        std::unique_ptr<Object::Albedo::Base> albedo;
+        std::unique_ptr<Object::Albedo> albedo;
 
         if(matchLiteral("color")) {
             Math::Color color = parseColor();
-            albedo = std::make_unique<Object::Albedo::Solid>(color);
+            albedo = std::make_unique<Object::Impl::Albedo::Solid>(color);
         } else if(matchLiteral("texture")) {
             auto texture = BmpLoader::load(parseString());
-            albedo = std::make_unique<Object::Albedo::Texture>(std::move(texture));
+            albedo = std::make_unique<Object::Impl::Albedo::Texture>(std::move(texture));
         } else {
             throwUnexpected();
         }
@@ -421,7 +421,7 @@ namespace Parse {
         return albedo;
     }
 
-    bool SceneParser::tryParseBrdfs(std::vector<std::unique_ptr<Object::Brdf::Base>> &brdfs, float &transmitIor)
+    bool SceneParser::tryParseBrdfs(std::vector<std::unique_ptr<Object::Brdf>> &brdfs, float &transmitIor)
     {
         if(!matchLiteral("brdf")) {
             return false;
@@ -432,21 +432,21 @@ namespace Parse {
         while(!matchRightBrace()) {
             if(matchLiteral("lambert")) {
                 float strength = parseFloat();
-                brdfs.push_back(std::make_unique<Object::Brdf::Lambert>(strength));
+                brdfs.push_back(std::make_unique<Object::Impl::Brdf::Lambert>(strength));
                 continue;
             }
     
             if(matchLiteral("phong")) {
                 float strength = parseFloat();
                 float power = parseFloat();
-                brdfs.push_back(std::make_unique<Object::Brdf::Phong>(strength, power));
+                brdfs.push_back(std::make_unique<Object::Impl::Brdf::Phong>(strength, power));
                 continue;
             }
 
             if(matchLiteral("oren_nayar")) {
                 float strength = parseFloat();
                 float roughness = parseFloat();
-                brdfs.push_back(std::make_unique<Object::Brdf::OrenNayar>(strength, roughness));
+                brdfs.push_back(std::make_unique<Object::Impl::Brdf::OrenNayar>(strength, roughness));
                 continue;
             }
     
@@ -454,7 +454,7 @@ namespace Parse {
                 float strength = parseFloat();
                 float roughness = parseFloat();
                 float ior = parseFloat();
-                brdfs.push_back(std::make_unique<Object::Brdf::TorranceSparrow>(strength, roughness, ior));
+                brdfs.push_back(std::make_unique<Object::Impl::Brdf::TorranceSparrow>(strength, roughness, ior));
                 continue;
             }
 

@@ -5,8 +5,8 @@
 #include "Object/Primitive.hpp"
 #include "Object/BoundingVolumeHierarchy.hpp"
 #include "Object/Intersection.hpp"
-#include "Object/Light/Base.hpp"
-#include "Object/Light/Point.hpp"
+#include "Object/Light.hpp"
+#include "Object/Impl/Light/Point.hpp"
 
 #include "Object/CLProxies.hpp"
 #include "OpenCL.hpp"
@@ -18,12 +18,12 @@ namespace Object {
     class Scene
     {
     public:
-        Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light::Base>> lights, const Math::Radiance &skyRadiance);
+        Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light>> lights, const Math::Radiance &skyRadiance);
 
         const Camera &camera() const;
         const std::vector<std::unique_ptr<Primitive>> &primitives() const;
-        const std::vector<std::reference_wrapper<Primitive>> &areaLights() const;
-        const std::vector<std::unique_ptr<Object::Light::Base>> &lights() const;
+        const std::vector<std::reference_wrapper<Object::Primitive>> &areaLights() const;
+        const std::vector<std::unique_ptr<Object::Light>> &lights() const;
 
         const Math::Radiance &skyRadiance() const;
 
@@ -35,10 +35,10 @@ namespace Object {
 
     protected:
         std::unique_ptr<Camera> mCamera;
-        std::vector<std::unique_ptr<Primitive>> mPrimitives;
-        std::vector<std::unique_ptr<Object::Light::Base>> mLights;
-        std::vector<std::reference_wrapper<Primitive>> mAreaLights;
-        std::vector<std::reference_wrapper<Object::Light::Point>> mPointLights;
+        std::vector<std::unique_ptr<Object::Primitive>> mPrimitives;
+        std::vector<std::unique_ptr<Object::Light>> mLights;
+        std::vector<std::reference_wrapper<Object::Primitive>> mAreaLights;
+        std::vector<std::reference_wrapper<Object::Impl::Light::Point>> mPointLights;
 
         Math::Radiance mSkyRadiance;
 
