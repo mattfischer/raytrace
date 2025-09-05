@@ -27,7 +27,7 @@ namespace Object {
         return Math::Vector(0, 0, 0);
     }
 
-    float Brdf::pdf(const Math::Vector &, const Math::Normal &, const Math::Vector &) const
+    Math::Pdf Brdf::pdf(const Math::Vector &, const Math::Normal &, const Math::Vector &) const
     {
         return 0;
     }

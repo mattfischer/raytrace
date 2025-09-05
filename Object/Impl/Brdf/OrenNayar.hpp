@@ -13,7 +13,7 @@ namespace Object::Impl::Brdf {
         float lambert() const override;
 
         Math::Vector sample(Math::Sampler &sampler, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
-        float pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
+        Math::Pdf pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const override;
 
         void writeProxy(BrdfProxy &proxy) const override;
     

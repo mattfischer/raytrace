@@ -6,7 +6,7 @@ namespace Object::Impl::Light {
     {
     }
 
-    Math::Radiance Shape::sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, float &dotSample, float &pdf, bool &pdfDelta) const
+    Math::Radiance Shape::sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, float &dotSample, Math::Pdf &pdf) const
     {
         Math::Radiance rad;
         Math::Normal nrmSample;
@@ -18,7 +18,6 @@ namespace Object::Impl::Light {
 
             rad = mRadiance * dotSample;
         }
-        pdfDelta = false;
 
         return rad;
     }

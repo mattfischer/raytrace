@@ -74,7 +74,7 @@ namespace Object {
         return colTransmit;
     }
 
-    Math::Color Surface::sample(const Object::Intersection &isect, Math::Sampler &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const
+    Math::Color Surface::sample(const Object::Intersection &isect, Math::Sampler &sampler, Math::Vector &dirIn, Math::Pdf &pdf) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
         const Math::Normal &nrmFacing = isect.facingNormal();
@@ -97,8 +97,7 @@ namespace Object {
             float roulette = sampler.getValue();
 
             if(roulette < transmitThreshold) {
-                pdf = 1.0f;
-                pdfDelta = true;
+                pdf = Math::Pdf::delta();
 
                 return transmitted(isect, dirIn) / (dirOut * nrmFacing * transmitThreshold);
             }
@@ -113,11 +112,10 @@ namespace Object {
        
         dirIn = brdf.sample(sampler, nrmFacing, dirOut);
         pdf = Surface::pdf(isect, dirIn);
-        pdfDelta = false;
         return reflected(isect, dirIn) / (1 - transmitThreshold);
     }
 
-    float Surface::pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const
+    Math::Pdf Surface::pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
         const Math::Normal &nrmFacing = isect.facingNormal();

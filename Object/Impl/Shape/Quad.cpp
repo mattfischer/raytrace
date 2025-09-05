@@ -31,7 +31,7 @@ namespace Object::Impl::Shape {
         return false;
     }
 
-    bool Quad::sample(Math::Sampler &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const
+    bool Quad::sample(Math::Sampler &sampler, Math::Point &pnt, Math::Normal &nrm, Math::Pdf &pdf) const
     {
         Math::Point2D pntSurface = sampler.getValue2D();
         pnt = mPosition + mSide1 * pntSurface.u() + mSide2 * pntSurface.v();
@@ -43,7 +43,7 @@ namespace Object::Impl::Shape {
         return true;
     }
 
-    float Quad::samplePdf(const Math::Point &) const
+    Math::Pdf Quad::samplePdf(const Math::Point &) const
     {
         float surfaceArea = (mSide1 % mSide2).magnitude();
         return 1.0f / surfaceArea;

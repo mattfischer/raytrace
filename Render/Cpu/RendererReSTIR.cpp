@@ -135,7 +135,7 @@ namespace Render::Cpu {
 
                 Math::Point pnt2;
                 Math::Normal nrm2;
-                float pdf2;
+                Math::Pdf pdf2;
 
                 if(light.shape().sample(sampler, pnt2, nrm2, pdf2)) {
                     Math::Vector dirIn = pnt2 - pntOffset;
@@ -164,9 +164,8 @@ namespace Render::Cpu {
             resIndirect.clear();
 
             Math::Vector dirIn;
-            float pdf;
-            bool pdfDelta;
-            Math::Color reflected = surface.sample(isect, sampler, dirIn, pdf, pdfDelta);
+            Math::Pdf pdf;
+            Math::Color reflected = surface.sample(isect, sampler, dirIn, pdf);
             float reverse = (dirIn * nrmFacing > 0) ? 1.0f : -1.0f;
             float dot = dirIn * nrmFacing * reverse;
 

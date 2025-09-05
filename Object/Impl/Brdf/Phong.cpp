@@ -47,7 +47,7 @@ namespace Object::Impl::Brdf {
         return dirIn;
     }
 
-    float Phong::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const
+    Math::Pdf Phong::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const
     {
         float coeff = 0;
         Math::Vector dirReflect = -(dirIn - Math::Vector(nrm) * (dirIn * nrm * 2));

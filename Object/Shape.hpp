@@ -3,6 +3,7 @@
 
 #include "Math/Ray.hpp"
 #include "Math/Normal.hpp"
+#include "Math/Pdf.hpp"
 #include "Math/Point2D.hpp"
 #include "Math/Bivector.hpp"
 #include "Math/Transformation.hpp"
@@ -29,8 +30,8 @@ namespace Object {
 
         virtual bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const = 0;
         virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const = 0;
-        virtual bool sample(Math::Sampler &sampler, Math::Point &pnt, Math::Normal &nrm, float &pdf) const { return false; }
-        virtual float samplePdf(const Math::Point &pnt) const { return 0; }
+        virtual bool sample(Math::Sampler &sampler, Math::Point &pnt, Math::Normal &nrm, Math::Pdf &pdf) const { return false; }
+        virtual Math::Pdf samplePdf(const Math::Point &pnt) const { return 0; }
 
         virtual void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const { proxy.type = ShapeProxy::Type::None; }
     };

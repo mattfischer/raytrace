@@ -68,7 +68,7 @@ namespace Object::Impl::Brdf {
         return dirIn;
     }
 
-    float TorranceSparrow::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const
+    Math::Pdf TorranceSparrow::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &dirOut) const
     {
         Math::Vector axis = (dirIn + dirOut).normalize();
 

@@ -5,6 +5,7 @@
 #include "Object/Brdf.hpp"
 
 #include "Math/Color.hpp"
+#include "Math/Pdf.hpp"
 #include "Math/Radiance.hpp"
 #include "Object/NormalMap.hpp"
 
@@ -27,8 +28,8 @@ namespace Object {
 
         Math::Color reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
         Math::Color transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
-        Math::Color sample(const Object::Intersection &isect, Math::Sampler &sampler, Math::Vector &dirIn, float &pdf, bool &pdfDelta) const;
-        float pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const;
+        Math::Color sample(const Object::Intersection &isect, Math::Sampler &sampler, Math::Vector &dirIn, Math::Pdf &pdf) const;
+        Math::Pdf pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const;
 
         bool opaque() const;
         float lambert() const;

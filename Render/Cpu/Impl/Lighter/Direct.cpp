@@ -20,9 +20,8 @@ namespace Render::Cpu::Impl::Lighter {
         for(const std::unique_ptr<Object::Light> &light : scene.lights()) {
             Math::Point pntSample;
             float dotSample;
-            float pdf;
-            bool pdfDelta;
-            Math::Radiance rad2 = light->sample(sampler, pntOffset, pntSample, dotSample, pdf, pdfDelta);
+            Math::Pdf pdf;
+            Math::Radiance rad2 = light->sample(sampler, pntOffset, pntSample, dotSample, pdf);
 
             Math::Vector dirIn = pntSample - pntOffset;
             float d = dirIn.magnitude();

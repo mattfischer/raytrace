@@ -60,7 +60,7 @@ namespace Object::Impl::Brdf {
         return dirIn;
     }
 
-    float OrenNayar::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &) const
+    Math::Pdf OrenNayar::pdf(const Math::Vector &dirIn, const Math::Normal &nrm, const Math::Vector &) const
     {
         float cosTheta = std::max(dirIn * Math::Vector(nrm), 0.0f);
         return cosTheta / M_PI;
