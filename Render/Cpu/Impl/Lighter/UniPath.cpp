@@ -62,11 +62,11 @@ namespace Render::Cpu::Impl::Lighter {
 
             if (isect2.valid()) {
                 Math::Radiance rad2 = isect2.primitive().surface().radiance();
-                if(rad2.magnitude() > 0 && !pdf.isDelta()) {
+                if(rad2.magnitude() > 0) {
                     float dot2 = -isect2.facingNormal() * dirIn;
-                    float pdfLight = isect2.primitive().shape().samplePdf(isect2.point()) * isect2.distance() * isect2.distance() / dot2;
+                    float pdfLight = pdf.isDelta() ? 0.0f : isect2.primitive().shape().samplePdf(isect2.point()) * isect2.distance() * isect2.distance() / dot2;
                     float misWeight = pdf * pdf / (pdf * pdf + pdfLight * pdfLight);
-        
+
                     rad += rad2 * throughput * misWeight;
                 }
 
