@@ -6,17 +6,19 @@ namespace Object::Impl::Light {
     {
     }
 
-    Math::Radiance Shape::sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, float &dotSample, Math::Pdf &pdf) const
+    Math::Radiance Shape::sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, Math::Pdf &pdf) const
     {
         Math::Radiance rad;
         Math::Normal nrmSample;
-        if(mShape.sample(sampler, pntSample, nrmSample, pdf)) {
-            Math::Vector dirOut = pnt - pntSample;
+        Math::Pdf pdfArea;
+        if(mShape.sample(sampler, pntSample, nrmSample, pdfArea)) {
+            Math::Vector dirOut = pntSample - pnt;
             float d = dirOut.magnitude();
             dirOut = dirOut / d;
-            dotSample = std::abs(dirOut * nrmSample);
+            float dot = std::abs(dirOut * nrmSample);
+            pdf = pdfArea * d * d / dot;
 
-            rad = mRadiance * dotSample;
+            rad = mRadiance * dot;
         }
 
         return rad;

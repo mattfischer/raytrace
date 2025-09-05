@@ -10,7 +10,7 @@ namespace Object::Impl::Light {
     public:
         Shape(const Object::Shape &shape, const Math::Radiance &radiance);
 
-        virtual Math::Radiance sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, float &dotSample, Math::Pdf &pdf) const override;
+        virtual Math::Radiance sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, Math::Pdf &pdf) const override;
         virtual bool didIntersect(const Object::Intersection &isect) const override;
 
     private:

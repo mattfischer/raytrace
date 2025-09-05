@@ -97,7 +97,7 @@ namespace Object {
             float roulette = sampler.getValue();
 
             if(roulette < transmitThreshold) {
-                pdf = Math::Pdf::delta();
+                pdf = Math::Pdf(1.0f, true);
 
                 return transmitted(isect, dirIn) / (dirOut * nrmFacing * transmitThreshold);
             }

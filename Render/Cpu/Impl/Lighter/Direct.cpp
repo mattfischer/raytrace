@@ -19,9 +19,8 @@ namespace Render::Cpu::Impl::Lighter {
 
         for(const std::unique_ptr<Object::Light> &light : scene.lights()) {
             Math::Point pntSample;
-            float dotSample;
             Math::Pdf pdf;
-            Math::Radiance rad2 = light->sample(sampler, pntOffset, pntSample, dotSample, pdf);
+            Math::Radiance rad2 = light->sample(sampler, pntOffset, pntSample, pdf);
 
             Math::Vector dirIn = pntSample - pntOffset;
             float d = dirIn.magnitude();
@@ -34,7 +33,7 @@ namespace Render::Cpu::Impl::Lighter {
                 Object::Intersection isect2 = scene.intersect(beam, d, false);
 
                 if (!isect2.valid() || light->didIntersect(isect2)) {
-                    Math::Radiance irad = rad2 * dot / (d * d);
+                    Math::Radiance irad = rad2 * dot;
                     rad += irad * surface.reflected(isect, dirIn) / pdf;
                 }
             }

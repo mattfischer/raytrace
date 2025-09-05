@@ -23,9 +23,8 @@ namespace Render::Cpu::Impl::Lighter {
 
             for(const std::unique_ptr<Object::Light> &light : scene.lights()) {
                 Math::Point pntSample;
-                float dotSample;
                 Math::Pdf pdf;
-                Math::Radiance rad2 = light->sample(sampler, pntOffset, pntSample, dotSample, pdf);
+                Math::Radiance rad2 = light->sample(sampler, pntOffset, pntSample, pdf);
 
                 Math::Vector dirIn = pntSample - pntOffset;
                 float d = dirIn.magnitude();
@@ -38,8 +37,8 @@ namespace Render::Cpu::Impl::Lighter {
                     Object::Intersection isect2 = scene.intersect(beam, d, false);
 
                     if (!isect2.valid() || light->didIntersect(isect2)) {
-                        Math::Radiance irad = rad2 * dot / (d * d);
-                        float pdfBrdf = pdf.isDelta() ? 0.0f : surface.pdf(isect, dirIn) * dotSample / (d * d);
+                        Math::Radiance irad = rad2 * dot;
+                        float pdfBrdf = pdf.isDelta() ? 0.0f : surface.pdf(isect, dirIn);
                         float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
                         
                         rad += irad * surface.reflected(isect, dirIn) * throughput * misWeight / pdf;
@@ -79,9 +78,8 @@ namespace Render::Cpu::Impl::Lighter {
                 Math::Radiance rad2 = isect2.primitive().surface().radiance();
                 if(rad2.magnitude() > 0 && !pdf.isDelta()) {
                     float dot2 = -isect2.facingNormal() * dirIn;
-                    float pdfArea = pdf * dot2 / (isect2.distance() * isect2.distance());
-                    float pdfLight = isect2.primitive().shape().samplePdf(isect2.point());
-                    float misWeight = pdfArea * pdfArea / (pdfArea * pdfArea + pdfLight * pdfLight);
+                    float pdfLight = isect2.primitive().shape().samplePdf(isect2.point()) * isect2.distance() * isect2.distance() / dot2;
+                    float misWeight = pdf * pdf / (pdf * pdf + pdfLight * pdfLight);
         
                     rad += rad2 * throughput * misWeight;
                 }

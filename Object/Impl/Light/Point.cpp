@@ -6,11 +6,13 @@ namespace Object::Impl::Light {
     {
     }
 
-    Math::Radiance Point::sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, float &dotSample, Math::Pdf &pdf) const
+    Math::Radiance Point::sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, Math::Pdf &pdf) const
     {
         pntSample = mPosition;
-        dotSample = 0.0f;
-        pdf = Math::Pdf::delta();
+        Math::Vector dirOut = pnt - pntSample;
+        float d = dirOut.magnitude();
+
+        pdf = Math::Pdf(d * d, true);
         return mRadiance;
     }
 

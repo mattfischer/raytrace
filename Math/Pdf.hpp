@@ -4,18 +4,13 @@
 namespace Math {
     class Pdf {
     public:
-        Pdf();
-        Pdf(float pdf);
+        Pdf(float pdf = 0.0f, bool isDelta = false);
     
         operator float() const;
 
         bool isDelta() const;
 
-        static Pdf delta();
-
-    private:
-        Pdf(float pdf, bool isDelta);
-    
+    private:    
         float mPdf;
         bool mIsDelta;
     };
