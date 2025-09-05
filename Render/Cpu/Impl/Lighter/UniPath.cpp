@@ -22,9 +22,7 @@ namespace Render::Cpu::Impl::Lighter {
             Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
             for(const std::unique_ptr<Object::Light> &light : scene.lights()) {
-                Math::Vector dirIn;
-                Math::Pdf pdf;
-                Math::Radiance radLight = light->sample(sampler, pntOffset, dirIn, pdf);
+                auto [radLight, dirIn, pdf] = light->sample(sampler, pntOffset);
 
                 float dot = dirIn * nrmFacing;
                 if(dot > 0 && light->testVisible(scene, pntOffset, dirIn)) {
@@ -36,9 +34,7 @@ namespace Render::Cpu::Impl::Lighter {
                 }
             }
 
-            Math::Vector dirIn;
-            Math::Pdf pdf;
-            Math::Color reflected = surface.sample(isect, sampler, dirIn, pdf);
+            auto [reflected, dirIn, pdf] = surface.sample(isect, sampler);
             float reverse = (dirIn * nrmFacing > 0) ? 1.0f : -1.0f;
             float dot = dirIn * nrmFacing * reverse;
 

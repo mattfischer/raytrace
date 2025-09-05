@@ -14,7 +14,7 @@ namespace Object::Impl::Shape {
         bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const override;
         BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
-        bool sample(Math::Sampler &sampler, Math::Point &pnt, Math::Normal &nrm, Math::Pdf &pdf) const override;
+        std::tuple<Math::Point, Math::Normal, Math::Pdf> sample(Math::Sampler &sampler) const override;
         Math::Pdf samplePdf(const Math::Point &pnt) const override;
 
         void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const override;

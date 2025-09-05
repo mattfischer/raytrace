@@ -74,10 +74,12 @@ namespace Object {
         return colTransmit;
     }
 
-    Math::Color Surface::sample(const Object::Intersection &isect, Math::Sampler &sampler, Math::Vector &dirIn, Math::Pdf &pdf) const
+    std::tuple<Math::Color, Math::Vector, Math::Pdf> Surface::sample(const Object::Intersection &isect, Math::Sampler &sampler) const
     {
         const Math::Vector dirOut = -isect.ray().direction();
         const Math::Normal &nrmFacing = isect.facingNormal();
+        Math::Vector dirIn;
+        Math::Pdf pdf;
 
         float transmitThreshold = 0;
         if(!opaque()) {
@@ -99,7 +101,8 @@ namespace Object {
             if(roulette < transmitThreshold) {
                 pdf = Math::Pdf(1.0f, true);
 
-                return transmitted(isect, dirIn) / (dirOut * nrmFacing * transmitThreshold);
+                Math::Color color = transmitted(isect, dirIn) / (dirOut * nrmFacing * transmitThreshold);
+                return std::make_tuple(color, dirIn, pdf);
             }
         }
 
@@ -109,10 +112,11 @@ namespace Object {
             idx = std::min((int)std::floor(mBrdfs.size() * sample), (int)mBrdfs.size() - 1);
         }
         const Object::Brdf &brdf = *mBrdfs[idx];
-       
+
         dirIn = brdf.sample(sampler, nrmFacing, dirOut);
         pdf = Surface::pdf(isect, dirIn);
-        return reflected(isect, dirIn) / (1 - transmitThreshold);
+        Math::Color color = reflected(isect, dirIn) / (1 - transmitThreshold);
+        return std::make_tuple(color, dirIn, pdf);
     }
 
     Math::Pdf Surface::pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const

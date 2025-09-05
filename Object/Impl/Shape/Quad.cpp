@@ -31,16 +31,15 @@ namespace Object::Impl::Shape {
         return false;
     }
 
-    bool Quad::sample(Math::Sampler &sampler, Math::Point &pnt, Math::Normal &nrm, Math::Pdf &pdf) const
+    std::tuple<Math::Point, Math::Normal, Math::Pdf> Quad::sample(Math::Sampler &sampler) const
     {
         Math::Point2D pntSurface = sampler.getValue2D();
-        pnt = mPosition + mSide1 * pntSurface.u() + mSide2 * pntSurface.v();
-        nrm = mNormal;
+        Math::Point pnt = mPosition + mSide1 * pntSurface.u() + mSide2 * pntSurface.v();
         
         float surfaceArea = (mSide1 % mSide2).magnitude();
-        pdf = 1.0f / surfaceArea;
+        Math::Pdf pdf = 1.0f / surfaceArea;
 
-        return true;
+        return std::make_tuple(pnt, mNormal, pdf);
     }
 
     Math::Pdf Quad::samplePdf(const Math::Point &) const

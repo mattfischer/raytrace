@@ -8,23 +8,24 @@ namespace Object::Impl::Light {
     {
     }
 
-    Math::Radiance Shape::sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Vector &dirIn, Math::Pdf &pdf) const
+    std::tuple<Math::Radiance, Math::Vector, Math::Pdf> Shape::sample(Math::Sampler &sampler, const Math::Point &pnt) const
     {
         Math::Radiance rad;
-        Math::Point pntSample;
-        Math::Normal nrmSample;
-        Math::Pdf pdfArea;
-        if(mShape.sample(sampler, pntSample, nrmSample, pdfArea)) {
+        Math::Vector dirIn;
+        Math::Pdf pdfAngular;
+
+        auto [pntSample, nrmSample, pdfArea] = mShape.sample(sampler);
+        if(pdfArea > 0.0f) {
             dirIn = pntSample - pnt;
             float d = dirIn.magnitude();
             dirIn = dirIn / d;
             float dot = std::abs(dirIn * nrmSample);
-            pdf = pdfArea * d * d / dot;
+            pdfAngular = pdfArea * d * d / dot;
 
             rad = mRadiance * dot;
         }
 
-        return rad;
+        return std::make_tuple(rad, dirIn, pdfAngular);
     }
 
     bool Shape::testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const

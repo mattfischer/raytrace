@@ -133,11 +133,8 @@ namespace Render::Cpu {
                 const Object::Primitive &light = mScene.areaLights()[lightIndex];
                 const Math::Radiance &rad2 = light.surface().radiance();
 
-                Math::Point pnt2;
-                Math::Normal nrm2;
-                Math::Pdf pdf2;
-
-                if(light.shape().sample(sampler, pnt2, nrm2, pdf2)) {
+                auto [pnt2, nrm2, pdf2] = light.shape().sample(sampler);
+                if(pdf2 > 0.0f) {
                     Math::Vector dirIn = pnt2 - pntOffset;
                     float d = dirIn.magnitude();
                     dirIn = dirIn / d;
@@ -163,9 +160,7 @@ namespace Render::Cpu {
             Reservoir<IndirectSample> &resIndirect = mIndirectReservoirs.at(x, y);           
             resIndirect.clear();
 
-            Math::Vector dirIn;
-            Math::Pdf pdf;
-            Math::Color reflected = surface.sample(isect, sampler, dirIn, pdf);
+            auto [reflected, dirIn, pdf] = surface.sample(isect, sampler);
             float reverse = (dirIn * nrmFacing > 0) ? 1.0f : -1.0f;
             float dot = dirIn * nrmFacing * reverse;
 

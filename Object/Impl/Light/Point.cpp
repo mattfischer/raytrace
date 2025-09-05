@@ -8,15 +8,15 @@ namespace Object::Impl::Light {
     {
     }
 
-    Math::Radiance Point::sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Vector &dirIn, Math::Pdf &pdf) const
+    std::tuple<Math::Radiance, Math::Vector, Math::Pdf> Point::sample(Math::Sampler &sampler, const Math::Point &pnt) const
     {
-        dirIn = mPosition - pnt;
+        Math::Vector dirIn = mPosition - pnt;
         float d = dirIn.magnitude();
         dirIn = dirIn / d;
 
-        pdf = Math::Pdf(d * d, true);
+        Math::Pdf pdfAngular(d * d, true);
 
-        return mRadiance;
+        return std::make_tuple(mRadiance, dirIn, pdfAngular);
     }
 
     bool Point::testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const

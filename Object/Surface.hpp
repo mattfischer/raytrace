@@ -28,7 +28,7 @@ namespace Object {
 
         Math::Color reflected(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
         Math::Color transmitted(const Object::Intersection &intersection, const Math::Vector &incidentDirection) const;
-        Math::Color sample(const Object::Intersection &isect, Math::Sampler &sampler, Math::Vector &dirIn, Math::Pdf &pdf) const;
+        std::tuple<Math::Color, Math::Vector, Math::Pdf> sample(const Object::Intersection &isect, Math::Sampler &sampler) const;
         Math::Pdf pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const;
 
         bool opaque() const;

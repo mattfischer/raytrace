@@ -10,7 +10,7 @@ namespace Object::Impl::Light {
     public:
         Shape(const Object::Shape &shape, const Math::Radiance &radiance);
 
-        virtual Math::Radiance sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Vector &dirIn, Math::Pdf &pdf) const override;
+        virtual std::tuple<Math::Radiance, Math::Vector, Math::Pdf> sample(Math::Sampler &sampler, const Math::Point &pnt) const override;
         virtual bool testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const override;
 
     private:

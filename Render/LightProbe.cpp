@@ -15,9 +15,7 @@ namespace Render {
         const Math::Normal &nrmFacing = mIntersection.facingNormal();
         const Math::Vector dirOut = -mIntersection.ray().direction();
         
-        Math::Pdf pdf;
-        Math::Vector dirIn;
-        surface.sample(mIntersection, mSampler, dirIn, pdf);
+        auto [_, dirIn, pdf] = surface.sample(mIntersection, mSampler);
         float dot = dirIn * nrmFacing;
         Math::Point pntOffset = mIntersection.point() + Math::Vector(nrmFacing) * 0.01f;
 		Math::Ray ray(pntOffset, dirIn);
