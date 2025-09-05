@@ -11,8 +11,8 @@ namespace Object::Impl::Light {
     public:
         Point(const Math::Point &position, const Math::Radiance &radiance);
 
-        virtual Math::Radiance sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Point &pntSample, Math::Pdf &pdf) const override;
-        virtual bool didIntersect(const Object::Intersection &isect) const override;
+        virtual Math::Radiance sample(Math::Sampler &sampler, const Math::Point &pnt, Math::Vector &dirIn, Math::Pdf &pdf) const override;
+        virtual bool testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const override;
 
         void writeProxy(PointLightProxy &proxy) const;
 
