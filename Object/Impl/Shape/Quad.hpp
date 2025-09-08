@@ -15,7 +15,7 @@ namespace Object::Impl::Shape {
         BoundingVolume boundingVolume(const Math::Transformation &trans) const override;
 
         std::tuple<Math::Point, Math::Normal, Math::Pdf> sample(Math::Sampler &sampler) const override;
-        Math::Pdf samplePdf(const Math::Point &pnt) const override;
+        Math::Pdf pdf(const Math::Point &pnt) const override;
 
         void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const override;
 

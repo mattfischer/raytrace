@@ -37,7 +37,7 @@ namespace Object::Impl::Light {
     {
         float dot = isect.beam().ray().direction() * isect.facingNormal();
         float d = isect.distance();
-        return mShape.samplePdf(isect.point()) * d * d / dot;
+        return mShape.pdf(isect.point()) * d * d / dot;
     }
 
     bool Shape::testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const

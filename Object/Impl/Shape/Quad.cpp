@@ -42,7 +42,7 @@ namespace Object::Impl::Shape {
         return std::make_tuple(pnt, mNormal, pdf);
     }
 
-    Math::Pdf Quad::samplePdf(const Math::Point &) const
+    Math::Pdf Quad::pdf(const Math::Point &) const
     {
         float surfaceArea = (mSide1 % mSide2).magnitude();
         return 1.0f / surfaceArea;
