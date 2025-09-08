@@ -22,10 +22,22 @@ namespace Object::Impl::Light {
             float dot = std::abs(dirIn * nrmSample);
             pdfAngular = pdfArea * d * d / dot;
 
-            rad = mRadiance * dot;
+            rad = mRadiance;
         }
 
         return std::make_tuple(rad, dirIn, pdfAngular);
+    }
+
+    Math::Radiance Shape::radiance(const Object::Intersection &isect) const
+    {
+        return mRadiance;
+    }
+
+    Math::Pdf Shape::pdf(const Object::Intersection &isect) const
+    {
+        float dot = isect.beam().ray().direction() * isect.facingNormal();
+        float d = isect.distance();
+        return mShape.samplePdf(isect.point()) * d * d / dot;
     }
 
     bool Shape::testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const

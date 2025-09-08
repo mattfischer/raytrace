@@ -14,14 +14,18 @@ namespace Render::Cpu::Impl::Lighter {
         const Math::Point &point = isect.point();
         const Math::Normal &nrmFacing = isect.facingNormal();
 
-        Math::Radiance rad = surface.radiance();
+        Math::Radiance rad;
+        if(isect.primitive().light()) {
+            rad += isect.primitive().light()->radiance(isect);
+        }
+
         Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
-        for(const std::unique_ptr<Object::Light> &light : scene.lights()) {
-            auto [radLight, dirIn, pdf] = light->sample(sampler, pntOffset);
+        for(const Object::Light &light : scene.lights()) {
+            auto [radLight, dirIn, pdf] = light.sample(sampler, pntOffset);
 
             float dot = dirIn * nrmFacing;
-            if(dot > 0 && light->testVisible(scene, pntOffset, dirIn)) {
+            if(dot > 0 && light.testVisible(scene, pntOffset, dirIn)) {
                 Math::Radiance irad = radLight * dot;
                 rad += irad * surface.reflected(isect, dirIn) / pdf;
             }

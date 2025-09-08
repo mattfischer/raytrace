@@ -30,6 +30,16 @@ namespace Object::Impl::Light {
         return !isect.valid();
     }
 
+    Math::Radiance Point::radiance(const Object::Intersection &isect) const
+    {
+        return Math::Radiance();
+    }
+
+    Math::Pdf Point::pdf(const Object::Intersection &isect) const
+    {
+        return 0.0f;
+    }
+
     void Point::writeProxy(PointLightProxy &proxy) const
     {
         mPosition.writeProxy(proxy.position);

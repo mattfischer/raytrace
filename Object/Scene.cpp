@@ -17,13 +17,14 @@ namespace Object {
     Scene::Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light>> lights, const Math::Radiance &skyRadiance)
         : mCamera(std::move(camera))
         , mPrimitives(std::move(primitives))
-        , mLights(std::move(lights))
+        , mExplicitLights(std::move(lights))
         , mSkyRadiance(skyRadiance)
     {
         std::vector<Math::Point> centroids;
         centroids.reserve(mPrimitives.size());
 
-        for (std::unique_ptr<Object::Light> &light : mLights) {
+        for (std::unique_ptr<Object::Light> &light : mExplicitLights) {
+            mLights.push_back(*light);
             if(dynamic_cast<Object::Impl::Light::Point*>(light.get())) {
                 mPointLights.push_back(dynamic_cast<Object::Impl::Light::Point&>(*light));
             }
@@ -32,9 +33,9 @@ namespace Object {
         for (std::unique_ptr<Primitive> &primitive : mPrimitives) {
             centroids.push_back(primitive->boundingVolume().centroid());
 
-            if (primitive->surface().radiance().magnitude() > 0) {
+            if (primitive->light()) {
                 mAreaLights.push_back(static_cast<Object::Primitive&>(*primitive));
-                mLights.push_back(std::make_unique<Object::Impl::Light::Shape>(primitive->shape(), primitive->surface().radiance()));
+                mLights.push_back(*primitive->light());
             }
         }
 
@@ -55,7 +56,7 @@ namespace Object {
         return mPrimitives;
     }
 
-    const std::vector<std::unique_ptr<Object::Light>> &Scene::lights() const
+    const std::vector<std::reference_wrapper<Object::Light>> &Scene::lights() const
     {
         return mLights;
     }

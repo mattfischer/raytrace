@@ -10,7 +10,11 @@ namespace Render::Cpu::Impl::Lighter {
     Math::Radiance UniPath::light(const Object::Intersection &isectBase, Math::Sampler &sampler) const
     {
         Object::Intersection isect = isectBase;
-        Math::Radiance rad = isect.primitive().surface().radiance();
+        Math::Radiance rad;
+        if(isect.primitive().light()) {
+            rad += isect.primitive().light()->radiance(isect);
+        }
+
         Math::Color throughput(1, 1, 1);
 
         for(int generation = 0; generation < 10; generation++) {
@@ -21,11 +25,11 @@ namespace Render::Cpu::Impl::Lighter {
 
             Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
-            for(const std::unique_ptr<Object::Light> &light : scene.lights()) {
-                auto [radLight, dirIn, pdf] = light->sample(sampler, pntOffset);
+            for(const Object::Light &light : scene.lights()) {
+                auto [radLight, dirIn, pdf] = light.sample(sampler, pntOffset);
 
                 float dot = dirIn * nrmFacing;
-                if(dot > 0 && light->testVisible(scene, pntOffset, dirIn)) {
+                if(dot > 0 && light.testVisible(scene, pntOffset, dirIn)) {
                     Math::Radiance irad = radLight * dot;
                     float pdfBrdf = pdf.isDelta() ? 0.0f : surface.pdf(isect, dirIn);
                     float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
@@ -61,12 +65,13 @@ namespace Render::Cpu::Impl::Lighter {
             Object::Intersection isect2 = scene.intersect(beam, FLT_MAX, true);
 
             if (isect2.valid()) {
-                Math::Radiance rad2 = isect2.primitive().surface().radiance();
-                if(rad2.magnitude() > 0) {
+                auto &light = isect2.primitive().light();
+                if(light) {
                     float dot2 = -isect2.facingNormal() * dirIn;
-                    float pdfLight = pdf.isDelta() ? 0.0f : isect2.primitive().shape().samplePdf(isect2.point()) * isect2.distance() * isect2.distance() / dot2;
+                    float pdfLight = pdf.isDelta() ? 0.0f : light->pdf(isect2);
                     float misWeight = pdf * pdf / (pdf * pdf + pdfLight * pdfLight);
 
+                    Math::Radiance rad2 = light->radiance(isect2);
                     rad += rad2 * throughput * misWeight;
                 }
 

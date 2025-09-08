@@ -23,7 +23,7 @@ namespace Object {
         const Camera &camera() const;
         const std::vector<std::unique_ptr<Primitive>> &primitives() const;
         const std::vector<std::reference_wrapper<Object::Primitive>> &areaLights() const;
-        const std::vector<std::unique_ptr<Object::Light>> &lights() const;
+        const std::vector<std::reference_wrapper<Object::Light>> &lights() const;
 
         const Math::Radiance &skyRadiance() const;
 
@@ -36,7 +36,8 @@ namespace Object {
     protected:
         std::unique_ptr<Camera> mCamera;
         std::vector<std::unique_ptr<Object::Primitive>> mPrimitives;
-        std::vector<std::unique_ptr<Object::Light>> mLights;
+        std::vector<std::unique_ptr<Object::Light>> mExplicitLights;
+        std::vector<std::reference_wrapper<Object::Light>> mLights;
         std::vector<std::reference_wrapper<Object::Primitive>> mAreaLights;
         std::vector<std::reference_wrapper<Object::Impl::Light::Point>> mPointLights;
 
