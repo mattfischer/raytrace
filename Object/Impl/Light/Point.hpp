@@ -13,6 +13,7 @@ namespace Object::Impl::Light {
 
         virtual Sample sample(Math::Sampler &sampler, const Math::Point &pnt) const override;
         virtual Math::Radiance radiance(const Object::Intersection &isect) const override;
+        virtual Math::Radiance radiance(const Math::Vector &direction) const override;
         virtual Math::Pdf pdf(const Object::Intersection &isect) const override;
 
         virtual bool testVisible(const Object::Scene &scene, const Sample &sample) const override;

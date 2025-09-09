@@ -34,6 +34,11 @@ namespace Object::Impl::Light {
         return mRadiance;
     }
 
+    Math::Radiance Shape::radiance(const Math::Vector &direction) const
+    {
+        return mRadiance;
+    }
+
     Math::Pdf Shape::pdf(const Object::Intersection &isect) const
     {
         float dot = isect.beam().ray().direction() * isect.facingNormal();

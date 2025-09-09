@@ -33,6 +33,11 @@ namespace Object::Impl::Light {
         return Math::Radiance();
     }
 
+    Math::Radiance Point::radiance(const Math::Vector &direction) const
+    {
+        return Math::Radiance();
+    }
+
     Math::Pdf Point::pdf(const Object::Intersection &isect) const
     {
         return 0.0f;

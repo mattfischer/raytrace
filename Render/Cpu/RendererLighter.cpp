@@ -93,7 +93,9 @@ namespace Render::Cpu {
             if (isect.valid()) {
                 rad = mLighter->light(isect, sampler);
             } else {
-                rad = mScene.skyRadiance();
+                for(const Object::Light &light : mScene.skyLights()) {
+                    rad += light.radiance(beam.ray().direction());
+                }
             }
     
             Math::Radiance radTotal = mTotalRadiance.get(x, y) + rad;

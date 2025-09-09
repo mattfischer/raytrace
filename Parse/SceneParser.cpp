@@ -10,6 +10,8 @@
 #include "Object/Impl/Brdf/OrenNayar.hpp"
 #include "Object/Impl/Brdf/TorranceSparrow.hpp"
 
+#include "Object/Impl/Light/Sky.hpp"
+
 #include "Parse/BptLoader.hpp"
 #include "Parse/PlyLoader.hpp"
 #include "Parse/BmpLoader.hpp"
@@ -203,7 +205,6 @@ namespace Parse {
         std::unique_ptr<Object::Camera> camera;
         std::vector<std::unique_ptr<Object::Primitive>> primitives;
         std::vector<std::unique_ptr<Object::Light>> lights;
-        Math::Radiance skyRadiance;
 
         while(!matchEnd()) {
             if(auto cam = tryParseCamera()) {
@@ -221,17 +222,10 @@ namespace Parse {
                 continue;
             }
 
-            if(matchLiteral("sky")) {
-                expectLeftBrace();
-                skyRadiance = parseRadiance();
-                expectRightBrace();
-                continue;
-            }
-
             throwUnexpected();
         }
 
-        return std::make_unique<Object::Scene>(std::move(camera), std::move(primitives), std::move(lights), skyRadiance);
+        return std::make_unique<Object::Scene>(std::move(camera), std::move(primitives), std::move(lights));
     }
 
     std::unique_ptr<Object::Camera> SceneParser::tryParseCamera()
@@ -253,17 +247,24 @@ namespace Parse {
 
     std::unique_ptr<Object::Light> SceneParser::tryParseLight()
     {
-        if(!matchLiteral("point_light")) {
+        if(matchLiteral("point_light")) {
+            expectLeftBrace();
+
+            Math::Point position = parsePoint();
+            Math::Radiance radiance = parseRadiance();
+
+            expectRightBrace();
+
+            return std::make_unique<Object::Impl::Light::Point>(position, radiance);
+        } else if(matchLiteral("sky")) {
+            expectLeftBrace();
+            Math::Radiance radiance = parseRadiance();
+            expectRightBrace();
+            
+            return std::make_unique<Object::Impl::Light::Sky>(radiance);
+        } else {
             return nullptr;
         }
-        expectLeftBrace();
-
-        Math::Point position = parsePoint();
-        Math::Radiance radiance = parseRadiance();
-
-        expectRightBrace();
-
-        return std::make_unique<Object::Impl::Light::Point>(position, radiance);
     }
 
     std::unique_ptr<Object::Primitive> SceneParser::tryParsePrimitive()

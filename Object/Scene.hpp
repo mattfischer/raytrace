@@ -18,14 +18,13 @@ namespace Object {
     class Scene
     {
     public:
-        Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light>> lights, const Math::Radiance &skyRadiance);
+        Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light>> lights);
 
         const Camera &camera() const;
         const std::vector<std::unique_ptr<Primitive>> &primitives() const;
         const std::vector<std::reference_wrapper<Object::Primitive>> &areaLights() const;
         const std::vector<std::reference_wrapper<Object::Light>> &lights() const;
-
-        const Math::Radiance &skyRadiance() const;
+        const std::vector<std::reference_wrapper<Object::Light>> &skyLights() const;
 
         const Object::BoundingVolumeHierarchy &boundingVolumeHierarchy() const;
 
@@ -40,8 +39,7 @@ namespace Object {
         std::vector<std::reference_wrapper<Object::Light>> mLights;
         std::vector<std::reference_wrapper<Object::Primitive>> mAreaLights;
         std::vector<std::reference_wrapper<Object::Impl::Light::Point>> mPointLights;
-
-        Math::Radiance mSkyRadiance;
+        std::vector<std::reference_wrapper<Object::Light>> mSkyLights;
 
         Object::BoundingVolumeHierarchy mBoundingVolumeHierarchy;
     };

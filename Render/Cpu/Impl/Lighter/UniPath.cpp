@@ -78,8 +78,11 @@ namespace Render::Cpu::Impl::Lighter {
 
                 isect = isect2;
             } else {
-                Math::Radiance rad2 = scene.skyRadiance();
-                rad += rad2 * throughput;
+                for(const Object::Light &light : scene.skyLights()) {
+                    Math::Radiance rad2 = light.radiance(dirIn);
+                    rad += rad2 * throughput;
+                }
+
                 break;
             }
         }

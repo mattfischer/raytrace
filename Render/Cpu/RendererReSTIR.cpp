@@ -185,7 +185,9 @@ namespace Render::Cpu {
 
             radEmitted = isect.primitive().surface().radiance();
         } else {
-            radEmitted = mScene.skyRadiance();
+            for(const Object::Light &light : mScene.skyLights()) {
+                radEmitted += light.radiance(beam.ray().direction());
+            }
         }
 
         addRadiance(x, y, sample, radEmitted);

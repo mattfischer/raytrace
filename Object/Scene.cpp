@@ -10,20 +10,25 @@
 
 #include "Object/Impl/Light/Shape.hpp"
 #include "Object/Impl/Light/Point.hpp"
+#include "Object/Impl/Light/Sky.hpp"
 
 #include <cfloat>
 
 namespace Object {
-    Scene::Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light>> lights, const Math::Radiance &skyRadiance)
+    Scene::Scene(std::unique_ptr<Camera> camera, std::vector<std::unique_ptr<Primitive>> primitives, std::vector<std::unique_ptr<Object::Light>> lights)
         : mCamera(std::move(camera))
         , mPrimitives(std::move(primitives))
         , mExplicitLights(std::move(lights))
-        , mSkyRadiance(skyRadiance)
     {
         std::vector<Math::Point> centroids;
         centroids.reserve(mPrimitives.size());
 
         for (std::unique_ptr<Object::Light> &light : mExplicitLights) {
+            if(dynamic_cast<Object::Impl::Light::Sky*>(light.get())) {
+                mSkyLights.push_back(*light);
+                continue;
+            }
+
             mLights.push_back(*light);
             if(dynamic_cast<Object::Impl::Light::Point*>(light.get())) {
                 mPointLights.push_back(dynamic_cast<Object::Impl::Light::Point&>(*light));
@@ -66,9 +71,9 @@ namespace Object {
         return mAreaLights;
     }
 
-    const Math::Radiance &Scene::skyRadiance() const
+    const std::vector<std::reference_wrapper<Object::Light>> &Scene::skyLights() const
     {
-        return mSkyRadiance;
+        return mSkyLights;
     }
 
     const Object::BoundingVolumeHierarchy &Scene::boundingVolumeHierarchy() const
@@ -125,7 +130,6 @@ namespace Object {
             mPointLights[i].get().writeProxy(proxy.pointLights[i]);
         }
 
-        mSkyRadiance.writeProxy(proxy.skyRadiance);
         mCamera->writeProxy(proxy.camera);
         proxy.bvh = clAllocator.allocateArray<BVHNodeProxy>(mBoundingVolumeHierarchy.nodes().size());
         mBoundingVolumeHierarchy.writeProxy(proxy.bvh);

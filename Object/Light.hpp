@@ -26,6 +26,7 @@ namespace Object {
         virtual Sample sample(Math::Sampler &sampler, const Math::Point &pnt) const = 0;
         virtual Math::Pdf pdf(const Object::Intersection &isect) const = 0;
         virtual Math::Radiance radiance(const Object::Intersection &isect) const = 0;
+        virtual Math::Radiance radiance(const Math::Vector &direction) const = 0;
 
         virtual bool testVisible(const Object::Scene &scene, const Sample &sample) const = 0;
     };
