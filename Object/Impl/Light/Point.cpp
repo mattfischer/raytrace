@@ -8,7 +8,7 @@ namespace Object::Impl::Light {
     {
     }
 
-    std::tuple<Math::Radiance, Math::Vector, Math::Pdf> Point::sample(Math::Sampler &sampler, const Math::Point &pnt) const
+    Object::Light::Sample Point::sample(Math::Sampler &sampler, const Math::Point &pnt) const
     {
         Math::Vector dirIn = mPosition - pnt;
         float d = dirIn.magnitude();
@@ -16,16 +16,14 @@ namespace Object::Impl::Light {
 
         Math::Pdf pdfAngular(d * d, true);
 
-        return std::make_tuple(mRadiance, dirIn, pdfAngular);
+        return {mRadiance, pnt, dirIn, pdfAngular, d};
     }
 
-    bool Point::testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const
+    bool Point::testVisible(const Object::Scene &scene, const Sample &sample) const
     {
-        float d = (mPosition - pnt).magnitude();
-
-        Math::Ray ray(pnt, dirIn);
+        Math::Ray ray(sample.origin, sample.direction);
         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-        Object::Intersection isect = scene.intersect(beam, d, false);
+        Object::Intersection isect = scene.intersect(beam, sample.distance, false);
 
         return !isect.valid();
     }

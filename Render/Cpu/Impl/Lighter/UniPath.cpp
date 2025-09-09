@@ -26,15 +26,16 @@ namespace Render::Cpu::Impl::Lighter {
             Math::Point pntOffset = isect.point() + Math::Vector(nrmFacing) * 0.01f;
 
             for(const Object::Light &light : scene.lights()) {
-                auto [radLight, dirIn, pdf] = light.sample(sampler, pntOffset);
+                Object::Light::Sample sample = light.sample(sampler, pntOffset);
 
-                float dot = dirIn * nrmFacing;
-                if(dot > 0 && light.testVisible(scene, pntOffset, dirIn)) {
-                    Math::Radiance irad = radLight * dot;
-                    float pdfBrdf = pdf.isDelta() ? 0.0f : surface.pdf(isect, dirIn);
+                float dot = sample.direction * nrmFacing;
+                if(dot > 0 && light.testVisible(scene, sample)) {
+                    Math::Radiance irad = sample.radiance * dot;
+                    float pdf = sample.pdf;
+                    float pdfBrdf = sample.pdf.isDelta() ? 0.0f : surface.pdf(isect, sample.direction);
                     float misWeight = pdf * pdf / (pdf * pdf + pdfBrdf * pdfBrdf);
                     
-                    rad += irad * surface.reflected(isect, dirIn) * throughput * misWeight / pdf;
+                    rad += irad * surface.reflected(isect, sample.direction) * throughput * misWeight / pdf;
                 }
             }
 

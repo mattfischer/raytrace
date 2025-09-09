@@ -32,7 +32,7 @@ namespace Object {
         virtual bool intersect(const Math::Ray &ray, Intersection &isect, bool closest) const = 0;
         virtual BoundingVolume boundingVolume(const Math::Transformation &trans) const = 0;
 
-        virtual std::tuple<Math::Point, Math::Normal, Math::Pdf> sample(Math::Sampler &sampler) const { return std::make_tuple(Math::Point(), Math::Normal(), Math::Pdf()); }
+        virtual std::tuple<Math::Point, Math::Normal, Math::Pdf> sample(Math::Sampler &sampler) const { return {Math::Point(), Math::Normal(), Math::Pdf()}; }
         virtual Math::Pdf pdf(const Math::Point &pnt) const { return 0; }
 
         virtual void writeProxy(ShapeProxy &proxy, OpenCL::Allocator &clAllocator) const { proxy.type = ShapeProxy::Type::None; }

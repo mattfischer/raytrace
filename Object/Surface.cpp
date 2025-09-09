@@ -102,7 +102,7 @@ namespace Object {
                 pdf = Math::Pdf(1.0f, true);
 
                 Math::Color color = transmitted(isect, dirIn) / (dirOut * nrmFacing * transmitThreshold);
-                return std::make_tuple(color, dirIn, pdf);
+                return {color, dirIn, pdf};
             }
         }
 
@@ -116,7 +116,7 @@ namespace Object {
         dirIn = brdf.sample(sampler, nrmFacing, dirOut);
         pdf = Surface::pdf(isect, dirIn);
         Math::Color color = reflected(isect, dirIn) / (1 - transmitThreshold);
-        return std::make_tuple(color, dirIn, pdf);
+        return {color, dirIn, pdf};
     }
 
     Math::Pdf Surface::pdf(const Object::Intersection &isect, const Math::Vector &dirIn) const

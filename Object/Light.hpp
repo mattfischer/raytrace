@@ -15,11 +15,19 @@ namespace Object {
 
     class Light {
     public:
-        virtual std::tuple<Math::Radiance, Math::Vector, Math::Pdf> sample(Math::Sampler &sampler, const Math::Point &pnt) const = 0;
+        struct Sample {
+            Math::Radiance radiance;
+            Math::Point origin;
+            Math::Vector direction;
+            Math::Pdf pdf;
+            float distance;
+        };
+
+        virtual Sample sample(Math::Sampler &sampler, const Math::Point &pnt) const = 0;
         virtual Math::Pdf pdf(const Object::Intersection &isect) const = 0;
         virtual Math::Radiance radiance(const Object::Intersection &isect) const = 0;
 
-        virtual bool testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const = 0;
+        virtual bool testVisible(const Object::Scene &scene, const Sample &sample) const = 0;
     };
 }
 

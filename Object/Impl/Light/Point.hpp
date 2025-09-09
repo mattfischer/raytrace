@@ -11,11 +11,11 @@ namespace Object::Impl::Light {
     public:
         Point(const Math::Point &position, const Math::Radiance &radiance);
 
-        virtual std::tuple<Math::Radiance, Math::Vector, Math::Pdf> sample(Math::Sampler &sampler, const Math::Point &pnt) const override;
+        virtual Sample sample(Math::Sampler &sampler, const Math::Point &pnt) const override;
         virtual Math::Radiance radiance(const Object::Intersection &isect) const override;
         virtual Math::Pdf pdf(const Object::Intersection &isect) const override;
 
-        virtual bool testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const override;
+        virtual bool testVisible(const Object::Scene &scene, const Sample &sample) const override;
 
         void writeProxy(PointLightProxy &proxy) const;
 

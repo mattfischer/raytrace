@@ -8,16 +8,17 @@ namespace Object::Impl::Light {
     {
     }
 
-    std::tuple<Math::Radiance, Math::Vector, Math::Pdf> Shape::sample(Math::Sampler &sampler, const Math::Point &pnt) const
+    Object::Light::Sample Shape::sample(Math::Sampler &sampler, const Math::Point &pnt) const
     {
         Math::Radiance rad;
         Math::Vector dirIn;
         Math::Pdf pdfAngular;
+        float d = 0.0f;
 
         auto [pntSample, nrmSample, pdfArea] = mShape.sample(sampler);
         if(pdfArea > 0.0f) {
             dirIn = pntSample - pnt;
-            float d = dirIn.magnitude();
+            d = dirIn.magnitude();
             dirIn = dirIn / d;
             float dot = std::abs(dirIn * nrmSample);
             pdfAngular = pdfArea * d * d / dot;
@@ -25,7 +26,7 @@ namespace Object::Impl::Light {
             rad = mRadiance;
         }
 
-        return std::make_tuple(rad, dirIn, pdfAngular);
+        return {rad, pnt, dirIn, pdfAngular, d};
     }
 
     Math::Radiance Shape::radiance(const Object::Intersection &isect) const
@@ -40,12 +41,12 @@ namespace Object::Impl::Light {
         return mShape.pdf(isect.point()) * d * d / dot;
     }
 
-    bool Shape::testVisible(const Object::Scene &scene, const Math::Point &pnt, const Math::Vector &dirIn) const
+    bool Shape::testVisible(const Object::Scene &scene, const Sample &sample) const
     {
-        Math::Ray ray(pnt, dirIn);
+        Math::Ray ray(sample.origin, sample.direction);
         Math::Beam beam(ray, Math::Bivector(), Math::Bivector());
-        Object::Intersection isect = scene.intersect(beam, FLT_MAX, true);
+        Object::Intersection isect = scene.intersect(beam, sample.distance, false);
 
-        return (isect.valid() && &(isect.primitive().shape()) == &mShape);
+        return (!isect.valid() || &(isect.primitive().shape()) == &mShape);
     }
 }
