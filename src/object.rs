@@ -1,7 +1,8 @@
 pub mod albedo;
+pub use albedo::Albedo;
+
 pub mod brdf;
-pub mod sampler;
-pub mod shape;
+pub use brdf::Brdf;
 
 mod bounding_volume;
 pub use bounding_volume::BoundingVolume;
@@ -33,18 +34,18 @@ pub use primitive::Primitive;
 mod radiance;
 pub use radiance::Radiance;
 
+pub mod sampler;
+pub use sampler::Sampler;
+
 mod scene;
 pub use scene::Scene;
+
+pub mod shape;
+pub use shape::Shape;
+pub use shape::ShapeIntersection;
 
 mod surface;
 pub use surface::Surface;
 
 mod texture;
 pub use texture::Texture;
-
-mod traits;
-pub use traits::Albedo;
-pub use traits::Brdf;
-pub use traits::Sampler;
-pub use traits::Shape;
-pub use traits::ShapeIntersection;
