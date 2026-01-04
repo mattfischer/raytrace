@@ -282,7 +282,7 @@ impl Cache {
         F: FnMut(&'a CacheEntry) -> bool,
     {
         if let Some(node) = node {
-            for entry in node.entries.iter() {
+            for entry in &node.entries {
                 if !callback(entry) {
                     return false;
                 }

@@ -96,7 +96,7 @@ impl Executor {
         self.inner.run_jobs.store(true, Ordering::SeqCst);
         let j = Arc::new(job);
         let d = Arc::new(Box::new(done) as Box<dyn FnOnce() + Send + Sync>);
-        for thread in self.threads.iter() {
+        for thread in &self.threads {
             let _ = thread.sender.send(Command::RunJob(j.clone(), d.clone()));
         }
     }

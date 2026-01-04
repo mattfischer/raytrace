@@ -69,7 +69,7 @@ impl ModelLoader {
             let ply = parser.read_ply(&mut file);
             if let Ok(ply) = ply {
                 let mut points = Vec::new();
-                for elem in ply.payload["vertex"].iter() {
+                for elem in &ply.payload["vertex"] {
                     let x = elem.get_float(&String::from("x")).unwrap_or(0.0);
                     let y = elem.get_float(&String::from("y")).unwrap_or(0.0);
                     let z = elem.get_float(&String::from("z")).unwrap_or(0.0);
@@ -79,7 +79,7 @@ impl ModelLoader {
                 }
 
                 let mut triangles = Vec::new();
-                for elem in ply.payload["face"].iter() {
+                for elem in &ply.payload["face"] {
                     let ind = elem
                         .get_list_int(&String::from("vertex_indices"))
                         .unwrap_or(&[0, 0, 0]);

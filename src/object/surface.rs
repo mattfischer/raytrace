@@ -31,7 +31,7 @@ impl Surface {
     ) -> Surface {
         let mut opaque = false;
         let mut lambert = 0.0;
-        for brdf in brdfs.iter() {
+        for brdf in &brdfs {
             if brdf.opaque() {
                 opaque = true;
             }
@@ -56,7 +56,7 @@ impl Surface {
         let mut color = Color::ZERO;
         let mut color_transmit = Color::ONE;
 
-        for brdf in self.brdfs.iter() {
+        for brdf in &self.brdfs {
             color += color_transmit
                 * brdf.reflected(
                     dir_in,
@@ -74,7 +74,7 @@ impl Surface {
     pub fn transmitted(&self, isect: &Intersection, dir_in: Vec3) -> Color {
         let mut color_transmit = Color::ONE;
 
-        for brdf in self.brdfs.iter() {
+        for brdf in &self.brdfs {
             color_transmit =
                 color_transmit * brdf.transmitted(dir_in, -isect.facing_normal, isect.albedo);
         }
@@ -133,7 +133,7 @@ impl Surface {
         let nrm_facing = isect.facing_normal;
 
         let mut total_pdf = 0.0;
-        for brdf in self.brdfs.iter() {
+        for brdf in &self.brdfs {
             total_pdf += brdf.pdf(dir_in, nrm_facing, dir_out);
         }
         total_pdf /= self.brdfs.len() as f32;

@@ -69,7 +69,7 @@ impl SceneParser {
             )
             .map(|transforms| {
                 let mut result = transforms[0];
-                for t in transforms[1..].iter() {
+                for t in &transforms[1..] {
                     result = result.transform(*t);
                 }
                 return result;

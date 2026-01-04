@@ -77,7 +77,7 @@ impl Shape for TriangleMesh {
     fn bounding_volume(&self, xform: geo::Transformation) -> BoundingVolume {
         let mut volume = BoundingVolume::new();
 
-        for vertex in self.vertices.iter() {
+        for vertex in &self.vertices {
             volume.include_point(vertex.point.transform(xform));
         }
 

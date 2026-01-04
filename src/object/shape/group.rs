@@ -22,7 +22,7 @@ impl Shape for Group {
     fn intersect(&self, ray: Ray, max_distance: f32, closest: bool) -> Option<ShapeIntersection> {
         let mut result = None;
         let mut distance = max_distance;
-        for shape in self.shapes.iter() {
+        for shape in &self.shapes {
             if let Some(shape_isect) = shape.intersect(ray, distance, closest) {
                 result = Some(shape_isect);
                 distance = shape_isect.distance;
@@ -38,7 +38,7 @@ impl Shape for Group {
     fn bounding_volume(&self, xform: Transformation) -> BoundingVolume {
         let mut volume = BoundingVolume::new();
 
-        for shape in self.shapes.iter() {
+        for shape in &self.shapes {
             volume.include_volume(shape.bounding_volume(xform));
         }
 

@@ -114,7 +114,7 @@ impl Shape for Grid {
     fn bounding_volume(&self, xform: Transformation) -> BoundingVolume {
         let mut volume = BoundingVolume::new();
 
-        for vertex in self.vertices.iter() {
+        for vertex in &self.vertices {
             volume.include_point(vertex.point.transform(xform));
         }
 

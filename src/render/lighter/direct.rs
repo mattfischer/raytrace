@@ -31,7 +31,7 @@ impl Lighter for Direct {
         let mut rad = surface.radiance;
         let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
-        for idx in scene.area_lights.iter() {
+        for idx in &scene.area_lights {
             let light = &scene.primitives[*idx];
             let rad2 = light.surface.radiance;
 
@@ -55,7 +55,7 @@ impl Lighter for Direct {
             }
         }
 
-        for point_light in scene.point_lights.iter() {
+        for point_light in &scene.point_lights {
             let mut dir_in = point_light.position - pnt_offset;
             let d = dir_in.mag();
             dir_in = dir_in / d;
