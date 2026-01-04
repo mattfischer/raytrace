@@ -1,365 +1,461 @@
 use crate::geo;
-use crate::input;
-use crate::object;
+use geo::Point3;
+use geo::Transformation;
+use geo::Vec3;
 
+use crate::object;
+use object::Albedo;
+use object::Brdf;
+use object::Scene;
+use object::Camera;
+use object::Color;
+use object::NormalMap;
+use object::PointLight;
+use object::Primitive;
+use object::Radiance;
+use object::Shape;
+use object::Surface;
+
+use object::albedo::Solid;
+use object::albedo::Texture;
+
+use object::brdf::Lambert;
+use object::brdf::OrenNayar;
+use object::brdf::Phong;
+use object::brdf::TorranceSparrow;
+
+use object::shape::Sphere;
+use object::shape::Quad;
+use object::shape::Transformed;
+
+use crate::input;
 use input::ModelLoader;
 use input::TextureLoader;
 
-use chumsky::prelude::*;
+use std::fs;
+use std::cmp::min;
 
-pub struct SceneParser;
+pub struct SceneParser {
+    data: String,
+    pos: usize,
+    line: usize
+}
+
+struct ParseError {
+    message: String
+}
+
+impl ParseError {
+    pub fn new(message: &str) -> ParseError {
+        return ParseError { message: message.to_string() };
+    }
+}
 
 impl SceneParser {
-    fn make_parser() -> impl Parser<char, object::Scene, Error = Simple<char>> {
-        let float = just('-')
-            .or_not()
-            .chain::<char, _, _>(text::int(10))
-            .chain::<char, _, _>(just('.').chain(text::digits(10)).or_not())
-            .padded()
-            .collect::<String>()
-            .from_str::<f32>()
-            .unwrapped();
-
-        let triple = float
-            .clone()
-            .separated_by(just(','))
-            .exactly(3)
-            .delimited_by(just('<'), just('>'))
-            .padded();
-
-        let vector = triple.clone().map(|v| geo::Vec3::new(v[0], v[1], v[2]));
-
-        let point = triple.clone().map(|v| geo::Point3::new(v[0], v[1], v[2]));
-
-        let color = triple.clone().map(|v| object::Color::new(v[0], v[1], v[2]));
-
-        let radiance = triple
-            .clone()
-            .map(|v| object::Radiance::new(v[0], v[1], v[2]));
-
-        let string = filter(|c| *c != '"')
-            .repeated()
-            .delimited_by(just('"'), just('"'))
-            .padded()
-            .collect::<String>();
-
-        let keyword = |name| text::keyword(name).padded();
-
-        let transform_item = choice((
-            keyword("translate")
-                .ignore_then(vector.clone())
-                .map(|v| geo::Transformation::translate(v)),
-            keyword("rotate")
-                .ignore_then(vector.clone())
-                .map(|v| geo::Transformation::rotate(v)),
-            keyword("scale")
-                .ignore_then(vector.clone())
-                .map(|v| geo::Transformation::scale(v)),
-            keyword("uniform_scale")
-                .ignore_then(float.clone())
-                .map(|f| geo::Transformation::uniform_scale(f)),
-        ));
-
-        let transform = keyword("transform")
-            .ignore_then(
-                transform_item
-                    .repeated()
-                    .delimited_by(just('{'), just('}'))
-                    .padded(),
-            )
-            .map(|transforms| {
-                let mut result = transforms[0];
-                for t in &transforms[1..] {
-                    result = result.transform(*t);
-                }
-                return result;
-            });
-
-        let albedo = choice((
-            keyword("color").ignore_then(color.clone()).map(
-                |color| -> Option<Box<dyn object::Albedo>> {
-                    return Some(Box::new(object::albedo::Solid::new(color)));
-                },
-            ),
-            keyword("texture").ignore_then(string.clone()).map(
-                |filename| -> Option<Box<dyn object::Albedo>> {
-                    if let Some(texture) = TextureLoader::load(filename) {
-                        return Some(Box::new(object::albedo::Texture::new(texture)));
-                    } else {
-                        return None;
-                    }
-                },
-            ),
-        ));
-
-        let brdf_item = choice((
-            keyword("lambert").ignore_then(float.clone()).map(
-                |strength| -> Box<dyn object::Brdf> {
-                    Box::new(object::brdf::Lambert::new(strength))
-                },
-            ),
-            keyword("phong")
-                .ignore_then(float.clone())
-                .then(float.clone())
-                .map(|(strength, power)| -> Box<dyn object::Brdf> {
-                    Box::new(object::brdf::Phong::new(strength, power))
-                }),
-            keyword("oren_nayar")
-                .ignore_then(float.clone())
-                .then(float.clone())
-                .map(|(strength, roughness)| -> Box<dyn object::Brdf> {
-                    Box::new(object::brdf::OrenNayar::new(strength, roughness))
-                }),
-            keyword("torrance_sparrow")
-                .ignore_then(float.clone())
-                .then(float.clone())
-                .then(float.clone())
-                .map(|((strength, roughness), ior)| -> Box<dyn object::Brdf> {
-                    Box::new(object::brdf::TorranceSparrow::new(strength, roughness, ior))
-                }),
-        ));
-
-        enum SurfaceItem {
-            Albedo(Option<Box<dyn object::Albedo>>),
-            Brdfs(Vec<Box<dyn object::Brdf>>),
-            Radiance(object::Radiance),
-            NormalMap(Option<object::NormalMap>),
-            TransmitIor(f32),
-        }
-
-        let surface_item = choice((
-            keyword("albedo")
-                .ignore_then(albedo.delimited_by(just('{'), just('}')).padded())
-                .map(|albedo| SurfaceItem::Albedo(albedo)),
-            keyword("brdf")
-                .ignore_then(
-                    brdf_item
-                        .repeated()
-                        .delimited_by(just('{'), just('}'))
-                        .padded(),
-                )
-                .map(|brdfs| SurfaceItem::Brdfs(brdfs)),
-            keyword("radiance")
-                .ignore_then(radiance.clone())
-                .map(|radiance| SurfaceItem::Radiance(radiance)),
-            keyword("normal_map")
-                .ignore_then(string.clone())
-                .then(float.clone())
-                .map(|(filename, magnitude)| {
-                    if let Some(texture) = TextureLoader::load(filename) {
-                        let normal_map = object::NormalMap::new(texture, magnitude);
-                        return SurfaceItem::NormalMap(Some(normal_map));
-                    } else {
-                        return SurfaceItem::NormalMap(None);
-                    }
-                }),
-            keyword("transmit_ior")
-                .ignore_then(float.clone())
-                .map(|transmit_ior| SurfaceItem::TransmitIor(transmit_ior)),
-        ));
-
-        let surface = keyword("surface")
-            .ignore_then(
-                surface_item
-                    .repeated()
-                    .delimited_by(just('{'), just('}'))
-                    .padded(),
-            )
-            .map(|items| {
-                let mut albedo: Option<Box<dyn object::Albedo>> = None;
-                let mut brdfs = Vec::new();
-                let mut transmit_ior = 1.0;
-                let mut normal_map: Option<object::NormalMap> = None;
-                let mut radiance = object::Radiance::ZERO;
-
-                for item in items {
-                    match item {
-                        SurfaceItem::Albedo(a) => albedo = a,
-                        SurfaceItem::Brdfs(b) => brdfs = b,
-                        SurfaceItem::TransmitIor(i) => transmit_ior = i,
-                        SurfaceItem::NormalMap(n) => normal_map = n,
-                        SurfaceItem::Radiance(r) => radiance = r,
-                    }
-                }
-
-                if let Some(albedo) = albedo {
-                    let surface =
-                        object::Surface::new(albedo, brdfs, transmit_ior, radiance, normal_map);
-                    return Some(surface);
-                } else {
-                    return None;
-                }
-            });
-
-        enum PrimitiveModifier {
-            Transform(geo::Transformation),
-            Surface(Option<object::Surface>),
-        }
-
-        let primitive_modifiers = choice((
-            transform.map(|t| PrimitiveModifier::Transform(t)),
-            surface.map(|s| PrimitiveModifier::Surface(s)),
-        ))
-        .repeated();
-
-        let sphere = keyword("sphere")
-            .ignore_then(
-                point
-                    .clone()
-                    .then(float.clone())
-                    .then(primitive_modifiers.clone())
-                    .delimited_by(just('{'), just('}'))
-                    .padded(),
-            )
-            .map(|((center, radius), modifiers)| {
-                let sphere: Box<dyn object::Shape> =
-                    Box::new(object::shape::Sphere::new(center, radius));
-                return (Some(sphere), modifiers);
-            });
-
-        let quad = keyword("quad")
-            .ignore_then(
-                point
-                    .clone()
-                    .then(vector.clone())
-                    .then(vector.clone())
-                    .then(primitive_modifiers.clone())
-                    .delimited_by(just('{'), just('}'))
-                    .padded(),
-            )
-            .map(|(((position, side1), side2), modifiers)| {
-                let quad: Box<dyn object::Shape> =
-                    Box::new(object::shape::Quad::new(position, side1, side2));
-                return (Some(quad), modifiers);
-            });
-
-        let model = keyword("model")
-            .ignore_then(
-                string
-                    .clone()
-                    .then(primitive_modifiers.clone())
-                    .delimited_by(just('{'), just('}'))
-                    .padded(),
-            )
-            .map(|(filename, modifiers)| {
-                let model = ModelLoader::load(filename);
-                return (model, modifiers);
-            });
-
-        let primitive = choice((sphere, quad, model)).map(|(shape, modifiers)| {
-            let mut primitive = None;
-            let mut surface = None;
-            if let Some(shape) = shape {
-                let mut shape = shape;
-                for modifier in modifiers {
-                    match modifier {
-                        PrimitiveModifier::Surface(s) => surface = s,
-                        PrimitiveModifier::Transform(t) => {
-                            shape = Box::new(object::shape::Transformed::new(shape, t))
-                        }
-                    }
-                }
-
-                if let Some(s) = surface {
-                    primitive = Some(object::Primitive::new(shape, s));
-                }
-            }
-
-            return primitive;
-        });
-
-        let point_light = keyword("point_light")
-            .ignore_then(
-                point
-                    .clone()
-                    .then(radiance.clone())
-                    .delimited_by(just('{'), just('}'))
-                    .padded(),
-            )
-            .map(|(position, radiance)| {
-                return object::PointLight::new(position, radiance);
-            });
-
-        let sky = keyword("sky")
-            .ignore_then(radiance.clone().delimited_by(just('{'), just('}')).padded());
-
-        let camera = keyword("camera")
-            .ignore_then(
-                point
-                    .clone()
-                    .then(point.clone())
-                    .then(float.clone())
-                    .then(float.clone())
-                    .delimited_by(just('{'), just('}'))
-                    .padded(),
-            )
-            .map(|(((position, look_at), focal_length), aperture_size)| {
-                return object::Camera::new(
-                    position,
-                    (look_at - position).normalize(),
-                    geo::Vec3::new(0.0, 1.0, 0.0),
-                    60.0,
-                    focal_length,
-                    aperture_size,
-                );
-            });
-
-        enum Object {
-            Primitive(Option<object::Primitive>),
-            PointLight(object::PointLight),
-            Sky(object::Radiance),
-            Camera(object::Camera),
-        }
-
-        let object = choice((
-            primitive.map(|primitive| Object::Primitive(primitive)),
-            point_light.map(|point_light| Object::PointLight(point_light)),
-            sky.map(|radiance| Object::Sky(radiance)),
-            camera.map(|camera| Object::Camera(camera)),
-        ));
-
-        let scene = object
-            .repeated()
-            .padded()
-            .then_ignore(end())
-            .map(|objects| {
-                let mut primitives = Vec::new();
-                let mut camera = object::Camera::new(
-                    geo::Point3::ZERO,
-                    geo::Vec3::new(0.0, 0.0, 1.0),
-                    geo::Vec3::new(0.0, 1.0, 0.0),
-                    60.0,
-                    1.0,
-                    1.0,
-                );
-                let mut point_lights = Vec::new();
-                let mut sky_radiance = object::Radiance::ZERO;
-
-                for object in objects {
-                    match object {
-                        Object::Primitive(Some(p)) => primitives.push(p),
-                        Object::Primitive(None) => (),
-                        Object::Camera(c) => camera = c,
-                        Object::PointLight(p) => point_lights.push(p),
-                        Object::Sky(r) => sky_radiance = r,
-                    }
-                }
-                return object::Scene::new(camera, primitives, point_lights, sky_radiance);
-            });
-
-        return scene;
+    pub fn new(filename: String) -> SceneParser
+    {
+        let data = fs::read_to_string(filename).unwrap_or_default();
+        return SceneParser { data, pos: 0, line: 1 };
     }
 
-    pub fn parse_scene(filename: String) -> Option<object::Scene> {
-        let result = std::fs::read_to_string(filename);
-        if let Ok(contents) = result {
-            let parser = Self::make_parser();
-            let scene = parser.parse(contents);
-            if let Ok(s) = scene {
-                return Some(s);
+    pub fn parse(&mut self) -> Option<Scene> {
+        if self.data.is_empty() {
+            return None;
+        }
+
+        self.skip_whitespace();
+        match self.parse_scene() {
+            Ok(scene) => return Some(scene),
+            Err(err) => {
+                println!("Error, line {} : {}", self.line, err.message);
+                return None;
+            }
+        }
+    }
+
+    fn skip_whitespace(&mut self) {
+        while self.pos < self.data.len() {
+            let c = self.data.chars().nth(self.pos).unwrap_or_default();
+            if char::is_whitespace(c) || c == '\r' {
+                self.pos += 1;
+                continue;
+            } else if c == '\n' {
+                self.line += 1;
+                self.pos += 1;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn match_end(&mut self) -> bool {
+        return self.pos == self.data.len();
+    }
+
+    fn match_literal(&mut self, literal: &str) -> bool {
+        if self.match_end() {
+            return false;
+        }
+
+        let end = min(self.data.len(), self.pos + literal.len());
+        if &self.data[self.pos..end] == literal {
+            self.pos += literal.len();
+            self.skip_whitespace();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    fn expect_literal(&mut self, literal: &str) -> Result<(), ParseError> {
+        if !self.match_literal(literal) {
+            return Err(ParseError::new(&format!("Expected: {}", literal)));
+        } else {
+            return Ok(());
+        }
+    }
+
+    fn expect_left_brace(&mut self) -> Result<(), ParseError> {
+        return self.expect_literal("{");
+    }
+
+    fn expect_right_brace(&mut self) -> Result<(), ParseError> {
+        return self.expect_literal("}");
+    }
+
+    fn match_right_brace(&mut self) -> bool {
+        return self.match_literal("}");
+    }
+
+    fn error_unexpected(&mut self) -> Result<(), ParseError> {
+        return Err(ParseError::new("Unexpected token"));
+    }
+
+    fn parse_float(&mut self) -> Result<f32, ParseError> {
+        let c = self.data.chars().nth(self.pos).unwrap_or_default();
+        if self.match_end() || !(char::is_digit(c, 10) || c == '-' || c == '.') {
+            return Err(ParseError::new("Expected <float>"));
+        }
+
+        let mut pos = self.pos + 1;
+        while pos < self.data.len() {
+            let c = self.data.chars().nth(pos).unwrap_or_default();
+            if char::is_digit(c, 10) || c == '.' || c == '-' {
+                pos += 1;
+            } else {
+                break;
             }
         }
 
-        return None;
+        let s = &self.data[self.pos..pos];
+        let f = s.parse::<f32>().unwrap_or_default();
+
+        self.pos = pos;
+        self.skip_whitespace();
+        return Ok(f);
+    }
+
+    fn parse_string(&mut self) -> Result<String, ParseError> {
+        let c = self.data.chars().nth(self.pos).unwrap_or_default();
+        if self.match_end() || c != '"' {
+            return Err(ParseError::new("Expected <string>"));
+        }
+
+        let mut pos = self.pos + 1;
+        loop {
+            let c = self.data.chars().nth(pos).unwrap_or_default();
+            if c == '"' {
+                break;
+            }
+            pos += 1;
+            if pos == self.data.len() {
+                return Err(ParseError::new("Unterminated string constant"));
+            }
+        }
+
+        let ret = self.data[self.pos + 1..pos].to_string();
+        self.pos = pos + 1;
+
+        self.skip_whitespace();
+
+        return Ok(ret);
+    }
+
+    fn parse_float_triple(&mut self) -> Result<[f32; 3], ParseError> {
+        let mut values = [0.0; 3];
+
+        self.expect_literal("<")?;
+        values[0] = self.parse_float()?;
+        self.expect_literal(",")?;
+        values[1] = self.parse_float()?;
+        self.expect_literal(",")?;
+        values[2] = self.parse_float()?;
+        self.expect_literal(">")?;
+        
+        return Ok(values);
+    }
+
+    fn parse_color(&mut self) -> Result<Color, ParseError> {
+        let values = self.parse_float_triple()?;
+        return Ok(Color::new(values[0], values[1], values[2]));
+    }
+
+    fn parse_point(&mut self) -> Result<Point3, ParseError> {
+        let values = self.parse_float_triple()?;
+        return Ok(Point3::new(values[0], values[1], values[2]));
+    }
+
+    fn parse_radiance(&mut self) -> Result<Radiance, ParseError> {
+        let values = self.parse_float_triple()?;
+        return Ok(Radiance::new(values[0], values[1], values[2]));
+    }
+
+    fn parse_vector(&mut self) -> Result<Vec3, ParseError> {
+        let values = self.parse_float_triple()?;
+        return Ok(Vec3::new(values[0], values[1], values[2]));
+    }
+
+    fn parse_scene(&mut self) -> Result<Scene, ParseError> {
+        let mut camera = None;
+        let mut primitives = Vec::new();
+        let mut point_lights = Vec::new();
+        let mut sky_radiance = Radiance::ZERO;
+
+        while !self.match_end() {
+            if let Some(new_camera) = self.try_parse_camera()? {
+                camera = Some(new_camera);
+                continue;
+            } else if let Some(primitive) = self.try_parse_primitive()? {
+                primitives.push(primitive);
+                continue;
+            } else if let Some(light) = self.try_parse_point_light()? {
+                point_lights.push(light);
+                continue;
+            } else if self.match_literal("sky") {
+                self.expect_left_brace()?;
+                sky_radiance = self.parse_radiance()?;
+                self.expect_right_brace()?;
+                continue;
+            } else {
+                self.error_unexpected()?;
+            }
+        }
+
+        return Ok(Scene::new(camera.expect("Camera expected"), primitives, point_lights, sky_radiance));
+    }
+
+    fn try_parse_camera(&mut self) -> Result<Option<Camera>, ParseError> {
+        if !self.match_literal("camera") {
+            return Ok(None);
+        }
+        self.expect_left_brace()?;
+
+        let position = self.parse_point()?;
+        let look_at = self.parse_point()?;
+        let focal_length = self.parse_float()?;
+        let aperture_size = self.parse_float()?;
+
+        self.expect_right_brace()?;
+
+        return Ok(Some(Camera::new(position, (look_at - position).normalize(), Vec3::new(0.0, 1.0, 0.0), 60.0, focal_length, aperture_size)));
+    }
+
+    fn try_parse_point_light(&mut self) -> Result<Option<PointLight>, ParseError> {
+        if !self.match_literal("point_light") {
+            return Ok(None);
+        }
+        self.expect_left_brace()?;
+
+        let position = self.parse_point()?;
+        let radiance = self.parse_radiance()?;
+
+        self.expect_right_brace()?;
+
+        return Ok(Some(PointLight::new(position, radiance)));
+    }
+
+    fn try_parse_primitive(&mut self) -> Result<Option<Primitive>, ParseError> {
+        let mut shape : Box<dyn Shape>;
+
+        if self.match_literal("sphere") {
+            self.expect_left_brace()?;
+
+            let position = self.parse_point()?;
+            let radius = self.parse_float()?;
+            shape = Box::new(Sphere::new(position, radius));
+        } else if self.match_literal("quad") {
+            self.expect_left_brace()?;
+
+            let position = self.parse_point()?;
+            let side1 = self.parse_vector()?;
+            let side2 = self.parse_vector()?;
+            shape = Box::new(Quad::new(position, side1, side2));
+        } else if self.match_literal("model") {
+            self.expect_left_brace()?;
+
+            let filename = self.parse_string()?;
+            if let Some(sh) = ModelLoader::load(filename.clone()) {
+                shape = sh;
+            } else {
+                return Err(ParseError::new(&format!("Invalid model filename {}", filename)));
+            }
+        } else {
+            return Ok(None);
+        }
+
+        let mut surface = None;
+        while !self.match_right_brace() {
+            if let Some(new_surface) = self.try_parse_surface()? {
+                surface = Some(new_surface);
+                continue;
+            } else if let Some(transformation) = self.try_parse_transformation()? {
+                shape = Box::new(Transformed::new(shape, transformation));
+                continue;
+            } else {
+                self.error_unexpected()?;
+            }
+        }
+    
+        return Ok(Some(Primitive::new(shape, surface.expect("Surface expected"))));
+    }
+
+    fn try_parse_surface(&mut self) -> Result<Option<Surface>, ParseError> {
+        if !self.match_literal("surface") {
+            return Ok(None);
+        }
+        self.expect_left_brace()?;
+
+        let mut albedo = None;
+        let mut brdfs = Vec::new();
+        let mut transmit_ior = 0.0;
+        let mut radiance = Radiance::ZERO;
+        let mut normal_map = None;
+
+        while !self.match_right_brace() {
+            if let Some(new_albedo) = self.try_parse_albedo()? {
+                albedo = Some(new_albedo);
+                continue;
+            } else if let Some((new_brdfs, new_transmit_ior)) = self.try_parse_brdfs()? {
+                brdfs = new_brdfs;
+                transmit_ior = new_transmit_ior;
+                continue;
+            } else if let Some(new_normal_map) = self.try_parse_normal_map()? {
+                normal_map = Some(new_normal_map);
+                continue;
+            } else if self.match_literal("radiance") {
+                radiance = self.parse_radiance()?;
+                continue;
+            } else {
+                self.error_unexpected()?;
+            }
+        }
+
+        return Ok(Some(Surface::new(albedo.expect("Albedo expected"), brdfs, transmit_ior, radiance, normal_map)));
+    }
+
+    fn try_parse_transformation(&mut self) -> Result<Option<Transformation>, ParseError> {
+        if !self.match_literal("transform") {
+            return Ok(None);
+        }
+        self.expect_left_brace()?;
+
+        let mut result = Transformation::identity();
+        while !self.match_right_brace() {
+            if self.match_literal("translate") {
+                let vector = self.parse_vector()?;
+                result = result.transform(Transformation::translate(vector));
+                continue;
+            } else if self.match_literal("rotate") {
+                let vector = self.parse_vector()?;
+                result = result.transform(Transformation::rotate(vector));
+                continue;
+            } else if self.match_literal("scale") {
+                let vector = self.parse_vector()?;
+                result = result.transform(Transformation::scale(vector));
+                continue;
+            } else if self.match_literal("uniform_scale") {
+                let scale = self.parse_float()?;
+                result = result.transform(Transformation::uniform_scale(scale));
+                continue;
+            } else {
+                self.error_unexpected()?;
+            }
+        }
+
+        return Ok(Some(result));
+    }
+
+    fn try_parse_normal_map(&mut self) -> Result<Option<NormalMap>, ParseError> {
+        if !self.match_literal("normal_map") {
+            return Ok(None);
+        }
+        let filename = self.parse_string()?;
+        let texture = TextureLoader::load(filename);
+        let magnitude = self.parse_float()?;
+
+        return Ok(Some(NormalMap::new(texture.expect("Texture expected"), magnitude)));
+    }
+
+    fn try_parse_albedo(&mut self) -> Result<Option<Box<dyn Albedo>>, ParseError> {
+        if !self.match_literal("albedo") {
+            return Ok(None);
+        }
+        self.expect_left_brace()?;
+
+        let mut albedo: Option<Box<dyn Albedo>> = None;
+        if self.match_literal("color") {
+            let color = self.parse_color()?;
+            albedo = Some(Box::new(Solid::new(color)));
+        } else if self.match_literal("texture") {
+            let filename = self.parse_string()?;
+            let texture = TextureLoader::load(filename);
+            albedo = Some(Box::new(Texture::new(texture.expect("Texture expected"))));
+        } else {
+            self.error_unexpected()?;
+        }
+
+        self.expect_right_brace()?;
+        return Ok(albedo);
+    }
+
+    fn try_parse_brdfs(&mut self) -> Result<Option<(Vec<Box<dyn Brdf>>, f32)>, ParseError> {
+        if !self.match_literal("brdf") {
+            return Ok(None);
+        }
+        self.expect_left_brace()?;
+
+        let mut brdfs: Vec<Box<dyn Brdf>> = Vec::new();
+        let mut transmit_ior = 0.0;
+        while !self.match_right_brace() {
+            if self.match_literal("lambert") {
+                let strength = self.parse_float()?;
+                brdfs.push(Box::new(Lambert::new(strength)));
+                continue;
+            } else if self.match_literal("phong") {
+                let strength = self.parse_float()?;
+                let power = self.parse_float()?;
+                brdfs.push(Box::new(Phong::new(strength, power)));
+                continue;
+            } else if self.match_literal("oren_nayar") {
+                let strength = self.parse_float()?;
+                let roughness = self.parse_float()?;
+                brdfs.push(Box::new(OrenNayar::new(strength, roughness)));
+                continue;
+            } else if self.match_literal("torrance_sparrow") {
+                let strength = self.parse_float()?;
+                let roughness = self.parse_float()?;
+                let ior = self.parse_float()?;
+                brdfs.push(Box::new(TorranceSparrow::new(strength, roughness, ior)));
+                continue;
+            } else if self.match_literal("transmit") {
+                transmit_ior = self.parse_float()?;
+                continue;
+            } else {
+                self.error_unexpected()?;
+            }
+        }
+
+        return Ok(Some((brdfs, transmit_ior)));
     }
 }

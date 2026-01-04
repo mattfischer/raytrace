@@ -77,7 +77,7 @@ struct Scene {
 impl Scene {
     #[new]
     pub fn new(filename: String) -> Scene {
-        if let Some(scene) = SceneParser::parse_scene(filename) {
+        if let Some(scene) = SceneParser::new(filename).parse() {
             return Scene {
                 scene: Some(Arc::new(scene)),
             };
