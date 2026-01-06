@@ -6,6 +6,7 @@ use geo::OrthonormalBasis;
 use geo::Vec3;
 
 use object::Color;
+use object::Pdf;
 use object::Sampler;
 
 use std::f32::consts::PI;
@@ -76,7 +77,7 @@ impl object::Brdf for TorranceSparrow {
         return dir_in;
     }
 
-    fn pdf(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3) -> f32 {
+    fn pdf(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3) -> Pdf {
         let axis = (dir_in + dir_out).normalize();
 
         let cos_theta = axis * nrm;
@@ -87,7 +88,7 @@ impl object::Brdf for TorranceSparrow {
         let mut pdf = (-tan_theta.powi(2) / m2).exp() / (PI * m2 * cos_theta.powi(4));
         pdf = pdf / (4.0 * (dir_out * axis));
 
-        return pdf.min(1000.0);
+        return Pdf::new(pdf.min(1000.0));
     }
 
     fn opaque(&self) -> bool {

@@ -16,6 +16,7 @@ use geo::Vec3;
 
 use crate::object;
 use object::Color;
+use object::Pdf;
 use object::Sampler;
 
 pub trait Brdf: Send + Sync {
@@ -24,7 +25,7 @@ pub trait Brdf: Send + Sync {
     fn lambert(&self) -> f32;
 
     fn sample(&self, sampler: &mut dyn Sampler, nrm: Normal3, dir_out: Vec3) -> Vec3;
-    fn pdf(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3) -> f32;
+    fn pdf(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3) -> Pdf;
 
     fn opaque(&self) -> bool {
         return true;

@@ -8,6 +8,7 @@ use object::Brdf;
 use object::Color;
 use object::Intersection;
 use object::NormalMap;
+use object::Pdf;
 use object::Radiance;
 use object::Sampler;
 
@@ -86,7 +87,7 @@ impl Surface {
         &self,
         isect: &Intersection,
         sampler: &mut dyn Sampler,
-    ) -> (Color, Vec3, Option<f32>) {
+    ) -> (Color, Vec3, Pdf) {
         let dir_out = -isect.ray.direction;
         let nrm_facing = isect.facing_normal;
 
@@ -110,7 +111,7 @@ impl Surface {
             if roulette < transmit_threshold {
                 let color =
                     self.transmitted(isect, dir_in) / (dir_out * nrm_facing * transmit_threshold);
-                return (color, dir_in, None);
+                return (color, dir_in, Pdf::delta());
             }
         }
 
@@ -125,19 +126,19 @@ impl Surface {
         let pdf = self.pdf(isect, dir_in);
         let color = self.reflected(isect, dir_in) / (1.0 - transmit_threshold);
 
-        return (color, dir_in, Some(pdf));
+        return (color, dir_in, pdf);
     }
 
-    pub fn pdf(&self, isect: &Intersection, dir_in: Vec3) -> f32 {
+    pub fn pdf(&self, isect: &Intersection, dir_in: Vec3) -> Pdf {
         let dir_out = -isect.ray.direction;
         let nrm_facing = isect.facing_normal;
 
         let mut total_pdf = 0.0;
         for brdf in &self.brdfs {
-            total_pdf += brdf.pdf(dir_in, nrm_facing, dir_out);
+            total_pdf += brdf.pdf(dir_in, nrm_facing, dir_out).as_f32();
         }
         total_pdf /= self.brdfs.len() as f32;
 
-        return total_pdf;
+        return Pdf::new(total_pdf);
     }
 }

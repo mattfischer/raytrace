@@ -51,9 +51,10 @@ impl Lighter for UniPath {
 
                         if isect2.is_none() || light.did_intersect(&isect2.unwrap()) {
                             let irad = rad2 * dot / (d * d);
-                            let pdf_brdf = surface.pdf(&isect, dir_in) * dot_sample / (d * d);
-                            let mis_weight = pdf.unwrap_or_default() * pdf.unwrap_or_default() / (pdf.unwrap_or_default() * pdf.unwrap_or_default() + pdf_brdf * pdf_brdf);
-                            rad += irad * surface.reflected(&isect, dir_in) * throughput * mis_weight / pdf.unwrap_or_default();
+                            let pdf_brdf = if pdf.is_delta { 0.0 } else { surface.pdf(&isect, dir_in).as_f32() * dot_sample / (d * d) };
+                            let pdf = pdf.as_f32();
+                            let mis_weight = pdf * pdf / (pdf * pdf + pdf_brdf * pdf_brdf);
+                            rad += irad * surface.reflected(&isect, dir_in) * throughput * mis_weight / pdf;
                         }
                     }
                 }
@@ -78,7 +79,7 @@ impl Lighter for UniPath {
                 break;
             }
 
-            throughput = throughput * reflected * dot / (pdf.unwrap_or(1.0) * threshold);
+            throughput = throughput * reflected * dot / (pdf.as_f32() * threshold);
 
             let reflect_ray = Ray::new(pnt_offset, dir_in);
             beam = Beam::new(reflect_ray, Bivec3::ZERO, Bivec3::ZERO);
@@ -86,11 +87,11 @@ impl Lighter for UniPath {
 
             if let Some(isect2) = isect2 {
                 let rad2 = isect2.primitive.surface.radiance;
-                if rad2.mag() > 0.0 && pdf.is_some() {
+                if rad2.mag() > 0.0 && !pdf.is_delta {
                     let dot2 = -isect2.facing_normal * dir_in;
-                    let pdf_area = pdf.unwrap_or(1.0) * dot2
+                    let pdf_area = pdf.as_f32() * dot2
                         / (isect2.shape_isect.distance * isect2.shape_isect.distance);
-                    let pdf_light = isect2.primitive.shape.sample_pdf(isect2.point);
+                    let pdf_light = isect2.primitive.shape.sample_pdf(isect2.point).as_f32();
                     let mis_weight =
                         pdf_area * pdf_area / (pdf_area * pdf_area + pdf_light * pdf_light);
 

@@ -35,6 +35,7 @@ use geo::Transformation;
 
 use crate::object;
 use object::BoundingVolume;
+use object::Pdf;
 use object::Sampler;
 
 #[derive(Copy, Clone, Default)]
@@ -65,11 +66,11 @@ pub trait Shape: Send + Sync {
     fn intersect(&self, ray: Ray, max_distance: f32, closest: bool) -> Option<ShapeIntersection>;
     fn bounding_volume(&self, xform: Transformation) -> BoundingVolume;
 
-    fn sample(&self, _sampler: &mut dyn Sampler) -> Option<(Point3, Normal3, f32)> {
+    fn sample(&self, _sampler: &mut dyn Sampler) -> Option<(Point3, Normal3, Pdf)> {
         return None;
     }
 
-    fn sample_pdf(&self, _pnt: Point3) -> f32 {
-        return 0.0;
+    fn sample_pdf(&self, _pnt: Point3) -> Pdf {
+        return Pdf::new(0.0);
     }
 }

@@ -6,6 +6,7 @@ use geo::OrthonormalBasis;
 use geo::Vec3;
 
 use object::Color;
+use object::Pdf;
 use object::Sampler;
 
 use std::f32::consts::PI;
@@ -50,7 +51,7 @@ impl object::Brdf for Phong {
         return dir_in;
     }
 
-    fn pdf(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3) -> f32 {
+    fn pdf(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3) -> Pdf {
         let mut coeff = 0.0;
         let dir_reflect = -(dir_in - Vec3::from(nrm) * (dir_in * nrm * 2.0));
         let dot = dir_reflect * dir_out;
@@ -59,6 +60,6 @@ impl object::Brdf for Phong {
         }
 
         let pdf = coeff * (self.power + 1.0) / (2.0 * PI);
-        return pdf.min(1000.0);
+        return Pdf::new(pdf.min(1000.0));
     }
 }

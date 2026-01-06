@@ -28,6 +28,9 @@ pub use light::Light;
 mod normal_map;
 pub use normal_map::NormalMap;
 
+mod pdf;
+pub use pdf::Pdf;
+
 mod primitive;
 pub use primitive::Primitive;
 

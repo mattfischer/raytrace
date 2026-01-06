@@ -4,6 +4,7 @@ use geo::Point3;
 use crate::object;
 use object::Intersection;
 use object::Light;
+use object::Pdf;
 use object::Radiance;
 use object::Sampler;
 
@@ -19,9 +20,9 @@ impl Point {
 }
 
 impl Light for Point {
-    fn sample(&self, _sampler: &mut dyn Sampler, _pnt: Point3) -> Option<(Radiance, Point3, f32, Option<f32>)>
+    fn sample(&self, _sampler: &mut dyn Sampler, _pnt: Point3) -> Option<(Radiance, Point3, f32, Pdf)>
     {
-        return Some((self.radiance, self.position, 0.0, None));
+        return Some((self.radiance, self.position, 0.0, Pdf::delta()));
     }
 
     fn did_intersect(&self, _isect: &Intersection) -> bool

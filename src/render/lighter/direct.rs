@@ -45,7 +45,7 @@ impl Lighter for Direct {
 
                     if isect2.is_none() || light.did_intersect(&isect2.unwrap()) {
                         let irad = rad2 * dot_sample * dot / (d * d);
-                        rad += irad * surface.reflected(isect, dir_in) / pdf.unwrap();
+                        rad += irad * surface.reflected(isect, dir_in) / pdf.as_f32();
                     }
                 }
             }

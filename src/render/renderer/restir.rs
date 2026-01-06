@@ -13,6 +13,7 @@ use geo::Vec3;
 use object::sampler::Halton;
 use object::FlatIntersection;
 use object::Intersection;
+use object::Pdf;
 use object::Radiance;
 use object::Sampler;
 use object::Scene;
@@ -40,8 +41,8 @@ struct Reservoir<T> {
 }
 
 impl<T> Reservoir<T> {
-    pub fn add_sample(&mut self, sample: T, q: f32, pdf: f32, sampler: &mut dyn Sampler) {
-        self.combine(sample, q, 1.0 / pdf, 1, 1.0, sampler);
+    pub fn add_sample(&mut self, sample: T, q: f32, pdf: Pdf, sampler: &mut dyn Sampler) {
+        self.combine(sample, q, 1.0 / pdf.as_f32(), 1, 1.0, sampler);
     }
 
     pub fn add_reservoir(&mut self, res: Reservoir<T>, q: f32, j: f32, sampler: &mut dyn Sampler) {
@@ -296,30 +297,29 @@ impl Inner {
                 .unwrap()
                 .set(x, y, Default::default());
 
-            if let (_reflected, dir_in, Some(pdf)) = surface.sample(&isect, sampler) {
-                let reverse = (dir_in * nrm_facing).signum();
-                let dot = dir_in * nrm_facing * reverse;
+            let (_reflected, dir_in, pdf) = surface.sample(&isect, sampler);
+            let reverse = (dir_in * nrm_facing).signum();
+            let dot = dir_in * nrm_facing * reverse;
 
-                let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01 * reverse;
-                if dot > 0.0 {
-                    let ray_reflect = Ray::new(pnt_offset, dir_in);
-                    let beam = Beam::new(ray_reflect, Bivec3::ZERO, Bivec3::ZERO);
-                    if let Some(isect2) = scene.intersect(beam, f32::MAX, true) {
-                        let rad2 = self.indirect_lighter.light(&isect2, sampler);
+            let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01 * reverse;
+            if dot > 0.0 {
+                let ray_reflect = Ray::new(pnt_offset, dir_in);
+                let beam = Beam::new(ray_reflect, Bivec3::ZERO, Bivec3::ZERO);
+                if let Some(isect2) = scene.intersect(beam, f32::MAX, true) {
+                    let rad2 = self.indirect_lighter.light(&isect2, sampler);
 
-                        let sample = IndirectSample {
-                            point: isect2.point,
-                            normal: isect2.facing_normal,
-                            indirect_radiance: rad2 - isect2.primitive.surface.radiance,
-                        };
+                    let sample = IndirectSample {
+                        point: isect2.point,
+                        normal: isect2.facing_normal,
+                        indirect_radiance: rad2 - isect2.primitive.surface.radiance,
+                    };
 
-                        let q = sample.indirect_radiance.mag();
-                        self.indirect_reservoirs
-                            .write()
-                            .unwrap()
-                            .get_mut(x, y)
-                            .add_sample(sample, q, pdf, sampler);
-                    }
+                    let q = sample.indirect_radiance.mag();
+                    self.indirect_reservoirs
+                        .write()
+                        .unwrap()
+                        .get_mut(x, y)
+                        .add_sample(sample, q, pdf, sampler);
                 }
             }
 

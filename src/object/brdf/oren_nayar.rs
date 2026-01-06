@@ -6,6 +6,7 @@ use geo::OrthonormalBasis;
 use geo::Vec3;
 
 use object::Color;
+use object::Pdf;
 use object::Sampler;
 
 use std::f32::consts::PI;
@@ -73,10 +74,10 @@ impl object::Brdf for OrenNayar {
         return dir_in;
     }
 
-    fn pdf(&self, dir_in: Vec3, nrm: Normal3, _dir_out: Vec3) -> f32 {
+    fn pdf(&self, dir_in: Vec3, nrm: Normal3, _dir_out: Vec3) -> Pdf {
         let cos_theta = (dir_in * nrm).max(0.0);
         let pdf = cos_theta / PI;
 
-        return pdf;
+        return Pdf::new(pdf);
     }
 }
