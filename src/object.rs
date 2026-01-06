@@ -22,11 +22,11 @@ mod intersection;
 pub use intersection::FlatIntersection;
 pub use intersection::Intersection;
 
+pub mod light;
+pub use light::Light;
+
 mod normal_map;
 pub use normal_map::NormalMap;
-
-mod point_light;
-pub use point_light::PointLight;
 
 mod primitive;
 pub use primitive::Primitive;

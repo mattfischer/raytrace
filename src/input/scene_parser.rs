@@ -9,8 +9,8 @@ use object::Brdf;
 use object::Scene;
 use object::Camera;
 use object::Color;
+use object::Light;
 use object::NormalMap;
-use object::PointLight;
 use object::Primitive;
 use object::Radiance;
 use object::Shape;
@@ -219,7 +219,7 @@ impl SceneParser {
     fn parse_scene(&mut self) -> Result<Scene, ParseError> {
         let mut camera = None;
         let mut primitives = Vec::new();
-        let mut point_lights = Vec::new();
+        let mut lights = Vec::new();
         let mut sky_radiance = Radiance::ZERO;
 
         while !self.match_end() {
@@ -229,8 +229,8 @@ impl SceneParser {
             } else if let Some(primitive) = self.try_parse_primitive()? {
                 primitives.push(primitive);
                 continue;
-            } else if let Some(light) = self.try_parse_point_light()? {
-                point_lights.push(light);
+            } else if let Some(light) = self.try_parse_light()? {
+                lights.push(light);
                 continue;
             } else if self.match_literal("sky") {
                 self.expect_left_brace()?;
@@ -242,7 +242,7 @@ impl SceneParser {
             }
         }
 
-        return Ok(Scene::new(camera.expect("Camera expected"), primitives, point_lights, sky_radiance));
+        return Ok(Scene::new(camera.expect("Camera expected"), primitives, lights, sky_radiance));
     }
 
     fn try_parse_camera(&mut self) -> Result<Option<Camera>, ParseError> {
@@ -261,7 +261,7 @@ impl SceneParser {
         return Ok(Some(Camera::new(position, (look_at - position).normalize(), Vec3::new(0.0, 1.0, 0.0), 60.0, focal_length, aperture_size)));
     }
 
-    fn try_parse_point_light(&mut self) -> Result<Option<PointLight>, ParseError> {
+    fn try_parse_light(&mut self) -> Result<Option<Box<dyn Light>>, ParseError> {
         if !self.match_literal("point_light") {
             return Ok(None);
         }
@@ -272,7 +272,7 @@ impl SceneParser {
 
         self.expect_right_brace()?;
 
-        return Ok(Some(PointLight::new(position, radiance)));
+        return Ok(Some(Box::new(object::light::Point::new(position, radiance))));
     }
 
     fn try_parse_primitive(&mut self) -> Result<Option<Primitive>, ParseError> {

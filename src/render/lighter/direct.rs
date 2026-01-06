@@ -31,44 +31,22 @@ impl Lighter for Direct {
         let mut rad = surface.radiance;
         let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
-        for idx in &scene.area_lights {
-            let light = &scene.primitives[*idx];
-            let rad2 = light.surface.radiance;
-
-            if let Some((pnt_sample, nrm_sample, pdf)) = light.shape.sample(sampler) {
+        for light in &scene.lights {
+            if let Some((rad2, pnt_sample, dot_sample, pdf)) = light.sample(sampler, pnt_offset) {
                 let mut dir_in = pnt_sample - pnt_offset;
                 let d = dir_in.mag();
                 dir_in = dir_in / d;
-                let dot_sample = (dir_in * nrm_sample).abs();
-
+                
                 let dot = dir_in * nrm_facing;
                 if dot > 0.0 {
                     let ray = Ray::new(pnt_offset, dir_in);
                     let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
                     let isect2 = scene.intersect(beam, d, false);
 
-                    if isect2.is_none() || std::ptr::eq(isect2.unwrap().primitive, light) {
+                    if isect2.is_none() || light.did_intersect(&isect2.unwrap()) {
                         let irad = rad2 * dot_sample * dot / (d * d);
-                        rad += irad * surface.reflected(isect, dir_in) / pdf;
+                        rad += irad * surface.reflected(isect, dir_in) / pdf.unwrap();
                     }
-                }
-            }
-        }
-
-        for point_light in &scene.point_lights {
-            let mut dir_in = point_light.position - pnt_offset;
-            let d = dir_in.mag();
-            dir_in = dir_in / d;
-
-            let dot = dir_in * nrm_facing;
-            if dot > 0.0 {
-                let ray = Ray::new(pnt_offset, dir_in);
-                let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-                let isect2 = scene.intersect(beam, d, false);
-
-                if isect2.is_none() {
-                    let irad = point_light.radiance * dot / (d * d);
-                    rad += irad * surface.reflected(isect, dir_in);
                 }
             }
         }

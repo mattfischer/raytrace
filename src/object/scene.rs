@@ -8,14 +8,14 @@ use object::BoundingVolume;
 use object::BoundingVolumeHierarchy;
 use object::Camera;
 use object::Intersection;
-use object::PointLight;
+use object::Light;
 use object::Primitive;
 use object::Radiance;
 
 pub struct Scene {
     pub camera: object::Camera,
     pub primitives: Vec<Primitive>,
-    pub point_lights: Vec<PointLight>,
+    pub lights: Vec<Box<dyn Light>>,
     pub area_lights: Vec<usize>,
     pub sky_radiance: Radiance,
     bvh: BoundingVolumeHierarchy,
@@ -25,16 +25,20 @@ impl Scene {
     pub fn new(
         camera: Camera,
         primitives: Vec<Primitive>,
-        point_lights: Vec<PointLight>,
+        lights: Vec<Box<dyn Light>>,
         sky_radiance: Radiance,
     ) -> Scene {
         let mut centroids = Vec::new();
         let mut area_lights = Vec::new();
         let xform = Transformation::identity();
+
+        let mut lights = lights;
+
         for (idx, primitive) in primitives.iter().enumerate() {
             centroids.push(primitive.shape.bounding_volume(xform).centroid());
             if primitive.surface.radiance.mag2() > 0.0 {
                 area_lights.push(idx);
+                lights.push(Box::new(object::light::Shape::new(primitive.shape.clone(), primitive.surface.radiance)));
             }
         }
 
@@ -46,7 +50,7 @@ impl Scene {
         return Scene {
             camera,
             primitives,
-            point_lights,
+            lights,
             area_lights,
             sky_radiance,
             bvh,
