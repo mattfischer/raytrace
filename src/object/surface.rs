@@ -111,7 +111,7 @@ impl Surface {
             if roulette < transmit_threshold {
                 let color =
                     self.transmitted(isect, dir_in) / (dir_out * nrm_facing * transmit_threshold);
-                return (color, dir_in, Pdf::delta());
+                return (color, dir_in, Pdf::new(1.0, true));
             }
         }
 
@@ -139,6 +139,6 @@ impl Surface {
         }
         total_pdf /= self.brdfs.len() as f32;
 
-        return Pdf::new(total_pdf);
+        return Pdf::new(total_pdf, false);
     }
 }

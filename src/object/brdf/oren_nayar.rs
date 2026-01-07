@@ -78,6 +78,6 @@ impl object::Brdf for OrenNayar {
         let cos_theta = (dir_in * nrm).max(0.0);
         let pdf = cos_theta / PI;
 
-        return Pdf::new(pdf);
+        return Pdf::new(pdf, false);
     }
 }

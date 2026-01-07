@@ -32,7 +32,7 @@ impl Lighter for Direct {
         let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
         for light in &scene.lights {
-            if let Some((rad2, pnt_sample, dot_sample, pdf)) = light.sample(sampler, pnt_offset) {
+            if let Some((rad2, pnt_sample, pdf)) = light.sample(sampler, pnt_offset) {
                 let mut dir_in = pnt_sample - pnt_offset;
                 let d = dir_in.mag();
                 dir_in = dir_in / d;
@@ -44,7 +44,7 @@ impl Lighter for Direct {
                     let isect2 = scene.intersect(beam, d, false);
 
                     if isect2.is_none() || light.did_intersect(&isect2.unwrap()) {
-                        let irad = rad2 * dot_sample * dot / (d * d);
+                        let irad = rad2 * dot;
                         rad += irad * surface.reflected(isect, dir_in) / pdf.as_f32();
                     }
                 }

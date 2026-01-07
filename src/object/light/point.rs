@@ -20,9 +20,12 @@ impl Point {
 }
 
 impl Light for Point {
-    fn sample(&self, _sampler: &mut dyn Sampler, _pnt: Point3) -> Option<(Radiance, Point3, f32, Pdf)>
+    fn sample(&self, _sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Point3, Pdf)>
     {
-        return Some((self.radiance, self.position, 0.0, Pdf::delta()));
+        let dir_out = pnt - self.position;
+        let d = dir_out.mag();
+
+        return Some((self.radiance, self.position, Pdf::new(d * d, true)))
     }
 
     fn did_intersect(&self, _isect: &Intersection) -> bool

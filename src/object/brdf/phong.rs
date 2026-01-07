@@ -60,6 +60,6 @@ impl object::Brdf for Phong {
         }
 
         let pdf = coeff * (self.power + 1.0) / (2.0 * PI);
-        return Pdf::new(pdf.min(1000.0));
+        return Pdf::new(pdf.min(1000.0), false);
     }
 }

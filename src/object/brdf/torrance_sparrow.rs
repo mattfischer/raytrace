@@ -88,7 +88,7 @@ impl object::Brdf for TorranceSparrow {
         let mut pdf = (-tan_theta.powi(2) / m2).exp() / (PI * m2 * cos_theta.powi(4));
         pdf = pdf / (4.0 * (dir_out * axis));
 
-        return Pdf::new(pdf.min(1000.0));
+        return Pdf::new(pdf.min(1000.0), false);
     }
 
     fn opaque(&self) -> bool {

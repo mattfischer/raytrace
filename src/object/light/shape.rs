@@ -22,15 +22,16 @@ impl Shape {
 }
 
 impl Light for Shape {
-    fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Point3, f32, Pdf)>
+    fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Point3, Pdf)>
     {
-        if let Some((pnt_sample, nrm_sample, pdf)) = self.shape.sample(sampler) {
-            let mut dir_out = pnt - pnt_sample;
+        if let Some((pnt_sample, nrm_sample, pdf_area)) = self.shape.sample(sampler) {
+            let mut dir_out = pnt_sample - pnt;
             let d = dir_out.mag();
             dir_out = dir_out / d;
-            let dot_sample = f32::abs(dir_out * nrm_sample);
-            let rad = self.radiance * dot_sample;
-            return Some((rad, pnt_sample, dot_sample, pdf));
+            let dot = f32::abs(dir_out * nrm_sample);
+            let pdf = pdf_area.as_f32() * d * d / dot;
+            let rad = self.radiance * dot;
+            return Some((rad, pnt_sample, Pdf::new(pdf, false)));
         }
         return None;
     }

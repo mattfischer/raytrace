@@ -4,12 +4,8 @@ pub struct Pdf {
 }
 
 impl Pdf {
-    pub fn new(pdf: f32) -> Pdf {
-        return Pdf { pdf, is_delta: false };
-    }
-
-    pub fn delta() -> Pdf {
-        return Pdf { pdf: 1.0, is_delta: true };
+    pub fn new(pdf: f32, is_delta: bool) -> Pdf {
+        return Pdf { pdf, is_delta };
     }
 
     pub fn as_f32(&self) -> f32 {

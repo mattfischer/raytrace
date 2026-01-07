@@ -75,13 +75,13 @@ impl Shape for Quad {
         let nrm = self.normal;
 
         let surface_area = (self.side1 % self.side2).mag();
-        let pdf = Pdf::new(1.0 / surface_area);
+        let pdf = Pdf::new(1.0 / surface_area, false);
 
         return Some((pnt, nrm, pdf));
     }
 
     fn sample_pdf(&self, _pnt: Point3) -> Pdf {
         let surface_area = (self.side1 % self.side2).mag();
-        return Pdf::new(1.0 / surface_area);
+        return Pdf::new(1.0 / surface_area, false);
     }
 }

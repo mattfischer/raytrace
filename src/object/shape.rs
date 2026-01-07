@@ -71,6 +71,6 @@ pub trait Shape: Send + Sync {
     }
 
     fn sample_pdf(&self, _pnt: Point3) -> Pdf {
-        return Pdf::new(0.0);
+        return Pdf::new(0.0, false);
     }
 }
