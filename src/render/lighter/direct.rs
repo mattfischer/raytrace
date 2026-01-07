@@ -4,6 +4,8 @@ use crate::render;
 
 use geo::Vec3;
 
+use object::Radiance;
+
 use render::Lighter;
 
 pub struct Direct;
@@ -25,7 +27,10 @@ impl Lighter for Direct {
         let surface = &primitive.surface;
         let nrm_facing = isect.facing_normal;
 
-        let mut rad = surface.radiance;
+        let mut rad = Radiance::ZERO;
+        if let Some(light) = &primitive.light {
+            rad += light.radiance(isect);
+        }
         let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 
         for light in &scene.lights {

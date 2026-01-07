@@ -6,6 +6,7 @@ use geo::Ray;
 use geo::Vec3;
 
 use crate::object;
+use object::Intersection;
 use object::Light;
 use object::Pdf;
 use object::Radiance;
@@ -34,10 +35,21 @@ impl Light for Shape {
             dir_in = dir_in / d;
             let dot = f32::abs(dir_in * nrm_sample);
             let pdf = pdf_area.as_f32() * d * d / dot;
-            let rad = self.radiance * dot;
-            return Some((rad, dir_in, Pdf::new(pdf, false)));
+            return Some((self.radiance, dir_in, Pdf::new(pdf, false)));
         }
         return None;
+    }
+
+    fn pdf(&self, isect: &Intersection) -> Pdf
+    {
+        let dot = isect.ray.direction * isect.facing_normal;
+        let d = isect.shape_isect.distance;
+        return Pdf::new(self.shape.sample_pdf(isect.point).as_f32() * d * d / dot, false);
+    }
+
+    fn radiance(&self, _isect: &Intersection) -> Radiance
+    {
+        return self.radiance;
     }
 
     fn test_visible(&self, scene: &Scene, pnt: Point3, dir_in: Vec3) -> bool

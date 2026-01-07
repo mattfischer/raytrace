@@ -6,6 +6,7 @@ use geo::Ray;
 use geo::Vec3;
 
 use crate::object;
+use object::Intersection;
 use object::Light;
 use object::Pdf;
 use object::Radiance;
@@ -31,6 +32,16 @@ impl Light for Point {
         dir_in = dir_in / d;
 
         return Some((self.radiance, dir_in, Pdf::new(d * d, true)))
+    }
+
+    fn pdf(&self, _isect: &Intersection) -> Pdf
+    {
+        return Pdf::new(0.0, false);
+    }
+
+    fn radiance(&self, _isect: &Intersection) -> Radiance
+    {
+        return Radiance::ZERO;
     }
 
     fn test_visible(&self, scene: &Scene, pnt: Point3, dir_in: Vec3) -> bool
