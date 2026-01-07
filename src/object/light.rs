@@ -15,10 +15,18 @@ use object::Radiance;
 use object::Sampler;
 use object::Scene;
 
+pub struct LightSample {
+    pub radiance: Radiance,
+    pub origin: Point3,
+    pub direction: Vec3,
+    pub pdf: Pdf,
+    pub distance: f32
+}
+
 pub trait Light: Send + Sync {
-    fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Vec3, Pdf)>;
+    fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<LightSample>;
     fn pdf(&self, isect: &Intersection) -> Pdf;
     fn radiance(&self, isect: &Intersection) -> Radiance;
 
-    fn test_visible(&self, scene: &Scene, pnt: Point3, dir_in: Vec3) -> bool;
+    fn test_visible(&self, scene: &Scene, sample: &LightSample) -> bool;
 }

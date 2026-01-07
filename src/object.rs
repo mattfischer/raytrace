@@ -24,6 +24,7 @@ pub use intersection::Intersection;
 
 pub mod light;
 pub use light::Light;
+pub use light::LightSample;
 
 mod normal_map;
 pub use normal_map::NormalMap;

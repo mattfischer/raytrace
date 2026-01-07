@@ -8,6 +8,7 @@ use geo::Vec3;
 use crate::object;
 use object::Intersection;
 use object::Light;
+use object::LightSample;
 use object::Pdf;
 use object::Radiance;
 use object::Sampler;
@@ -27,7 +28,7 @@ impl Shape {
 }
 
 impl Light for Shape {
-    fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Vec3, Pdf)>
+    fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<LightSample>
     {
         if let Some((pnt_sample, nrm_sample, pdf_area)) = self.shape.sample(sampler) {
             let mut dir_in = pnt_sample - pnt;
@@ -35,7 +36,7 @@ impl Light for Shape {
             dir_in = dir_in / d;
             let dot = f32::abs(dir_in * nrm_sample);
             let pdf = pdf_area.as_f32() * d * d / dot;
-            return Some((self.radiance, dir_in, Pdf::new(pdf, false)));
+            return Some(LightSample { radiance: self.radiance, origin: pnt, direction: dir_in, pdf: Pdf::new(pdf, false), distance: d } );
         }
         return None;
     }
@@ -52,12 +53,12 @@ impl Light for Shape {
         return self.radiance;
     }
 
-    fn test_visible(&self, scene: &Scene, pnt: Point3, dir_in: Vec3) -> bool
+    fn test_visible(&self, scene: &Scene, sample: &LightSample) -> bool
     {
-        let ray = Ray::new(pnt, dir_in);
+        let ray = Ray::new(sample.origin, sample.direction);
         let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-        let isect = scene.intersect(beam, f32::MAX, true);
+        let isect = scene.intersect(beam, sample.distance, true);
 
-        return isect.is_some() && Arc::ptr_eq(&isect.unwrap().primitive.shape, &self.shape);
+        return isect.is_none() || Arc::ptr_eq(&isect.unwrap().primitive.shape, &self.shape);
     }  
 }

@@ -42,14 +42,14 @@ impl Lighter for UniPath {
 
             let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
             for light in &scene.lights {
-                if let Some((rad_light, dir_in, pdf)) = light.sample(sampler, pnt_offset) {
-                    let dot = dir_in * nrm_facing;
-                    if dot > 0.0 && light.test_visible(scene, pnt_offset, dir_in) {
-                        let irad = rad_light * dot;
-                        let pdf_brdf = if pdf.is_delta { 0.0 } else { surface.pdf(&isect, dir_in).as_f32() };
-                        let pdf = pdf.as_f32();
+                if let Some(sample) = light.sample(sampler, pnt_offset) {
+                    let dot = sample.direction * nrm_facing;
+                    if dot > 0.0 && light.test_visible(scene, &sample) {
+                        let irad = sample.radiance * dot;
+                        let pdf_brdf = if sample.pdf.is_delta { 0.0 } else { surface.pdf(&isect, sample.direction).as_f32() };
+                        let pdf = sample.pdf.as_f32();
                         let mis_weight = pdf * pdf / (pdf * pdf + pdf_brdf * pdf_brdf);
-                        rad += irad * surface.reflected(&isect, dir_in) * throughput * mis_weight / pdf;
+                        rad += irad * surface.reflected(&isect, sample.direction) * throughput * mis_weight / pdf;
                     }
                 }
             }
