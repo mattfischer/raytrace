@@ -77,9 +77,9 @@ impl Lighter for UniPath {
 
             if let Some(isect2) = isect2 {
                 let rad2 = isect2.primitive.surface.radiance;
-                if rad2.mag() > 0.0 && !pdf.is_delta {
+                if rad2.mag() > 0.0 {
                     let dot2 = -isect2.facing_normal * dir_in;
-                    let pdf_light = isect2.primitive.shape.sample_pdf(isect2.point).as_f32() * isect2.shape_isect.distance * isect2.shape_isect.distance / dot2; 
+                    let pdf_light = if pdf.is_delta { 0.0 } else { isect2.primitive.shape.sample_pdf(isect2.point).as_f32() * isect2.shape_isect.distance * isect2.shape_isect.distance / dot2 }; 
                     let pdf = pdf.as_f32();
                     let mis_weight = pdf * pdf / (pdf * pdf + pdf_light * pdf_light);
 

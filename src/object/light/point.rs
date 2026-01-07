@@ -6,7 +6,6 @@ use geo::Ray;
 use geo::Vec3;
 
 use crate::object;
-use object::Intersection;
 use object::Light;
 use object::Pdf;
 use object::Radiance;
