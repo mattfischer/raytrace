@@ -1,12 +1,16 @@
 use crate::geo;
+use geo::Beam;
+use geo::Bivec3;
 use geo::Point3;
+use geo::Ray;
+use geo::Vec3;
 
 use crate::object;
-use object::Intersection;
 use object::Light;
 use object::Pdf;
 use object::Radiance;
 use object::Sampler;
+use object::Scene;
 
 use std::sync::Arc;
 
@@ -22,23 +26,26 @@ impl Shape {
 }
 
 impl Light for Shape {
-    fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Point3, Pdf)>
+    fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Vec3, Pdf)>
     {
         if let Some((pnt_sample, nrm_sample, pdf_area)) = self.shape.sample(sampler) {
-            let mut dir_out = pnt_sample - pnt;
-            let d = dir_out.mag();
-            dir_out = dir_out / d;
-            let dot = f32::abs(dir_out * nrm_sample);
+            let mut dir_in = pnt_sample - pnt;
+            let d = dir_in.mag();
+            dir_in = dir_in / d;
+            let dot = f32::abs(dir_in * nrm_sample);
             let pdf = pdf_area.as_f32() * d * d / dot;
             let rad = self.radiance * dot;
-            return Some((rad, pnt_sample, Pdf::new(pdf, false)));
+            return Some((rad, dir_in, Pdf::new(pdf, false)));
         }
         return None;
     }
 
-    fn did_intersect(&self, isect: &Intersection) -> bool
+    fn test_visible(&self, scene: &Scene, pnt: Point3, dir_in: Vec3) -> bool
     {
-        return Arc::ptr_eq(&isect.primitive.shape, &self.shape);
-    }
-  
+        let ray = Ray::new(pnt, dir_in);
+        let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
+        let isect = scene.intersect(beam, f32::MAX, true);
+
+        return isect.is_some() && Arc::ptr_eq(&isect.unwrap().primitive.shape, &self.shape);
+    }  
 }

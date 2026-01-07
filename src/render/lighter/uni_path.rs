@@ -38,24 +38,14 @@ impl Lighter for UniPath {
 
             let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
             for light in &scene.lights {
-                if let Some((rad2, pnt_sample, pdf)) = light.sample(sampler, pnt_offset) {
-                    let mut dir_in = pnt_sample - pnt_offset;
-                    let d = dir_in.mag();
-                    dir_in = dir_in / d;
-
+                if let Some((rad_light, dir_in, pdf)) = light.sample(sampler, pnt_offset) {
                     let dot = dir_in * nrm_facing;
-                    if dot > 0.0 {
-                        let ray = Ray::new(pnt_offset, dir_in);
-                        let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-                        let isect2 = scene.intersect(beam, d, false);
-
-                        if isect2.is_none() || light.did_intersect(&isect2.unwrap()) {
-                            let irad = rad2 * dot;
-                            let pdf_brdf = if pdf.is_delta { 0.0 } else { surface.pdf(&isect, dir_in).as_f32() };
-                            let pdf = pdf.as_f32();
-                            let mis_weight = pdf * pdf / (pdf * pdf + pdf_brdf * pdf_brdf);
-                            rad += irad * surface.reflected(&isect, dir_in) * throughput * mis_weight / pdf;
-                        }
+                    if dot > 0.0 && light.test_visible(scene, pnt_offset, dir_in) {
+                        let irad = rad_light * dot;
+                        let pdf_brdf = if pdf.is_delta { 0.0 } else { surface.pdf(&isect, dir_in).as_f32() };
+                        let pdf = pdf.as_f32();
+                        let mis_weight = pdf * pdf / (pdf * pdf + pdf_brdf * pdf_brdf);
+                        rad += irad * surface.reflected(&isect, dir_in) * throughput * mis_weight / pdf;
                     }
                 }
             }

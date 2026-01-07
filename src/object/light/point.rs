@@ -1,5 +1,9 @@
 use crate::geo;
+use geo::Beam;
+use geo::Bivec3;
 use geo::Point3;
+use geo::Ray;
+use geo::Vec3;
 
 use crate::object;
 use object::Intersection;
@@ -7,6 +11,7 @@ use object::Light;
 use object::Pdf;
 use object::Radiance;
 use object::Sampler;
+use object::Scene;
 
 pub struct Point {
     position: Point3,
@@ -20,16 +25,22 @@ impl Point {
 }
 
 impl Light for Point {
-    fn sample(&self, _sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Point3, Pdf)>
+    fn sample(&self, _sampler: &mut dyn Sampler, pnt: Point3) -> Option<(Radiance, Vec3, Pdf)>
     {
-        let dir_out = pnt - self.position;
-        let d = dir_out.mag();
+        let mut dir_in = self.position - pnt;
+        let d = dir_in.mag();
+        dir_in = dir_in / d;
 
-        return Some((self.radiance, self.position, Pdf::new(d * d, true)))
+        return Some((self.radiance, dir_in, Pdf::new(d * d, true)))
     }
 
-    fn did_intersect(&self, _isect: &Intersection) -> bool
+    fn test_visible(&self, scene: &Scene, pnt: Point3, dir_in: Vec3) -> bool
     {
-        return false;
+        let d = (self.position - pnt).mag();
+        let ray = Ray::new(pnt, dir_in);
+        let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
+        let isect = scene.intersect(beam, d, false);
+
+        return isect.is_none();
     }
 }
