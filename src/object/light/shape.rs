@@ -48,7 +48,12 @@ impl Light for Shape {
         return Pdf::new(self.shape.pdf(isect.point).as_f32() * d * d / dot, false);
     }
 
-    fn radiance(&self, _isect: &Intersection) -> Radiance
+    fn radiance_from_isect(&self, _isect: &Intersection) -> Radiance
+    {
+        return self.radiance;
+    }
+
+    fn radiance_from_direction(&self, _direction: Vec3) -> Radiance
     {
         return self.radiance;
     }

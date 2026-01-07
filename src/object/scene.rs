@@ -10,7 +10,6 @@ use object::Camera;
 use object::Intersection;
 use object::Light;
 use object::Primitive;
-use object::Radiance;
 
 use std::sync::Arc;
 
@@ -18,8 +17,8 @@ pub struct Scene {
     pub camera: object::Camera,
     pub primitives: Vec<Primitive>,
     pub lights: Vec<Arc<Box<dyn Light>>>,
+    pub sky_lights: Vec<Arc<Box<dyn Light>>>,
     pub area_lights: Vec<usize>,
-    pub sky_radiance: Radiance,
     bvh: BoundingVolumeHierarchy,
 }
 
@@ -27,16 +26,22 @@ impl Scene {
     pub fn new(
         camera: Camera,
         primitives: Vec<Primitive>,
-        lights: Vec<Box<dyn Light>>,
-        sky_radiance: Radiance,
+        lights: Vec<Box<dyn Light>>
     ) -> Scene {
         let mut centroids = Vec::new();
         let mut area_lights = Vec::new();
         let xform = Transformation::identity();
 
         let mut all_lights = Vec::new();
+        let mut sky_lights = Vec::new();
         for light in lights {
-            all_lights.push(Arc::new(light));
+            let light = Arc::new(light);
+
+            if light.is_sky() {
+                sky_lights.push(light.clone());
+            }
+
+            all_lights.push(light);
         }
 
         for (idx, primitive) in primitives.iter().enumerate() {
@@ -57,7 +62,7 @@ impl Scene {
             primitives,
             lights: all_lights,
             area_lights,
-            sky_radiance,
+            sky_lights,
             bvh,
         };
     }

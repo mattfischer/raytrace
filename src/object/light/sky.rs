@@ -14,25 +14,20 @@ use object::Radiance;
 use object::Sampler;
 use object::Scene;
 
-pub struct Point {
-    position: Point3,
+pub struct Sky {
     radiance: Radiance
 }
 
-impl Point {
-    pub fn new(position: Point3, radiance: Radiance) -> Point {
-        return Point { position, radiance };
+impl Sky {
+    pub fn new(radiance: Radiance) -> Sky {
+        return Sky { radiance };
     }
 }
 
-impl Light for Point {
-    fn sample(&self, _sampler: &mut dyn Sampler, pnt: Point3) -> Option<LightSample>
+impl Light for Sky {
+    fn sample(&self, _sampler: &mut dyn Sampler, _pnt: Point3) -> Option<LightSample>
     {
-        let mut dir_in = self.position - pnt;
-        let d = dir_in.mag();
-        dir_in = dir_in / d;
-
-        return Some(LightSample { radiance: self.radiance, origin: pnt, direction: dir_in, pdf: Pdf::new(d * d, true), distance: d } );
+        return None;
     }
 
     fn pdf(&self, _isect: &Intersection) -> Pdf
@@ -42,20 +37,24 @@ impl Light for Point {
 
     fn radiance_from_isect(&self, _isect: &Intersection) -> Radiance
     {
-        return Radiance::ZERO;
+        return self.radiance;
     }
 
     fn radiance_from_direction(&self, _direction: Vec3) -> Radiance
     {
-        return Radiance::ZERO;
+        return self.radiance;
     }
 
     fn test_visible(&self, scene: &Scene, sample: &LightSample) -> bool
     {
         let ray = Ray::new(sample.origin, sample.direction);
         let beam = Beam::new(ray, Bivec3::ZERO, Bivec3::ZERO);
-        let isect = scene.intersect(beam, sample.distance, false);
+        let isect = scene.intersect(beam, f32::MAX, false);
 
         return isect.is_none();
+    }
+
+    fn is_sky(&self) -> bool {
+        return true;
     }
 }

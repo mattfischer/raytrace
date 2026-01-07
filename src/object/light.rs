@@ -4,6 +4,9 @@ pub use point::Point;
 mod shape;
 pub use shape::Shape;
 
+mod sky;
+pub use sky::Sky;
+
 use crate::geo;
 use geo::Point3;
 use geo::Vec3;
@@ -26,7 +29,12 @@ pub struct LightSample {
 pub trait Light: Send + Sync {
     fn sample(&self, sampler: &mut dyn Sampler, pnt: Point3) -> Option<LightSample>;
     fn pdf(&self, isect: &Intersection) -> Pdf;
-    fn radiance(&self, isect: &Intersection) -> Radiance;
+    fn radiance_from_isect(&self, isect: &Intersection) -> Radiance;
+    fn radiance_from_direction(&self, direction: Vec3) -> Radiance;
 
     fn test_visible(&self, scene: &Scene, sample: &LightSample) -> bool;
+
+    fn is_sky(&self) -> bool {
+        return false;
+    }
 }

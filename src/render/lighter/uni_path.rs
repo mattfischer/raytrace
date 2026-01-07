@@ -32,7 +32,7 @@ impl Lighter for UniPath {
 
         let mut rad = Radiance::ZERO;
         if let Some(light) = &isect.primitive.light {
-            rad += light.radiance(isect_base);
+            rad += light.radiance_from_isect(isect_base);
         }
         let mut throughput = Color::ONE;
 
@@ -85,13 +85,16 @@ impl Lighter for UniPath {
                     let pdf = pdf.as_f32();
                     let mis_weight = pdf * pdf / (pdf * pdf + pdf_light * pdf_light);
 
-                    let rad2 = light.radiance(&isect2);
+                    let rad2 = light.radiance_from_isect(&isect2);
                     rad += rad2 * throughput * mis_weight;
                 }
 
                 isect = isect2;
             } else {
-                rad += scene.sky_radiance * throughput;
+                for light in &scene.sky_lights {
+                    let rad2 = light.radiance_from_direction(dir_in);
+                    rad += rad2 * throughput;
+                }
                 break;
             }
         }

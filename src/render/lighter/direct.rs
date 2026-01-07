@@ -29,7 +29,7 @@ impl Lighter for Direct {
 
         let mut rad = Radiance::ZERO;
         if let Some(light) = &primitive.light {
-            rad += light.radiance(isect);
+            rad += light.radiance_from_isect(isect);
         }
         let pnt_offset = isect.point + Vec3::from(nrm_facing) * 0.01;
 

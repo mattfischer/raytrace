@@ -241,8 +241,9 @@ impl Inner {
             self.settings.height,
             pnt_aperture,
         );
+        let dir = beam.ray.direction;
 
-        let rad_emitted;
+        let mut rad_emitted = Radiance::ZERO;
 
         if let Some(isect) = scene.intersect(beam, f32::MAX, true) {
             self.primary_hits
@@ -326,7 +327,9 @@ impl Inner {
             rad_emitted = isect.primitive.surface.radiance;
         } else {
             self.primary_hits.write().unwrap().set(x, y, None);
-            rad_emitted = scene.sky_radiance;
+            for light in &scene.sky_lights {
+                rad_emitted += light.radiance_from_direction(dir);
+            }
         }
 
         self.add_radiance(x, y, sample, rad_emitted);

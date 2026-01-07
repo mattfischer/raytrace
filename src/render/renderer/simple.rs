@@ -6,6 +6,7 @@ use crate::render;
 
 use geo::Point2;
 
+use object::Color;
 use object::sampler::Halton;
 use object::Radiance;
 use object::Sampler;
@@ -125,15 +126,18 @@ impl Inner {
             aperture_point,
         );
 
+        let dir = beam.ray.direction;
         let isect = self.scene.intersect(beam, f32::MAX, true);
 
-        let color;
+        let mut color = Color::ZERO;
         if let Some(lighter) = &self.lighter {
-            let rad;
+            let mut rad = Radiance::ZERO;
             if let Some(isect) = isect {
                 rad = lighter.light(&isect, sampler);
             } else {
-                rad = self.scene.sky_radiance;
+                for light in &self.scene.sky_lights {
+                    rad += light.radiance_from_direction(dir);
+                }
             }
 
             let mut total_radiance = self.total_radiance.lock().unwrap();
@@ -144,8 +148,6 @@ impl Inner {
         } else {
             if let Some(isect) = isect {
                 color = isect.albedo;
-            } else {
-                color = Framebuffer::tone_map(self.scene.sky_radiance);
             }
         }
 
