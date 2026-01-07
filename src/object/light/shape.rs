@@ -44,7 +44,7 @@ impl Light for Shape {
     {
         let dot = isect.ray.direction * isect.facing_normal;
         let d = isect.shape_isect.distance;
-        return Pdf::new(self.shape.sample_pdf(isect.point).as_f32() * d * d / dot, false);
+        return Pdf::new(self.shape.pdf(isect.point).as_f32() * d * d / dot, false);
     }
 
     fn radiance(&self, _isect: &Intersection) -> Radiance
