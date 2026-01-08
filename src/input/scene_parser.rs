@@ -30,7 +30,7 @@ use object::shape::Transformed;
 
 use crate::input;
 use input::ModelLoader;
-use input::TextureLoader;
+use input::BmpLoader;
 
 use std::fs;
 use std::cmp::min;
@@ -394,10 +394,13 @@ impl SceneParser {
             return Ok(None);
         }
         let filename = self.parse_string()?;
-        let texture = TextureLoader::load(filename);
         let magnitude = self.parse_float()?;
 
-        return Ok(Some(NormalMap::new(texture.expect("Texture expected"), magnitude)));
+        if let Ok(texture) = BmpLoader::load(filename.as_str()) {        
+            return Ok(Some(NormalMap::new(texture, magnitude)));
+        } else {
+            return Ok(None);
+        }
     }
 
     fn try_parse_albedo(&mut self) -> Result<Option<Box<dyn Albedo>>, ParseError> {
@@ -412,8 +415,9 @@ impl SceneParser {
             albedo = Some(Box::new(Solid::new(color)));
         } else if self.match_literal("texture") {
             let filename = self.parse_string()?;
-            let texture = TextureLoader::load(filename);
-            albedo = Some(Box::new(Texture::new(texture.expect("Texture expected"))));
+            if let Ok(texture) = BmpLoader::load(filename.as_str()) {
+                albedo = Some(Box::new(Texture::new(texture)));
+            }
         } else {
             self.error_unexpected()?;
         }
