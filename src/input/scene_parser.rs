@@ -29,8 +29,9 @@ use object::shape::Quad;
 use object::shape::Transformed;
 
 use crate::input;
-use input::ModelLoader;
 use input::BmpLoader;
+use input::BptLoader;
+use input::PlyLoader;
 
 use std::fs;
 use std::cmp::min;
@@ -298,8 +299,10 @@ impl SceneParser {
             self.expect_left_brace()?;
 
             let filename = self.parse_string()?;
-            if let Some(sh) = ModelLoader::load(filename.clone()) {
-                shape = sh;
+            if filename.ends_with(".ply") {
+                shape = PlyLoader::load(filename.as_str()).expect("Model expected");
+            } else if filename.ends_with(".bpt") {
+                shape = BptLoader::load(filename.as_str()).expect("Model expected");
             } else {
                 return Err(ParseError::new(&format!("Invalid model filename {}", filename)));
             }
