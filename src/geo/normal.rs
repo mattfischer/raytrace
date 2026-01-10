@@ -17,11 +17,11 @@ impl Normal3 {
         Self { x, y, z }
     }
 
-    pub fn transform(self, xform: Transformation) -> Self {
+    pub fn transform(self, xform: &Transformation) -> Self {
         self * xform.inverse_matrix
     }
 
-    pub fn inverse_transform(self, xform: Transformation) -> Self {
+    pub fn inverse_transform(self, xform: &Transformation) -> Self {
         self * xform.matrix
     }
 

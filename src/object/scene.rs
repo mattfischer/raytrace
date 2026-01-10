@@ -45,7 +45,7 @@ impl Scene {
         }
 
         for (idx, primitive) in primitives.iter().enumerate() {
-            centroids.push(primitive.shape.bounding_volume(xform).centroid());
+            centroids.push(primitive.shape.bounding_volume(&xform).centroid());
             if let Some(light) = &primitive.light {
                 area_lights.push(idx);
                 all_lights.push(light.clone());
@@ -53,7 +53,7 @@ impl Scene {
         }
 
         let func = |idx: usize| -> BoundingVolume {
-            return primitives[idx].shape.bounding_volume(xform);
+            return primitives[idx].shape.bounding_volume(&xform);
         };
         let bvh = BoundingVolumeHierarchy::with_volumes(&centroids[..], &func);
 

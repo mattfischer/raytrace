@@ -35,7 +35,7 @@ impl Shape for Group {
         return result;
     }
 
-    fn bounding_volume(&self, xform: Transformation) -> BoundingVolume {
+    fn bounding_volume(&self, xform: &Transformation) -> BoundingVolume {
         let mut volume = BoundingVolume::new();
 
         for shape in &self.shapes {

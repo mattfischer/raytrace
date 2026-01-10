@@ -21,11 +21,11 @@ impl Transformed {
 
 impl Shape for Transformed {
     fn intersect(&self, ray: Ray, max_distance: f32, closest: bool) -> Option<ShapeIntersection> {
-        let transformed_ray = ray.inverse_transform(self.xform);
+        let transformed_ray = ray.inverse_transform(&self.xform);
 
         if let Some(shape_isect) = self.shape.intersect(transformed_ray, max_distance, closest) {
-            let normal = shape_isect.normal.transform(self.xform).normalize();
-            let tangent = shape_isect.tangent.transform(self.xform);
+            let normal = shape_isect.normal.transform(&self.xform).normalize();
+            let tangent = shape_isect.tangent.transform(&self.xform);
             return Some(ShapeIntersection::new(
                 shape_isect.distance,
                 normal,
@@ -37,7 +37,7 @@ impl Shape for Transformed {
         return None;
     }
 
-    fn bounding_volume(&self, xform: Transformation) -> BoundingVolume {
-        return self.shape.bounding_volume(self.xform.transform(xform));
+    fn bounding_volume(&self, xform: &Transformation) -> BoundingVolume {
+        return self.shape.bounding_volume(&self.xform.transform(xform));
     }
 }

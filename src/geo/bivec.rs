@@ -17,11 +17,11 @@ impl Bivec3 {
         Self { u, v }
     }
 
-    pub fn transform(&self, xform: Transformation) -> Self {
+    pub fn transform(&self, xform: &Transformation) -> Self {
         Self::new(self.u.transform(xform), self.v.transform(xform))
     }
 
-    pub fn inverse_transform(&self, xform: Transformation) -> Self {
+    pub fn inverse_transform(&self, xform: &Transformation) -> Self {
         Self::new(
             self.u.inverse_transform(xform),
             self.v.inverse_transform(xform),

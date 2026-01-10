@@ -64,7 +64,7 @@ impl ShapeIntersection {
 
 pub trait Shape: Send + Sync {
     fn intersect(&self, ray: Ray, max_distance: f32, closest: bool) -> Option<ShapeIntersection>;
-    fn bounding_volume(&self, xform: Transformation) -> BoundingVolume;
+    fn bounding_volume(&self, xform: &Transformation) -> BoundingVolume;
 
     fn sample(&self, _sampler: &mut dyn Sampler) -> Option<(Point3, Normal3, Pdf)> {
         return None;

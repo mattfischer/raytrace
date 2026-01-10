@@ -111,7 +111,7 @@ impl Grid {
 }
 
 impl Shape for Grid {
-    fn bounding_volume(&self, xform: Transformation) -> BoundingVolume {
+    fn bounding_volume(&self, xform: &Transformation) -> BoundingVolume {
         let mut volume = BoundingVolume::new();
 
         for vertex in &self.vertices {

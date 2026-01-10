@@ -3,21 +3,20 @@ use crate::geo;
 use geo::Matrix4;
 use geo::Vec3;
 
-#[derive(Copy, Clone)]
 pub struct Transformation {
     pub matrix: Matrix4,
     pub inverse_matrix: Matrix4,
 }
 
 impl Transformation {
-    pub fn transform(&self, xform: Self) -> Self {
+    pub fn transform(&self, xform: &Self) -> Self {
         Self {
             matrix: self.matrix * xform.matrix,
             inverse_matrix: xform.inverse_matrix * self.inverse_matrix,
         }
     }
 
-    pub fn inverse_transform(&self, xform: Self) -> Self {
+    pub fn inverse_transform(&self, xform: &Self) -> Self {
         Transformation {
             matrix: self.inverse_matrix * xform.matrix,
             inverse_matrix: self.matrix * xform.inverse_matrix,

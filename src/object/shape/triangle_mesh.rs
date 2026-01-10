@@ -6,6 +6,7 @@ use geo::Bivec3;
 use geo::Normal3;
 use geo::Point2;
 use geo::Point3;
+use geo::Transformation;
 
 use object::shape::Triangle;
 use object::BoundingVolume;
@@ -74,7 +75,7 @@ impl TriangleMesh {
 }
 
 impl Shape for TriangleMesh {
-    fn bounding_volume(&self, xform: geo::Transformation) -> BoundingVolume {
+    fn bounding_volume(&self, xform: &Transformation) -> BoundingVolume {
         let mut volume = BoundingVolume::new();
 
         for vertex in &self.vertices {

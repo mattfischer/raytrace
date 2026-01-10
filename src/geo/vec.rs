@@ -36,11 +36,11 @@ impl Vec3 {
         self / self.mag2().sqrt()
     }
 
-    pub fn transform(self, xform: Transformation) -> Self {
+    pub fn transform(self, xform: &Transformation) -> Self {
         xform.matrix * self
     }
 
-    pub fn inverse_transform(self, xform: Transformation) -> Self {
+    pub fn inverse_transform(self, xform: &Transformation) -> Self {
         xform.inverse_matrix * self
     }
 }

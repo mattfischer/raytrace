@@ -15,7 +15,7 @@ impl Ray {
         return Ray { origin, direction };
     }
 
-    pub fn inverse_transform(&self, xform: Transformation) -> Ray {
+    pub fn inverse_transform(&self, xform: &Transformation) -> Ray {
         return Ray {
             origin: self.origin.inverse_transform(xform),
             direction: self.direction.inverse_transform(xform),

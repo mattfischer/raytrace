@@ -4,6 +4,7 @@ use crate::object;
 use geo::Bivec3;
 use geo::Normal3;
 use geo::Point3;
+use geo::Transformation;
 use geo::Vec3;
 
 use object::shape::Grid;
@@ -119,7 +120,7 @@ impl BezierPatch {
 }
 
 impl Shape for BezierPatch {
-    fn bounding_volume(&self, xform: geo::Transformation) -> object::BoundingVolume {
+    fn bounding_volume(&self, xform: &Transformation) -> object::BoundingVolume {
         return self.grid.bounding_volume(xform);
     }
 

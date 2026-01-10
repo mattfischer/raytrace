@@ -55,7 +55,7 @@ impl Shape for Quad {
         return None;
     }
 
-    fn bounding_volume(&self, xform: Transformation) -> BoundingVolume {
+    fn bounding_volume(&self, xform: &Transformation) -> BoundingVolume {
         let mut volume = BoundingVolume::new();
         for point in [
             self.position,

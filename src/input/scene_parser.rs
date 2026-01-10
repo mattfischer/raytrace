@@ -370,19 +370,19 @@ impl SceneParser {
         while !self.match_right_brace() {
             if self.match_literal("translate") {
                 let vector = self.parse_vector()?;
-                result = result.transform(Transformation::translate(vector));
+                result = result.transform(&Transformation::translate(vector));
                 continue;
             } else if self.match_literal("rotate") {
                 let vector = self.parse_vector()?;
-                result = result.transform(Transformation::rotate(vector));
+                result = result.transform(&Transformation::rotate(vector));
                 continue;
             } else if self.match_literal("scale") {
                 let vector = self.parse_vector()?;
-                result = result.transform(Transformation::scale(vector));
+                result = result.transform(&Transformation::scale(vector));
                 continue;
             } else if self.match_literal("uniform_scale") {
                 let scale = self.parse_float()?;
-                result = result.transform(Transformation::uniform_scale(scale));
+                result = result.transform(&Transformation::uniform_scale(scale));
                 continue;
             } else {
                 self.error_unexpected()?;

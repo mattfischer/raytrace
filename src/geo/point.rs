@@ -18,11 +18,11 @@ impl Point3 {
         Self { x, y, z }
     }
 
-    pub fn transform(self, xform: Transformation) -> Self {
+    pub fn transform(self, xform: &Transformation) -> Self {
         xform.matrix * self
     }
 
-    pub fn inverse_transform(self, xform: Transformation) -> Self {
+    pub fn inverse_transform(self, xform: &Transformation) -> Self {
         xform.inverse_matrix * self
     }
 }
