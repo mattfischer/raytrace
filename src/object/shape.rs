@@ -1,9 +1,8 @@
 mod bezier_patch;
 pub use bezier_patch::BezierPatch;
 
-mod grid;
+pub mod grid;
 pub use grid::Grid;
-pub use grid::GridVertex;
 
 mod group;
 pub use group::Group;
@@ -20,10 +19,8 @@ pub use transformed::Transformed;
 mod triangle;
 pub use triangle::Triangle;
 
-mod triangle_mesh;
+pub mod triangle_mesh;
 pub use triangle_mesh::TriangleMesh;
-pub use triangle_mesh::TriangleMeshTriangle;
-pub use triangle_mesh::TriangleMeshVertex;
 
 use crate::geo;
 use geo::Bivec3;

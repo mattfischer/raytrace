@@ -6,8 +6,8 @@ use crate::object;
 use object::Shape;
 
 use object::shape::TriangleMesh;
-use object::shape::TriangleMeshVertex;
-use object::shape::TriangleMeshTriangle;
+use object::shape::triangle_mesh::Vertex;
+use object::shape::triangle_mesh::Triangle;
 
 use std::io::BufReader;
 use std::io::BufRead;
@@ -114,7 +114,7 @@ impl PlyLoader {
                         }
                     }
 
-                    let vertex = TriangleMeshVertex { point: Point3::new(x, y, z) };
+                    let vertex = Vertex { point: Point3::new(x, y, z) };
                     vertices.push(vertex);
                 }
             } else if element.name == "face" {
@@ -138,7 +138,7 @@ impl PlyLoader {
                                     let u = vertices[triangle_vertices[1]].point - vertices[triangle_vertices[0]].point;
                                     let v = vertices[triangle_vertices[2]].point - vertices[triangle_vertices[0]].point;
                                     let normal = Normal3::from(u % v).normalize();
-                                    let triangle = TriangleMeshTriangle { vertices: [triangle_vertices[0], triangle_vertices[1], triangle_vertices[2]], normal };
+                                    let triangle = Triangle { vertices: [triangle_vertices[0], triangle_vertices[1], triangle_vertices[2]], normal };
                                     triangles.push(triangle);
                                     triangle_vertices[1] = triangle_vertices[2];
                                     triangle_vertices[2] = index;
@@ -148,7 +148,7 @@ impl PlyLoader {
                             let u = vertices[triangle_vertices[1]].point - vertices[triangle_vertices[0]].point;
                             let v = vertices[triangle_vertices[2]].point - vertices[triangle_vertices[0]].point;
                             let normal = Normal3::from(u % v).normalize();
-                            let triangle = TriangleMeshTriangle { vertices: [triangle_vertices[0], triangle_vertices[1], triangle_vertices[2]], normal };
+                            let triangle = Triangle { vertices: [triangle_vertices[0], triangle_vertices[1], triangle_vertices[2]], normal };
                             triangles.push(triangle);
                         } else {
                             Self::skip_property(&mut reader, &element.properties[j]);

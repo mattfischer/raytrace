@@ -16,7 +16,7 @@ use object::Shape;
 use object::ShapeIntersection;
 
 #[derive(Copy, Clone)]
-pub struct GridVertex {
+pub struct Vertex {
     pub point: Point3,
     pub normal: Normal3,
     pub tangent: Bivec3,
@@ -25,13 +25,13 @@ pub struct GridVertex {
 pub struct Grid {
     width: usize,
     height: usize,
-    vertices: Vec<GridVertex>,
+    vertices: Vec<Vertex>,
     bvh: BoundingVolumeHierarchy,
 }
 
 impl Grid {
     fn compute_bounds(
-        vertices: &[GridVertex],
+        vertices: &[Vertex],
         width: usize,
         height: usize,
         nodes: &mut Vec<BvhNode>,
@@ -82,7 +82,7 @@ impl Grid {
         return node_index;
     }
 
-    pub fn new(width: usize, height: usize, vertices: Vec<GridVertex>) -> Grid {
+    pub fn new(width: usize, height: usize, vertices: Vec<Vertex>) -> Grid {
         let mut nodes = Vec::new();
         nodes.reserve(width * height * 2);
         Self::compute_bounds(
@@ -105,7 +105,7 @@ impl Grid {
         };
     }
 
-    pub fn vertex(&self, u: usize, v: usize) -> GridVertex {
+    pub fn vertex(&self, u: usize, v: usize) -> Vertex {
         return self.vertices[v * self.width + u];
     }
 }

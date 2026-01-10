@@ -10,7 +10,7 @@ use geo::Vec3;
 
 use object::BoundingVolume;
 use object::shape::Grid;
-use object::shape::GridVertex;
+use object::shape::grid::Vertex;
 use object::Shape;
 use object::ShapeIntersection;
 
@@ -107,7 +107,7 @@ impl BezierPatch {
                     dt = dt1;
                 }
 
-                let vertex = GridVertex {
+                let vertex = Vertex {
                     point: p.into(),
                     tangent: Bivec3::new(ds, dt),
                     normal: Normal3::from((ds % dt).normalize()),

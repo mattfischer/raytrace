@@ -7,31 +7,30 @@ use geo::Point2;
 use geo::Point3;
 use geo::Transformation;
 
-use object::shape::Triangle;
 use object::BoundingVolume;
 use object::BoundingVolumeHierarchy;
 use object::Shape;
 use object::ShapeIntersection;
 
-pub struct TriangleMeshVertex {
+pub struct Vertex {
     pub point: Point3,
 }
 
-pub struct TriangleMeshTriangle {
+pub struct Triangle {
     pub vertices: [usize; 3],
     pub normal: Normal3,
 }
 
 pub struct TriangleMesh {
-    vertices: Vec<TriangleMeshVertex>,
-    triangles: Vec<TriangleMeshTriangle>,
+    vertices: Vec<Vertex>,
+    triangles: Vec<Triangle>,
     bvh: BoundingVolumeHierarchy,
 }
 
 impl TriangleMesh {
     fn compute_bvh(
-        vertices: &[TriangleMeshVertex],
-        triangles: &[TriangleMeshTriangle],
+        vertices: &[Vertex],
+        triangles: &[Triangle],
     ) -> BoundingVolumeHierarchy {
         let mut centroids = Vec::with_capacity(triangles.len());
         for triangle in triangles {
@@ -54,16 +53,16 @@ impl TriangleMesh {
     }
 
     pub fn new(
-        vertices: Vec<TriangleMeshVertex>,
-        triangles: Vec<TriangleMeshTriangle>,
+        vertices: Vec<Vertex>,
+        triangles: Vec<Triangle>,
     ) -> TriangleMesh {
         let bvh = Self::compute_bvh(&vertices[..], &triangles[..]);
         return Self::new_with_bvh(vertices, triangles, bvh);
     }
 
     pub fn new_with_bvh(
-        vertices: Vec<TriangleMeshVertex>,
-        triangles: Vec<TriangleMeshTriangle>,
+        vertices: Vec<Vertex>,
+        triangles: Vec<Triangle>,
         bvh: BoundingVolumeHierarchy,
     ) -> TriangleMesh {
         return TriangleMesh {
@@ -101,7 +100,7 @@ impl Shape for TriangleMesh {
             let vertex1 = &self.vertices[triangle.vertices[1]];
             let vertex2 = &self.vertices[triangle.vertices[2]];
 
-            if let Some((_tu, _tv, d)) = Triangle::intersect(
+            if let Some((_tu, _tv, d)) = object::shape::Triangle::intersect(
                 ray,
                 vertex0.point,
                 vertex1.point,
