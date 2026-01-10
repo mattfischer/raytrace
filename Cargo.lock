@@ -211,7 +211,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-test"
+name = "raytrace"
 version = "0.1.0"
 dependencies = [
  "packbytes",
