@@ -8,7 +8,9 @@ use geo::Ray;
 use geo::Vec3;
 
 use object::Color;
+use object::Intersection;
 use object::Radiance;
+use object::Sampler;
 
 use render::Lighter;
 
@@ -23,9 +25,9 @@ impl UniPath {
 impl Lighter for UniPath {
     fn light(
         &self,
-        isect_base: &crate::object::Intersection,
-        sampler: &mut dyn crate::object::Sampler,
-    ) -> crate::object::Radiance {
+        isect_base: &Intersection,
+        sampler: &mut dyn Sampler,
+    ) -> Radiance {
         let mut isect = (*isect_base).clone();
         let scene = isect.scene;
         let mut beam;

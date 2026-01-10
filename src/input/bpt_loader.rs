@@ -2,6 +2,10 @@ use crate::geo;
 use geo::Point3;
 
 use crate::object;
+use object::Shape;
+
+use object::shape::BezierPatch;
+use object::shape::Group;
 
 use std::fs::File;
 use std::io::{BufRead, BufReader};
@@ -10,13 +14,13 @@ use std::str::FromStr;
 pub struct BptLoader;
 
 impl BptLoader {
-    pub fn load(filename: &str) -> Option<Box<dyn object::Shape>> {
+    pub fn load(filename: &str) -> Option<Box<dyn Shape>> {
         if let Ok(file) = File::open(filename) {
             let mut reader = BufReader::new(file);
 
             let num_patches = Self::parse_nums::<i32, 1>(&mut reader)[0];
 
-            let mut patches: Vec<Box<dyn object::Shape>> = Vec::new();
+            let mut patches: Vec<Box<dyn Shape>> = Vec::new();
             for _ in 0..num_patches {
                 let [_, _] = Self::parse_nums::<i32, 2>(&mut reader);
                 let mut control_points = [Point3::ZERO; 16];
@@ -24,14 +28,14 @@ impl BptLoader {
                     let [x, y, z] = Self::parse_nums::<f32, 3>(&mut reader);
                     control_points[j] = Point3::new(x, y, z);
                 }
-                patches.push(Box::new(object::shape::BezierPatch::new(
+                patches.push(Box::new(BezierPatch::new(
                     16,
                     16,
                     control_points,
                 )));
             }
 
-            return Some(Box::new(object::shape::Group::new(patches)));
+            return Some(Box::new(Group::new(patches)));
         } else {
             return None;
         }

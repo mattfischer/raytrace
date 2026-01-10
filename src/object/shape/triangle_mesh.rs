@@ -1,6 +1,5 @@
 use crate::geo;
 use crate::object;
-use crate::object::ShapeIntersection;
 
 use geo::Bivec3;
 use geo::Normal3;
@@ -12,6 +11,7 @@ use object::shape::Triangle;
 use object::BoundingVolume;
 use object::BoundingVolumeHierarchy;
 use object::Shape;
+use object::ShapeIntersection;
 
 pub struct TriangleMeshVertex {
     pub point: Point3,

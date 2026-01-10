@@ -5,6 +5,7 @@ use geo::Normal3;
 use geo::OrthonormalBasis;
 use geo::Vec3;
 
+use object::Brdf;
 use object::Color;
 use object::Pdf;
 use object::Sampler;
@@ -25,7 +26,7 @@ impl OrenNayar {
     }
 }
 
-impl object::Brdf for OrenNayar {
+impl Brdf for OrenNayar {
     fn reflected(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3, albedo: Color) -> Color {
         let cos_theta_i = dir_in * nrm;
         let sin_theta_i = (1.0 - cos_theta_i * cos_theta_i).max(0.0).sqrt();

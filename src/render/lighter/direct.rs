@@ -4,7 +4,9 @@ use crate::render;
 
 use geo::Vec3;
 
+use object::Intersection;
 use object::Radiance;
+use object::Sampler;
 
 use render::Lighter;
 
@@ -19,9 +21,9 @@ impl Direct {
 impl Lighter for Direct {
     fn light(
         &self,
-        isect: &object::Intersection,
-        sampler: &mut dyn object::Sampler,
-    ) -> object::Radiance {
+        isect: &Intersection,
+        sampler: &mut dyn Sampler,
+    ) -> Radiance {
         let scene = isect.scene;
         let primitive = isect.primitive;
         let surface = &primitive.surface;

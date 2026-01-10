@@ -4,9 +4,11 @@ use crate::object;
 use geo::Bivec3;
 use geo::Normal3;
 use geo::Point3;
+use geo::Ray;
 use geo::Transformation;
 use geo::Vec3;
 
+use object::BoundingVolume;
 use object::shape::Grid;
 use object::shape::GridVertex;
 use object::Shape;
@@ -120,13 +122,13 @@ impl BezierPatch {
 }
 
 impl Shape for BezierPatch {
-    fn bounding_volume(&self, xform: &Transformation) -> object::BoundingVolume {
+    fn bounding_volume(&self, xform: &Transformation) -> BoundingVolume {
         return self.grid.bounding_volume(xform);
     }
 
     fn intersect(
         &self,
-        ray: geo::Ray,
+        ray: Ray,
         max_distance: f32,
         closest: bool,
     ) -> Option<ShapeIntersection> {

@@ -5,6 +5,7 @@ use geo::Normal3;
 use geo::OrthonormalBasis;
 use geo::Vec3;
 
+use object::Brdf;
 use object::Color;
 use object::Pdf;
 use object::Sampler;
@@ -21,7 +22,7 @@ impl Lambert {
     }
 }
 
-impl object::Brdf for Lambert {
+impl Brdf for Lambert {
     fn reflected(&self, _dir_in: Vec3, _nrm: Normal3, _dir_out: Vec3, albedo: Color) -> Color {
         return albedo * self.strength / PI;
     }

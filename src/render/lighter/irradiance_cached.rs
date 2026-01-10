@@ -13,6 +13,7 @@ use geo::Vec3;
 
 use object::sampler::Random;
 use object::Color;
+use object::Intersection;
 use object::Radiance;
 use object::Sampler;
 use object::Scene;
@@ -557,7 +558,7 @@ impl IrradianceCached {
 }
 
 impl Lighter for IrradianceCached {
-    fn light(&self, isect: &object::Intersection, sampler: &mut dyn object::Sampler) -> Radiance {
+    fn light(&self, isect: &Intersection, sampler: &mut dyn Sampler) -> Radiance {
         let surface = &isect.primitive.surface;
         let pnt = isect.point;
         let nrm_facing = isect.facing_normal;

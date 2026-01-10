@@ -5,6 +5,7 @@ use geo::Normal3;
 use geo::OrthonormalBasis;
 use geo::Vec3;
 
+use object::Brdf;
 use object::Color;
 use object::Pdf;
 use object::Sampler;
@@ -27,7 +28,7 @@ impl TorranceSparrow {
     }
 }
 
-impl object::Brdf for TorranceSparrow {
+impl Brdf for TorranceSparrow {
     fn reflected(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3, _albedo: Color) -> Color {
         let dir_half = (dir_in + dir_out).normalize();
         let alpha = (nrm * dir_half).min(1.0).acos();

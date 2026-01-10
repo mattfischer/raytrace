@@ -5,6 +5,7 @@ use geo::Normal3;
 use geo::OrthonormalBasis;
 use geo::Vec3;
 
+use object::Brdf;
 use object::Color;
 use object::Pdf;
 use object::Sampler;
@@ -22,7 +23,7 @@ impl Phong {
     }
 }
 
-impl object::Brdf for Phong {
+impl Brdf for Phong {
     fn reflected(&self, dir_in: Vec3, nrm: Normal3, dir_out: Vec3, _albedo: Color) -> Color {
         let dir_reflect = -(dir_in - Vec3::from(nrm) * (2.0 * nrm * dir_in));
         let dot = dir_reflect * dir_out;

@@ -14,7 +14,7 @@ use object::Primitive;
 use std::sync::Arc;
 
 pub struct Scene {
-    pub camera: object::Camera,
+    pub camera: Camera,
     pub primitives: Vec<Primitive>,
     pub lights: Vec<Arc<Box<dyn Light>>>,
     pub sky_lights: Vec<Arc<Box<dyn Light>>>,
