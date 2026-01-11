@@ -96,7 +96,7 @@ impl Grid {
             height - 1,
         );
 
-        let bvh = BoundingVolumeHierarchy::with_nodes(nodes);
+        let bvh = BoundingVolumeHierarchy::from_nodes(nodes);
         return Grid {
             width,
             height,

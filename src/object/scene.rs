@@ -55,7 +55,7 @@ impl Scene {
         let func = |idx: usize| -> BoundingVolume {
             return primitives[idx].shape.bounding_volume(&xform);
         };
-        let bvh = BoundingVolumeHierarchy::with_volumes(&centroids[..], &func);
+        let bvh = BoundingVolumeHierarchy::from_volumes(&centroids[..], &func);
 
         return Scene {
             camera,

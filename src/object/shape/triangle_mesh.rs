@@ -49,7 +49,7 @@ impl TriangleMesh {
             return volume;
         };
 
-        return BoundingVolumeHierarchy::with_volumes(&centroids[..], &func);
+        return BoundingVolumeHierarchy::from_volumes(&centroids[..], &func);
     }
 
     pub fn new(

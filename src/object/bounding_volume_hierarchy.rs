@@ -101,7 +101,7 @@ where
 }
 
 impl BoundingVolumeHierarchy {
-    pub fn with_volumes<F>(points: &[Point3], func: &F) -> BoundingVolumeHierarchy
+    pub fn from_volumes<F>(points: &[Point3], func: &F) -> BoundingVolumeHierarchy
     where
         F: Fn(usize) -> BoundingVolume,
     {
@@ -119,7 +119,7 @@ impl BoundingVolumeHierarchy {
         return BoundingVolumeHierarchy { nodes };
     }
 
-    pub fn with_nodes(nodes: Vec<BvhNode>) -> BoundingVolumeHierarchy {
+    pub fn from_nodes(nodes: Vec<BvhNode>) -> BoundingVolumeHierarchy {
         return BoundingVolumeHierarchy { nodes };
     }
 

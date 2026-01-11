@@ -65,6 +65,6 @@ impl Shape for Sphere {
             maxes[i] = x + y;
         }
 
-        return BoundingVolume::with_mins_maxes(mins, maxes);
+        return BoundingVolume::from_mins_maxes(mins, maxes);
     }
 }

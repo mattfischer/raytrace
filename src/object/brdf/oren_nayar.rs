@@ -70,7 +70,7 @@ impl Brdf for OrenNayar {
         let phi = 2.0 * PI * sample_point.u;
         let theta = f32::asin(sample_point.v.sqrt());
 
-        let dir_in = basis.local_to_world(Vec3::with_spherical(phi, PI / 2.0 - theta, 1.0));
+        let dir_in = basis.local_to_world(Vec3::from_spherical(phi, PI / 2.0 - theta, 1.0));
 
         return dir_in;
     }

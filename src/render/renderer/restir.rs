@@ -345,7 +345,7 @@ impl Inner {
         let mut rad_direct = Radiance::ZERO;
 
         if let Some(primary_hit) = self.primary_hits.read().unwrap().get(x, y) {
-            let isect = Intersection::with_flat(primary_hit, &self.scene);
+            let isect = Intersection::from_flat(primary_hit, &self.scene);
 
             let nrm_facing = isect.facing_normal;
             let surface = &isect.primitive.surface;
@@ -429,7 +429,7 @@ impl Inner {
         let n = self.settings.indirect_samples;
 
         if let Some(primary_hit) = self.primary_hits.read().unwrap().get(x, y) {
-            let isect = Intersection::with_flat(primary_hit, &self.scene);
+            let isect = Intersection::from_flat(primary_hit, &self.scene);
 
             let nrm_facing = isect.facing_normal;
             let surface = &isect.primitive.surface;
@@ -456,7 +456,7 @@ impl Inner {
                     .unwrap()
                     .get(sx as usize, sy as usize)
                 {
-                    let isect_s = Intersection::with_flat(flat_isect_s, &self.scene);
+                    let isect_s = Intersection::from_flat(flat_isect_s, &self.scene);
 
                     let res_candidate = self
                         .indirect_reservoirs

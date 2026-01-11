@@ -433,7 +433,7 @@ impl Inner {
                             let phi = 2.0 * PI * (k as f32 + sampler.get_value()) / (n as f32);
                             let theta = ((j as f32 + sampler.get_value()) / (m as f32)).sqrt().asin();
                             let dir_in =
-                                basis.local_to_world(Vec3::with_spherical(phi, theta, 1.0));
+                                basis.local_to_world(Vec3::from_spherical(phi, theta, 1.0));
 
                             let pnt_offset = pnt + Vec3::from(nrm_facing) * 0.01;
                             let ray = Ray::new(pnt_offset, dir_in);
@@ -470,8 +470,8 @@ impl Inner {
                         for k in 0..n {
                             let k1 = if k > 0 { k - 1 } else { n - 1 };
                             let phi = 2.0 * PI * (k as f32) / (n as f32);
-                            let u = basis.local_to_world(Vec3::with_spherical(phi, 0.0, 1.0));
-                            let v = basis.local_to_world(Vec3::with_spherical(
+                            let u = basis.local_to_world(Vec3::from_spherical(phi, 0.0, 1.0));
+                            let v = basis.local_to_world(Vec3::from_spherical(
                                 phi + PI / 2.0,
                                 0.0,
                                 1.0,

@@ -33,7 +33,7 @@ impl BoundingVolume {
         };
     }
 
-    pub fn with_mins_maxes(mins: [f32; NUM_VECTORS], maxes: [f32; NUM_VECTORS]) -> BoundingVolume {
+    pub fn from_mins_maxes(mins: [f32; NUM_VECTORS], maxes: [f32; NUM_VECTORS]) -> BoundingVolume {
         return BoundingVolume { mins, maxes };
     }
 

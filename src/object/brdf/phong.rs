@@ -47,7 +47,7 @@ impl Brdf for Phong {
 
         let basis = OrthonormalBasis::new(dir_out);
 
-        let dir_reflect = basis.local_to_world(Vec3::with_spherical(phi, PI / 2.0 - theta, 1.0));
+        let dir_reflect = basis.local_to_world(Vec3::from_spherical(phi, PI / 2.0 - theta, 1.0));
         let dir_in = -(dir_reflect - Vec3::from(nrm) * (dir_reflect * nrm * 2.0));
         return dir_in;
     }

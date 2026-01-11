@@ -16,7 +16,7 @@ impl Vec3 {
         Vec3 { x, y, z }
     }
 
-    pub fn with_spherical(phi: f32, theta: f32, r: f32) -> Self {
+    pub fn from_spherical(phi: f32, theta: f32, r: f32) -> Self {
         Vec3::new(
             r * phi.cos() * theta.cos(),
             r * phi.sin() * theta.cos(),

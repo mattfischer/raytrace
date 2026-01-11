@@ -81,7 +81,7 @@ impl<'a> Intersection<'a> {
         };
     }
 
-    pub fn with_flat(flat: FlatIntersection, scene: &'a Scene) -> Intersection<'a> {
+    pub fn from_flat(flat: FlatIntersection, scene: &'a Scene) -> Intersection<'a> {
         return Intersection {
             scene: scene,
             primitive: &scene.primitives[flat.primitive_idx],
